@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClInclude Include="..\..\Input Libs\libpng169\pngstruct.h" />
+    <ClInclude Include="..\..\Input Libs\libpng169\png.h" />
+    <ClInclude Include="..\..\Input Libs\libpng169\pngconf.h" />
+    <ClInclude Include="..\..\Input Libs\libpng169\pngdebug.h" />
+    <ClInclude Include="..\..\Input Libs\libpng169\pnginfo.h" />
+    <ClInclude Include="..\..\Input Libs\libpng169\pngpriv.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\Input Libs\libpng169\png.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngerror.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngget.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngmem.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngpread.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngread.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngrio.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngrtran.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngrutil.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngset.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngtest.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngtrans.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngwio.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngwrite.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngwtran.c" />
+    <ClCompile Include="..\..\Input Libs\libpng169\pngwutil.c" />
+  </ItemGroup>
+</Project>
