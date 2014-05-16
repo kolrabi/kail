@@ -1,0 +1,325 @@
+/* "Enable debug code features" */
+#cmakedefine DEBUG 1
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#cmakedefine HAVE_DLFCN_H 1
+
+/* Define to 1 if you have the <GLUT/glut.h> header file. */
+#cmakedefine HAVE_GLUT_GLUT_H 1
+
+/* Define to 1 if you have the <GL/glut.h> header file. */
+#cmakedefine HAVE_GL_GLUT_H 1
+
+/* Define to 1 if you have the <GL/glu.h> header file. */
+#cmakedefine HAVE_GL_GLU_H 1
+
+/* Define to 1 if you have the <GL/gl.h> header file. */
+#cmakedefine HAVE_GL_GL_H 1
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#cmakedefine HAVE_INTTYPES_H 1
+
+/* Define to 1 if you have the `m' library (-lm). */
+#cmakedefine HAVE_LIBM 1
+
+/* Define to 1 if you have the `z' library (-lz). */
+#cmakedefine HAVE_LIBZ 1
+
+/* Define to 1 if you have the <memory.h> header file. */
+#cmakedefine HAVE_MEMORY_H 1
+
+/* Define to 1 if you have the <OpenGL/glu.h> header file. */
+#cmakedefine HAVE_OPENGL_GLU_H 1
+
+/* Define to 1 if you have the <OpenGL/gl.h> header file. */
+#cmakedefine HAVE_OPENGL_GL_H 1
+
+/* Define if you have POSIX threads libraries and header files. */
+#cmakedefine HAVE_PTHREAD 1
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine HAVE_STDINT_H 1
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#cmakedefine HAVE_STDLIB_H 1
+
+/* Define to 1 if you have the <strings.h> header file. */
+#cmakedefine HAVE_STRINGS_H 1
+
+/* Define to 1 if you have the <string.h> header file. */
+#cmakedefine HAVE_STRING_H 1
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#cmakedefine HAVE_SYS_STAT_H 1
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#cmakedefine HAVE_SYS_TYPES_H 1
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#cmakedefine HAVE_UNISTD_H 1
+
+/* Use nonstandard varargs form for the GLU tesselator callback */
+#cmakedefine HAVE_VARARGS_GLU_TESSCB 1
+
+/* Define to 1 if you have the <windows.h> header file. */
+#cmakedefine HAVE_WINDOWS_H 1
+
+/* Support Allegro API */
+#cmakedefine ILUT_USE_ALLEGRO 1
+
+/* Support DirectX8 API */
+#cmakedefine ILUT_USE_DIRECTX8 1
+
+/* Support DirectX9 API */
+#cmakedefine ILUT_USE_DIRECTX9 1
+
+/* Define if system supports OpenGL API */
+#cmakedefine ILUT_USE_OPENGL 1
+
+/* Support SDL API */
+#cmakedefine ILUT_USE_SDL 1
+
+/* Support X11 API */
+#cmakedefine ILUT_USE_X11 1
+
+/* Support X11 XRender extension */
+#cmakedefine ILUT_USE_XRENDER 1
+
+/* Support X11 XShm extension */
+#cmakedefine ILUT_USE_XSHM 1
+
+/* Define if you want to build ILU part of DevIL (used in DevIL
+   examples/tests) */
+#cmakedefine ILU_ENABLED 1
+
+// Formats
+
+/* blp support (BLP is the texture format for Blizzard games.) */
+#cmakedefine IL_NO_BLP
+
+/* bmp support (BMP is a standard Windows bitmap.) */
+#cmakedefine IL_NO_BMP
+
+/* dcx support (DCX is a multi-page PCX file.) */
+#cmakedefine IL_NO_DCX
+
+/* dds support (DDS (DirectDraw Surface) is used by DirectX to load images
+   (usually DXTC).) */
+#cmakedefine IL_NO_DDS
+
+/* dicom support (DICOM (Digital Imaging and Communications in Medicine) is
+   used extensively in medical imaging.) */
+#cmakedefine IL_NO_DICOM
+
+/* exr support (EXR is a HDR image file format standardized by Industrial
+   Light and Magic. OpenEXR powered) */
+#cmakedefine IL_NO_EXR
+
+/* fits support (FITS (Flexible Image Transport System) is used for storing
+   scientific images and is used extensively in astronomy.) */
+#cmakedefine IL_NO_FITS
+
+/* Define if you want to disable support for various game formats */
+#cmakedefine IL_NO_GAMES
+
+/* gif support (GIF is lossy and proprietary format used mainly to make
+   animations) */
+#cmakedefine IL_NO_GIF
+
+/* hdr support (HDR is the Radiance High Dynamic Range format, using more bits
+   per channel than normal.) */
+#cmakedefine IL_NO_HDR
+
+/* icns support (ICNS is the icon format for the Mac OS X operation system.)
+   */
+#cmakedefine IL_NO_ICNS
+
+/* icon support (ICO is the icon format for the Windows operating system.) */
+#cmakedefine IL_NO_ICON
+
+/* iff support (IFF (Interchange File Format) is used to transfer images
+   between software from different companies.) */
+#cmakedefine IL_NO_IFF
+
+/* ilbm support (ILBM (Amiga Interleaved BitMap Format).) */
+#cmakedefine IL_NO_ILBM
+
+/* iwi support (IWI is the Infinity Ward Image format used in the Call of Duty
+   games.) */
+#cmakedefine IL_NO_IWI
+
+/* jp2 support (JP2 (JPEG 2000) is a better, but not so widespread,
+   alternative to JPEG. JasPer powered) */
+#cmakedefine IL_NO_JP2
+
+/* jpeg support (JPEG is most common lossy format. libjpeg powered) */
+#cmakedefine IL_NO_JPG
+
+/* lcms support () */
+#cmakedefine IL_NO_LCMS
+
+/* lif support (LIF is the image format of the game Homeworld.) */
+#cmakedefine IL_NO_LIF
+
+/* mdl support (MDL is the format for models in the game Half-Life.) */
+#cmakedefine IL_NO_MDL
+
+/* mng support (MNG is basically the animated version of PNG but is not
+   widespread.) */
+#cmakedefine IL_NO_MNG
+
+/* mp3 support (MP3 (MPEG-1 Audio Layer 3) sometimes have images in them, such
+   as cover art.) */
+#cmakedefine IL_NO_MP3
+
+/* pcd support (PCD is the Kodak PhotoCD format.) */
+#cmakedefine IL_NO_PCD
+
+/* pcx support (PCX is one of the first widely accepted DOS imaging standards)
+   */
+#cmakedefine IL_NO_PCX
+
+/* pic support (PIC is used by SoftImage software.) */
+#cmakedefine IL_NO_PIC
+
+/* pix support () */
+#cmakedefine IL_NO_PIX
+
+/* png support (PNG is a smart, loseless and even open format. libpng
+   powered.) */
+#cmakedefine IL_NO_PNG
+
+/* pnm support (PNM (Portable aNy Map format) is considered the
+   least-common-denominator for converting pixmap, graymap, or bitmap files
+   between different platforms.) */
+#cmakedefine IL_NO_PNM
+
+/* psd support (PSD is the PhotoShop native file format.) */
+#cmakedefine IL_NO_PSD
+
+/* psp support (PSP is the Paint Shop Pro native file format.) */
+#cmakedefine IL_NO_PSP
+
+/* pxr support (PXR is used by Pixar.) */
+#cmakedefine IL_NO_PXR
+
+/* raw support (RAW is simply raw data.) */
+#cmakedefine IL_NO_RAW
+
+/* rot support (ROT is the image format for the game Homeworld 2.) */
+#cmakedefine IL_NO_ROT
+
+/* sgi support (SGI is the native raster graphics file format for Silicon
+   Graphics workstations) */
+#cmakedefine IL_NO_SGI
+
+/* sun support (SUN is the image format used on Sun's operating systems.) */
+#cmakedefine IL_NO_SUN
+
+/* texture support (TEXTURE is the format used in Medieval II: Total War
+   (similar to DDS).) */
+#cmakedefine IL_NO_TEXTURE
+
+/* tga support (TGA (aka TARGA file format) has been used mainly in games. It
+   is open and simple.) */
+#cmakedefine IL_NO_TGA
+
+/* tiff support (TIFF is a lossless format supporting greater color depths.
+   libtiff powered) */
+#cmakedefine IL_NO_TIF
+
+/* tpl support (TPL is the format used by many GameCube and Wii games.) */
+#cmakedefine IL_NO_TPL
+
+/* utx support (UTX is the format used in the Unreal Tournament game series.)
+   */
+#cmakedefine IL_NO_UTX
+
+/* vtf support (VTF (Valve Texture Format) is used by games based on Valve's
+   Source engine.) */
+#cmakedefine IL_NO_VTF
+
+/* doom support (WAD is the format for graphics in the original DooM I/II.) */
+#cmakedefine IL_NO_WAD
+
+/* wal support (WAL is the image format used for the game Quake 2.) */
+#cmakedefine IL_NO_WAL
+
+/* wbmp support (WBMP (Wireless Application Protocol Bitmap) is a monochrome
+   graphics file format optimized for mobile computing devices) */
+#cmakedefine IL_NO_WBMP
+
+/* wdp support (WDP is Microsoft's successor to JPEG, able to store many
+   different image types either lossy or losslessly, also known as HD Photo.)
+   */
+#cmakedefine IL_NO_WDP
+
+/* xpm support (XPM (X PixMap) is an ASCII-based image used in X Windows.) */
+#cmakedefine IL_NO_XPM
+
+/* Google Skia library support */
+#cmakedefine IL_NO_SKIA
+
+/* LCMS include without lcms/ support */
+#cmakedefine LCMS_NODIRINCLUDE
+
+// TODO 
+#if 0
+
+/* X86_ASM assembly found */
+#cmakedefine GCC_X86_ASM
+
+/* Define if you can support at least some ASM */
+#cmakedefine IL_INLINE_ASM
+
+/* Define if you have nvidia texture tools library installed */
+#cmakedefine IL_USE_DXTC_NVIDIA
+
+/* Define if you have libsquish installed */
+#cmakedefine IL_USE_DXTC_SQUISH
+
+
+/* define if you have memalign memory allocation */
+#cmakedefine MEMALIGN
+
+/* define if you have mm_malloc.h header */
+#cmakedefine MM_MALLOC
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#cmakedefine NO_MINUS_C_MINUS_O
+
+/* define if you have posix_memalign memory allocation */
+#cmakedefine POSIX_MEMALIGN
+
+/* Define to necessary symbol if this constant uses a non-standard name on
+   your system. */
+#cmakedefine PTHREAD_CREATE_JOINABLE
+
+/* restric keyword available */
+#cmakedefine RESTRICT_KEYWORD
+
+/* SSE extension found */
+#cmakedefine SSE
+
+/* SSE2 extension found */
+#cmakedefine SSE2
+
+/* SSE3 extension found */
+#cmakedefine SSE3
+
+/* Define to 1 if you have the ANSI C header files. */
+#cmakedefine STDC_HEADERS
+
+/* define if you have valloc memory allocation */
+#cmakedefine VALLOC
+
+/* Memory must be vector aligned */
+#cmakedefine VECTORMEM
+
+/* Define to 1 if your processor stores words with the most significant byte
+   first (like Motorola and SPARC, unlike Intel and VAX). */
+#cmakedefine WORDS_BIGENDIAN
+
+/* Define to 1 if the X Window System is missing or not being used. */
+#cmakedefine X_DISPLAY_MISSING
+#endif

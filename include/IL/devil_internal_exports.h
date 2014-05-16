@@ -24,7 +24,7 @@
 //#ifndef NOINLINE
 #ifndef INLINE
 #if defined(__GNUC__)
-	#define INLINE extern inline
+	#define INLINE static inline
 #elif defined(_MSC_VER)	//@TODO: Get this working in MSVC++.
 						//  http://www.greenend.org.uk/rjk/2003/03/inline.html
 	//#define NOINLINE
@@ -58,7 +58,7 @@ typedef struct ILpal
 } ILpal;
 
 // Struct for storing IO function pointers and data
-struct SIO {
+typedef struct SIO {
 	// Function pointers set by ilSetRead, ilSetWrite
 	fOpenProc openReadOnly;
 	fOpenProc openWrite;
@@ -66,16 +66,16 @@ struct SIO {
 	fReadProc read;
 	fSeekProc seek;
 	fEofProc eof;
-	fGetcProc getc;
+	fGetcProc getchar;
 	fTellProc tell;
-	fPutcProc putc;
+	fPutcProc putchar;
 	fWriteProc write;
 
 	ILint64 lumpPos;
 	ILHANDLE handle;
 	const void *lump;
 	ILuint		lumpSize, ReadFileStart, WriteFileStart;
-};
+} SIO;
 
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.*/
@@ -109,7 +109,7 @@ typedef struct ILimage
 	ILubyte*        DxtcData;    //!< compressed data
 	ILenum          DxtcFormat;  //!< compressed data format
 	ILuint          DxtcSize;    //!< compressed data size
-	SIO io;
+	SIO      				io;
 } ILimage;
 
 
