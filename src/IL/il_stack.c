@@ -572,6 +572,8 @@ void ILAPIENTRY ilInit()
 	// if it is already initialized skip initialization
 	if (IsInit == IL_TRUE ) 
 		return;
+
+	// TODO: set iTraceOut
 	
 	//ilSetMemory(NULL, NULL);  Now useless 3/4/2006 (due to modification in il_alloc.c)
 	ilSetError(IL_NO_ERROR);
@@ -581,6 +583,7 @@ void ILAPIENTRY ilInit()
 	ilResetWrite();
 	iSetImage0();  // Beware!  Clears all existing textures!
 	iBindImageTemp();  // Go ahead and create the temporary image.
+
 	IsInit = IL_TRUE;
 	return;
 }

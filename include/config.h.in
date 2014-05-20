@@ -73,6 +73,11 @@
 /* Support DirectX9 API */
 #cmakedefine ILUT_USE_DIRECTX9 1
 
+/* There can be only one. */
+#ifdef ILUT_USE_DIRECTX9
+  #undef ILUT_USE_DIRECTX8
+#endif
+
 /* Define if system supports OpenGL API */
 #cmakedefine ILUT_USE_OPENGL 1
 

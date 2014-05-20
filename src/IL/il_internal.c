@@ -18,6 +18,8 @@
 // Global variable: stores the currently used image
 ILimage *iCurImage = NULL;
 
+FILE *   iTraceOut = NULL;
+
 
 /* Siigron: added this for Linux... a #define should work, but for some reason
 	it doesn't (anyone who knows why?) */

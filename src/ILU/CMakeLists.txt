@@ -24,13 +24,22 @@ SET                     ( SOURCES
                         )
 
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )
-#INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/formats )
 
 IF                      ( ILU_STATIC )
-ADD_LIBRARY             ( ILU STATIC ${SOURCES} )
+  SET                   ( SOURCES STATIC ${SOURCES} )
 ELSE                    ( )
-ADD_LIBRARY             ( ILU SHARED ${SOURCES} )
+  SET                   ( SOURCES SHARED ${SOURCES} )
 ENDIF                   ( )
+
+ADD_LIBRARY             ( ILU ${SOURCES} )
+
+IF                      ( WIN32 )
+  # Windows programs need a ILU.dll not libILU.dll
+  SET_TARGET_PROPERTIES ( ILU PROPERTIES PREFIX "" )
+  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
+ELSE                    ()
+  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libIL.so.a )
+ENDIF                   ()
 
 INSTALL                 ( TARGETS ILU
                           RUNTIME DESTINATION bin

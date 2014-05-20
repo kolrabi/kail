@@ -1,4 +1,5 @@
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
+
 PROJECT                 ( IL C CXX )
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
@@ -89,15 +90,24 @@ INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/formats )
 
 IF                      ( IL_STATIC )
-ADD_LIBRARY             ( IL STATIC ${SOURCES} )
+  SET                   ( SOURCES STATIC ${SOURCES} )
 ELSE                    ( )
-ADD_LIBRARY             ( IL SHARED ${SOURCES} )
+  SET                   ( SOURCES SHARED ${SOURCES} )
 ENDIF                   ( )
 
-TARGET_LINK_LIBRARIES   ( IL
+IF                      ( WIN32 )
+  # Windows programs need a DevIL.dll not libIL.dll
+  SET                   ( LIBNAME DevIL )
+  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
+  SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES PREFIX "" )
+ELSE                    ()
+  SET                   ( LIBNAME IL )
+ENDIF                   ()
+
+TARGET_LINK_LIBRARIES   ( ${LIBNAME}
                           ${JASPER_LIBRARIES}
-                          ${JPEG_LIBRARIES}
                           ${MNG_LIBRARIES}
+                          ${JPEG_LIBRARIES}
                           ${PNG_LIBRARIES}
                           ${TIFF_LIBRARIES}
                           ${LCMS2_LIBRARIES}
@@ -106,12 +116,11 @@ TARGET_LINK_LIBRARIES   ( IL
                           ${SDL_LIBRARIES}
                           ${X11_LIBRARIES}
                           m
+                          z
                         )
 
-
-INSTALL                 ( TARGETS IL
+INSTALL                 ( TARGETS ${LIBNAME}
                           RUNTIME DESTINATION bin
                           LIBRARY DESTINATION lib
                           ARCHIVE DESTINATION lib
                         )
-

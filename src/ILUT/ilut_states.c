@@ -18,9 +18,9 @@
 //#endif
 
 
-ILconst_string _ilutVendor	= IL_TEXT("Abysmal Software");
+ILconst_string _ilutVendor	= IL_TEXT("kolrabi");
 //ILconst_string _ilutVersion	= IL_TEXT("Developer's Image Library Utility Toolkit (ILUT) 1.7.8 " IL_TEXT(__DATE__));
-ILconst_string _ilutVersion	= IL_TEXT("Developer's Image Library Utility Toolkit (ILUT) 1.7.8");
+ILconst_string _ilutVersion	= IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.8.3");
 
 
 // Set all states to their defaults

@@ -130,10 +130,9 @@
 			#pragma comment(lib, "ILUT.lib")
 		#endif
 	#endif
-
-	#include <IL/ilut_config.h>
 #endif
 
+#include "ilut_config.h"
 
 
 //this should remain private and hidden
@@ -190,7 +189,7 @@
 
 #ifdef ILUT_USE_DIRECTX8
 	#include <d3d8.h>
-#endif//ILUT_USE_DIRECTX9
+#endif//ILUT_USE_DIRECTX8
 
 #ifdef ILUT_USE_DIRECTX9
 	#include <d3d9.h>

@@ -2,9 +2,10 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2009 by Denton Woods
-// Last modified: 02/14/2009
+// Copyright (C)      2014 by Björn Paetzel
+// Last modified: 2014-05-20
 //
-// Filename: src-IL/include/il_gif.h
+// Filename: src/IL/formats/il_gif.h
 //
 // Description: Reads from a Graphics Interchange Format (.gif) file.
 //
@@ -20,62 +21,113 @@
 extern "C" {
 #endif
 
-#define GIF87A 87
-#define GIF89A 89
+#define GIF_VERSION87A "GIF87a"
+#define GIF_VERSION89A "GIF89a"
 
-#ifdef _WIN32
-	#pragma pack(push, gif_struct, 1)
-#endif
-typedef struct GIFHEAD
-{
-	char		Sig[6];
-	ILushort	Width;
-	ILushort	Height;
-	ILubyte		ColourInfo;
-	ILubyte		Background;
-	ILubyte		Aspect;
-} IL_PACKSTRUCT GIFHEAD;
+enum {
+	GifFlag_LSD_GlobalColorTableSizeMask 	= (7<<0),
+	GifFlag_LSD_Sort                     	= (1<<3),
+	GifFlag_LSD_ColorResolutionMask      	= (7<<4),
+	GifFlag_LSD_HasGlobalColorTable      	= (1<<7),
 
-typedef struct IMAGEDESC
-{
-	ILubyte		Separator;
-	ILushort	OffX;
-	ILushort	OffY;
-	ILushort	Width;
-	ILushort	Height;
-	ILubyte		ImageInfo;
-} IL_PACKSTRUCT IMAGEDESC;
+	GifFlag_GCE_TransparentColor         	= (1<<0),
+	GifFlag_GCE_UserInput                	= (1<<1),
+	GifFlag_GCE_DisposalMethodMask       	= (7<<2),
+	GifFlag_GCE_DisposalMethodShift      	=     2 ,
+	GifFlag_GCE_ReservedMask             	= (3<<5),
+	GifFlag_GCE_ReservedShift            	=     5 ,
 
-typedef struct GFXCONTROL
-{
-	ILubyte		Size;
-	ILubyte		Packed;
-	ILushort	Delay;
-	ILubyte		Transparent;
-	ILubyte		Terminator;
-	ILboolean	Used; //this stores if a gfxcontrol was read - it is IL_FALSE (!)
+	GifFlag_IMG_LocalColorTableSizeMask 	= (7<<0),
+	GifFlag_IMG_ReservedMask              = (3<<3),
+	GifFlag_IMG_Sort                     	= (1<<5),
+	GifFlag_IMG_Interlaced               	= (1<<6),
+	GifFlag_IMG_HasLocalColorTable       	= (1<<7),
 
-			//if a gfxcontrol was read from the file, IL_TRUE otherwise
-} IL_PACKSTRUCT GFXCONTROL;
-#ifdef _WIN32
-	#pragma pack(pop, gif_struct)
-#endif
+	GifID_Terminator 											= 0x00,
+	GifID_Extension                  			= 0x21,
+	GifID_Image                      			= 0x2c,
+	GifID_End                             = 0x3b,
 
-// Internal functions
-//ILboolean iLoadGifInternal(void);
-//ILboolean ilLoadGifF(ILHANDLE File);
-ILboolean iIsValidGif(SIO *);
-//ILboolean iGetPalette(ILubyte Info, ILpal *Pal, ILboolean UsePrevPal, ILimage *PrevImage);
-//ILboolean GetImages(ILpal *GlobalPal, GIFHEAD *GifHead);
-ILboolean SkipExtensions(GFXCONTROL *Gfx);
+  GifExt_PlainText                      = 0x01,
+	GifExt_GraphicControl            			= 0xf9,
+	GifExt_Comment                   			= 0xfe,
+	GifExt_Application               			= 0xff,
 
-// No need to export this?
-//ILboolean GifGetData(ILimage *Image, ILubyte *Data, ILuint ImageSize, 
-//   ILuint OffX, ILuint OffY, ILuint Width, ILuint Height, ILuint Stride, 
-//   ILuint PalOffset, GFXCONTROL *Gfx);
+	GifDisposal_DontCare                  =    0,
+	GifDisposal_Overlay                   =    1,
+	GifDisposal_Clear                     =    2,
+	GifDisposal_Restore                   =    3,
+};
 
-ILboolean RemoveInterlace(ILimage *image);
-ILboolean ConvertTransparent(ILimage *Image, ILubyte TransColour);
+#pragma pack(push)
+#pragma pack(1)
+
+typedef struct GifSignature {
+	char Magic[6];
+} GifSignature;
+
+typedef struct GifLogicalScreenDescriptor {
+	ILushort Width;
+	ILushort Height;
+	ILubyte  Flags;
+	ILubyte  Background;
+	ILubyte  PixelAspect;
+} GifLogicalScreenDescriptor;
+
+typedef struct GifGraphicControlExtension {
+	ILubyte  Flags;
+	ILushort Delay;
+	ILubyte  TransparentColor;
+} GifGraphicControlExtension;
+
+typedef struct GifImageDescriptor {
+	ILushort Left;
+	ILushort Top;
+	ILushort Width;
+	ILushort Height;
+	ILubyte  Flags;
+} GifImageDescriptor;
+
+#pragma pack(pop)
+
+
+typedef struct GifLoadingContext {
+	ILimage * Target;
+	ILimage * Image;
+	ILimage * PrevImage;
+
+	GifLogicalScreenDescriptor Screen;
+	ILuint 		Frame;
+
+	ILuint   	Delay;
+
+	ILboolean UseTransparentColor;
+	ILubyte   TransparentColor;
+
+	ILboolean UseLocalPal;
+	ILpal			GlobalPal;
+	ILpal			LocalPal;
+	ILushort	Colors;
+
+	ILubyte   DisposalMethod;
+	ILboolean IsInterlaced;
+
+	ILubyte   LZWCodeSize;
+} GifLoadingContext;
+
+typedef struct LZWInputStream {
+	ILubyte 	CodeSize;
+	ILubyte 	OriginalCodeSize;
+	ILubyte * Data;
+	ILuint  	AllocCount;
+	ILuint  	BitCount;
+	ILuint    ClearCode, EndCode;
+	ILuint    PrevCode, NextCode;
+
+	ILuint *  Phrases[65536];
+	ILubyte   Buffer[4096];
+	ILuint    BufferLen;
+} LZWInputStream;
 
 #if __cplusplus
 }

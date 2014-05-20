@@ -465,6 +465,9 @@ ILboolean iLoadXpmInternal();
 
 //ILboolean ilLoadExr(ILconst_string FileName);
 
+extern FILE *iTraceOut;
+
+#define iTrace(...) if (iTraceOut) fprintf(iTraceOut, __VA_ARGS__);
 
 #ifdef __cplusplus
 }
@@ -472,6 +475,5 @@ ILboolean iLoadXpmInternal();
 
 ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image);
 ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format);
-
 
 #endif//INTERNAL_H
