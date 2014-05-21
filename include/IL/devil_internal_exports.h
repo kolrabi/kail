@@ -77,6 +77,17 @@ typedef struct SIO {
 	ILuint		lumpSize, ReadFileStart, WriteFileStart;
 } SIO;
 
+#define SIOopenRO(io,       f) (io)->openReadOnly((io)->handle)
+#define SIOopenWR(io,       f) (io)->openWrite   ((io)->handle)
+#define SIOclose( io         ) (io)->close  ((io)->handle               )
+#define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
+#define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
+#define SIOeof(   io         ) (io)->eof    ((io)->handle               )
+#define SIOgetc(  io         ) (io)->getchar((io)->handle               )
+#define SIOtell(  io         ) (io)->tell   ((io)->handle               )
+#define SIOputc(  io,       c) (io)->putchar((io)->handle,           (c))
+#define SIOwrite( io, p, s, n) (io)->write  ((io)->handle, (p), (s), (n))
+
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.*/
 typedef struct ILimage

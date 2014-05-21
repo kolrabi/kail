@@ -17,7 +17,6 @@
 #include "il_bmp.h"
 #include "il_endian.h"
 #include <stdio.h>
-void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILuint * CONST_RESTRICT ShiftRight);
 
 #ifndef _WIN32
 	#ifdef HAVE_STDINT_H
@@ -34,26 +33,7 @@ void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILui
 	#endif
 #endif
 
-void flipHeaderEndians(BMPHEAD * const header)
-{
-	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
-	#ifdef __BIG_ENDIAN__
-	iSwapInt(Header->bfSize); //= GetLittleInt();
-	iSwapUInt(Header->bfReserved); // = GetLittleUInt();
-	iSwapInt(Header->bfDataOff); // = GetLittleInt();
-	iSwapInt(Header->biSize); // = GetLittleInt();
-	iSwapInt(Header->biWidth); // = GetLittleInt();
-	iSwapInt(Header->biHeight); // = GetLittleInt();
-	iSwapShort(Header->biPlanes); // = GetLittleShort();
-	iSwapShort(Header->biBitCount); // = GetLittleShort();
-	iSwapInt(Header->biCompression); // = GetLittleInt();
-	iSwapInt(Header->biSizeImage); // = GetLittleInt();
-	iSwapInt(Header->biXPelsPerMeter); // = GetLittleInt();
-	iSwapInt(Header->biYPelsPerMeter); // = GetLittleInt();
-	iSwapInt(Header->biClrUsed); // = GetLittleInt();
-	iSwapInt(Header->biClrImportant); // = GetLittleInt();
-	#endif
-}
+void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILuint * CONST_RESTRICT ShiftRight);
 
 // Internal function used to get the .bmp header from the current file.
 ILboolean iGetBmpHead(SIO* io, BMPHEAD * const header)
@@ -61,7 +41,21 @@ ILboolean iGetBmpHead(SIO* io, BMPHEAD * const header)
 	ILint64 read = io->read(io->handle, header, 1, sizeof(BMPHEAD));
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
-	flipHeaderEndians(header);
+	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
+	Int  (Header->bfSize);
+	UInt (Header->bfReserved);
+	Int  (Header->bfDataOff);
+	Int  (Header->biSize);
+	Int  (Header->biWidth);
+	Int  (Header->biHeight);
+	Short(Header->biPlanes);
+	Short(Header->biBitCount);
+	Int  (Header->biCompression);
+	Int  (Header->biSizeImage);
+	Int  (Header->biXPelsPerMeter);
+	Int  (Header->biYPelsPerMeter);
+	Int  (Header->biClrUsed);
+	Int  (Header->biClrImportant); 
 
 	if (read == sizeof(BMPHEAD))
 		return IL_TRUE;
@@ -80,20 +74,18 @@ ILboolean iGetOS2Head(SIO* io, OS2_HEAD * const Header)
 		return IL_FALSE;
 
 	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
-	#ifdef __BIG_ENDIAN__
 	UShort(&Header->bfType);
-	UInt(&Header->biSize);
-	Short(&Header->xHotspot);
-	Short(&Header->yHotspot);
-	UInt(&Header->DataOff);
-	UInt(&Header->cbFix);
+	UInt  (&Header->biSize);
+	Short (&Header->xHotspot);
+	Short (&Header->yHotspot);
+	UInt  (&Header->DataOff);
+	UInt  (&Header->cbFix);
 
 	//2003-09-01 changed to UShort according to MSDN
 	UShort(&Header->cx);
 	UShort(&Header->cy);
 	UShort(&Header->cPlanes);
 	UShort(&Header->cBitCount);
-	#endif
 
 	return IL_TRUE;
 }
@@ -140,7 +132,7 @@ ILboolean iCheckOS2 (const OS2_HEAD * CONST_RESTRICT Header)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidBmp(SIO* io)
+static ILboolean iIsValidBmp(SIO* io)
 {
 	BMPHEAD		Head;
 	OS2_HEAD	Os2Head;
@@ -813,7 +805,7 @@ ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
 
 
 // Internal function used to load the .bmp.
-ILboolean iLoadBitmapInternal(ILimage* image)
+static ILboolean iLoadBitmapInternal(ILimage* image)
 {
 	BMPHEAD		Header;
 	OS2_HEAD	Os2Head;
@@ -869,7 +861,7 @@ ILboolean iLoadBitmapInternal(ILimage* image)
 
 
 // Internal function used to save the .bmp.
-ILboolean iSaveBitmapInternal(ILimage* image)
+static ILboolean iSaveBitmapInternal(ILimage* image)
 {
 	//int compress_rle8 = ilGetInteger(IL_BMP_RLE);
 	int compress_rle8 = IL_FALSE; // disabled BMP RLE compression. broken
@@ -1040,5 +1032,17 @@ ILboolean iSaveBitmapInternal(ILimage* image)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsBMP[] = { 
+	IL_TEXT("bmp"), 
+	IL_TEXT("dib"), 
+	NULL 
+};
+
+ILformat iFormatBMP = { 
+	.Validate = iIsValidBmp, 
+	.Load     = iLoadBitmapInternal, 
+	.Save     = iSaveBitmapInternal, 
+	.Exts     = iFormatExtsBMP
+};
 
 #endif//IL_NO_BMP

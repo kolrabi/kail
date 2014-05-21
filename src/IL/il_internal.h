@@ -13,16 +13,8 @@
 #define INTERNAL_H
 #define _IL_BUILD_LIBRARY
 
-
 // Local headers
-/*#if (defined(_WIN32) || defined(_WIN64)) && !defined(HAVE_CONFIG_H)
-	#define HAVE_CONFIG_H
-#endif*/
-#ifdef HAVE_CONFIG_H //if we use autotools, we have HAVE_CONFIG_H defined and we have to look for it like that
-	#include <config.h>
-#else // If we do not use autotools, we have to point to (possibly different) config.h than in the opposite case
-	#include <IL/config.h>
-#endif
+#include <config.h>
 
 // Standard headers
 #include <stdlib.h>
@@ -38,42 +30,6 @@ extern "C" {
 #include <IL/devil_internal_exports.h>
 #include "il_files.h"
 #include "il_endian.h"
-
-#ifndef _WIN32
-	// The Microsoft HD Photo Device Porting Kit has not been ported to anything other
-	//  than Windows yet, so we disable this if Windows is not the current platform.
-	#define IL_NO_WDP
-#endif//_WIN32
-
-// If we do not want support for game image formats, this define removes them all.
-#define IL_NO_GAMES
-#ifdef IL_NO_GAMES
-	#define IL_NO_BLP
-	#define IL_NO_DOOM
-	#define IL_NO_FTX
-	#define IL_NO_IWI
-	#define IL_NO_LIF
-	#define IL_NO_MDL
-	#define IL_NO_ROT
-	#define IL_NO_TPL
-	#define IL_NO_UTX
-	#define IL_NO_WAL
-#endif//IL_NO_GAMES
-
-// If we want to compile without support for formats supported by external libraries,
-//  this define will remove them all.
-#ifdef IL_NO_EXTLIBS
-	#define IL_NO_EXR
-	#define IL_NO_JP2
-	#define IL_NO_JPG
-	#define IL_NO_LCMS
-	#define IL_NO_MNG
-	#define IL_NO_PNG
-	#define IL_NO_TIF
-	#define IL_NO_WDP
-	#undef IL_USE_DXTC_NVIDIA
-	#undef IL_USE_DXTC_SQUISH
-#endif//IL_NO_EXTLIBS
 
 // Windows-specific
 #ifdef _WIN32
@@ -115,18 +71,6 @@ extern "C" {
 	#define IL_TEXT(s) (s)
 	#define iStrCpy strcpy
 #endif
-
-/* Siigron: added this for Linux... a #define should work, but for some reason
-	it doesn't (anyone who knows why?) */
-#if !_WIN32 || (_WIN32 && __GNUC__) // Cygwin
-	int stricmp(const char *src1, const char *src2);
-	int strnicmp(const char *src1, const char *src2, size_t max);
-#elif _WIN32_WCE
-	int stricmp(const char *src1, const char *src2);
-	int strnicmp(const char *src1, const char *src2, size_t max);
-#elif _WIN32
-	#define strnicmp _strnicmp
-#endif /* _WIN32 */
 
 #ifdef IL_INLINE_ASM
 	#if (defined (_MSC_VER) && defined(_WIN32))  // MSVC++ only
@@ -181,13 +125,20 @@ extern ILimage *iCurImage;
 #define BIT_30	0x40000000
 #define BIT_31	0x80000000
 #define NUL '\0'  // Easier to type and ?portable?
-#if !_WIN32 || _WIN32_WCE
+
+/* Siigron: added this for Linux... a #define should work, but for some reason
+	it doesn't (anyone who knows why?) */
+#if !_WIN32 || (_WIN32 && __GNUC__) // Cygwin
 	int stricmp(const char *src1, const char *src2);
 	int strnicmp(const char *src1, const char *src2, size_t max);
-#endif//_WIN32
-#ifdef _WIN32_WCE
+#elif _WIN32_WCE
+	int stricmp(const char *src1, const char *src2);
+	int strnicmp(const char *src1, const char *src2, size_t max);
 	char *strdup(const char *src);
-#endif
+#elif _WIN32
+	#define strnicmp _strnicmp
+#endif /* _WIN32 */
+
 int iStrCmp(ILconst_string src1, ILconst_string src2);
 
 //
@@ -251,16 +202,9 @@ char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 //
 // Image loading/saving functions
 //
-ILboolean iLoadBlpInternal(void);
-ILboolean ilLoadBlp(ILconst_string FileName);
-ILboolean ilLoadBlpF(ILHANDLE File);
-ILboolean ilLoadBlpL(const void *Lump, ILuint Size);
+#include "il_formats.h"
 
-ILboolean iIsValidBmp(SIO* io);
-ILboolean iLoadBitmapInternal(ILimage* image);
-ILboolean iSaveBitmapInternal(ILimage* image);
-
-ILboolean ilSaveCHeader(ILimage* image, char *InternalName);
+// ILboolean ilSaveCHeader(ILimage* image, char *InternalName);
 
 ILboolean iLoadCutInternal(ILimage* image);
 
@@ -300,8 +244,8 @@ ILboolean iLoadFitsInternal(ILimage* image);
 
 ILboolean iLoadFtxInternal(void);
 
-ILboolean iIsValidGif(SIO* io);
-ILboolean iLoadGifInternal(ILimage* image);
+//ILboolean iIsValidGif(SIO* io);
+//ILboolean iLoadGifInternal(ILimage* image);
 
 ILboolean iIsValidHdr(SIO* io);
 ILboolean iLoadHdrInternal(ILimage* image);
@@ -473,6 +417,16 @@ extern FILE *iTraceOut;
 	fputc('\n', iTraceOut); \
 	fflush(iTraceOut); \
 }
+
+#ifdef DEBUG
+#define iAssert(x) { \
+	bool __x = (x); \
+	iTrace("Assertion failed: ", #x); \
+	assert(x); \
+}
+#else
+#define iAssert(x)
+#endif
 
 #ifdef __cplusplus
 }

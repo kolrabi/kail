@@ -116,6 +116,9 @@
    used extensively in medical imaging.) */
 #cmakedefine IL_NO_DICOM
 
+// #cmakedefine IL_NO_DOOM 1
+#define IL_NO_DOOM // broken
+
 /* exr support (EXR is a HDR image file format standardized by Industrial
    Light and Magic. OpenEXR powered) */
 #cmakedefine IL_NO_EXR
@@ -124,8 +127,7 @@
    scientific images and is used extensively in astronomy.) */
 #cmakedefine IL_NO_FITS
 
-/* Define if you want to disable support for various game formats */
-#cmakedefine IL_NO_GAMES
+#define IL_NO_FTX // broken
 
 /* gif support (GIF is lossy and proprietary format used mainly to make
    animations) */
@@ -151,7 +153,8 @@
 
 /* iwi support (IWI is the Infinity Ward Image format used in the Call of Duty
    games.) */
-#cmakedefine IL_NO_IWI
+// #cmakedefine IL_NO_IWI
+#define IL_NO_IWI // broken
 
 /* jp2 support (JP2 (JPEG 2000) is a better, but not so widespread,
    alternative to JPEG. JasPer powered) */
@@ -164,10 +167,13 @@
 #cmakedefine IL_NO_LCMS
 
 /* lif support (LIF is the image format of the game Homeworld.) */
-#cmakedefine IL_NO_LIF
+// #cmakedefine IL_NO_LIF
+
+#define IL_NO_LIF // broken
 
 /* mdl support (MDL is the format for models in the game Half-Life.) */
-#cmakedefine IL_NO_MDL
+// #cmakedefine IL_NO_MDL
+#define IL_NO_MDL // broken
 
 /* mng support (MNG is basically the animated version of PNG but is not
    widespread.) */
@@ -212,7 +218,8 @@
 #cmakedefine IL_NO_RAW
 
 /* rot support (ROT is the image format for the game Homeworld 2.) */
-#cmakedefine IL_NO_ROT
+// #cmakedefine IL_NO_ROT
+#define IL_NO_ROT // broken
 
 /* sgi support (SGI is the native raster graphics file format for Silicon
    Graphics workstations) */
@@ -234,11 +241,13 @@
 #cmakedefine IL_NO_TIF
 
 /* tpl support (TPL is the format used by many GameCube and Wii games.) */
-#cmakedefine IL_NO_TPL
+// #cmakedefine IL_NO_TPL
+#define IL_NO_TPL // broken
 
 /* utx support (UTX is the format used in the Unreal Tournament game series.)
    */
-#cmakedefine IL_NO_UTX
+// #cmakedefine IL_NO_UTX
+#define IL_NO_UTX // broken
 
 /* vtf support (VTF (Valve Texture Format) is used by games based on Valve's
    Source engine.) */
@@ -248,7 +257,8 @@
 #cmakedefine IL_NO_WAD
 
 /* wal support (WAL is the image format used for the game Quake 2.) */
-#cmakedefine IL_NO_WAL
+// #cmakedefine IL_NO_WAL
+#define IL_NO_WAL // broken
 
 /* wbmp support (WBMP (Wireless Application Protocol Bitmap) is a monochrome
    graphics file format optimized for mobile computing devices) */
@@ -259,6 +269,12 @@
    */
 #cmakedefine IL_NO_WDP
 
+#if !defined(_WIN32)
+   // The Microsoft HD Photo Device Porting Kit has not been ported to anything other
+   //  than Windows yet, so we disable this if Windows is not the current platform.
+   #define IL_NO_WDP
+#endif//_WIN32
+
 /* xpm support (XPM (X PixMap) is an ASCII-based image used in X Windows.) */
 #cmakedefine IL_NO_XPM
 
@@ -268,14 +284,47 @@
 /* LCMS include without lcms/ support */
 #cmakedefine LCMS_NODIRINCLUDE
 
-// TODO 
-#if 0
+// If we do not want support for game image formats, this define removes them all.
+#cmakedefine IL_NO_GAMES
+
+#ifdef IL_NO_GAMES
+   #define IL_NO_BLP
+   #define IL_NO_DOOM
+   #define IL_NO_FTX
+   #define IL_NO_IWI
+   #define IL_NO_LIF
+   #define IL_NO_MDL
+   #define IL_NO_ROT
+   #define IL_NO_TPL
+   #define IL_NO_UTX
+   #define IL_NO_WAL
+#endif//IL_NO_GAMES
+
+// If we want to compile without support for formats supported by external libraries,
+//  this define will remove them all.
+#cmakedefine IL_NO_EXTLIBS
+
+#ifdef IL_NO_EXTLIBS
+   #define IL_NO_EXR
+   #define IL_NO_JP2
+   #define IL_NO_JPG
+   #define IL_NO_LCMS
+   #define IL_NO_MNG
+   #define IL_NO_PNG
+   #define IL_NO_TIF
+   #define IL_NO_WDP
+   #undef IL_USE_DXTC_NVIDIA
+   #undef IL_USE_DXTC_SQUISH
+#endif//IL_NO_EXTLIBS
 
 /* X86_ASM assembly found */
 #cmakedefine GCC_X86_ASM
 
 /* Define if you can support at least some ASM */
 #cmakedefine IL_INLINE_ASM
+
+// TODO 
+#if 0
 
 /* Define if you have nvidia texture tools library installed */
 #cmakedefine IL_USE_DXTC_NVIDIA
@@ -289,9 +338,6 @@
 
 /* define if you have mm_malloc.h header */
 #cmakedefine MM_MALLOC
-
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-#cmakedefine NO_MINUS_C_MINUS_O
 
 /* define if you have posix_memalign memory allocation */
 #cmakedefine POSIX_MEMALIGN

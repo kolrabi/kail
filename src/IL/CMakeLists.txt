@@ -19,7 +19,7 @@ SET                     ( SOURCES
                           formats/il_exr.c
                           formats/il_fits.c
                           formats/il_ftx.c
-                          formats/il_gif.cc
+                          formats/il_gif.c
                           formats/il_hdr.c
                           formats/il_header.c
                           formats/il_icns.c
@@ -70,6 +70,7 @@ SET                     ( SOURCES
                           il_error.c 
                           il_fastconv.c
                           il_files.c
+                          il_formats.c
                           il_internal.c
                           il_io.c
                           il_kail.c

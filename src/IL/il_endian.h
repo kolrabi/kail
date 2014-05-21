@@ -123,7 +123,7 @@ INLINE void iSwapDouble(ILdouble *d) {
 		: "r"  (t[0]), "r"  (t[1]));
 	#else
 	ILubyte t,*b = (ILubyte*)d;
-	#define dswap(x,y) t=b[x];b[x]=b[y];b[y]=b[x];
+	#define dswap(x,y) t=b[x]; b[x]=b[y]; b[y]=t;
 	dswap(0,7);
 	dswap(1,6);
 	dswap(2,5);

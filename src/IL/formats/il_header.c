@@ -18,8 +18,10 @@
 #define MAX_LINE_WIDTH 14
 
 //! Generates a C-style header file for the current image.
-ILboolean ilSaveCHeader(ILimage* image, char *InternalName)
+static ILboolean 
+iSaveCHEADInternal(ILimage* image)
 {
+	const char *InternalName = "IL_IMAGE";
 	FILE		*HeadFile;
 	ILuint		i = 0, j;
 	ILimage		*TempImage;
@@ -98,6 +100,16 @@ ILboolean ilSaveCHeader(ILimage* image, char *InternalName)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsCHEAD[] = { 
+	IL_TEXT("h"), 
+	NULL 
+};
 
+ILformat iFormatCHEAD = { 
+	.Validate = NULL, 
+	.Load     = NULL, 
+	.Save     = iSaveCHEADInternal,
+	.Exts     = iFormatExtsCHEAD
+};
 
 #endif//IL_NO_CHEAD

@@ -5,6 +5,12 @@ ENDIF                   ( )
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
 PROJECT                 ( KaIL C )
 
+IF                      ( CMAKE_COMPILER_IS_GNUCC )
+  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99" )
+  SET                   ( GCC_X86_ASM   TRUE )
+  SET                   ( IL_INLINE_ASM TRUE )
+ENDIF                   ()
+
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 INCLUDE                 ( CheckIncludeFile )
@@ -61,14 +67,17 @@ OPTION                  ( ILUT_USE_X11           "Enable support for X11"       
 OPTION                  ( ILUT_USE_XRENDER       "Enable support for Xrender"     ${X11_Xrender_FOUND} )
 OPTION                  ( ILUT_USE_XSHM          "Enable support for Xshm"        ${X11_XShm_FOUND} )
 
+OPTION                  ( IL_NO_GAMES            "Disable support for all game formats" FALSE )
+OPTION                  ( IL_NO_EXTLIBS          "Disable support for all formats that require external libraries" FALSE )
+
 OPTION                  ( IL_NO_BLP              "Disable support for BLP format" FALSE )
 OPTION                  ( IL_NO_BMP              "Disable support for BMP format" FALSE )
 OPTION                  ( IL_NO_DCX              "Disable support for DCX format" FALSE )
 OPTION                  ( IL_NO_DDS              "Disable support for DDS format" FALSE )
 OPTION                  ( IL_NO_DICOM            "Disable support for DICOM format" FALSE )
+OPTION                  ( IL_NO_DOOM             "Disable support for Doom format" FALSE )
 OPTION                  ( IL_NO_EXR              "Disable support for EXR format" TRUE)
 OPTION                  ( IL_NO_FITS             "Disable support for FITS format" FALSE )
-OPTION                  ( IL_NO_GAMES            "Disable support for GAMES format" FALSE )
 OPTION                  ( IL_NO_GIF              "Disable support for GIF format" FALSE )
 OPTION                  ( IL_NO_HDR              "Disable support for HDR format" FALSE )
 OPTION                  ( IL_NO_ICNS             "Disable support for ICNS format" FALSE )

@@ -15,6 +15,7 @@
 #include "il_pal.h"
 #include <string.h>
 
+#include "il_formats.h"
 
 // Returns a widened version of a string.
 // Make sure to free this after it is used.  Code help from
@@ -71,12 +72,6 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 		Type = IL_DDS;
 	else if (!iStrCmp(Ext, IL_TEXT("png")))
 		Type = IL_PNG;
-	else if (!iStrCmp(Ext, IL_TEXT("bmp")) || !iStrCmp(Ext, IL_TEXT("dib")))
-		Type = IL_BMP;
-	else if (!iStrCmp(Ext, IL_TEXT("gif")))
-		Type = IL_GIF;
-	else if (!iStrCmp(Ext, IL_TEXT("blp")))
-		Type = IL_BLP;
 	else if (!iStrCmp(Ext, IL_TEXT("cut")))
 		Type = IL_CUT;
 	else if (!iStrCmp(Ext, IL_TEXT("dcm")) || !iStrCmp(Ext, IL_TEXT("dicom")))
@@ -160,7 +155,7 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 	else if (!iStrCmp(Ext, IL_TEXT("xpm")))
 		Type = IL_XPM;
 	else
-		Type = IL_TYPE_UNKNOWN;
+		iIdentifyFormatExt(Ext);
 
 	return Type;
 }
@@ -231,23 +226,8 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 			if (buf[1] == 'H')
 				return IL_HALO_PAL;
 			break;
-		case 'B':
-			if (buf[1] == 'M')
-				#ifndef IL_NO_BMP
-				if (iIsValidBmp(&iCurImage->io))
-					return IL_BMP;
-				#else
-				return IL_BMP;
-				#endif
-			break;
-		case 'G':
-			if (!strnicmp((const char*) buf, "GIF87A", 6))
-				return IL_GIF;
-			if (!strnicmp((const char*) buf, "GIF89A", 6))
-				return IL_GIF;		
-			break;
 		case 'I':
-			if (buf[1] == 'I')
+			if (buf[1] == 'I') {
 				if (buf[2] == 42) {
 					#ifndef IL_NO_TIF
 					if (ilIsValidTiffFunc(&iCurImage->io))
@@ -258,6 +238,7 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				} else if (buf[2] == 0xBC){
 					return IL_WDP;
 				}
+			}
 		case 'M':
 			if (buf[1] == 'M')
 				#ifndef IL_NO_TIF
@@ -419,8 +400,8 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 	if (iIsValidTarga(&iCurImage->io))
 		return IL_TGA;
 	#endif
-	
-	return IL_TYPE_UNKNOWN;
+
+	return iIdentifyFormat(&iCurImage->io);
 }
 
 ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File)
@@ -464,11 +445,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 			return iIsValidPng(io);
 		#endif
 
-		#ifndef IL_NO_BMP
-		case IL_BMP:
-			return iIsValidBmp(io);
-		#endif
-
 		#ifndef IL_NO_DICOM
 		case IL_DICOM:
 			return iIsValidDicom(io);
@@ -477,11 +453,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return ilIsValidExr(io);
-		#endif
-
-		#ifndef IL_NO_GIF
-		case IL_GIF:
-			return iIsValidGif(io);
 		#endif
 
 		#ifndef IL_NO_HDR
@@ -578,6 +549,11 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		case IL_XPM:
 			return iIsValidXpm(io);
 		#endif
+	}
+
+	const ILformat *format = iGetFormat(Type);
+	if (format) {
+		return format->Validate && format->Validate(io);
 	}
 
 	ilSetError(IL_INVALID_ENUM);
@@ -703,11 +679,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		case IL_TYPE_UNKNOWN:
 			return IL_FALSE;
 
-		#ifndef IL_NO_BMP
-		case IL_BMP:
-			return iLoadBitmapInternal(image);
-		#endif
-
 		#ifndef IL_NO_CUT
 		case IL_CUT:
 			return iLoadCutInternal(image);
@@ -786,11 +757,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadMngInternal();
 		#endif
 
-		#ifndef IL_NO_GIF
-		case IL_GIF:
-			return iLoadGifInternal(image);
-		#endif
-
 		#ifndef IL_NO_DDS
 		case IL_DDS:
 			return iLoadDdsInternal(image);
@@ -799,11 +765,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#ifndef IL_NO_PSD
 		case IL_PSD:
 			return iLoadPsdInternal(image);
-		#endif
-
-		#ifndef IL_NO_BLP
-		case IL_BLP:
-			return iLoadBlpInternal(image);
 		#endif
 
 		#ifndef IL_NO_PSP
@@ -938,6 +899,11 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#endif
 	}
 
+	const ILformat *format = iGetFormat(type);
+	if (format) {
+		return format->Load != NULL && format->Load(image);
+	}
+
 	ilSetError(IL_INVALID_ENUM);
 	return IL_FALSE;
 }
@@ -1010,12 +976,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 	ILboolean bRet = IL_FALSE;
 
 	switch(type) {
-	#ifndef IL_NO_BMP
-	case IL_BMP:
-		bRet = iSaveBitmapInternal(image);
-		break;
-	#endif
-
 	#ifndef IL_NO_JPG
 	case IL_JPG:
 		bRet = iSaveJpegInternal(image);
@@ -1058,11 +1018,13 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		break;
 	#endif
 
+/*
 	#ifndef IL_NO_CHEAD
 	case IL_CHEAD:
 		bRet = ilSaveCHeader(image, "IL_IMAGE");
 		break;
 	#endif
+		*/
 
 	#ifndef IL_NO_RAW
 	case IL_RAW:
@@ -1124,8 +1086,15 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		bRet = ilSavePal(FileName);
 		break;*/
 	default:
-		ilSetError(IL_INVALID_EXTENSION);
+		break;
 	}
+
+	const ILformat *format = iGetFormat(type);
+	if (format) {
+		return format->Save != NULL && format->Save(image);
+	}
+
+	ilSetError(IL_INVALID_ENUM);
 
 	// Try registered procedures
 	// @todo: must be ported to use iCurImage->io

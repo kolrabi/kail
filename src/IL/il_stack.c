@@ -588,6 +588,8 @@ void ILAPIENTRY ilInit()
 	iSetImage0();  // Beware!  Clears all existing textures!
 	iBindImageTemp();  // Go ahead and create the temporary image.
 
+	iInitFormats();
+
 	IsInit = IL_TRUE;
 	return;
 }
@@ -626,6 +628,8 @@ void ILAPIENTRY ilShutDown()
 	ImageStack = NULL;
 	LastUsed = 0;
 	StackSize = 0;
+
+	iDeinitFormats();
 
 	if (iTraceOut && iTraceOut != stderr) fclose(iTraceOut);
 

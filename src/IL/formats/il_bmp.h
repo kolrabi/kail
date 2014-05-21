@@ -16,9 +16,9 @@
 
 #include "il_internal.h"
 
-#ifdef _WIN32
-	#pragma pack(push, bmp_struct, 1)
-#endif
+#pragma pack(push)
+#pragma pack(1)
+
 typedef struct BMPHEAD {
 	ILbyte		bfType[2];
 	ILint		bfSize;
@@ -54,8 +54,7 @@ typedef struct OS2_HEAD
 	ILushort	cPlanes;
 	ILushort	cBitCount;
 } IL_PACKSTRUCT OS2_HEAD;
-#ifdef _WIN32
-	#pragma pack(pop, bmp_struct)
-#endif
+
+#pragma pack(pop)
 
 #endif//BMP_H

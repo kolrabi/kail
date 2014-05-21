@@ -20,7 +20,8 @@
 #ifndef IL_NO_BLP
 #include "il_dds.h"
 
-
+#pragma pack(push)
+#pragma pack(1)
 typedef struct BLP1HEAD
 {
 	ILubyte	Sig[4];
@@ -49,6 +50,7 @@ typedef struct BLP2HEAD
 	ILuint	MipOffsets[16]; // The file offsets of each mipmap, 0 for unused
 	ILuint	MipLengths[16]; // The length of each mipmap data block
 } BLP2HEAD;
+#pragma pack(pop)
 
 // Data formats
 #define BLP_TYPE_JPG		0
@@ -60,102 +62,315 @@ typedef struct BLP2HEAD
 #define BLP_RAW_PLUS_ALPHA2	4
 #define BLP_RAW_NO_ALPHA	5
 
+static ILboolean 
+iIsValidBLP1(SIO *io) {
+	ILubyte Sig[4];
+	ILint64 Read = io->read(io->handle, &Sig, 1, 4);
+	io->seek(io->handle, -Read, IL_SEEK_CUR);
+	if (Read!=4) return IL_FALSE;
 
-ILboolean iIsValidBlp2(void);
-ILboolean iCheckBlp2(BLP2HEAD *Header);
-ILboolean iLoadBlpInternal(void);
-ILboolean iLoadBlp1(void);
-ILboolean iCheckBlp1(BLP1HEAD *Header);
-ILboolean iGetBlp1Head(BLP1HEAD *Header);
-
-
-//! Checks if the file specified in FileName is a valid BLP file.
-ILboolean ilIsValidBlp(ILconst_string FileName)
-{
-	ILHANDLE	BlpFile;
-	ILboolean	bBlp = IL_FALSE;
-	
-	if (!iCheckExtension(FileName, IL_TEXT("blp"))) {
-		ilSetError(IL_INVALID_EXTENSION);
-		return bBlp;
-	}
-	
-	BlpFile = iopenr(FileName);
-	if (BlpFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bBlp;
-	}
-	
-	bBlp = ilIsValidBlpF(BlpFile);
-	icloser(BlpFile);
-	
-	return bBlp;
+ 	return memcmp(Sig, "BLP1", 4) == 0;
 }
 
+static ILboolean 
+iIsValidBLP2(SIO *io) {
+	ILubyte Sig[4];
+	ILint64 Read = io->read(io->handle, &Sig, 1, 4);
+	io->seek(io->handle, -Read, IL_SEEK_CUR);
+	if (Read!=4) return IL_FALSE;
 
-//! Checks if the ILHANDLE contains a valid BLP file at the current position.
-ILboolean ilIsValidBlpF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iIsValidBlp2();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
+ 	return memcmp(Sig, "BLP2", 4) == 0;
 }
 
-
-//! Checks if Lump is a valid BLP lump.
-ILboolean ilIsValidBlpL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidBlp2();
+static ILboolean 
+iIsValidBLP(SIO *io) {
+	iTrace("---- %d %d", iIsValidBLP1(io), iIsValidBLP2(io));
+ 	return iIsValidBLP1(io) || iIsValidBLP2(io);
 }
 
+static ILboolean
+iGetBlp1Head(SIO *io, BLP1HEAD *Header) {
+	ILint64 Read = SIOread(io, Header, 1, sizeof(*Header));
+	if (Read != sizeof(*Header))
+		return IL_FALSE;
 
-// Internal function used to get the BLP header from the current file.
-ILboolean iGetBlp2Head(BLP2HEAD *Header)
-{
 	ILuint i;
 
-	iread(Header->Sig, 1, 4);
-	Header->Type = GetLittleUInt();
-	Header->Compression = igetc();
-	Header->AlphaBits = igetc();
-	Header->AlphaType = igetc();
-	Header->HasMips = igetc();
-	Header->Width = GetLittleUInt();
-	Header->Height = GetLittleUInt();
+	UInt(Header->Compression);
+	UInt(Header->Flags);
+	UInt(Header->Width);
+	UInt(Header->Height);
+	UInt(Header->PictureType);
+	UInt(Header->PictureSubType);
+
 	for (i = 0; i < 16; i++)
-		Header->MipOffsets[i] = GetLittleUInt();
+		UInt(Header->MipOffsets[i]);
+
 	for (i = 0; i < 16; i++)
-		Header->MipLengths[i] = GetLittleUInt();
+		UInt(Header->MipLengths[i]);
 
 	return IL_TRUE;
 }
 
-
-// Internal function to get the header and check it.
-ILboolean iIsValidBlp2(void)
-{
-	BLP2HEAD Header;
-
-	if (!iGetBlp2Head(&Header))
+static ILboolean
+iCheckBlp1(const BLP1HEAD *Header) {
+	// The file signature is 'BLP1'.
+	if (memcmp(Header->Sig, "BLP1", 4))
 		return IL_FALSE;
-	iseek(-148, IL_SEEK_CUR);
-	
-	return iCheckBlp2(&Header);
+	// Valid types are JPEG and RAW.  JPEG is not common, though.
+	if (Header->Compression != BLP_TYPE_JPG && Header->Compression != BLP_RAW)
+		return IL_FALSE;
+//@TODO: Find out what Flags is for.
+
+	// PictureType determines whether this has an alpha list.
+	if (Header->PictureType != BLP_RAW_PLUS_ALPHA1 && Header->PictureType != BLP_RAW_PLUS_ALPHA2
+		&& Header->PictureType != BLP_RAW_NO_ALPHA)
+		return IL_FALSE;
+	// Width or height of 0 makes no sense.
+	if (Header->Width == 0 || Header->Height == 0)
+		return IL_FALSE;
+
+	return IL_TRUE;
 }
 
+static ILubyte *
+ReadJpegHeader(SIO *io, ILuint *size) {
+	if (!SIOread(io, size, sizeof(*size), 1)) {
+		ilSetError(IL_FILE_READ_ERROR);
+		return IL_FALSE;
+	}
+	UInt(*JpegHeaderSize);
+
+	ILubyte *JpegHeader = (ILubyte*)ialloc(*size);
+	if (JpegHeader == NULL)
+		return NULL;
+
+	// Read the shared Jpeg header.
+	if (SIOread(io, JpegHeader, 1, *size) != *size) {
+		ifree(JpegHeader);
+		return NULL;
+	}
+
+	return JpegHeader;
+}
+
+static ILboolean 
+iLoadBlp1(ILimage *TargetImage) {
+	BLP1HEAD	Header;
+	ILubyte		*DataAndAlpha, *Palette;
+	ILuint		i;
+	ILimage		*Image = TargetImage;
+	ILboolean	BaseCreated = IL_FALSE;
+#ifndef IL_NO_JPG
+	ILubyte		*JpegHeader, *JpegData;
+	ILuint		JpegHeaderSize;
+#endif//IL_NO_JPG
+
+	SIO *     io = &TargetImage->io;
+
+	if (!iGetBlp1Head(io, &Header))
+		return IL_FALSE;
+
+	if (!iCheckBlp1(&Header)) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
+	}
+
+	//@TODO: Remove this.
+	i = 0;
+
+	switch (Header.Compression)
+	{
+		case BLP_TYPE_JPG:
+#ifdef IL_NO_JPG
+			// We can only do the Jpeg decoding if we do not have IL_NO_JPEG defined.
+			return IL_FALSE;
+#else
+			JpegHeader = ReadJpegHeader(io, &JpegHeaderSize);
+			if (!JpegHeader) {
+				return IL_FALSE;
+			}
+
+			//for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
+				//@TODO: Check return value?
+				SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);
+
+				JpegData = (ILubyte*)ialloc(JpegHeaderSize + Header.MipLengths[i]);
+				if (JpegData == NULL) {
+					ifree(JpegHeader);
+					return IL_FALSE;
+				}
+
+				memcpy(JpegData, JpegHeader, JpegHeaderSize);
+				if (SIOread(io, JpegData + JpegHeaderSize, Header.MipLengths[i], 1) != 1) {
+					ifree(JpegData);
+					ifree(JpegHeader);
+					return IL_FALSE;
+				}
+
+				// Just send the data straight to the Jpeg loader.
+				if (!ilLoadL(IL_JPG, JpegData, JpegHeaderSize + Header.MipLengths[i])) {
+					ifree(JpegData);
+					ifree(JpegHeader);
+					return IL_FALSE;
+				}
+
+				// The image data is in BGR(A) order, even though it is Jpeg-compressed.
+				if (Image->Format == IL_RGBA)
+					Image->Format = IL_BGRA;
+				if (Image->Format == IL_RGB)
+					Image->Format = IL_BGR;
+
+				ifree(JpegData);
+			//}
+			ifree(JpegHeader);
+#endif//IL_NO_JPG
+			break;
+
+		case BLP_RAW:
+			switch (Header.PictureType)
+			{
+				// There is no alpha list, so we just read like a normal indexed image.
+				case BLP_RAW_NO_ALPHA:
+					for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
+						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
+							if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+								return IL_FALSE;
+							Image = TargetImage;
+							BaseCreated = IL_TRUE;
+
+							// We have a BGRA palette.
+							Image->Pal.Palette = (ILubyte*)ialloc(256 * 4);
+							if (Image->Pal.Palette == NULL)
+								return IL_FALSE;
+							Image->Pal.PalSize = 1024;
+							Image->Pal.PalType = IL_PAL_BGRA32;
+
+							// Read in the palette ...
+							if (SIOread(io, Image->Pal.Palette, 1, 1024) != 1024)
+								return IL_FALSE;
+						}
+						else {
+							if (Image->Width == 1 && Image->Height == 1)  // Already at the smallest mipmap (1x1), so we are done.
+								break;
+							if (Header.MipOffsets[i] == 0 || Header.MipLengths[i] == 0)  // No more mipmaps in the file.
+								break;
+
+							Image->Mipmaps = ilNewImageFull(Image->Width >> 1, Image->Height >> 1, 1, 1, IL_COLOR_INDEX, IL_UNSIGNED_BYTE, NULL);
+							if (Image->Mipmaps == NULL)
+								return IL_FALSE;
+
+							// Copy the palette from the first image before we change our Image pointer.
+							Image->Mipmaps->Pal.Palette = (ILubyte*)ialloc(256 * 4);
+							if (Image->Mipmaps->Pal.Palette == NULL)
+								return IL_FALSE;
+							Image->Mipmaps->Pal.PalSize = 1024;
+							Image->Mipmaps->Pal.PalType = IL_PAL_BGRA32;
+							memcpy(Image->Mipmaps->Pal.Palette, Image->Pal.Palette, 1024);
+
+							// Move to the next mipmap in the linked list.
+							Image = Image->Mipmaps;
+						}
+						// The origin should be in the upper left.
+						Image->Origin = IL_ORIGIN_UPPER_LEFT;
+
+						// Seek to the data and read it.
+						SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);						
+						if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
+							return IL_FALSE;
+					}
+					break;
+
+				// These cases are identical and have an alpha list following the image data.
+				case BLP_RAW_PLUS_ALPHA1:
+				case BLP_RAW_PLUS_ALPHA2:
+					// Create the image.
+					if (!ilTexImage(Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
+						return IL_FALSE;
+
+					DataAndAlpha = (ILubyte*)ialloc(Header.Width * Header.Height);
+					Palette = (ILubyte*)ialloc(256 * 4);
+					if (DataAndAlpha == NULL || Palette == NULL) {
+						ifree(DataAndAlpha);
+						ifree(Palette);
+						return IL_FALSE;
+					}
+
+					// Read in the data and the palette.
+					if (SIOread(io, Palette, 1, 1024) != 1024) {
+						ifree(Palette);
+						return IL_FALSE;
+					}
+					// Seek to the data and read it.
+					SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);						
+					if (SIOread(io, DataAndAlpha, Header.Width * Header.Height, 1) != 1) {
+						ifree(DataAndAlpha);
+						ifree(Palette);
+						return IL_FALSE;
+					}
+
+					// Convert the color-indexed data to BGRX.
+					for (i = 0; i < Header.Width * Header.Height; i++) {
+						Image->Data[i*4]   = Palette[DataAndAlpha[i]*4];
+						Image->Data[i*4+1] = Palette[DataAndAlpha[i]*4+1];
+						Image->Data[i*4+2] = Palette[DataAndAlpha[i]*4+2];
+					}
+
+					// Read in the alpha list.
+					if (SIOread(io, DataAndAlpha, Header.Width * Header.Height, 1) != 1) {
+						ifree(DataAndAlpha);
+						ifree(Palette);
+						return IL_FALSE;
+					}
+					// Finally put the alpha data into the image data.
+					for (i = 0; i < Header.Width * Header.Height; i++) {
+						Image->Data[i*4+3] = DataAndAlpha[i];
+					}
+
+					ifree(DataAndAlpha);
+					ifree(Palette);
+					break;
+			}
+			break;
+
+		//default:  // Should already be checked by iCheckBlp1.
+	}
+
+	// Set the origin (always upper left).
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
+
+	return ilFixImage();
+}
+
+// Internal function used to get the BLP header from the current file.
+static ILboolean 
+iGetBlp2Head(SIO *io, BLP2HEAD *Header) {
+	ILint64 Read = SIOread(io, Header, 1, sizeof(*Header));
+	if (Read != sizeof(*Header)) {
+		SIOseek(io, -Read, IL_SEEK_CUR); // Go back the size of the BLP2 header, since we tried reading it.
+		return IL_FALSE;
+	}
+
+	ILuint i;
+
+	UInt(Header->Type);
+	UInt(Header->Width);
+	UInt(Header->Height);
+
+	for (i = 0; i < 16; i++)
+		UInt(Header->MipOffsets[i]);
+
+	for (i = 0; i < 16; i++)
+		UInt(Header->MipLengths[i]);
+
+	return IL_TRUE;
+}
 
 // Internal function used to check if the HEADER is a valid BLP header.
-ILboolean iCheckBlp2(BLP2HEAD *Header)
-{
+static ILboolean 
+iCheckBlp2(const BLP2HEAD *Header) {
 	// The file signature is 'BLP2'.
-	if (strncmp(Header->Sig, "BLP2", 4))
+	if (memcmp(Header->Sig, "BLP2", 4))
 		return IL_FALSE;
 	// Valid types are JPEG and DXTC.  JPEG is not common, though.
 	//  WoW only uses DXTC.
@@ -179,32 +394,37 @@ ILboolean iCheckBlp2(BLP2HEAD *Header)
 
 
 // Internal function used to load the BLP.
-ILboolean iLoadBlpInternal(void)
-{
+static ILboolean
+iLoadBlpInternal(ILimage *TargetImage) {
 	BLP2HEAD	Header;
 	ILubyte		*CompData;
-	ILimage		*Image;
+	ILimage		*Image = TargetImage;
 	ILuint		Mip, j, x, CompSize, AlphaSize, AlphaOff;
-	ILint		y;
+	ILint			y;
 	ILboolean	BaseCreated = IL_FALSE;
-	ILubyte		*DataAndAlpha = NULL, *Palette = NULL, AlphaMask; //, *JpegHeader, *JpegData;
+	ILubyte		*DataAndAlpha = NULL, *Palette = NULL, AlphaMask;
+	SIO *     io = &TargetImage->io;
 
-	if (iCurImage == NULL) {
+	if (TargetImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	if (!iGetBlp2Head(&Header)) {
+	if (!iGetBlp2Head(io, &Header)) {
+		return iLoadBlp1(Image);
+	}
+
+	if (!iCheckBlp2(&Header)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
-	if (!iCheckBlp2(&Header)) {
-		goto check_blp1;
-	}
 
 //@TODO: Remove this!
-	if (Header.Type != BLP_TYPE_DXTC_RAW)
+/*
+	if (Header.Type != BLP_TYPE_DXTC_RAW) {
+		iTrace("---- unknown sub format");
 		return IL_FALSE;
+	}*/
 
 	switch (Header.Compression)
 	{
@@ -225,7 +445,7 @@ ILboolean iLoadBlpInternal(void)
 						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
 							if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 								return IL_FALSE;
-							Image = iCurImage;
+							Image = TargetImage;
 							BaseCreated = IL_TRUE;
 
 							Image->Pal.Palette = (ILubyte*)ialloc(256 * 4);  // 256 entries of ARGB8888 values (1024).
@@ -233,7 +453,7 @@ ILboolean iLoadBlpInternal(void)
 								return IL_FALSE;
 							Image->Pal.PalSize = 1024;
 							Image->Pal.PalType = IL_PAL_BGRA32;  //@TODO: Find out if this is really BGRA data.
-							if (iread(Image->Pal.Palette, 1, 1024) != 1024)  // Read in the palette.
+							if (SIOread(io, Image->Pal.Palette, 1, 1024) != 1024)  // Read in the palette.
 								return IL_FALSE;
 						}
 						else {
@@ -255,8 +475,8 @@ ILboolean iLoadBlpInternal(void)
 							return IL_FALSE;
 						}
 						// Finally read in the image data.
-						iseek(Header.MipOffsets[Mip], IL_SEEK_SET);
-						if (iread(Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
+						SIOseek(io, Header.MipOffsets[Mip], IL_SEEK_SET);
+						if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
 							return IL_FALSE;
 						break;
 
@@ -264,7 +484,7 @@ ILboolean iLoadBlpInternal(void)
 						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
 							if (!ilTexImage(Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
 								return IL_FALSE;
-							Image = iCurImage;
+							Image = TargetImage;
 							BaseCreated = IL_TRUE;
 
 							Palette = (ILubyte*)ialloc(256 * 4);
@@ -272,7 +492,7 @@ ILboolean iLoadBlpInternal(void)
 								return IL_FALSE;
 
 							// Read in the palette.
-							if (iread(Palette, 1, 1024) != 1024) {
+							if (SIOread(io, Palette, 1, 1024) != 1024) {
 								ifree(Palette);
 								return IL_FALSE;
 							}
@@ -307,8 +527,8 @@ ILboolean iLoadBlpInternal(void)
 						}
 
 						// Seek to the data and read it.
-						iseek(Header.MipOffsets[Mip], IL_SEEK_SET);						
-						if (iread(DataAndAlpha, Image->Width * Image->Height, 1) != 1) {
+						SIOseek(io, Header.MipOffsets[Mip], IL_SEEK_SET);						
+						if (SIOread(io, DataAndAlpha, Image->Width * Image->Height, 1) != 1) {
 							ifree(DataAndAlpha);
 							ifree(Palette);
 							return IL_FALSE;
@@ -322,7 +542,7 @@ ILboolean iLoadBlpInternal(void)
 						}
 
 						// Read in the alpha list.
-						if (iread(DataAndAlpha, AlphaSize, 1) != 1) {
+						if (SIOread(io, DataAndAlpha, AlphaSize, 1) != 1) {
 							ifree(DataAndAlpha);
 							ifree(Palette);
 							return IL_FALSE;
@@ -368,7 +588,7 @@ ILboolean iLoadBlpInternal(void)
 				if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
 					if (!ilTexImage(Header.Width, Header.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 						return IL_FALSE;
-					Image = iCurImage;
+					Image = TargetImage;
 					BaseCreated = IL_TRUE;
 				}
 				else {
@@ -395,8 +615,8 @@ ILboolean iLoadBlpInternal(void)
 					return IL_FALSE;
 
 				// Read in the compressed mipmap data.
-				iseek(Header.MipOffsets[Mip], IL_SEEK_SET);
-				if (iread(CompData, 1, Header.MipLengths[Mip]) != Header.MipLengths[Mip]) {
+				TargetImage->io.seek(TargetImage->io.handle, Header.MipOffsets[Mip], IL_SEEK_SET);
+				if (TargetImage->io.read(TargetImage->io.handle, CompData, 1, Header.MipLengths[Mip]) != Header.MipLengths[Mip]) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
@@ -459,236 +679,18 @@ ILboolean iLoadBlpInternal(void)
 	}
 
 	return ilFixImage();
-
-check_blp1:
-	iseek(-148, IL_SEEK_CUR);  // Go back the size of the BLP2 header, since we tried reading it.
-	return iLoadBlp1();
 }
 
+ILconst_string iFormatExtsBLP[] = { 
+	IL_TEXT("blp"), 
+	NULL 
+};
 
-ILboolean iGetBlp1Head(BLP1HEAD *Header)
-{
-	ILuint i;
-
-	iread(Header->Sig, 1, 4);
-	Header->Compression = GetLittleUInt();
-	Header->Flags = GetLittleUInt();
-	Header->Width = GetLittleUInt();
-	Header->Height = GetLittleUInt();
-	Header->PictureType = GetLittleUInt();
-	Header->PictureSubType = GetLittleUInt();
-	for (i = 0; i < 16; i++)
-		Header->MipOffsets[i] = GetLittleUInt();
-	for (i = 0; i < 16; i++)
-		Header->MipLengths[i] = GetLittleUInt();
-
-	return IL_TRUE;
-}
-
-
-ILboolean iCheckBlp1(BLP1HEAD *Header)
-{
-	// The file signature is 'BLP1'.
-	if (strncmp(Header->Sig, "BLP1", 4))
-		return IL_FALSE;
-	// Valid types are JPEG and RAW.  JPEG is not common, though.
-	if (Header->Compression != BLP_TYPE_JPG && Header->Compression != BLP_RAW)
-		return IL_FALSE;
-//@TODO: Find out what Flags is for.
-
-	// PictureType determines whether this has an alpha list.
-	if (Header->PictureType != BLP_RAW_PLUS_ALPHA1 && Header->PictureType != BLP_RAW_PLUS_ALPHA2
-		&& Header->PictureType != BLP_RAW_NO_ALPHA)
-		return IL_FALSE;
-	// Width or height of 0 makes no sense.
-	if (Header->Width == 0 || Header->Height == 0)
-		return IL_FALSE;
-
-	return IL_TRUE;
-}
-
-
-ILboolean iLoadBlp1()
-{
-	BLP1HEAD	Header;
-	ILubyte		*DataAndAlpha, *Palette;
-	ILuint		i;
-	ILimage		*Image = iCurImage;
-	ILboolean	BaseCreated = IL_FALSE;
-#ifndef IL_NO_JPG
-	ILubyte		*JpegHeader, *JpegData;
-	ILuint		JpegHeaderSize;
-#endif//IL_NO_JPG
-
-	if (!iGetBlp1Head(&Header))
-		return IL_FALSE;
-	if (!iCheckBlp1(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
-		return IL_FALSE;
-	}
-
-	//@TODO: Remove this.
-	i = 0;
-
-	switch (Header.Compression)
-	{
-		case BLP_TYPE_JPG:
-#ifdef IL_NO_JPG
-			// We can only do the Jpeg decoding if we do not have IL_NO_JPEG defined.
-			return IL_FALSE;
-#else
-			JpegHeaderSize = GetLittleUInt();
-			JpegHeader = (ILubyte*)ialloc(JpegHeaderSize);
-			if (JpegHeader == NULL)
-				return IL_FALSE;
-			// Read the shared Jpeg header.
-			if (iread(JpegHeader, 1, JpegHeaderSize) != JpegHeaderSize) {
-				ifree(JpegHeader);
-				return IL_FALSE;
-			}
-
-			//for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
-				//@TODO: Check return value?
-				iseek(Header.MipOffsets[i], IL_SEEK_SET);
-				JpegData = (ILubyte*)ialloc(JpegHeaderSize + Header.MipLengths[i]);
-				if (JpegData == NULL) {
-					ifree(JpegHeader);
-					return IL_FALSE;
-				}
-				memcpy(JpegData, JpegHeader, JpegHeaderSize);
-				if (iread(JpegData + JpegHeaderSize, Header.MipLengths[i], 1) != 1)
-					return IL_FALSE;
-
-				// Just send the data straight to the Jpeg loader.
-				if (!ilLoadJpegL(JpegData, JpegHeaderSize + Header.MipLengths[i]))
-					return IL_FALSE;
-
-				// The image data is in BGR(A) order, even though it is Jpeg-compressed.
-				if (Image->Format == IL_RGBA)
-					Image->Format = IL_BGRA;
-				if (Image->Format == IL_RGB)
-					Image->Format = IL_BGR;
-
-				ifree(JpegData);
-			//}
-			ifree(JpegHeader);
-#endif//IL_NO_JPG
-			break;
-
-		case BLP_RAW:
-			switch (Header.PictureType)
-			{
-				// There is no alpha list, so we just read like a normal indexed image.
-				case BLP_RAW_NO_ALPHA:
-					for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
-						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
-							if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
-								return IL_FALSE;
-							Image = iCurImage;
-							BaseCreated = IL_TRUE;
-
-							// We have a BGRA palette.
-							Image->Pal.Palette = (ILubyte*)ialloc(256 * 4);
-							if (Image->Pal.Palette == NULL)
-								return IL_FALSE;
-							Image->Pal.PalSize = 1024;
-							Image->Pal.PalType = IL_PAL_BGRA32;
-
-							// Read in the palette ...
-							if (iread(Image->Pal.Palette, 1, 1024) != 1024)
-								return IL_FALSE;
-						}
-						else {
-							if (Image->Width == 1 && Image->Height == 1)  // Already at the smallest mipmap (1x1), so we are done.
-								break;
-							if (Header.MipOffsets[i] == 0 || Header.MipLengths[i] == 0)  // No more mipmaps in the file.
-								break;
-
-							Image->Mipmaps = ilNewImageFull(Image->Width >> 1, Image->Height >> 1, 1, 1, IL_COLOR_INDEX, IL_UNSIGNED_BYTE, NULL);
-							if (Image->Mipmaps == NULL)
-								return IL_FALSE;
-
-							// Copy the palette from the first image before we change our Image pointer.
-							Image->Mipmaps->Pal.Palette = (ILubyte*)ialloc(256 * 4);
-							if (Image->Mipmaps->Pal.Palette == NULL)
-								return IL_FALSE;
-							Image->Mipmaps->Pal.PalSize = 1024;
-							Image->Mipmaps->Pal.PalType = IL_PAL_BGRA32;
-							memcpy(Image->Mipmaps->Pal.Palette, Image->Pal.Palette, 1024);
-
-							// Move to the next mipmap in the linked list.
-							Image = Image->Mipmaps;
-						}
-						// The origin should be in the upper left.
-						Image->Origin = IL_ORIGIN_UPPER_LEFT;
-
-						// Seek to the data and read it.
-						iseek(Header.MipOffsets[i], IL_SEEK_SET);						
-						if (iread(Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
-							return IL_FALSE;
-					}
-					break;
-
-				// These cases are identical and have an alpha list following the image data.
-				case BLP_RAW_PLUS_ALPHA1:
-				case BLP_RAW_PLUS_ALPHA2:
-					// Create the image.
-					if (!ilTexImage(Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
-						return IL_FALSE;
-
-					DataAndAlpha = (ILubyte*)ialloc(Header.Width * Header.Height);
-					Palette = (ILubyte*)ialloc(256 * 4);
-					if (DataAndAlpha == NULL || Palette == NULL) {
-						ifree(DataAndAlpha);
-						ifree(Palette);
-						return IL_FALSE;
-					}
-
-					// Read in the data and the palette.
-					if (iread(Palette, 1, 1024) != 1024) {
-						ifree(Palette);
-						return IL_FALSE;
-					}
-					// Seek to the data and read it.
-					iseek(Header.MipOffsets[i], IL_SEEK_SET);						
-					if (iread(DataAndAlpha, Header.Width * Header.Height, 1) != 1) {
-						ifree(DataAndAlpha);
-						ifree(Palette);
-						return IL_FALSE;
-					}
-
-					// Convert the color-indexed data to BGRX.
-					for (i = 0; i < Header.Width * Header.Height; i++) {
-						Image->Data[i*4]   = Palette[DataAndAlpha[i]*4];
-						Image->Data[i*4+1] = Palette[DataAndAlpha[i]*4+1];
-						Image->Data[i*4+2] = Palette[DataAndAlpha[i]*4+2];
-					}
-
-					// Read in the alpha list.
-					if (iread(DataAndAlpha, Header.Width * Header.Height, 1) != 1) {
-						ifree(DataAndAlpha);
-						ifree(Palette);
-						return IL_FALSE;
-					}
-					// Finally put the alpha data into the image data.
-					for (i = 0; i < Header.Width * Header.Height; i++) {
-						Image->Data[i*4+3] = DataAndAlpha[i];
-					}
-
-					ifree(DataAndAlpha);
-					ifree(Palette);
-					break;
-			}
-			break;
-
-		//default:  // Should already be checked by iCheckBlp1.
-	}
-
-	// Set the origin (always upper left).
-	Image->Origin = IL_ORIGIN_UPPER_LEFT;
-
-	return ilFixImage();
-}
-
+ILformat iFormatBLP = { 
+	.Validate = iIsValidBLP, 
+	.Load     = iLoadBlpInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsBLP
+};
 
 #endif//IL_NO_BLP

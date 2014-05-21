@@ -56,8 +56,7 @@ GifLoadColorTable(
 	if (TargetImage->io.read(TargetImage->io.handle, Temp, 1, PalSize) != PalSize)
 		return IL_FALSE;
 
-	ILuint i;
-	for (i=0; i<1<<(Size+1); i++) {
+	for (ILint i=0; i<1<<(Size+1); i++) {
 		Pal->Palette[i*4+0] = Temp[i*3+0];
 		Pal->Palette[i*4+1] = Temp[i*3+1];
 		Pal->Palette[i*4+2] = Temp[i*3+2];
@@ -107,27 +106,29 @@ GifHandleExtensionSubBlock(
 	GifLoadingContext *Ctx,
 	ILubyte 				Type, 
 	const ILubyte *	SubBlock, 
-	ILubyte 				SubBlockLength,
-	ILuint          SubBlockIndex
+	ILubyte 				SubBlockLength
 ) {
 	switch (Type) {
 		case GifExt_PlainText:
-		case GifExt_Comment: 
+		case GifExt_Comment: {
 			char tmp[257];
 			memcpy(tmp, SubBlock, SubBlockLength);
 			tmp[SubBlockLength] = 0;
 			return IL_TRUE;
+		}
 
 		case GifExt_Application:
 			return IL_TRUE;
 
 		case GifExt_GraphicControl:
 			if (SubBlockLength != sizeof(GifGraphicControlExtension)) {
-				iTrace("**** GifGraphicControlExtension has wrong size %d expected %ld\n", SubBlockLength, sizeof(GifGraphicControlExtension));
+				iTrace("**** GifGraphicControlExtension has wrong size %u expected %u\n", SubBlockLength, sizeof(GifGraphicControlExtension));
 				return IL_FALSE;
 			}
 			return GifHandleGraphicControlExtension(Ctx, (const GifGraphicControlExtension *)SubBlock);
 	}
+
+	return IL_TRUE;
 }
 
 static ILboolean
@@ -141,14 +142,12 @@ GifLoadExtension(
 
 	ILubyte SubBlock[255];
 	ILubyte SubBlockLength = 0;
-	ILubyte SubBlockIndex = 0;
 	do {
 		if (!GifLoadSubBlock(Ctx, SubBlock, &SubBlockLength))
 			return IL_FALSE;
 
 		if (SubBlockLength > 0) {
-			GifHandleExtensionSubBlock(Ctx, Type, SubBlock, SubBlockLength, SubBlockIndex);
-			SubBlockIndex ++;
+			GifHandleExtensionSubBlock(Ctx, Type, SubBlock, SubBlockLength);
 		}
 	} while(SubBlockLength > 0);
 
@@ -458,11 +457,12 @@ LZWInputStreamDecode(
 		Stream->PrevCode = Stream->NextCode-1;
 	}
 
-	if (Stream->NextCode == (1<<Stream->CodeSize) || Code == ((1<<Stream->CodeSize)-1)) {
+	if ( Stream->NextCode == (ILuint)(1<<Stream->CodeSize ) 
+	  || Code             == (ILuint)((1<<Stream->CodeSize)-1)) {
 		if (Stream->CodeSize < 12) {
 			Stream->CodeSize++;
 		} else {
-			iTrace("**** Not ncreasing code size to %u\n", Stream->CodeSize + 1);
+			iTrace("**** Not increasing code size to %u\n", Stream->CodeSize + 1);
 		}
 	}
 
@@ -572,9 +572,6 @@ GifLoadFrame(
 		iTrace("**** LZW code size out of range: %u", Ctx->LZWCodeSize);
 		return IL_FALSE;
 	}
-
-	ILubyte SubBlock[255];
-	ILubyte SubBlockLength = 0;
 
 	LZWInputStream Stream;
 	LZWInputStreamInit(&Stream, Ctx->LZWCodeSize, Ctx);
@@ -741,5 +738,17 @@ iIsValidGif(SIO* io) {
 	io->seek(io->handle, -Read, IL_SEEK_CUR);
 	return Read == 6 && GifCheckHeader(&Sig);
 }
+
+ILconst_string iFormatExtsGIF[] = { 
+	IL_TEXT("gif"), 
+	NULL 
+};
+
+ILformat iFormatGIF = { 
+	.Validate = iIsValidGif, 
+	.Load     = iLoadGifInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsGIF
+};
 
 #endif //IL_NO_GIF
