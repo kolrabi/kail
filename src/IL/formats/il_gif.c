@@ -94,7 +94,7 @@ GifHandleGraphicControlExtension(
 	Ctx->Delay 								= Delay * 10;
 	Ctx->UseTransparentColor 	= Gce->Flags & GifFlag_GCE_TransparentColor;
 	Ctx->TransparentColor    	= Gce->TransparentColor;
-	Ctx->DisposalMethod      	= (Gce->Flags & GifFlag_GCE_DisposalMethodMask) >> GifFlag_GCE_DisposalMethodShift;
+	Ctx->NextDisposalMethod   = (Gce->Flags & GifFlag_GCE_DisposalMethodMask) >> GifFlag_GCE_DisposalMethodShift;
 
 	// ILubyte Reserved = (Gce->Flags & GifFlag_GCE_ReservedMask) >> GifFlag_GCE_ReservedShift;
 
@@ -158,7 +158,7 @@ static ILboolean
 GifHandleDisposal(
 	GifLoadingContext *Ctx
 ) {
-	Ctx->Image->Next = ilNewImage(Ctx->Target->Width, Ctx->Target->Height, 1, 1, 1);
+	Ctx->Image->Next = ilNewImageFull(Ctx->Target->Width, Ctx->Target->Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 	if (Ctx->Image->Next == NULL) {
 		iTrace("**** failed to create new image for frame!\n");
 		return IL_FALSE;
@@ -171,27 +171,22 @@ GifHandleDisposal(
 			break;
 
 		case GifDisposal_Clear:
-			if (Ctx->UseTransparentColor) {
-				memset(Ctx->Image->Next->Data, Ctx->Screen.Background, Ctx->Image->SizeOfData);
-			} else {
-				memset(Ctx->Image->Next->Data, Ctx->TransparentColor, Ctx->Image->SizeOfData);
-			}
+			memset(Ctx->Image->Next->Data, 0, Ctx->Image->SizeOfData);
 			break;
 
 		case GifDisposal_Restore:
 			if (Ctx->PrevImage){
 				memcpy(Ctx->Image->Next->Data, Ctx->PrevImage, Ctx->Image->SizeOfData);
-			} else if (Ctx->UseTransparentColor) {
-				memset(Ctx->Image->Next->Data, Ctx->Screen.Background, Ctx->Image->SizeOfData);
-			} else {
-				memset(Ctx->Image->Next->Data, Ctx->TransparentColor, Ctx->Image->SizeOfData);
+			} else  {
+				memset(Ctx->Image->Next->Data, 0, Ctx->Image->SizeOfData);
 			}
 			break;
 	}
 
+	Ctx->DisposalMethod = Ctx->NextDisposalMethod;
+
 	Ctx->PrevImage      = Ctx->Image;
 	Ctx->Image 					= Ctx->Image->Next;
-	Ctx->Image->Format 	= IL_COLOUR_INDEX;
 	Ctx->Image->Origin 	= IL_ORIGIN_UPPER_LEFT;
 
 	return IL_TRUE;
@@ -412,6 +407,14 @@ LZWInputStreamAppendCode(
 
 	Stream->Phrases[Stream->NextCode++] = Phrase;
 
+	if ( Stream->NextCode == (ILuint)(1<<Stream->CodeSize) ) {
+		if (Stream->CodeSize < 12) {
+			Stream->CodeSize++;
+		} else {
+			iTrace("**** Not increasing code size to %u\n", Stream->CodeSize + 1);
+		}
+	}
+
 	return IL_TRUE;
 }
 
@@ -430,7 +433,6 @@ LZWInputStreamDecode(
   	Stream->PrevCode = Code;
   	return IL_TRUE;
   }
-
 
 	// is CODE in the code table?
 	const ILuint *Phrase = Stream->Phrases[Code];
@@ -457,6 +459,7 @@ LZWInputStreamDecode(
 		Stream->PrevCode = Stream->NextCode-1;
 	}
 
+/*
 	if ( Stream->NextCode == (ILuint)(1<<Stream->CodeSize ) 
 	  || Code             == (ILuint)((1<<Stream->CodeSize)-1)) {
 		if (Stream->CodeSize < 12) {
@@ -465,6 +468,7 @@ LZWInputStreamDecode(
 			iTrace("**** Not increasing code size to %u\n", Stream->CodeSize + 1);
 		}
 	}
+	*/
 
 	return IL_TRUE;
 }
@@ -537,6 +541,9 @@ GifLoadFrame(
 		iTrace("**** Failed to load local palette\n");
 		return IL_FALSE;
 	}
+	iTrace("---- UseLocalPal: %d", Ctx->UseLocalPal);
+	iTrace("---- DisposalMethod: %d %d", Ctx->DisposalMethod, Ctx->Frame);
+	iTrace("---- Delay: %d", Ctx->Delay);
 
 	Ctx->IsInterlaced = Img.Flags & GifFlag_IMG_Interlaced;
 
@@ -547,11 +554,13 @@ GifLoadFrame(
 		}
 	}
 
+	Ctx->Image->Duration = Ctx->Delay;
+
 	ILpal *SourcePal = Ctx->UseLocalPal ? &Ctx->LocalPal : &Ctx->GlobalPal;
-	if (!iCopyPalette(&Ctx->Image->Pal, SourcePal)) {
+	/*if (!iCopyPalette(&Ctx->Image->Pal, SourcePal)) {
 		iTrace("**** Could not copy palette for frame!");
 		return IL_FALSE;
-	}
+	}*/
 
 	if (Ctx->UseLocalPal) {
 		Ctx->Colors = 1<<(1+(Img.Flags & GifFlag_IMG_LocalColorTableSizeMask));
@@ -559,9 +568,9 @@ GifLoadFrame(
 		Ctx->Colors = 1<<(1+(Ctx->Screen.Flags & GifFlag_LSD_GlobalColorTableSizeMask));
 	}
 	
-	if (Ctx->UseTransparentColor && Ctx->TransparentColor < Ctx->Image->Pal.PalSize/4) {
+	/*if (Ctx->UseTransparentColor && Ctx->TransparentColor < Ctx->Image->Pal.PalSize/4) {
 		Ctx->Image->Pal.Palette[Ctx->TransparentColor * 4 + 3] = 0;
-	}
+	}*/
 
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, &Ctx->LZWCodeSize, 1, 1) != 1) {
 		iTrace("**** Could not read LZW code size!");
@@ -587,10 +596,10 @@ GifLoadFrame(
 			&& y < Ctx->Screen.Height 
 			&& ( B != Ctx->TransparentColor 
 				|| !Ctx->UseTransparentColor 
-				|| Ctx->DisposalMethod != GifDisposal_Overlay 
+				|| Ctx->Frame == 0
 				)
 		) {
-			Ctx->Image->Data[x + y * Ctx->Screen.Width] = B;
+			((ILuint*)Ctx->Image->Data)[x + y * Ctx->Screen.Width] = ((ILuint*)SourcePal->Palette)[B];
 		}
 
 		x++;
@@ -632,6 +641,15 @@ GifLoadFrame(
 	return IL_TRUE;
 }
 
+static void 
+GifFixLastDisposal(
+	GifLoadingContext *Ctx
+) {
+	if (Ctx->DisposalMethod == GifDisposal_Overlay) {
+		// TODO: set all transparent pixels of first frame to values of pixels in last frame
+	}
+}
+
 static ILboolean
 GifLoad(
 	GifLoadingContext *Ctx
@@ -641,6 +659,7 @@ GifLoad(
 		return IL_FALSE;
 	}
 
+	iTrace("---- Block ID %02x", ID);
 	while (ID != GifID_End) {
 		switch (ID) {
 			case GifID_Extension:
@@ -649,21 +668,32 @@ GifLoad(
 				break;
 
 			case GifID_Image:
-				if (!GifLoadFrame(Ctx))
+				if (!GifLoadFrame(Ctx)) {
+					if (Ctx->Frame > 1)
+						GifFixLastDisposal(Ctx);
 					return Ctx->Frame > 0;
+				}
 				break;
 
 			case GifID_Terminator:
 				break;
 
 			default:
-				return Ctx->Frame > 0;
+				iTrace("---- Unknown block at %08x", SIOtell(&Ctx->Target->io));
+
+				// just read next byte and hope for the best
+				if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
+					iTrace("---- EOF", ID);
+					return Ctx->Frame > 0;
+				}
 		}
 
 		// try to read next block id
-		if (Ctx->Target->io.read(Ctx->Target->io.handle, &ID, 1, 1) != 1) {
+		if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
+			iTrace("---- EOF", ID);
 			break;
 		}
+		iTrace("---- Block ID %02x", ID);
 	}
 	return IL_TRUE;
 }
@@ -671,6 +701,7 @@ GifLoad(
 // Internal function used to load the Gif.
 ILboolean iLoadGifInternal(ILimage* TargetImage)
 {
+	iTrace("---- load image!\n");
 	if (TargetImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -705,7 +736,7 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 	UShort(Ctx.Screen.Height);
 
 	// create texture
-	if (!ilTexImage(Ctx.Screen.Width, Ctx.Screen.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage(Ctx.Screen.Width, Ctx.Screen.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	// check for a global color table

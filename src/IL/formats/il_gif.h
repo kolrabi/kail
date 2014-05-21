@@ -109,7 +109,7 @@ typedef struct GifLoadingContext {
 	ILpal			LocalPal;
 	ILushort	Colors;
 
-	ILubyte   DisposalMethod;
+	ILubyte   DisposalMethod, NextDisposalMethod;
 	ILboolean IsInterlaced;
 
 	ILubyte   LZWCodeSize;
