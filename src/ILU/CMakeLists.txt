@@ -38,7 +38,7 @@ IF                      ( WIN32 )
   SET_TARGET_PROPERTIES ( ILU PROPERTIES PREFIX "" )
   TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
 ELSE                    ()
-  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libIL.so.a )
+  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
 ENDIF                   ()
 
 INSTALL                 ( TARGETS ILU

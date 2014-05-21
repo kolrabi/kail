@@ -102,6 +102,7 @@ IF                      ( WIN32 )
   SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES PREFIX "" )
 ELSE                    ()
   SET                   ( LIBNAME IL )
+  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
 ENDIF                   ()
 
 TARGET_LINK_LIBRARIES   ( ${LIBNAME}
