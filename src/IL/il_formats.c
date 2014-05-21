@@ -51,6 +51,9 @@ iInitFormats() {
 #ifndef IL_NO_GIF
   ADD_FORMAT(GIF);
 #endif
+#ifndef IL_NO_TIF
+  ADD_FORMAT(TIF);
+#endif
 }
 
 void 

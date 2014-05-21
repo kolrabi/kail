@@ -136,8 +136,6 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 		Type = IL_SUN;
 	else if (!iStrCmp(Ext, IL_TEXT("texture")))
 		Type = IL_TEXTURE;
-	else if (!iStrCmp(Ext, IL_TEXT("tif")) || !iStrCmp(Ext, IL_TEXT("tiff")))
-		Type = IL_TIF;
 	else if (!iStrCmp(Ext, IL_TEXT("tpl")))
 		Type = IL_TPL;
 	else if (!iStrCmp(Ext, IL_TEXT("utx")))
@@ -226,25 +224,10 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 			break;
 		case 'I':
 			if (buf[1] == 'I') {
-				if (buf[2] == 42) {
-					#ifndef IL_NO_TIF
-					if (ilIsValidTiffFunc(&iCurImage->io))
-						return IL_TIF;
-					#else
-					return IL_TIF;
-					#endif
-				} else if (buf[2] == 0xBC){
+				if (buf[2] == 0xBC){
 					return IL_WDP;
 				}
 			}
-		case 'M':
-			if (buf[1] == 'M')
-				#ifndef IL_NO_TIF
-				if (ilIsValidTiffFunc(&iCurImage->io))
-					return IL_TIF;
-				#else
-				return IL_TIF;
-				#endif
 		case 'P':
 			if (strnicmp((const char*) buf, "Paint Shop Pro Image File", 25) == 0) {
 				#ifndef IL_NO_PSP
@@ -528,11 +511,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 			return iIsValidSun(io);
 		#endif
 
-		#ifndef IL_NO_TIF
-		case IL_TIF:
-			return ilIsValidTiffFunc(io);
-		#endif
-
 		#ifndef IL_NO_TPL
 		case IL_TPL:
 			return ilIsValidTpl(io);
@@ -729,11 +707,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadTargaInternal(image);
 		#endif
 
-		#ifndef IL_NO_TIF
-		case IL_TIF:
-			return iLoadTiffInternal(image);
-		#endif
-
 		#ifndef IL_NO_RAW
 		case IL_RAW:
 			return iLoadRawInternal();
@@ -892,6 +865,7 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#endif
 	}
 
+	iTrace("----");
 	const ILformat *format = iGetFormat(type);
 	if (format) {
 		return format->Load != NULL && format->Load(image);
@@ -930,6 +904,7 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type)
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
 ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
 {
+	iTrace("**** %04x %p, %u", Type, Lump, Size);
 	if (Lump == NULL || Size == 0) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
@@ -1004,20 +979,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		bRet = iSaveTargaInternal(image);
 		break;
 	#endif
-
-	#ifndef IL_NO_TIF
-	case IL_TIF:
-		bRet = iSaveTiffInternal(image);
-		break;
-	#endif
-
-/*
-	#ifndef IL_NO_CHEAD
-	case IL_CHEAD:
-		bRet = ilSaveCHeader(image, "IL_IMAGE");
-		break;
-	#endif
-		*/
 
 	#ifndef IL_NO_RAW
 	case IL_RAW:

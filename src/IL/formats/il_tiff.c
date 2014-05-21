@@ -37,24 +37,12 @@
 /*----------------------------------------------------------------------------*/
 
 // No need for a separate header
-static ILboolean iLoadTiffInternal(ILimage *);
 static char*     iMakeString(void);
 static TIFF*     iTIFFOpen(char *Mode);
 
 /*----------------------------------------------------------------------------*/
 
-ILboolean ilisValidTiffExtension(ILconst_string FileName)
-{
-	if (!iCheckExtension((ILstring)FileName, IL_TEXT("tif")) &&
-		!iCheckExtension((ILstring)FileName, IL_TEXT("tiff")))
-		return IL_FALSE;
-	else
-		return IL_TRUE;
-}
-
-/*----------------------------------------------------------------------------*/
-
-ILboolean ilIsValidTiffFunc(SIO* io)
+ILboolean iIsValidTiff(SIO* io)
 {
 	ILushort Header1 = 0, Header2 = 0;
 
@@ -902,5 +890,18 @@ char *iMakeString()
 }
 
 /*----------------------------------------------------------------------------*/
+
+ILconst_string iFormatExtsTIF[] = { 
+	IL_TEXT("tif"), 
+	IL_TEXT("tiff"), 
+	NULL 
+};
+
+ILformat iFormatTIF = { 
+	.Validate = iIsValidTiff, 
+	.Load     = iLoadTiffInternal, 
+	.Save     = iSaveTiffInternal, 
+	.Exts     = iFormatExtsTIF
+};
 
 #endif//IL_NO_TIF

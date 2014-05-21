@@ -356,7 +356,7 @@ ILboolean ilLoadTexture(ILconst_string FileName);
 ILboolean ilLoadTextureF(ILHANDLE File);
 ILboolean ilLoadTextureL(ILimage* image, const void *Lump, ILuint Size);
 
-ILboolean ilIsValidTiffFunc(SIO* io);
+//ILboolean ilIsValidTiffFunc(SIO* io);
 //ILboolean iLoadTiffInternal(ILimage* image);
 //ILboolean iSaveTiffInternal(ILimage* image);
 
