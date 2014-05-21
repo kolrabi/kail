@@ -206,25 +206,29 @@ LZWInputStreamClearPhrases(
 static void 
 LZWInputStreamInit(
 	LZWInputStream *Stream,
-	ILubyte CodeSize
+	ILubyte CodeSize,
+	GifLoadingContext *Ctx
 ) {
-	Stream->CodeSize 		= CodeSize+1;
-	Stream->OriginalCodeSize = CodeSize+1;
+	Stream->Ctx         			= Ctx;
 
-	Stream->Data 				= (ILubyte*)ialloc(1);
-	Stream->AllocCount 	= 1;
-	Stream->BitCount 		= 0;
+	Stream->CodeSize 					= CodeSize+1;
+	Stream->OriginalCodeSize 	= CodeSize+1;
 
-	Stream->ClearCode  	= 1 << CodeSize;
-	Stream->EndCode  		= Stream->ClearCode + 1;
+	Stream->InputAvail 				= 0;
+	Stream->InputPos          = 0;
+	Stream->InputBits         = 0;
+	Stream->InputBitCount 		= 0;
 
-	Stream->PrevCode    = Stream->ClearCode;
-	Stream->NextCode    = Stream->ClearCode + 2;
+	Stream->ClearCode  				= 1 << CodeSize;
+	Stream->EndCode  					= Stream->ClearCode + 1;
 
-	memset(Stream->Phrases,	0, sizeof(Stream->Phrases));
-	memset(Stream->Buffer, 	0, sizeof(Stream->Buffer));
+	Stream->PrevCode    			= Stream->ClearCode;
+	Stream->NextCode    			= Stream->ClearCode + 2;
 
-	Stream->BufferLen   = 0;
+	memset(Stream->Phrases,				0, sizeof(Stream->Phrases));
+	memset(Stream->OutputBuffer, 	0, sizeof(Stream->OutputBuffer));
+
+	Stream->OutputBufferLen   = 0;
 
 	LZWInputStreamClearPhrases(Stream);
 }
@@ -260,10 +264,6 @@ static void
 LZWInputStreamDeinit(
 	LZWInputStream *Stream
 ) {
-	if (Stream->Data) {
-		ifree(Stream->Data);
-	}
-
 	ILuint i;
 	for (i=0; i<4096; i++) {
 		if (Stream->Phrases[i]) {
@@ -276,81 +276,35 @@ LZWInputStreamDeinit(
 }
 
 static ILboolean
-LZWInputStreamAppend(
-	LZWInputStream *Stream, 
-	const ILubyte * Data, 
-	ILuint          Length
-) {
-	ILuint newLength = Stream->BitCount / 8 + 1 + Length;
-	if (newLength >= Stream->AllocCount) {
-		ILubyte *newData = (ILubyte*)ialloc(newLength);
-		if (!newData) {
-			iTrace("**** Could not allocate %d bytes\n", newLength);
-			return IL_FALSE;
-		}
-
-		memcpy(newData, Stream->Data, Stream->BitCount / 8 + 1);
-		ifree(Stream->Data);
-		Stream->Data = newData;
-		Stream->AllocCount = newLength;
-	}
-
-	ILubyte Shift = Stream->BitCount % 8;
-
-	if (!Shift) {
-		memcpy(Stream->Data + (Stream->BitCount / 8), Data, Length);
-		Stream->BitCount += 8 * Length;
-		return IL_TRUE;
-	}
-
-	// clear last data byte, upper bits
-	Stream->Data[Stream->BitCount/8    ] &= 0xFF >> (8-Shift);
-
-	ILuint i;
-	for (i = 0; i<Length; i++) {
-		Stream->Data[Stream->BitCount/8    ] |= Data[i] << Shift;
-		Stream->Data[Stream->BitCount/8 + 1]  = Data[i] >> (8-Shift);
-		Stream->BitCount += 8;
-	}
-
-	return IL_TRUE;
-}
-
-static ILboolean
 LZWInputStreamReadCode(
 	LZWInputStream *Stream, 
 	ILuint *        Code
 ) {
 	ILubyte BitsLeftToRead 	= Stream->CodeSize;
-	ILubyte Shift 					= 0;
 
-	if (Stream->BitCount < BitsLeftToRead) {
-		iTrace("**** Could not read %u bits, only got %u\n", BitsLeftToRead, Stream->BitCount);
-		return IL_FALSE;
+	while (Stream->InputBitCount < BitsLeftToRead) {
+		// make sure there is something in the input buffer
+		if (Stream->InputAvail == 0) {
+			Stream->InputPos = 0;
+			if ( !GifLoadSubBlock(Stream->Ctx, Stream->InputBuffer, &Stream->InputAvail) 
+				|| Stream->InputAvail == 0) {
+				iTrace("**** Could not read %u bits, only got %u and could not load more", BitsLeftToRead, Stream->InputBitCount);
+				return IL_FALSE;
+			}
+		}
+
+		// get bits from input buffer, one byte at a time
+		while (Stream->InputAvail > 0 && Stream->InputBitCount <= 24) {
+			Stream->InputBits |= Stream->InputBuffer[Stream->InputPos] << Stream->InputBitCount;
+			Stream->InputPos ++;
+			Stream->InputAvail --;
+			Stream->InputBitCount += 8;
+		}
 	}
 
-	*Code = 0;
-
-	while (BitsLeftToRead > 8) {
-		*Code |= Stream->Data[0] << Shift;
-		
-		memmove(Stream->Data, Stream->Data + 1, Stream->BitCount / 8);
-
-		Stream->BitCount -= 8;
-		BitsLeftToRead -= 8;
-		Shift += 8;
-	}
-
-	*Code |= (Stream->Data[0] & (0xFF >> (8-BitsLeftToRead)))<<Shift;
-
-	// Shift remaining bits
-	ILuint i;
-	for (i = 1; i<Stream->BitCount/8; i++) {
-		Stream->Data[i-1]  = Stream->Data[i-1]   >> BitsLeftToRead;
-		Stream->Data[i-1] |= Stream->Data[i] << (8-BitsLeftToRead);
-	}
-	Stream->BitCount -= BitsLeftToRead;
-
+	*Code = Stream->InputBits & ((1 << BitsLeftToRead) - 1);
+	Stream->InputBitCount -= BitsLeftToRead;
+	Stream->InputBits = (Stream->InputBits >> BitsLeftToRead);// & ((1<<Stream->InputBitCount)-1);
 	return IL_TRUE;
 }
 
@@ -359,11 +313,12 @@ LZWInputStreamBufferByte(
 	LZWInputStream *Stream,
 	ILubyte Byte 
 ) {
-	if (Stream->BufferLen < sizeof(Stream->Buffer)) {
-		Stream->Buffer[Stream->BufferLen++] = Byte;
-		return IL_TRUE;
+	if (Stream->OutputBufferLen >= sizeof(Stream->OutputBuffer)) {
+		iTrace("**** Output buffer overflow");
+		return IL_FALSE;
 	}
-	return IL_FALSE;
+	Stream->OutputBuffer[Stream->OutputBufferLen++] = Byte;
+	return IL_TRUE;
 }
 
 // output a code to the output buffer
@@ -520,7 +475,7 @@ LZWInputStreamReadByte(
 	ILubyte *Out
 ) {
 	// decode code if necessary
-	while (Stream->BufferLen == 0) {
+	while (Stream->OutputBufferLen == 0) {
 		// get next code
 		ILuint Code = 0;
 		if (!LZWInputStreamReadCode(Stream, &Code)) {
@@ -540,7 +495,6 @@ LZWInputStreamReadByte(
 
 		// handle end of image
 		if (Code == Stream->EndCode) {
-			iTrace("---- End of image\n");
 			return IL_FALSE;
 		}
 
@@ -551,11 +505,11 @@ LZWInputStreamReadByte(
 		}
 	}
 
-	// return decoded bytes 
-	if (Stream->BufferLen > 0) {
-		*Out = Stream->Buffer[0];
-		memmove(Stream->Buffer, Stream->Buffer+1, Stream->BufferLen - 1);
-		Stream->BufferLen -= 1;
+	// return decoded bytes TODO: optimize out memmove
+	if (Stream->OutputBufferLen > 0) {
+		*Out = Stream->OutputBuffer[0];
+		memmove(Stream->OutputBuffer, Stream->OutputBuffer+1, Stream->OutputBufferLen - 1);
+		Stream->OutputBufferLen -= 1;
 		return IL_TRUE;
 	}
 
@@ -584,12 +538,6 @@ GifLoadFrame(
 		return IL_FALSE;
 	}
 
-	if (Ctx->UseLocalPal) {
-		Ctx->Colors = 1<<(1+(Img.Flags & GifFlag_IMG_LocalColorTableSizeMask));
-	} else {
-		Ctx->Colors = 1<<(1+(Ctx->Screen.Flags & GifFlag_LSD_GlobalColorTableSizeMask));
-	}
-
 	Ctx->IsInterlaced = Img.Flags & GifFlag_IMG_Interlaced;
 
 	if (Ctx->Frame) {
@@ -599,12 +547,16 @@ GifLoadFrame(
 		}
 	}
 
+	ILpal *SourcePal = Ctx->UseLocalPal ? &Ctx->LocalPal : &Ctx->GlobalPal;
+	if (!iCopyPalette(&Ctx->Image->Pal, SourcePal)) {
+		iTrace("**** Could not copy palette for frame!");
+		return IL_FALSE;
+	}
+
 	if (Ctx->UseLocalPal) {
-		if (!iCopyPalette(&Ctx->Image->Pal, &Ctx->LocalPal))
-			return IL_FALSE;
+		Ctx->Colors = 1<<(1+(Img.Flags & GifFlag_IMG_LocalColorTableSizeMask));
 	} else {
-		if (!iCopyPalette(&Ctx->Image->Pal, &Ctx->GlobalPal))
-			return IL_FALSE;
+		Ctx->Colors = 1<<(1+(Ctx->Screen.Flags & GifFlag_LSD_GlobalColorTableSizeMask));
 	}
 	
 	if (Ctx->UseTransparentColor && Ctx->TransparentColor < Ctx->Image->Pal.PalSize/4) {
@@ -612,11 +564,12 @@ GifLoadFrame(
 	}
 
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, &Ctx->LZWCodeSize, 1, 1) != 1) {
+		iTrace("**** Could not read LZW code size!");
 		return IL_FALSE;
 	}
 
 	if (Ctx->LZWCodeSize < 2 || Ctx->LZWCodeSize > 12) {
-		iTrace("**** Lzw Code size out of range!\n");
+		iTrace("**** LZW code size out of range: %u", Ctx->LZWCodeSize);
 		return IL_FALSE;
 	}
 
@@ -624,20 +577,7 @@ GifLoadFrame(
 	ILubyte SubBlockLength = 0;
 
 	LZWInputStream Stream;
-	LZWInputStreamInit(&Stream, Ctx->LZWCodeSize);
-
-	do {
-		if (!GifLoadSubBlock(Ctx, SubBlock, &SubBlockLength)) {
-			ifree(Stream.Data);
-			return IL_FALSE;
-		}
-
-		if (SubBlockLength) {
-			if (!LZWInputStreamAppend(&Stream, SubBlock, SubBlockLength)) {
-				break;
-			}
-		}
-	} while(SubBlockLength > 0);
+	LZWInputStreamInit(&Stream, Ctx->LZWCodeSize, Ctx);
 
 	ILubyte B;
 	ILuint y = Img.Top;
@@ -716,6 +656,9 @@ GifLoad(
 					return Ctx->Frame > 0;
 				break;
 
+			case GifID_Terminator:
+				break;
+
 			default:
 				return Ctx->Frame > 0;
 		}
@@ -725,16 +668,6 @@ GifLoad(
 			break;
 		}
 	}
-
-	/*
-	if (Ctx->IsInterlaced) {
-		Ctx->Image = Ctx->Target;
-		while(Ctx->Image) {
-			GifDeinterlace(Ctx->Image);
-			Ctx->Image = Ctx->Image->Next;
-		}
-	}
-	*/
 	return IL_TRUE;
 }
 

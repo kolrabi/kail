@@ -467,7 +467,12 @@ ILboolean iLoadXpmInternal();
 
 extern FILE *iTraceOut;
 
-#define iTrace(...) if (iTraceOut) fprintf(iTraceOut, __VA_ARGS__);
+#define iTrace(...) if (iTraceOut) {\
+	fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
+	fprintf(iTraceOut, __VA_ARGS__); \
+	fputc('\n', iTraceOut); \
+	fflush(iTraceOut); \
+}
 
 #ifdef __cplusplus
 }

@@ -116,17 +116,24 @@ typedef struct GifLoadingContext {
 } GifLoadingContext;
 
 typedef struct LZWInputStream {
+	GifLoadingContext *Ctx;
+
 	ILubyte 	CodeSize;
 	ILubyte 	OriginalCodeSize;
-	ILubyte * Data;
-	ILuint  	AllocCount;
-	ILuint  	BitCount;
+	
+	ILubyte 	InputBuffer[256];
+	ILubyte 	InputAvail;
+	ILubyte   InputPos;
+
+	ILuint    InputBits;
+	ILuint  	InputBitCount;
+
 	ILuint    ClearCode, EndCode;
 	ILuint    PrevCode, NextCode;
 
-	ILuint *  Phrases[65536];
-	ILubyte   Buffer[4096];
-	ILuint    BufferLen;
+	ILuint *  Phrases[4096];
+	ILubyte   OutputBuffer[4096];
+	ILuint    OutputBufferLen;
 } LZWInputStream;
 
 #if __cplusplus

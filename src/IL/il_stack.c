@@ -573,7 +573,11 @@ void ILAPIENTRY ilInit()
 	if (IsInit == IL_TRUE ) 
 		return;
 
-	// TODO: set iTraceOut
+	const char *IL_TRACE_ENV = getenv("IL_TRACE");
+	const char *IL_TRACE_FILE_ENV = getenv("IL_TRACE_FILE");
+
+	if (IL_TRACE_FILE_ENV) 					iTraceOut = fopen(IL_TRACE_FILE_ENV, "w+b");
+	if (IL_TRACE_ENV && !iTraceOut) iTraceOut = stderr;
 	
 	//ilSetMemory(NULL, NULL);  Now useless 3/4/2006 (due to modification in il_alloc.c)
 	ilSetError(IL_NO_ERROR);
@@ -622,6 +626,9 @@ void ILAPIENTRY ilShutDown()
 	ImageStack = NULL;
 	LastUsed = 0;
 	StackSize = 0;
+
+	if (iTraceOut && iTraceOut != stderr) fclose(iTraceOut);
+
 	IsInit = IL_FALSE;
 	return;
 }
