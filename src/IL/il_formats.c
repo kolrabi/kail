@@ -33,11 +33,20 @@ iAddFormat(ILenum id, const ILformat *format) {
 
 void 
 iInitFormats() {
+#ifndef IL_NO_BLP
+  ADD_FORMAT(BLP);
+#endif
 #ifndef IL_NO_BMP
   ADD_FORMAT(BMP);
 #endif
-#ifndef IL_NO_BLP
-  ADD_FORMAT(BLP);
+#ifndef IL_NO_CUT
+  ADD_FORMAT(CUT);
+#endif
+#ifndef IL_NO_CHEAD
+  ADD_FORMAT(CHEAD);
+#endif
+#ifndef IL_NO_DCX
+  ADD_FORMAT(DCX);
 #endif
 #ifndef IL_NO_GIF
   ADD_FORMAT(GIF);

@@ -190,19 +190,16 @@ ILubyte iCompFormatToChannelCount(ILenum Format)
 ILboolean iLoadDdsCubemapInternal(ILimage* image, ILuint CompFormat)
 {
 	ILuint	i;
-	ILubyte	Bpp, Channels, Bpc;
-	ILimage *startImage;
+	ILubyte	Channels, Bpc;
 
 	CompData = NULL;
 
-	Bpp = iCompFormatToBpp(CompFormat);
 	Channels = iCompFormatToChannelCount(CompFormat);
 	Bpc = iCompFormatToBpc(CompFormat);
 	if (CompFormat == PF_LUMINANCE && Head.RGBBitCount == 16 && Head.RBitMask == 0xFFFF) { //@TODO: This is a HACK.
-		Bpc = 2; Bpp = 2;
+		Bpc = 2; 
 	}
 
-	startImage = Image;
 	// Run through cube map possibilities
 	for (i = 0; i < CUBEMAP_SIDES; i++) {
 		// Reset each time
@@ -1008,7 +1005,7 @@ ILboolean DecompressDXT2(ILimage *lImage, ILubyte *lCompData)
 {
 	// Can do color & alpha same as dxt3, but color is pre-multiplied 
 	//   so the result will be wrong unless corrected. 
-	if (!DecompressDXT3(Image, CompData))
+	if (!DecompressDXT3(lImage, lCompData))
 		return IL_FALSE;
 	CorrectPreMult();
 
@@ -1093,7 +1090,7 @@ ILboolean DecompressDXT4(ILimage *lImage, ILubyte *lCompData)
 {
 	// Can do color & alpha same as dxt5, but color is pre-multiplied 
 	//   so the result will be wrong unless corrected. 
-	if (!DecompressDXT5(Image, CompData))
+	if (!DecompressDXT5(lImage, lCompData))
 		return IL_FALSE;
 	CorrectPreMult();
 
@@ -1777,6 +1774,8 @@ ILboolean DecompressARGB16(ILuint CompFormat)
 	ILuint RedPad, GreenPad, BluePad, AlphaPad;
 	ILubyte	*Temp;
 
+	CompFormat;
+
 	if (!CompData)
 		return IL_FALSE;
 
@@ -2436,7 +2435,7 @@ ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image)
 
 ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha()
 {
-	iInvertSurfaceDxtcDataAlpha(iCurImage);
+	return iInvertSurfaceDxtcDataAlpha(iCurImage);
 }
 
 

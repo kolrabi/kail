@@ -579,11 +579,11 @@ void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
 ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 {
 	ILushort	*Data, Block[16], ex0, ex1, *Runner16, t0, t1;
-	ILuint		x, y, z, i, BitMask, DXTCSize;//, Rms1, Rms2;
+	ILuint		x, y, z, i, BitMask;//, Rms1, Rms2;
 	ILubyte		*Alpha, AlphaBlock[16], AlphaBitMask[6], /*AlphaOut[16],*/ a0, a1;
 	ILboolean	HasAlpha;
 	ILuint		Count = 0;
-	ILubyte		*Data3Dc, *Runner8, *ByteData, *BlockData;
+	ILubyte		*Data3Dc, *Runner8;
 
 	if (DXTCFormat == IL_3DC) {
 		Data3Dc = CompressTo88(Image);
@@ -654,6 +654,7 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 	{
 		// We want to try nVidia compression first, because it is the fastest.
 #ifdef IL_USE_DXTC_NVIDIA
+		ILubyte  *ByteData, *BlockData;
 		if (ilIsEnabled(IL_NVIDIA_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
 			if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_DXT3 || DXTCFormat == IL_DXT5) {
 				// NVTT needs data as BGRA 32-bit.
@@ -679,6 +680,9 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 
 		// libsquish generates better quality output than DevIL does, so we try it next.
 #ifdef IL_USE_DXTC_SQUISH
+		ILubyte  *ByteData, *BlockData;
+		ILuint DXTCSize;
+		
 		if (ilIsEnabled(IL_SQUISH_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
 			if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_DXT3 || DXTCFormat == IL_DXT5) {
 				// libsquish needs data as RGBA 32-bit.

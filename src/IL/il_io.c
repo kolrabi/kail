@@ -72,8 +72,6 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 		Type = IL_DDS;
 	else if (!iStrCmp(Ext, IL_TEXT("png")))
 		Type = IL_PNG;
-	else if (!iStrCmp(Ext, IL_TEXT("cut")))
-		Type = IL_CUT;
 	else if (!iStrCmp(Ext, IL_TEXT("dcm")) || !iStrCmp(Ext, IL_TEXT("dicom")))
 		Type = IL_DICOM;
 	else if (!iStrCmp(Ext, IL_TEXT("dpx")))
@@ -678,11 +676,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 	{
 		case IL_TYPE_UNKNOWN:
 			return IL_FALSE;
-
-		#ifndef IL_NO_CUT
-		case IL_CUT:
-			return iLoadCutInternal(image);
-		#endif
 
 		#ifndef IL_NO_ICO
 		case IL_ICO:

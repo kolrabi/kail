@@ -9,6 +9,7 @@ IF                      ( CMAKE_COMPILER_IS_GNUCC )
   SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99" )
   SET                   ( GCC_X86_ASM   TRUE )
   SET                   ( IL_INLINE_ASM TRUE )
+  SET                   ( RESTRICT_KEYWORD TRUE )
 ENDIF                   ()
 
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
@@ -16,7 +17,11 @@ SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 INCLUDE                 ( CheckIncludeFile )
 INCLUDE                 ( CheckTypeSize )
 INCLUDE                 ( CheckLibraryExists )
+INCLUDE                 ( CheckFunctionExists )
 INCLUDE                 ( FindPkgConfig )
+INCLUDE                 ( TestBigEndian )
+INCLUDE                 ( CheckCCompilerFlag )
+INCLUDE                 ( TestBigEndian )
 
 CHECK_INCLUDE_FILE      ( "dlfcn.h"         HAVE_DLFCN_H  )
 CHECK_INCLUDE_FILE      ( "inttypes.h"      HAVE_INTTYPES_H  )
@@ -32,6 +37,18 @@ CHECK_INCLUDE_FILE      ( "sys/type.h"      HAVE_SYS_TYPES_H )
 CHECK_INCLUDE_FILE      ( "unistd.h"        HAVE_UNISTD_H )
 
 CHECK_INCLUDE_FILE      ( "windows.h"       HAVE_WINDOWS_H )
+
+CHECK_FUNCTION_EXISTS   ( memalign          MEMALIGN )
+CHECK_FUNCTION_EXISTS   ( _mm_malloc        MM_MALLOC )
+CHECK_FUNCTION_EXISTS   ( posix_memalign    POSIX_MEMALIGN )
+CHECK_FUNCTION_EXISTS   ( valloc            VALLOC )
+
+CHECK_C_COMPILER_FLAG   ( "-faltivec -maltivec" ALTIVEC_GCC )
+CHECK_C_COMPILER_FLAG   ( "-msse" SSE )
+CHECK_C_COMPILER_FLAG   ( "-msse2" SSE2 )
+CHECK_C_COMPILER_FLAG   ( "-msse3" SSE3 )
+
+TEST_BIG_ENDIAN         ( WORDS_BIGENDIAN )
 
 FIND_PACKAGE            ( OpenGL ) 
 SET                     ( HAVE_GL_GL_H      ${OPENGL_FOUND})

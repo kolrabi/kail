@@ -2,7 +2,7 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2009 by Denton Woods
-// Last modified: 02/26/2009
+// Last modified: 2014-05-21 by Björn Paetzel
 //
 // Filename: src-IL/include/il_dcx.h
 //
@@ -17,9 +17,9 @@
 #include "il_internal.h"
 
 
-#ifdef _WIN32
-#pragma pack(push, packed_struct, 1)
-#endif
+#pragma pack(push)
+#pragma pack(1)
+
 typedef struct DCXHEAD
 {
 	ILubyte		Manufacturer;
@@ -38,15 +38,7 @@ typedef struct DCXHEAD
 	ILushort	VScreenSize;
 	ILubyte		Filler[54];
 } IL_PACKSTRUCT DCXHEAD;
-#ifdef _WIN32
-#pragma pack(pop, packed_struct)
-#endif
 
-// For checking and reading
-ILboolean iIsValidDcx(void);
-ILboolean iCheckDcx(DCXHEAD *Header);
-ILboolean iLoadDcxInternal(void);
-ILimage*  iUncompressDcx(DCXHEAD *Header);
-ILimage*  iUncompressDcxSmall(DCXHEAD *Header);
+#pragma pack(pop)
 
 #endif//PCX_H

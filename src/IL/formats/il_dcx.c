@@ -2,9 +2,9 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2009 by Denton Woods
-// Last modified: 03/07/2009
+// Last modified: 2014-05-21 by Björn Paetzel
 //
-// Filename: src-IL/src/il_dcx.c
+// Filename: src/IL/formats/il_dcx.c
 //
 // Description: Reads from a .dcx file.
 //
@@ -16,90 +16,50 @@
 #include "il_dcx.h"
 #include "il_manip.h"
 
+static ILimage *iUncompressDcx(SIO *io, DCXHEAD *Header);
+static ILimage *iUncompressDcxSmall(SIO *io, DCXHEAD *Header);
 
-//! Checks if the file specified in FileName is a valid .dcx file.
-ILboolean ilIsValidDcx(ILconst_string FileName)
-{
-	ILHANDLE	DcxFile;
-	ILboolean	bDcx = IL_FALSE;
-
-	if (!iCheckExtension(FileName, IL_TEXT("dcx"))) {
-		ilSetError(IL_INVALID_EXTENSION);
-		return bDcx;
-	}
-
-	DcxFile = iCurImage->io.openReadOnly(FileName);
-	if (DcxFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bDcx;
-	}
-
-	bDcx = ilIsValidDcxF(DcxFile);
-	iCurImage->io.close(DcxFile);
-
-	return bDcx;
-}
-
-
-//! Checks if the ILHANDLE contains a valid .dcx file at the current position.
-ILboolean ilIsValidDcxF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = iCurImage->io.tell(iCurImage->io.handle);
-	bRet = iIsValidDcx();
-	iCurImage->io.seek(iCurImage->io.handle, FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Checks if Lump is a valid .dcx lump.
-ILboolean ilIsValidDcxL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidDcx();
-}
-
-
-// Internal function obtain the .dcx header from the current file.
-ILboolean iGetDcxHead(DCXHEAD *Head)
-{
-	Head->Xmin = GetLittleUShort(&iCurImage->io);
-	Head->Ymin = GetLittleUShort(&iCurImage->io);
-	Head->Xmax = GetLittleUShort(&iCurImage->io);
-	Head->Ymax = GetLittleUShort(&iCurImage->io);
-	Head->HDpi = GetLittleUShort(&iCurImage->io);
-	Head->VDpi = GetLittleUShort(&iCurImage->io);
-	Head->Bps = GetLittleUShort(&iCurImage->io);
-	Head->PaletteInfo = GetLittleUShort(&iCurImage->io);
-	Head->HScreenSize = GetLittleUShort(&iCurImage->io);
-	Head->VScreenSize = GetLittleUShort(&iCurImage->io);
-
-	return IL_TRUE;
-}
-
-
-// Internal function to get the header and check it.
-ILboolean iIsValidDcx()
-{
+static ILboolean 
+iIsValidDcx(SIO *io) {
 	ILuint Signature;
 
-	if (iCurImage->io.read(iCurImage->io.handle, &Signature, 1, 4) != 4)
+	ILuint Read = SIOread(io, &Signature, 1, 4);
+	SIOseek(io, -Read, IL_SEEK_CUR);
+
+	if (Read != 4)
 		return IL_FALSE;
-	iCurImage->io.seek(iCurImage->io.handle, -4, IL_SEEK_CUR);
+
+	UInt(Signature);
 
 	return (Signature == 987654321);
 }
 
+// Internal function obtain the .dcx header from the current file.
+static ILboolean 
+iGetDcxHead(SIO *io, DCXHEAD *Head) {
+	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
+		return IL_FALSE;
 
+	UShort(Head->Xmin);
+	UShort(Head->Ymin);
+	UShort(Head->Xmax);
+	UShort(Head->Ymax);
+	UShort(Head->HDpi);
+	UShort(Head->VDpi);
+	UShort(Head->Bps);
+	UShort(Head->PaletteInfo);
+	UShort(Head->HScreenSize);
+	UShort(Head->VScreenSize);
+
+	return IL_TRUE;
+}
+
+#if 0 // seems unused
 // Internal function used to check if the HEADER is a valid .dcx header.
 // Should we also do a check on Header->Bpp?
-ILboolean iCheckDcx(DCXHEAD *Header)
-{
-	ILuint	Test, i;
+static ILboolean 
+iCheckDcx(DCXHEAD *Header) {
+	ILuint	i;
 
 	// There are other versions, but I am not supporting them as of yet.
 	//	Got rid of the Reserved check, because I've seen some .dcx files with invalid values in it.
@@ -107,7 +67,7 @@ ILboolean iCheckDcx(DCXHEAD *Header)
 		return IL_FALSE;
 
 	// See if the padding size is correct
-	Test = Header->Xmax - Header->Xmin + 1;
+	//ILuint Test = Header->Xmax - Header->Xmin + 1;
 	/*if (Header->Bpp >= 8) {
 		if (Test & 1) {
 			if (Header->Bps != Test + 1)
@@ -127,91 +87,58 @@ ILboolean iCheckDcx(DCXHEAD *Header)
 	return IL_TRUE;
 }
 
-
-//! Reads a .dcx file
-ILboolean ilLoadDcx(ILconst_string FileName)
-{
-	ILHANDLE	DcxFile;
-	ILboolean	bDcx = IL_FALSE;
-
-	DcxFile = iCurImage->io.openReadOnly(FileName);
-	if (DcxFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bDcx;
-	}
-
-	bDcx = ilLoadDcxF(DcxFile);
-	iCurImage->io.close(DcxFile);
-
-	return bDcx;
-}
-
-
-//! Reads an already-opened .dcx file
-ILboolean ilLoadDcxF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = iCurImage->io.tell(iCurImage->io.handle);
-	bRet = iLoadDcxInternal();
-	iCurImage->io.seek(iCurImage->io.handle, FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Reads from a memory "lump" that contains a .dcx
-ILboolean ilLoadDcxL(const void *Lump, ILuint Size) {
-	iSetInputLump(Lump, Size);
-	return iLoadDcxInternal();
-}
-
+#endif
 
 // Internal function used to load the .dcx.
-ILboolean iLoadDcxInternal()
+static ILboolean
+iLoadDcxInternal(ILimage *TargetImage)
 {
 	DCXHEAD	Header;
 	ILuint	Signature, i, Entries[1024], Num = 0;
-	ILimage	*Image, *Base;
+	ILimage	*Prev = TargetImage;
+	ILimage *Image = TargetImage;
 
-	if (iCurImage == NULL) {
+	if (TargetImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	if (!iIsValidDcx())
+	SIO *io = &TargetImage->io;
+
+	if (!iIsValidDcx(io))
 		return IL_FALSE;
-	iCurImage->io.read(iCurImage->io.handle, &Signature, 1, 4);
+
+	SIOread(io, &Signature, 1, 4);
 
 	do {
-		if (iCurImage->io.read(iCurImage->io.handle, &Entries[Num], 1, 4) != 4)
+		if (SIOread(io, &Entries[Num], 1, 4) != 4)
 			return IL_FALSE;
+		UShort(Entries[Num]);
 		Num++;
 	} while (Entries[Num-1] != 0);
 
 	for (i = 0; i < Num; i++) {
-		iCurImage->io.seek(iCurImage->io.handle, Entries[i], IL_SEEK_SET);
-		iGetDcxHead(&Header);
+		SIOseek(io, Entries[i], IL_SEEK_SET);
+		iGetDcxHead(io, &Header);
 		/*if (!iCheckDcx(&Header)) {
 			ilSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}*/
 
-		Image = iUncompressDcx(&Header);
+		Image = iUncompressDcx(io, &Header);
 		if (Image == NULL)
 			return IL_FALSE;
 
 		if (i == 0) {
 			ilTexImage(Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
-			Base = iCurImage;
-			Base->Origin = IL_ORIGIN_UPPER_LEFT;
+			Prev = TargetImage;
+			Prev->Origin = IL_ORIGIN_UPPER_LEFT;
 			ilCloseImage(Image);
 		}
 		else {
-			iCurImage->Next = Image;
-			iCurImage = iCurImage->Next;
+			Prev->Next = Image;
+			Prev = Prev->Next;
+			iCurImage = Image;
 		}
 	}
 
@@ -220,8 +147,8 @@ ILboolean iLoadDcxInternal()
 
 
 // Internal function to uncompress the .dcx (all .dcx files are rle compressed)
-ILimage *iUncompressDcx(DCXHEAD *Header)
-{
+static ILimage *
+iUncompressDcx(SIO *io, DCXHEAD *Header) {
 	ILubyte		ByteHead, Colour, *ScanLine = NULL /* Only one plane */;
 	ILuint		c, i, x, y;//, Read = 0;
 	ILimage		*Image = NULL;
@@ -229,7 +156,7 @@ ILimage *iUncompressDcx(DCXHEAD *Header)
 	if (Header->Bpp < 8) {
 		/*ilSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;*/
-		return iUncompressDcxSmall(Header);
+		return iUncompressDcxSmall(io, Header);
 	}
 
 	Image = ilNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
@@ -274,9 +201,9 @@ ILimage *iUncompressDcx(DCXHEAD *Header)
 	}
 
 
-		/*StartPos = iCurImage->io.tell(iCurImage->io.handle);
+		/*StartPos = SIO_tell(io);
 		Compressed = (ILubyte*)ialloc(Image->SizeOfData * 4 / 3);
-		iCurImage->io.read(iCurImage->io.handle, Compressed, 1, Image->SizeOfData * 4 / 3);
+		SIOread(io, Compressed, 1, Image->SizeOfData * 4 / 3);
 
 		for (y = 0; y < Image->Height; y++) {
 			for (c = 0; c < Image->Bpp; c++) {
@@ -302,7 +229,7 @@ ILimage *iUncompressDcx(DCXHEAD *Header)
 		}
 
 		ifree(Compressed);
-		iCurImage->io.seek(iCurImage->io.handle, StartPos + Read, IL_SEEK_SET);*/
+		SIOseek(io, StartPos + Read, IL_SEEK_SET);*/
 
 	//TODO: because the .pcx-code was broken this
 	//code is probably broken, too
@@ -310,12 +237,12 @@ ILimage *iUncompressDcx(DCXHEAD *Header)
 		for (c = 0; c < Image->Bpp; c++) {
 			x = 0;
 			while (x < Header->Bps) {
-				if (iCurImage->io.read(iCurImage->io.handle, &ByteHead, 1, 1) != 1) {
+				if (SIOread(io, &ByteHead, 1, 1) != 1) {
 					goto dcx_error;
 				}
 				if ((ByteHead & 0xC0) == 0xC0) {
 					ByteHead &= 0x3F;
-					if (iCurImage->io.read(iCurImage->io.handle, &Colour, 1, 1) != 1) {
+					if (SIOread(io, &Colour, 1, 1) != 1) {
 						goto dcx_error;
 					}
 					for (i = 0; i < ByteHead; i++) {
@@ -337,11 +264,11 @@ ILimage *iUncompressDcx(DCXHEAD *Header)
 
 	// Read in the palette
 	if (Image->Bpp == 1) {
-		ByteHead = iCurImage->io.getchar(iCurImage->io.handle);	// the value 12, because it signals there's a palette for some reason...
+		ByteHead = SIOgetc(io);	// the value 12, because it signals there's a palette for some reason...
 							//	We should do a check to make certain it's 12...
 		if (ByteHead != 12)
-			iCurImage->io.seek(iCurImage->io.handle, -1, IL_SEEK_CUR);
-		if (iCurImage->io.read(iCurImage->io.handle, Image->Pal.Palette, 1, Image->Pal.PalSize) != Image->Pal.PalSize) {
+			SIOseek(io, -1, IL_SEEK_CUR);
+		if (SIOread(io, Image->Pal.Palette, 1, Image->Pal.PalSize) != Image->Pal.PalSize) {
 			ilCloseImage(Image);
 			return NULL;
 		}
@@ -356,8 +283,8 @@ dcx_error:
 }
 
 
-ILimage *iUncompressDcxSmall(DCXHEAD *Header)
-{
+static ILimage *
+iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 	ILuint	i = 0, j, k, c, d, x, y, Bps;
 	ILubyte	HeadByte, Colour, Data = 0, *ScanLine = NULL;
 	ILimage	*Image;
@@ -389,11 +316,11 @@ ILimage *iUncompressDcxSmall(DCXHEAD *Header)
 		for (j = 0; j < Image->Height; j++) {
 			i = 0;
 			while (i < Image->Width) {
-				if (iCurImage->io.read(iCurImage->io.handle, &HeadByte, 1, 1) != 1)
+				if (SIOread(io, &HeadByte, 1, 1) != 1)
 					goto file_read_error;
 				if (HeadByte >= 192) {
 					HeadByte -= 192;
-					if (iCurImage->io.read(iCurImage->io.handle, &Data, 1, 1) != 1)
+					if (SIOread(io, &Data, 1, 1) != 1)
 						goto file_read_error;
 
 					for (c = 0; c < HeadByte; c++) {
@@ -413,7 +340,7 @@ ILimage *iUncompressDcxSmall(DCXHEAD *Header)
 				}
 			}
 			if (Data != 0)
-				iCurImage->io.getchar(iCurImage->io.handle);  // Skip pad byte if last byte not a 0
+				SIOgetc(io);  // Skip pad byte if last byte not a 0
 		}
 	}
 	else {   // 4-bit images
@@ -435,11 +362,11 @@ ILimage *iUncompressDcxSmall(DCXHEAD *Header)
 			for (c = 0; c < Header->NumPlanes; c++) {
 				x = 0;
 				while (x < Bps) {
-					if (iCurImage->io.read(iCurImage->io.handle, &HeadByte, 1, 1) != 1)
+					if (SIOread(io, &HeadByte, 1, 1) != 1)
 						goto file_read_error;
 					if ((HeadByte & 0xC0) == 0xC0) {
 						HeadByte &= 0x3F;
-						if (iCurImage->io.read(iCurImage->io.handle, &Colour, 1, 1) != 1)
+						if (SIOread(io, &Colour, 1, 1) != 1)
 							goto file_read_error;
 						for (i = 0; i < HeadByte; i++) {
 							k = 128;
@@ -473,5 +400,17 @@ file_read_error:
 	ilCloseImage(Image);
 	return NULL;
 }
+
+ILconst_string iFormatExtsDCX[] = { 
+	IL_TEXT("dcx"), 
+	NULL 
+};
+
+ILformat iFormatDCX = { 
+	.Validate = iIsValidDcx, 
+	.Load     = iLoadDcxInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsDCX
+};
 
 #endif//IL_NO_DCX

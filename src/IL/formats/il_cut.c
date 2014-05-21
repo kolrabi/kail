@@ -2,7 +2,7 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2008 by Denton Woods
-// Last modified: 10/10/2006
+// Last modified: 2014-05-21 by Björn Paetzel
 //
 // Filename: src-IL/src/il_cut.c
 //
@@ -65,16 +65,16 @@ ILboolean isValidCutHeader(const CUT_HEAD* header)
 }
 
 // Simple check if the file header is plausible
-ILboolean iIsValidCut(SIO* io)
-{
+static ILboolean 
+iIsValidCut(SIO* io) {
 	if (io == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	CUT_HEAD	header;
-	io->read(io->handle, &header, 1, sizeof(CUT_HEAD));
-	return isValidCutHeader(&header);
+	return SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD)
+	    && isValidCutHeader(&header);
 }
 
 ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y)
@@ -116,16 +116,19 @@ ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y
 	return errorOccurred;
 }
 
-ILboolean iLoadCutInternal(ILimage* image)
-{
+static ILboolean 
+iLoadCutInternal(ILimage* image) {
 	if (image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
+	SIO *io = &image->io;
 	CUT_HEAD	Header;
-	image->io.read(image->io.handle, &Header, 1, sizeof(Header));
-	if (Header.Width == 0 || Header.Height == 0) {
+
+	if ( SIOread(io, &Header, 1, sizeof(Header)) != sizeof(Header) 
+	  || Header.Width == 0 
+	  || Header.Height == 0) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
@@ -141,9 +144,9 @@ ILboolean iLoadCutInternal(ILimage* image)
 
 	while (!done) {
 		ILushort chunkSize;
-		auto read = image->io.read(image->io.handle, &chunkSize, 1, sizeof(chunkSize));
+		ILuint read = SIOread(&image->io, &chunkSize, 1, sizeof(chunkSize));
 		if (read == sizeof(chunkSize)) {
-			if (image->io.read(image->io.handle, chunk, 1, chunkSize) == chunkSize) {
+			if (SIOread(&image->io, chunk, 1, chunkSize) == chunkSize) {
 				done = readScanLine(image, chunk, chunkSize, y);
 				++y;
 			} else 
@@ -170,5 +173,16 @@ ILboolean iLoadCutInternal(ILimage* image)
 	return ilFixImage();
 }
 
+ILconst_string iFormatExtsCUT[] = { 
+	IL_TEXT("cut"), 
+	NULL 
+};
+
+ILformat iFormatCUT = { 
+	.Validate = iIsValidCut, 
+	.Load     = iLoadCutInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsCUT
+};
 
 #endif//IL_NO_CUT

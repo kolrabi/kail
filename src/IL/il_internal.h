@@ -206,14 +206,16 @@ char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 
 // ILboolean ilSaveCHeader(ILimage* image, char *InternalName);
 
-ILboolean iLoadCutInternal(ILimage* image);
+// ILboolean iLoadCutInternal(ILimage* image);
 
+/*
 ILboolean ilIsValidDcx(ILconst_string FileName);
 ILboolean ilIsValidDcxF(ILHANDLE File);
 ILboolean ilIsValidDcxL(const void *Lump, ILuint Size);
 ILboolean ilLoadDcx(ILconst_string FileName);
 ILboolean ilLoadDcxF(ILHANDLE File);
 ILboolean ilLoadDcxL(const void *Lump, ILuint Size);
+*/
 
 ILboolean iIsValidDds(SIO* io);
 ILboolean iLoadDdsInternal(ILimage* image);
