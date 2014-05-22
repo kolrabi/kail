@@ -90,7 +90,7 @@ SET                     ( SOURCES
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/formats )
 
-IF                      ( IL_STATIC )
+IF                      ( IL_STATIC_LIB )
   SET                   ( SOURCES STATIC ${SOURCES} )
 ELSE                    ( )
   SET                   ( SOURCES SHARED ${SOURCES} )

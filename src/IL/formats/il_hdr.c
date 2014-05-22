@@ -13,7 +13,6 @@
 
 #include "il_internal.h"
 #ifndef IL_NO_HDR
-#include "il_hdr.h"
 #include "il_endian.h"
 #include <string.h>
 
@@ -36,14 +35,12 @@ const char* strnstr(const char* bigstr, const char* substr, size_t max)
 	return NULL;
 }
 
-ILboolean iIsValidHdr(SIO* io)
+static ILboolean iIsValidHdr(SIO* io)
 {
-	char header[512];
-	auto	read = io->read(io->handle, header, 1, sizeof(header));
-	if (strcmp(header, "#?RADIANCE") == 0)
-		return IL_TRUE;
-	else
-		return IL_FALSE;
+	char header[10];
+	ILuint read = SIOread(io, header, 1, sizeof(header));
+	SIOseek(io, -read, IL_SEEK_CUR);
+	return read == 10 && memcmp(header, "#?RADIANCE", 10) == 0;
 }
 
 void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
@@ -136,7 +133,7 @@ void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 
 
 // Internal function used to load the .hdr.
-ILboolean iLoadHdrInternal(ILimage* image)
+static ILboolean iLoadHdrInternal(ILimage* image)
 {
 	ILfloat *data;
 	ILubyte *scanline;
@@ -373,7 +370,7 @@ ILboolean RGBE_WriteBytes_RLE(ILimage* image, ILubyte *data, ILuint numbytes)
 
 
 // Internal function used to save the Hdr.
-ILboolean iSaveHdrInternal(ILimage* image)
+static ILboolean iSaveHdrInternal(ILimage* image)
 {
 	ILimage *TempImage;
 	rgbe_header_info stHeader;
@@ -462,5 +459,16 @@ ILboolean iSaveHdrInternal(ILimage* image)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsHDR[] = { 
+	IL_TEXT("hdr"), 
+	NULL 
+};
+
+ILformat iFormatHDR = { 
+	.Validate = iIsValidHdr, 
+	.Load     = iLoadHdrInternal, 
+	.Save     = iSaveHdrInternal, 
+	.Exts     = iFormatExtsHDR
+};
 
 #endif//IL_NO_HDR

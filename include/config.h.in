@@ -97,6 +97,8 @@
    examples/tests) */
 #cmakedefine ILU_ENABLED 1
 
+#cmakedefine IL_STATIC_LIB 1
+
 // Formats
 
 /* blp support (BLP is the texture format for Blizzard games.) */
@@ -116,8 +118,7 @@
    used extensively in medical imaging.) */
 #cmakedefine IL_NO_DICOM
 
-// #cmakedefine IL_NO_DOOM 1
-#define IL_NO_DOOM // broken
+#cmakedefine IL_NO_DOOM 1
 
 /* exr support (EXR is a HDR image file format standardized by Industrial
    Light and Magic. OpenEXR powered) */
@@ -127,7 +128,7 @@
    scientific images and is used extensively in astronomy.) */
 #cmakedefine IL_NO_FITS
 
-#define IL_NO_FTX // broken
+#cmakedefine IL_NO_FTX
 
 /* gif support (GIF is lossy and proprietary format used mainly to make
    animations) */

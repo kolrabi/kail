@@ -16,9 +16,8 @@
 
 #include "il_internal.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, packed_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct PSDHEAD
 {
 	ILubyte		Signature[4];
@@ -29,11 +28,9 @@ typedef struct PSDHEAD
 	ILuint		Width;
 	ILushort	Depth;
 	ILushort	Mode;
-} IL_PACKSTRUCT PSDHEAD;
+} PSDHEAD;
 
-#ifdef _MSC_VER
-#pragma pack(pop,  packed_struct)
-#endif
+#include "pack_pop.h"
 
 ILushort	ChannelNum;
 

@@ -24,13 +24,24 @@
 #include <dos.h>
 #endif
 
+// Internal functions
+ILboolean	iCheckTarga(TARGAHEAD *Header);
+static ILboolean	iLoadTargaInternal(ILimage* image);
+static ILboolean	iSaveTargaInternal(ILimage* image);
+ILboolean	iReadBwTga(ILimage* image, TARGAHEAD *Header);
+ILboolean	iReadColMapTga(ILimage* image, TARGAHEAD *Header);
+ILboolean	iReadUnmapTga(ILimage* image, TARGAHEAD *Header);
+ILboolean	iUncompressTgaData(ILimage *Image);
+ILboolean	i16BitTarga(ILimage *Image);
+void		iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec);
+
 ILint iGetTgaHead(SIO* io, TARGAHEAD *Header)
 {
 	return io->read(io->handle, Header, 1, sizeof(TARGAHEAD));
 }
 
 // Internal function to get the header and check it.
-ILboolean iIsValidTarga(SIO* io)
+static ILboolean iIsValidTarga(SIO* io)
 {
 	TARGAHEAD	Head;
 	auto read = iGetTgaHead(io, &Head);
@@ -73,7 +84,7 @@ ILboolean iCheckTarga(TARGAHEAD *Header)
 
 
 // Internal function used to load the Targa.
-ILboolean iLoadTargaInternal(ILimage* image)
+static ILboolean iLoadTargaInternal(ILimage* image)
 {
 	TARGAHEAD	Header;
 	ILboolean	bTarga;
@@ -429,7 +440,7 @@ ILboolean i16BitTarga(ILimage *image)
 
 // Internal function used to save the Targa.
 // @todo: write header in one read() call
-ILboolean iSaveTargaInternal(ILimage* image)
+static ILboolean iSaveTargaInternal(ILimage* image)
 {
 	const char	*ID = iGetString(IL_TGA_ID_STRING);
 	const char	*AuthName = iGetString(IL_TGA_AUTHNAME_STRING);
@@ -721,5 +732,16 @@ void iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Mi
 #endif
 }
 
+ILconst_string iFormatExtsTGA[] = { 
+	IL_TEXT("tga"), 
+	NULL 
+};
+
+ILformat iFormatTGA = { 
+	.Validate = iIsValidTarga, 
+	.Load     = iLoadTargaInternal, 
+	.Save     = iSaveTargaInternal, 
+	.Exts     = iFormatExtsTGA
+};
 
 #endif//IL_NO_TGA

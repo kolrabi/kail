@@ -70,16 +70,8 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 		Type = IL_JP2;
 	else if (!iStrCmp(Ext, IL_TEXT("png")))
 		Type = IL_PNG;
-	else if (!iStrCmp(Ext, IL_TEXT("dpx")))
-		Type = IL_DPX;
 	else if (!iStrCmp(Ext, IL_TEXT("exr")))
 		Type = IL_EXR;
-	else if (!iStrCmp(Ext, IL_TEXT("fit")) || !iStrCmp(Ext, IL_TEXT("fits")))
-		Type = IL_FITS;
-	else if (!iStrCmp(Ext, IL_TEXT("ftx")))
-		Type = IL_FTX;
-	else if (!iStrCmp(Ext, IL_TEXT("hdr")))
-		Type = IL_HDR;
 	else if (!iStrCmp(Ext, IL_TEXT("iff")))
 		Type = IL_IFF;
 	else if (!iStrCmp(Ext, IL_TEXT("ilbm")) || !iStrCmp(Ext, IL_TEXT("lbm")) ||
@@ -201,10 +193,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				return IL_PCX;
 			break;
 		#endif
-		case '#':
-			if (buf[1] == '?' && buf[2] == 'R')
-				return IL_HDR;
-			break;
 		case '8':
 			if (buf[1] == 'B' && buf[2] == 'P' && buf[3] == 'S')
 				#ifndef IL_NO_PSD
@@ -234,12 +222,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 					return IL_PNM; // il_pnm's test doesn't add anything here
 			}
 			break;
-		case 'S':
-			if (!strnicmp((const char*) buf, "SDPX", 4))
-				return IL_DPX;
-			if (!strnicmp((const char*) buf, "SIMPLE", 6))
-				return IL_FITS;
-			break;
 		case 'V':
 			if (buf[1] == 'T' && buf[2] == 'F')
 				#ifndef IL_NO_VTF
@@ -248,10 +230,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				#else
 				return IL_VTF;
 				#endif
-			break;
-		case 'X':
-			if (!strnicmp((const char*) buf, "XDPX", 4))
-				return IL_DPX;
 			break;
 		case 0x59:
 			if (buf[1] == 0xA6 && buf[2] == 0x6A && buf[3] == 0x95)
@@ -292,16 +270,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 			if (buf[1] == 0xd8)
 				return IL_JPG;
 			break;
-	}
-
-	if (read >= 131) {
-		if (buf[128] == 'D' 
-		&&  buf[129] == 'I' 
-		&&  buf[130] == 'C' 
-		&&  buf[131] == 'M')
-		{
-			return IL_DICOM;
-		}
 	}
 
 	#ifndef IL_NO_ICNS
@@ -366,13 +334,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 		return IL_ICO;
 	#endif
 
-	//moved tga to end of list because it has no magic number
-	//in header to assure that this is really a tga... (20040218)
-	#ifndef IL_NO_TGA
-	if (iIsValidTarga(&iCurImage->io))
-		return IL_TGA;
-	#endif
-
 	return iIdentifyFormat(&iCurImage->io);
 }
 
@@ -397,11 +358,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 
 	switch (Type)
 	{
-		#ifndef IL_NO_TGA
-		case IL_TGA:
-			return iIsValidTarga(io);
-		#endif
-
 		#ifndef IL_NO_JPG
 		case IL_JPG:
 			return iIsValidJpeg(io);
@@ -415,11 +371,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return ilIsValidExr(io);
-		#endif
-
-		#ifndef IL_NO_HDR
-		case IL_HDR:
-			return iIsValidHdr(io);
 		#endif
 
 		#ifndef IL_NO_ICNS
@@ -683,11 +634,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadSgiInternal();
 		#endif
 
-		#ifndef IL_NO_TGA
-		case IL_TGA:
-			return iLoadTargaInternal(image);
-		#endif
-
 		#ifndef IL_NO_RAW
 		case IL_RAW:
 			return iLoadRawInternal();
@@ -729,11 +675,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadXpmInternal();
 		#endif
 
-		#ifndef IL_NO_HDR
-		case IL_HDR:
-			return iLoadHdrInternal(image);
-		#endif
-
 		#ifndef IL_NO_ICNS
 		case IL_ICNS:
 			return iLoadIcnsInternal(image);
@@ -759,18 +700,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadIffInternal();
 		#endif
 
-		#ifndef IL_NO_FITS
-		case IL_FITS:
-			return iLoadFitsInternal(image);
-		#endif
-
-		#ifndef IL_NO_DOOM
-		case IL_DOOM:
-			return iLoadDoomInternal();
-		case IL_DOOM_FLAT:
-			return iLoadDoomFlatInternal();
-		#endif
-
 		#ifndef IL_NO_TEXTURE
 		case IL_TEXTURE:
 			//return ilLoadTextureF(File);
@@ -780,19 +709,9 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return ilLoadFuncs2(image, IL_DDS);
 		#endif
 
-		#ifndef IL_NO_DPX
-		case IL_DPX:
-			return iLoadDpxInternal(image);
-		#endif
-
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return iLoadExrInternal();
-		#endif
-
-		#ifndef IL_NO_FTX
-		case IL_FTX:
-			return iLoadFtxInternal();
 		#endif
 
 		#ifndef IL_NO_IWI
@@ -945,12 +864,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		break;
 	#endif
 
-	#ifndef IL_NO_TGA
-	case IL_TGA:
-		bRet = iSaveTargaInternal(image);
-		break;
-	#endif
-
 	#ifndef IL_NO_RAW
 	case IL_RAW:
 		bRet = iSaveRawInternal();
@@ -966,12 +879,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 	#ifndef IL_NO_PSD
 	case IL_PSD:
 		bRet = iSavePsdInternal(image);
-		break;
-	#endif
-
-	#ifndef IL_NO_HDR
-	case IL_HDR:
-		bRet = iSaveHdrInternal(image);
 		break;
 	#endif
 

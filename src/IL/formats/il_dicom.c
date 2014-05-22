@@ -216,22 +216,12 @@ ILboolean iCheckDicom(DICOMHEAD *Header)
 // Internal function to get the header and check it.
 static ILboolean iIsValidDicom(SIO* io)
 {
-	DICOMHEAD	Header;
-	ILuint		Pos = io->tell(io->handle);
+	char Sig[4];
 
-	// Clear the header to all 0s to make checks later easier.
-	memset(&Header, 0, sizeof(DICOMHEAD));
-	ILboolean gotHeader = iGetDicomHead(io, &Header);
-
-	// The length of the header varies, so we just go back to the original position.
-	io->seek(io->handle, Pos, IL_SEEK_CUR);
-
-	if (gotHeader)
-		return iCheckDicom(&Header);
-	else
-		return IL_FALSE;
+	ILuint Read = SIOread(io, Sig, 1, 4);
+	SIOseek(io, -Read, IL_SEEK_CUR);
+	return Read == 4 && memcmp(Sig, "DICM", 4) == 0;
 }
-
 
 ILboolean SkipElement(DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum)
 {
@@ -280,10 +270,11 @@ ILuint GetGroupNum(DICOMHEAD *Header)
 		return GroupNum;
 	}
 	// Now we have to swizzle it if it is not 0x02.
-	if (Header->BigEndian)
+	if (Header->BigEndian){
 		BigUShort(&GroupNum);
-	else
+	}	else{
 		UShort(&GroupNum);
+	}
 
 	return GroupNum;
 }
@@ -300,10 +291,11 @@ ILuint GetShort(DICOMHEAD *Header, ILushort GroupNum)
 		return Num;
 	}
 	// Now we have to swizzle it if it is not 0x02.
-	if (Header->BigEndian)
+	if (Header->BigEndian){
 		BigUShort(&Num);
-	else
+	}	else {
 		UShort(&Num);
+	}
 
 	return Num;
 }
@@ -320,10 +312,11 @@ ILuint GetInt(DICOMHEAD *Header, ILushort GroupNum)
 		return Num;
 	}
 	// Now we have to swizzle it if it is not 0x02.
-	if (Header->BigEndian)
+	if (Header->BigEndian) {
 		BigUInt(&Num);
-	else
+	}	else {
 		UInt(&Num);
+	}
 
 	return Num;
 }
@@ -340,10 +333,11 @@ ILfloat GetFloat(DICOMHEAD *Header, ILushort GroupNum)
 		return Num;
 	}
 	// Now we have to swizzle it if it is not 0x02.
-	if (Header->BigEndian)
+	if (Header->BigEndian) {
 		BigFloat(&Num);
-	else
+	} else {
 		Float(&Num);
+	}
 
 	return Num;
 }

@@ -682,14 +682,12 @@ GifLoad(
 
 				// just read next byte and hope for the best
 				if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
-					iTrace("---- EOF", ID);
 					return Ctx->Frame > 0;
 				}
 		}
 
 		// try to read next block id
 		if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
-			iTrace("---- EOF", ID);
 			break;
 		}
 		iTrace("---- Block ID %02x @ %08x", ID, SIOtell(&Ctx->Target->io)-1);

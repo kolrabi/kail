@@ -33,7 +33,7 @@ ILAPI void ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size,
 }
 
 // Just created for internal use.
-ILubyte* iFlipNewBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num)
+static ILubyte* iFlipNewBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num)
 {
 	ILubyte *data;
 	ILubyte *s1, *s2;

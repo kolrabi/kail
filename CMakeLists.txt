@@ -72,7 +72,7 @@ CHECK_INCLUDE_FILE      ( "d3d8.h"          HAVE_D3D8_H )
 FIND_PACKAGE            ( SDL )
 FIND_PACKAGE            ( X11 )
 
-OPTION                  ( IL_STATIC              "Build static libraries"         FALSE )
+OPTION                  ( IL_STATIC_LIB          "Build static libraries"         FALSE )
 OPTION                  ( ILU_ENABLED            "Build ILU"                      TRUE )
 
 OPTION                  ( ILUT_USE_ALLEGRO       "Enable support for Allegro"     ${ALLEGRO_FOUND} )
@@ -180,8 +180,8 @@ IF                      ( NOT IL_NO_LCMS )
   ENDIF                 ()
 ENDIF                   ()
 
-CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/config.h.in ${CMAKE_BINARY_DIR}/config.h )
-CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/ilut_config.h.in ${CMAKE_BINARY_DIR}/ilut_config.h )
+CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/config.h.in ${CMAKE_BINARY_DIR}/IL/config.h )
+CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/ilut_config.h.in ${CMAKE_BINARY_DIR}/IL/ilut_config.h )
 ADD_DEFINITIONS         ( -DHAVE_CONFIG_H ) 
 
 INCLUDE_DIRECTORIES     ( ${CMAKE_BINARY_DIR} )
@@ -192,8 +192,8 @@ ADD_SUBDIRECTORY        ( src/ILU )
 ADD_SUBDIRECTORY        ( src/ILUT )
 ADD_SUBDIRECTORY        ( include )
 
-INSTALL                 ( FILES       ${CMAKE_BINARY_DIR}/config.h
-                                      ${CMAKE_BINARY_DIR}/ilut_config.h
+INSTALL                 ( FILES       ${CMAKE_BINARY_DIR}/IL/config.h
+                                      ${CMAKE_BINARY_DIR}/IL/ilut_config.h
                           DESTINATION include/IL
                         )
 

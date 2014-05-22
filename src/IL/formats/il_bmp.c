@@ -134,18 +134,11 @@ ILboolean iCheckOS2 (const OS2_HEAD * CONST_RESTRICT Header)
 // Internal function to get the header and check it.
 static ILboolean iIsValidBmp(SIO* io)
 {
-	BMPHEAD		Head;
-	OS2_HEAD	Os2Head;
-	ILboolean	IsValid;
+	char Sig[2];
 
-	iGetBmpHead(io, &Head);
-
-	IsValid = iCheckBmp(&Head);
-	if (!IsValid) {
-		iGetOS2Head(io, &Os2Head);
-		IsValid = iCheckOS2(&Os2Head);
-	}
-	return IsValid;
+	ILuint Read = SIOread(io, Sig, 1, 2);
+	SIOseek(io, -Read, IL_SEEK_CUR);
+	return Read == 2 && memcmp(Sig, "BM", 2) == 0;
 }
 
 
@@ -181,7 +174,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 	ILubyte	ByteData;
 
 	if (Header->cBitCount == 1) {
-		if (!ilTexImage(Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 		image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -220,7 +213,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 	}
 
 	if (Header->cBitCount == 4) {
-		if (!ilTexImage(Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 		image->Origin = IL_ORIGIN_LOWER_LEFT;

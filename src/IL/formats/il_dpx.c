@@ -2,9 +2,9 @@
 //
 // ImageLib Sources
 // Copyright (C) 2000-2009 by Denton Woods
-// Last modified: 02/26/2009
+// Last modified: 2014-05-22 by Björn Paetzel
 //
-// Filename: src-IL/src/il_dpx.c
+// Filename: src/IL/formats/il_dpx.c
 //
 // Description: Reads from a Digital Picture Exchange (.dpx) file.
 //				Specifications for this format were	found at
@@ -18,129 +18,143 @@
 #include "il_dpx.h"
 #include "il_bits.h"
 
-
-ILboolean DpxGetFileInfo(DPX_FILE_INFO *FileInfo)
-{
-	//if (iCurImage->io.read(iCurImage->io.handle, FileInfo, 768, 1) != 1)
-	//	return IL_FALSE;
-
-	FileInfo->MagicNum = GetBigUInt(&iCurImage->io);
-	FileInfo->Offset = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, FileInfo->Vers, 8, 1);
-	FileInfo->FileSize = GetBigUInt(&iCurImage->io);
-	FileInfo->DittoKey = GetBigUInt(&iCurImage->io);
-	FileInfo->GenHdrSize = GetBigUInt(&iCurImage->io);
-	FileInfo->IndHdrSize = GetBigUInt(&iCurImage->io);
-	FileInfo->UserDataSize = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, FileInfo->FileName, 100, 1);
-	iCurImage->io.read(iCurImage->io.handle, FileInfo->CreateTime, 24, 1);
-	iCurImage->io.read(iCurImage->io.handle, FileInfo->Creator, 100, 1);
-	iCurImage->io.read(iCurImage->io.handle, FileInfo->Project, 200, 1);
-	if (iCurImage->io.read(iCurImage->io.handle, FileInfo->Copyright, 200, 1) != 1)
-		return IL_FALSE;
-	FileInfo->Key = GetBigUInt(&iCurImage->io);
-	iCurImage->io.seek(iCurImage->io.handle, 104, IL_SEEK_CUR);  // Skip reserved section.
-
-	return IL_TRUE;
-}
-
-
-ILboolean GetImageElement(DPX_IMAGE_ELEMENT *ImageElement)
-{
-	ImageElement->DataSign = GetBigUInt(&iCurImage->io);
-	ImageElement->RefLowData = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, &ImageElement->RefLowQuantity, 1, 4);
-	ImageElement->RefHighData = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, &ImageElement->RefHighQuantity, 1, 4);
-	ImageElement->Descriptor = iCurImage->io.getchar(iCurImage->io.handle);
-	ImageElement->Transfer = iCurImage->io.getchar(iCurImage->io.handle);
-	ImageElement->Colorimetric = iCurImage->io.getchar(iCurImage->io.handle);
-	ImageElement->BitSize = iCurImage->io.getchar(iCurImage->io.handle);
-	ImageElement->Packing = GetBigUShort(&iCurImage->io);
-	ImageElement->Encoding = GetBigUShort(&iCurImage->io);
-	ImageElement->DataOffset = GetBigUInt(&iCurImage->io);
-	ImageElement->EolPadding = GetBigUInt(&iCurImage->io);
-	ImageElement->EoImagePadding = GetBigUInt(&iCurImage->io);
-	if (iCurImage->io.read(iCurImage->io.handle, ImageElement->Description, 32, 1) != 1)
+static ILboolean 
+DpxGetFileInfo(SIO *io, DPX_FILE_INFO *FileInfo) {
+	if (SIOread(io, FileInfo, 1, sizeof(*FileInfo)) != sizeof(*FileInfo))
 		return IL_FALSE;
 
-	return IL_TRUE;
-}
-
-
-ILboolean DpxGetImageInfo(DPX_IMAGE_INFO *ImageInfo)
-{
-	ILuint i;
-
-	//if (iCurImage->io.read(iCurImage->io.handle, ImageInfo, sizeof(DPX_IMAGE_INFO), 1) != 1)
-	//	return IL_FALSE;
-	ImageInfo->Orientation = GetBigUShort(&iCurImage->io);
-	ImageInfo->NumElements = GetBigUShort(&iCurImage->io);
-	ImageInfo->Width = GetBigUInt(&iCurImage->io);
-	ImageInfo->Height = GetBigUInt(&iCurImage->io);
-
-	for (i = 0; i < 8; i++) {
-		GetImageElement(&ImageInfo->ImageElement[i]);
+	if (FileInfo->Magic[0] == 'S') {
+		BigUInt(&FileInfo->Offset);
+		BigUInt(&FileInfo->FileSize);
+		BigUInt(&FileInfo->DittoKey);
+		BigUInt(&FileInfo->GenHdrSize);
+		BigUInt(&FileInfo->IndHdrSize);
+		BigUInt(&FileInfo->UserDataSize);
+		BigUInt(&FileInfo->Key);
+	} else {
+		UInt(&FileInfo->Offset);
+		UInt(&FileInfo->FileSize);
+		UInt(&FileInfo->DittoKey);
+		UInt(&FileInfo->GenHdrSize);
+		UInt(&FileInfo->IndHdrSize);
+		UInt(&FileInfo->UserDataSize);
+		UInt(&FileInfo->Key);
 	}
 
-	iCurImage->io.seek(iCurImage->io.handle, 52, IL_SEEK_CUR);  // Skip padding bytes.
-
 	return IL_TRUE;
 }
 
+static void
+DpxFixImageElement(DPX_IMAGE_ELEMENT *ImageElement, ILboolean big) {
+	if (big) {
+		BigUInt  (&ImageElement->DataSign);
+		BigUInt  (&ImageElement->RefLowData);
+		BigUInt  (&ImageElement->RefHighData);
+		BigUShort(&ImageElement->Packing);
+		BigUShort(&ImageElement->Encoding);
+		BigUInt  (&ImageElement->DataOffset);
+		BigUInt  (&ImageElement->EolPadding);
+		BigUInt  (&ImageElement->EoImagePadding);
+	} else {
+		UInt  (&ImageElement->DataSign);
+		UInt  (&ImageElement->RefLowData);
+		UInt  (&ImageElement->RefHighData);
+		UShort(&ImageElement->Packing);
+		UShort(&ImageElement->Encoding);
+		UInt  (&ImageElement->DataOffset);
+		UInt  (&ImageElement->EolPadding);
+		UInt  (&ImageElement->EoImagePadding);
+	}
+}
 
-ILboolean DpxGetImageOrient(DPX_IMAGE_ORIENT *ImageOrient)
-{
-	ImageOrient->XOffset = GetBigUInt(&iCurImage->io);
-	ImageOrient->YOffset = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, &ImageOrient->XCenter, 4, 1);
-	iCurImage->io.read(iCurImage->io.handle, &ImageOrient->YCenter, 4, 1);
-	ImageOrient->XOrigSize = GetBigUInt(&iCurImage->io);
-	ImageOrient->YOrigSize = GetBigUInt(&iCurImage->io);
-	iCurImage->io.read(iCurImage->io.handle, ImageOrient->FileName, 100, 1);
-	iCurImage->io.read(iCurImage->io.handle, ImageOrient->CreationTime, 24, 1);
-	iCurImage->io.read(iCurImage->io.handle, ImageOrient->InputDev, 32, 1);
-	if (iCurImage->io.read(iCurImage->io.handle, ImageOrient->InputSerial, 32, 1) != 1)
+static ILboolean 
+DpxGetImageInfo(SIO *io, DPX_IMAGE_INFO *ImageInfo, ILboolean big) {
+	if (SIOread(io, ImageInfo, 1, sizeof(*ImageInfo)) != sizeof(*ImageInfo))
 		return IL_FALSE;
-	ImageOrient->Border[0] = GetBigUShort(&iCurImage->io);
-	ImageOrient->Border[1] = GetBigUShort(&iCurImage->io);
-	ImageOrient->Border[2] = GetBigUShort(&iCurImage->io);
-	ImageOrient->Border[3] = GetBigUShort(&iCurImage->io);
-	ImageOrient->PixelAspect[0] = GetBigUInt(&iCurImage->io);
-	ImageOrient->PixelAspect[1] = GetBigUInt(&iCurImage->io);
-	iCurImage->io.seek(iCurImage->io.handle, 28, IL_SEEK_CUR);  // Skip reserved bytes.
+
+	if (big) {
+		BigUShort(&ImageInfo->Orientation);
+		BigUShort(&ImageInfo->NumElements);
+		BigUInt  (&ImageInfo->Width);
+		BigUInt  (&ImageInfo->Height);
+	} else {
+		UShort(&ImageInfo->Orientation);
+		UShort(&ImageInfo->NumElements);
+		UInt  (&ImageInfo->Width);
+		UInt  (&ImageInfo->Height);
+	}
+
+	ILuint i;
+	for (i = 0; i < 8; i++) {
+		DpxFixImageElement(&ImageInfo->ImageElement[i], big);
+	}
 
 	return IL_TRUE;
 }
 
+static ILboolean
+DpxGetImageOrient(SIO *io, DPX_IMAGE_ORIENT *ImageOrient, ILboolean big) {
+	if (SIOread(io, ImageOrient, 1, sizeof(*ImageOrient)) != sizeof(*ImageOrient))
+		return IL_FALSE;
+
+	if (big) {
+		BigUInt  	(&ImageOrient->XOffset);
+		BigUInt  	(&ImageOrient->YOffset);
+		BigUInt  	(&ImageOrient->XOrigSize);
+		BigUInt  	(&ImageOrient->YOrigSize);
+		BigUShort	(&ImageOrient->Border[0]);
+		BigUShort	(&ImageOrient->Border[1]);
+		BigUShort	(&ImageOrient->Border[2]);
+		BigUShort	(&ImageOrient->Border[3]);
+		BigUInt		(&ImageOrient->PixelAspect[0]);
+		BigUInt		(&ImageOrient->PixelAspect[1]);
+	} else {
+		UInt  	(&ImageOrient->XOffset);
+		UInt  	(&ImageOrient->YOffset);
+		UInt  	(&ImageOrient->XOrigSize);
+		UInt  	(&ImageOrient->YOrigSize);
+		UShort	(&ImageOrient->Border[0]);
+		UShort	(&ImageOrient->Border[1]);
+		UShort	(&ImageOrient->Border[2]);
+		UShort	(&ImageOrient->Border[3]);
+		UInt		(&ImageOrient->PixelAspect[0]);
+		UInt		(&ImageOrient->PixelAspect[1]);
+	}
+
+	return IL_TRUE;
+}
 
 // Internal function used to load the DPX.
-ILboolean iLoadDpxInternal(ILimage* image)
-{
-	DPX_FILE_INFO		FileInfo;
+static ILboolean iLoadDpxInternal(ILimage* image) {
+	DPX_FILE_INFO			FileInfo;
 	DPX_IMAGE_INFO		ImageInfo;
 	DPX_IMAGE_ORIENT	ImageOrient;
-//	BITFILE		*File;
 	ILuint		i, NumElements, CurElem = 0;
 	ILushort	Val, *ShortData;
 	ILubyte		Data[8];
 	ILenum		Format = 0;
 	ILubyte		NumChans = 0;
-
+	ILboolean bigEndian = IL_FALSE;
 
 	if (image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	SIO *io = &image->io;
 	
-	if (!DpxGetFileInfo(&FileInfo))
-		return IL_FALSE;
-	if (!DpxGetImageInfo(&ImageInfo))
-		return IL_FALSE;
-	if (!DpxGetImageOrient(&ImageOrient))
+	if (!DpxGetFileInfo(io, &FileInfo))
 		return IL_FALSE;
 
-	iCurImage->io.seek(iCurImage->io.handle, ImageInfo.ImageElement[CurElem].DataOffset, IL_SEEK_SET);
+	bigEndian = FileInfo.Magic[0] == 'S'; // "SDPX" -> big endian
+
+	if (!DpxGetImageInfo(io, &ImageInfo, bigEndian))
+		return IL_FALSE;
+
+	if (!DpxGetImageOrient(io, &ImageOrient, bigEndian))
+		return IL_FALSE;
+
+	SIOseek(io, ImageInfo.ImageElement[CurElem].DataOffset, IL_SEEK_SET);
 
 //@TODO: Deal with different origins!
 
@@ -276,6 +290,28 @@ ILboolean iLoadDpxInternal(ILimage* image)
 finish:
 	return ilFixImage();
 }
+
+static ILboolean 
+iIsValidDpx(SIO *io) {
+	ILuint magic;
+
+	if (SIOread(io, &magic, 1, sizeof(magic)) != sizeof(magic))
+		return IL_FALSE;
+
+	return magic == 0x53445058 || magic == 0x58504453;
+}
+
+ILconst_string iFormatExtsDPX[] = { 
+	"dpx",
+	NULL 
+};
+
+ILformat iFormatDPX = { 
+	.Validate = iIsValidDpx, 
+	.Load     = iLoadDpxInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsDPX
+};
 
 #endif//IL_NO_DPX
 

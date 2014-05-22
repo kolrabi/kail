@@ -246,11 +246,9 @@ ILuint GLGetDXTCNum(ILenum DXTCFormat)
 ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image)
 {
 	ILimage	*ImageCopy, *OldImage;
-#if defined (_MSC_VER) || defined (linux) || defined(__APPLE__)
 	ILenum	DXTCFormat;
 	ILuint	Size;
 	ILubyte	*Buffer;
-#endif
 
 	if (Image == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
@@ -259,7 +257,6 @@ ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image
 
 	OldImage = ilGetCurImage();
 
-#if defined (_MSC_VER) || defined (linux) || defined(__APPLE__)
 	if (ilutGetBoolean(ILUT_GL_USE_S3TC) && ilGLCompressed2D != NULL) {
 		if (Image->DxtcData != NULL && Image->DxtcSize != 0) {
 			DXTCFormat = GLGetDXTCNum(Image->DxtcFormat);
@@ -297,7 +294,6 @@ ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image
 			ilSetCurImage(OldImage);
 		}
 	}
-#endif//_MSC_VER
 
 	ImageCopy = MakeGLCompliant2D(Image);
 	if (ImageCopy == NULL)

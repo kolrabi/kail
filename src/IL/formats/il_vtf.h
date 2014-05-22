@@ -18,12 +18,8 @@
 
 #include "il_internal.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, vtf_struct, 1)
-#elif defined(MACOSX) || defined(__GNUC__)
-#pragma pack(1)
-#endif
-
+#include "pack_push.h"
+  
 typedef struct VTFHEAD
 {
 	ILubyte		Signature[4];		// File signature ("VTF\0").
@@ -45,13 +41,9 @@ typedef struct VTFHEAD
 	ILubyte		LowResImageHeight;	// Low resolution image height.
 	ILushort	Depth;				// Depth of the largest mipmap in pixels.
 									// Must be a power of 2. Can be 0 or 1 for a 2D texture (v7.2 only).
-} IL_PACKSTRUCT VTFHEAD;
+} VTFHEAD;
 
-#if defined(MACOSX) || defined(__GNUC__)
-#pragma pack()
-#elif _MSC_VER
-#pragma pack(pop, vtf_struct)
-#endif
+#include "pack_pop.h"
 
 enum
 {

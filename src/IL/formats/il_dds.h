@@ -17,8 +17,7 @@
 #include "il_internal.h"
 
 
-#pragma pack(push)
-#pragma pack(1)
+#include "pack_push.h"
 
 typedef struct DDSHEAD
 {
@@ -46,9 +45,9 @@ typedef struct DDSHEAD
 
 	ILuint	ddsCaps1, ddsCaps2, ddsCaps3, ddsCaps4; // direct draw surface capabilities
 	ILuint	TextureStage;
-} IL_PACKSTRUCT DDSHEAD;
+} DDSHEAD;
 
-#pragma pack(pop)
+#include "pack_pop.h"
 
 // use cast to struct instead of RGBA_MAKE as struct is
 //  much

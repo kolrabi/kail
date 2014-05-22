@@ -13,27 +13,36 @@
 #include "il_internal.h"
 #ifndef IL_NO_FTX
 
-ILboolean iLoadFtxInternal(void);
-
+#include "pack_push.h"
+typedef struct {
+	ILuint Width, Height, HasAlpha;
+} FTX_HEAD;
+#include "pack_pop.h"
 
 // Internal function used to load the FTX.
-ILboolean iLoadFtxInternal(void)
+static ILboolean iLoadFtxInternal(ILimage *Image)
 {
-	ILuint Width, Height, HasAlpha;
-
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	Width = GetLittleUInt();
-	Height = GetLittleUInt();
-	HasAlpha = GetLittleUInt();  // Kind of backwards from what I would think...
+	SIO *io = &Image->io;
+
+	FTX_HEAD Head;
+	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
+	}
+
+	UInt(Head.Width);
+	UInt(Head.Height);
+	UInt(Head.HasAlpha); // Kind of backwards from what I would think...
 
 	//@TODO: Right now, it appears that all images are in RGBA format.  See if I can find specs otherwise
 	//  or images that load incorrectly like this.
 	//if (HasAlpha == 0) {  // RGBA format
-		if (!ilTexImage(Width, Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
+		if (!ilTexImage_(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 			return IL_FALSE;
 	//}
 	//else if (HasAlpha == 1) {  // RGB format
@@ -46,14 +55,26 @@ ILboolean iLoadFtxInternal(void)
 	//}
 
 	// The origin will always be in the upper left.
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	// All we have to do for this format is read the raw, uncompressed data.
-	if (iread(iCurImage->Data, 1, iCurImage->SizeOfData) != iCurImage->SizeOfData)
+	if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
 		return IL_FALSE;
 
 	return ilFixImage();
 }
+
+ILconst_string iFormatExtsFTX[] = { 
+	IL_TEXT("ftx"), 
+	NULL 
+};
+
+ILformat iFormatFTX = { 
+	.Validate = NULL, 
+	.Load     = iLoadFtxInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsFTX
+};
 
 #endif//IL_NO_FTX
 

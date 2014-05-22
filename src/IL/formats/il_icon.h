@@ -16,15 +16,14 @@
 
 #include "il_internal.h"
 
-#ifdef _WIN32
-	#pragma pack(push, ico_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct ICODIR
 {
 	ILshort		Reserved;	// Reserved (must be 0)
 	ILshort		Type;		// Type (1 for icons, 2 for cursors)
 	ILshort		Count;		// How many different images?
-} IL_PACKSTRUCT ICODIR;
+} ICODIR;
 
 typedef struct ICODIRENTRY
 {
@@ -36,7 +35,7 @@ typedef struct ICODIRENTRY
 	ILshort		Bpp;			// Bits per pixel
 	ILuint		SizeOfData;		// How many bytes in this resource?
 	ILuint		Offset;			// Offset from beginning of the file
-} IL_PACKSTRUCT ICODIRENTRY;
+} ICODIRENTRY;
 
 typedef struct INFOHEAD
 {
@@ -51,7 +50,7 @@ typedef struct INFOHEAD
 	ILint		YPixPerMeter;
 	ILint		ColourUsed;
 	ILint		ColourImportant;
-} IL_PACKSTRUCT INFOHEAD;
+} INFOHEAD;
 
 typedef struct ICOIMAGE
 {
@@ -60,9 +59,8 @@ typedef struct ICOIMAGE
 	ILubyte		*Data;	// XOR mask
 	ILubyte		*AND;	// AND mask
 } ICOIMAGE;
-#ifdef _WIN32
-	#pragma pack(pop, ico_struct)
-#endif
+
+#include "pack_pop.h"
 
 ILboolean iLoadIconInternal();
 ILboolean iLoadIconPNG(ICOIMAGE *Icon);

@@ -19,9 +19,8 @@
 #define BUFFLEN	256
 #define PALBPP	3
 
-#ifdef _MSC_VER
-#pragma pack(push, packed_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct HALOHEAD
 {
 	ILushort	Id;  // 'AH'
@@ -38,10 +37,9 @@ typedef struct HALOHEAD
 	/*ILbyte	Signature[8];
 	ILbyte		Filler[12];*/
 	ILbyte		Filler[20];  // Always 0 by PSP 4
-} IL_PACKSTRUCT HALOHEAD;
-#ifdef _MSC_VER
-#pragma pack(pop,  packed_struct)
-#endif
+} HALOHEAD;
+
+#include "pack_pop.h"
 
 ILboolean	ilLoadJascPal(ILconst_string FileName);
 ILboolean	ilSaveJascPal(ILconst_string FileName);

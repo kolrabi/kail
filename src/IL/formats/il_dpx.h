@@ -19,31 +19,25 @@
 
 #include "il_internal.h"
 
+#include "pack_push.h"
 
-#ifdef _WIN32
-#pragma pack(push, packed_struct, 1)
-#endif
 typedef struct R32
 {
 	ILubyte	r, g, b, a;
-} IL_PACKSTRUCT R32;
-#ifdef _WIN32
-#pragma pack(pop, packed_struct)
-#endif
-
+} R32;
 
 typedef struct DPX_FILE_INFO
 {
-    ILuint	MagicNum;        /* magic number 0x53445058 (SDPX) or 0x58504453 (XPDS) */
+    ILubyte	Magic[4];         /* magic number 0x53445058 (SDPX) or 0x58504453 (XPDS) */
     ILuint	Offset;           /* offset to image data in bytes */
     ILbyte	Vers[8];          /* which header format version is being used (v1.0)*/
-    ILuint	FileSize;        /* file size in bytes */
-    ILuint	DittoKey;        /* read time short cut - 0 = same, 1 = new */
-    ILuint	GenHdrSize;     /* generic header length in bytes */
-    ILuint	IndHdrSize;     /* industry header length in bytes */
-    ILuint	UserDataSize;   /* user-defined data length in bytes */
-    ILbyte	FileName[100];   /* image file name */
-    ILbyte	CreateTime[24];  /* file creation date "yyyy:mm:dd:hh:mm:ss:LTZ" */
+    ILuint	FileSize;         /* file size in bytes */
+    ILuint	DittoKey;         /* read time short cut - 0 = same, 1 = new */
+    ILuint	GenHdrSize;       /* generic header length in bytes */
+    ILuint	IndHdrSize;       /* industry header length in bytes */
+    ILuint	UserDataSize;     /* user-defined data length in bytes */
+    ILbyte	FileName[100];    /* image file name */
+    ILbyte	CreateTime[24];   /* file creation date "yyyy:mm:dd:hh:mm:ss:LTZ" */
     ILbyte	Creator[100];     /* file creator's name */
     ILbyte	Project[200];     /* project name */
     ILbyte	Copyright[200];   /* right to use or copyright info */
@@ -71,7 +65,6 @@ typedef struct DPX_IMAGE_ELEMENT
     ILbyte		Description[32];/* description of element */
 } DPX_IMAGE_ELEMENT;  /* NOTE THERE ARE EIGHT OF THESE */
 
-
 typedef struct DPX_IMAGE_INFO
 {
     ILushort	Orientation;          /* image orientation */
@@ -81,7 +74,6 @@ typedef struct DPX_IMAGE_INFO
 	DPX_IMAGE_ELEMENT	ImageElement[8];
     ILubyte		reserved[52];             /* reserved for future use (padding) */
 } DPX_IMAGE_INFO;
-
 
 typedef struct DPX_IMAGE_ORIENT
 {
@@ -141,10 +133,6 @@ typedef struct DPX_TELEVISION_HEAD
     ILubyte  reserved[76];        /* reserved for future use (padding) */
 } DPX_TELEVISION_HEAD;
 
-
-// For checking and reading
-ILboolean iIsValidDpx(void);
-//ILboolean iCheckDpx(DPXHEAD *Header);
-ILboolean iLoadDpxInternal(ILimage *);
+#include "pack_pop.h"
 
 #endif//PCX_H

@@ -16,11 +16,7 @@
 
 #include "il_internal.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, tga_struct, 1)
-#elif defined(MACOSX) || defined(__GNUC__)
-#pragma pack(1)
-#endif
+#include "pack_push.h"
 
 typedef struct TARGAHEAD
 {
@@ -37,7 +33,7 @@ typedef struct TARGAHEAD
 	ILushort	Height;
 	ILubyte		Bpp;
 	ILubyte		ImageDesc;
-} IL_PACKSTRUCT TARGAHEAD;
+} TARGAHEAD;
 
 typedef struct TARGAFOOTER
 {
@@ -46,12 +42,9 @@ typedef struct TARGAFOOTER
 	ILbyte Signature[16];	// TRUEVISION-XFILE
 	ILbyte Reserved;		// ASCII period '.'
 	ILbyte NullChar;		// NULL
-} IL_PACKSTRUCT TARGAFOOTER;
-#if defined(MACOSX) || defined(__GNUC__)
-#pragma pack()
-#elif _MSC_VER
-#pragma pack(pop, tga_struct)
-#endif
+} TARGAFOOTER;
+
+#include "pack_pop.h"
 
 #define TGA_EXT_LEN		495
 typedef struct TARGAEXT
@@ -89,18 +82,6 @@ typedef struct TARGAEXT
 #define IMAGEDESC_BOTLEFT		0x00
 #define IMAGEDESC_BOTRIGHT		0x10
 #define IMAGEDESC_TOPRIGHT		0x30
-
-
-// Internal functions
-ILboolean	iCheckTarga(TARGAHEAD *Header);
-ILboolean	iLoadTargaInternal(ILimage* image);
-ILboolean	iSaveTargaInternal(ILimage* image);
-ILboolean	iReadBwTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iReadColMapTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iReadUnmapTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iUncompressTgaData(ILimage *Image);
-ILboolean	i16BitTarga(ILimage *Image);
-void		iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec);
 
 
 #endif//TARGA_H

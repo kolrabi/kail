@@ -16,24 +16,21 @@
 
 #include "il_internal.h"
 
-#ifdef _WIN32
-	#pragma pack(push, icns_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct ICNSHEAD
 {
 	char		Head[4];	// Must be 'ICNS'
 	ILint		Size;		// Total size of the file (including header)
-} IL_PACKSTRUCT ICNSHEAD;
+} ICNSHEAD;
 
 typedef struct ICNSDATA
 {
 	char		ID[4];		// Identifier ('it32', 'il32', etc.)
 	ILint		Size;		// Total size of the entry (including identifier)
-} IL_PACKSTRUCT ICNSDATA;
+} ICNSDATA;
 
-#ifdef _WIN32
-	#pragma pack(pop, icns_struct)
-#endif
+#include "pack_pop.h"
 
 ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlpha, 
 	ILint Width, ICNSDATA *Entry, ILimage **Image);

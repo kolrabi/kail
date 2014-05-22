@@ -16,10 +16,8 @@
 #include "il_manip.h"
 #include "il_endian.h"
 
+#include "pack_push.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, pix_struct, 1)
-#endif
 typedef struct PIXHEAD
 {
 	ILushort	Width;
@@ -27,10 +25,8 @@ typedef struct PIXHEAD
 	ILushort	OffX;
 	ILushort	OffY;
 	ILushort	Bpp;
-} IL_PACKSTRUCT PIXHEAD;
-#ifdef _MSC_VER
-#pragma pack(pop, pix_struct)
-#endif
+} PIXHEAD;
+#include "pack_pop.h"
 
 // Internal function used to check if the HEADER is a valid Pix header.
 ILboolean iCheckPix(PIXHEAD *Header)

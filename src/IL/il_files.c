@@ -16,20 +16,20 @@
 #include <stdarg.h>
 
 // Lump read functions
-ILboolean	ILAPIENTRY iEofLump(ILHANDLE h);
-ILint		ILAPIENTRY iGetcLump(ILHANDLE h);
-ILuint		ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number);
-ILint		ILAPIENTRY iSeekLump(ILHANDLE h, ILint64 Offset, ILuint Mode);
-ILuint		ILAPIENTRY iTellLump(ILHANDLE h);
-ILint		ILAPIENTRY iPutcLump(ILubyte Char, ILHANDLE h);
-ILint		ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
+ILboolean	ILAPIENTRY iEofLump 		(ILHANDLE h);
+ILint			ILAPIENTRY iGetcLump 		(ILHANDLE h);
+ILuint		ILAPIENTRY iReadLump 		(ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number);
+ILint			ILAPIENTRY iSeekLump 		(ILHANDLE h, ILint64 Offset, ILuint Mode);
+ILuint		ILAPIENTRY iTellLump 		(ILHANDLE h);
+ILint			ILAPIENTRY iPutcLump 		(ILubyte Char, ILHANDLE h);
+ILint			ILAPIENTRY iWriteLump 	(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // "Fake" size functions, used to determine the size of write lumps
 // Definitions are in il_size.cpp
-ILint		ILAPIENTRY iSizeSeek(ILHANDLE h, ILint64 Offset, ILuint Mode);
-ILuint		ILAPIENTRY iSizeTell(ILHANDLE h);
-ILint		ILAPIENTRY iSizePutc(ILubyte Char, ILHANDLE h);
-ILint		ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
+ILint			ILAPIENTRY iSizeSeek 		(ILHANDLE h, ILint64 Offset, ILuint Mode);
+ILuint		ILAPIENTRY iSizeTell 		(ILHANDLE h);
+ILint			ILAPIENTRY iSizePutc 		(ILubyte Char, ILHANDLE h);
+ILint			ILAPIENTRY iSizeWrite 	(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // Next 7 functions are the default read functions
 
@@ -43,7 +43,11 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName)
 	#ifdef _WIN32
 		return (ILHANDLE)_wfopen(FileName, L"rb");
 	#else
-		return (ILHANDLE)fopen((char*)FileName, "rb");
+		size_t length = wcstombs(FileName, NULL, 0);
+		char 		tmp[length+1];
+		length = wcstombs(FileName, tmp, length);
+		tmp[length] = 0;
+		return (ILHANDLE)fopen(tmp, "rb");
 	#endif
 #endif//UNICODE
 }
@@ -58,6 +62,8 @@ void ILAPIENTRY iDefaultCloseR(ILHANDLE Handle)
 
 ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle)
 {
+	(void)Handle;
+
 	ILuint OrigPos, FileSize;
 
 	// Find out the filesize for checking for the end of file
@@ -74,6 +80,8 @@ ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle)
 
 ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle)
 {
+	(void)Handle;
+
 	ILint Val;
 
 	Val = 0;
@@ -113,7 +121,11 @@ ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName)
 	#ifdef _WIN32
 		return (ILHANDLE)_wfopen(FileName, L"wb");
 	#else
-		return (ILHANDLE)fopen((char*)FileName, "wb");
+		size_t length = wcstombs(FileName, NULL, 0);
+		char 		tmp[length+1];
+		length = wcstombs(FileName, tmp, length);
+		tmp[length] = 0;
+		return (ILHANDLE)fopen(tmp, "wb");
 	#endif
 #endif//UNICODE
 }
@@ -172,6 +184,25 @@ void ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGe
 	return;
 }
 
+//! Allows you to override the default file-reading functions.
+void ILAPIENTRY ilSetReadF(ILHANDLE File, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+	fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
+{
+	if (iCurImage != NULL) {
+		memset(&iCurImage->io, 0, sizeof(SIO));
+		iCurImage->io.openReadOnly    = aOpen;
+		iCurImage->io.close   = aClose;
+		iCurImage->io.eof   = aEof;
+		iCurImage->io.getchar  = aGetc;
+		iCurImage->io.read  = aRead;
+		iCurImage->io.seek = aSeek;
+		iCurImage->io.tell = aTell;
+		iCurImage->io.handle = File;
+		iCurImage->io.ReadFileStart = iCurImage->io.tell(iCurImage->io.handle);
+	}
+
+	return;
+}
 
 //! Allows you to override the default file-writing functions.
 void ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
@@ -188,6 +219,21 @@ void ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSe
 	}
 }
 
+//! Allows you to override the default file-writing functions.
+void ILAPIENTRY ilSetWriteF(ILHANDLE File, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+	fTellProc Tell, fWriteProc Write)
+{
+	if (iCurImage != NULL) {
+		memset(&iCurImage->io, 0, sizeof(SIO));
+		iCurImage->io.openWrite = Open;
+		iCurImage->io.close 		= Close;
+		iCurImage->io.putchar 	= Putc;
+		iCurImage->io.write 		= Write;
+		iCurImage->io.seek  		= Seek;
+		iCurImage->io.tell  		= Tell;
+		iCurImage->io.handle 		= File;
+	}
+}
 
 // Tells DevIL that we're reading from a file, not a lump
 void iSetInputFile(ILHANDLE File)
@@ -438,6 +484,7 @@ ILint ILAPIENTRY iPutcLump(ILubyte Char, ILHANDLE h)
 
 ILint ILAPIENTRY iWriteFile(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
+	(void)h;
 	ILuint NumWritten;
 	NumWritten =fwrite(Buffer, Size, Number, (FILE*) iCurImage->io.handle);
 	if (NumWritten != Number) {
@@ -450,6 +497,7 @@ ILint ILAPIENTRY iWriteFile(const void *Buffer, ILuint Size, ILuint Number, ILHA
 
 ILint ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
+	(void)h;
 	ILuint SizeBytes = Size * Number;
 	ILuint i = 0;
 
@@ -479,5 +527,6 @@ ILuint ILAPIENTRY iTellFile(ILHANDLE h)
 
 ILuint ILAPIENTRY iTellLump(ILHANDLE h)
 {
+	(void)h;
 	return iCurImage->io.lumpPos;
 }

@@ -85,15 +85,11 @@ ILboolean iGetDdsHead(SIO* io, DDSHEAD *Header)
 // Internal function to get the header and check it.
 static ILboolean iIsValidDds(SIO* io)
 {
-	ILboolean	IsValid;
-	DDSHEAD		Head;
+	char Sig[4];
 
-	iGetDdsHead(io, &Head);
-	io->seek(io->handle, -(ILint)sizeof(DDSHEAD), IL_SEEK_CUR);  // Go ahead and restore to previous state
-
-	IsValid = iCheckDds(&Head);
-
-	return IsValid;
+	ILuint Read = SIOread(io, Sig, 1, 4);
+	SIOseek(io, -Read, IL_SEEK_CUR);
+	return Read == 4 && memcmp(Sig, "DDS ", 4) == 0;
 }
 
 
@@ -1774,7 +1770,7 @@ ILboolean DecompressARGB16(ILuint CompFormat)
 	ILuint RedPad, GreenPad, BluePad, AlphaPad;
 	ILubyte	*Temp;
 
-	CompFormat;
+	(void)CompFormat;
 
 	if (!CompData)
 		return IL_FALSE;

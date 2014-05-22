@@ -16,10 +16,8 @@
 #include "il_manip.h"
 #include "il_endian.h"
 
+#include "pack_push.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, pxr_struct, 1)
-#endif
 typedef struct PIXHEAD
 {
 	ILushort	Signature;
@@ -29,11 +27,9 @@ typedef struct PIXHEAD
 	ILubyte		Reserved2[4];
 	ILubyte		BppInfo;
 	ILubyte		Reserved3[598];
-} IL_PACKSTRUCT PIXHEAD;
-#ifdef _MSC_VER
-#pragma pack(pop, pxr_struct)
-#endif
+} PIXHEAD;
 
+#include "pack_pop.h"
 
 //! Reads a Pxr file
 /*ILboolean ilLoadPxr(ILconst_string FileName)

@@ -16,9 +16,8 @@
 
 #include "il_internal.h"
 
-#ifdef _MSC_VER
-#pragma pack(push, packed_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct PIC_HEAD
 {
    ILint	Magic;			// PIC_MAGIC_NUMBER
@@ -30,7 +29,7 @@ typedef struct PIC_HEAD
    ILfloat	Ratio;			// Pixel aspect ratio
    ILshort	Fields;			// Picture field type
    ILshort	Padding;		// Unused
-} IL_PACKSTRUCT PIC_HEAD;
+} PIC_HEAD;
 
 typedef struct CHANNEL
 {
@@ -39,10 +38,8 @@ typedef struct CHANNEL
 	ILubyte	Chan;
 	void	*Next;
 } CHANNEL;
-#ifdef _MSC_VER
-#pragma pack(pop,  packed_struct)
-#endif
 
+#include "pack_pop.h"
 
 // Data type
 #define PIC_UNSIGNED_INTEGER	0x00

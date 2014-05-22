@@ -13,7 +13,12 @@
 #ifndef IL_EXPORTS_H
 #define IL_EXPORTS_H
 
-#include "IL/il.h"
+///////////////////////////////////////////////////////////////////////////
+//
+// Include required headers
+//
+
+#include <IL/il.h>
 
 #ifdef DEBUG
 	#include <assert.h>
@@ -21,37 +26,27 @@
 	#define assert(x)
 #endif
 
-//#ifndef NOINLINE
+///////////////////////////////////////////////////////////////////////////
+//
+// Compiler specific definitions
+//
+
 #ifndef INLINE
-#if defined(__GNUC__)
-	#define INLINE static inline
-#elif defined(_MSC_VER)	//@TODO: Get this working in MSVC++.
-						//  http://www.greenend.org.uk/rjk/2003/03/inline.html
-	//#define NOINLINE
-	//#define INLINE
-	/*#ifndef _WIN64  // Cannot use inline assembly in x64 target platform.
-		#define USE_WIN32_ASM
-	#endif//_WIN64*/
-	#define INLINE __inline
-#else
-	#define INLINE inline
+	#if defined(__GNUC__)
+		#define INLINE static inline
+	#elif defined(_MSC_VER)	//@TODO: Get this working in MSVC++.
+		#define INLINE __inline
+	#else
+		#define INLINE inline
+	#endif
 #endif
-#endif
-//#else
-//#define INLINE
-//#endif //NOINLINE
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#define IL_MAX(a,b) (((a) > (b)) ? (a) : (b))
-#define IL_MIN(a,b) (((a) < (b)) ? (a) : (b))
-
-
 //! Basic Palette struct
-typedef struct ILpal
-{
+typedef struct ILpal {
 	ILubyte* Palette; //!< the image palette (if any)
 	ILuint   PalSize; //!< size of the palette (in bytes)
 	ILenum   PalType; //!< the palette types in il.h (0x0500 range)
@@ -60,26 +55,27 @@ typedef struct ILpal
 // Struct for storing IO function pointers and data
 typedef struct SIO {
 	// Function pointers set by ilSetRead, ilSetWrite
-	fOpenProc openReadOnly;
-	fOpenProc openWrite;
-	fCloseProc close;
-	fReadProc read;
-	fSeekProc seek;
-	fEofProc eof;
-	fGetcProc getchar;
-	fTellProc tell;
-	fPutcProc putchar;
-	fWriteProc write;
+	fOpenProc 	openReadOnly;
+	fOpenProc 	openWrite;
+	fCloseProc 	close;
+	fReadProc 	read;
+	fSeekProc 	seek;
+	fEofProc 		eof;
+	fGetcProc 	getchar;
+	fTellProc 	tell;
+	fPutcProc 	putchar;
+	fWriteProc	write;
 
-	ILint64 lumpPos;
-	ILHANDLE handle;
+	ILint64 		lumpPos;
+	ILHANDLE 		handle;
+
 	const void *lump;
-	ILuint		lumpSize, ReadFileStart, WriteFileStart;
+	ILuint			lumpSize, ReadFileStart, WriteFileStart;
 } SIO;
 
 #define SIOopenRO(io,       f) (io)->openReadOnly((io)->handle)
 #define SIOopenWR(io,       f) (io)->openWrite   ((io)->handle)
-#define SIOclose( io         ) (io)->close  ((io)->handle               )
+#define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle) }
 #define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
 #define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
 #define SIOeof(   io         ) (io)->eof    ((io)->handle               )
@@ -116,27 +112,26 @@ typedef struct ILimage
 	void*           Profile;     //!< colour profile
 	ILuint          ProfileSize; //!< colour profile size
 	ILuint          OffX;        //!< x-offset of the image
-	ILuint			OffY;        //!< y-offset of the image
+	ILuint					OffY;        //!< y-offset of the image
 	ILubyte*        DxtcData;    //!< compressed data
 	ILenum          DxtcFormat;  //!< compressed data format
 	ILuint          DxtcSize;    //!< compressed data size
 	SIO      				io;
 } ILimage;
 
-
 // Memory functions
-ILAPI void* ILAPIENTRY ialloc(const ILsizei Size);
-ILAPI void  ILAPIENTRY ifree(const void *Ptr);
-ILAPI void* ILAPIENTRY icalloc(const ILsizei Size, const ILsizei Num);
+ILAPI void* 		ILAPIENTRY ialloc 	(const ILsizei Size);
+ILAPI void  		ILAPIENTRY ifree 		(const void *Ptr);
+ILAPI void* 		ILAPIENTRY icalloc 	(const ILsizei Size, const ILsizei Num);
 #ifdef ALTIVEC_GCC
-ILAPI void* ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
+ILAPI void* 		ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
 #endif
 
 // Internal library functions in IL
-ILAPI ILimage* ILAPIENTRY ilGetCurImage(void);
-ILAPI void     ILAPIENTRY ilSetCurImage(ILimage *Image);
-ILAPI void     ILAPIENTRY ilSetError(ILenum Error);
-ILAPI void     ILAPIENTRY ilSetPal(ILpal *Pal);
+ILAPI ILimage* 	ILAPIENTRY ilGetCurImage(void);
+ILAPI void     	ILAPIENTRY ilSetCurImage(ILimage *Image);
+ILAPI void     	ILAPIENTRY ilSetError(ILenum Error);
+ILAPI void     	ILAPIENTRY ilSetPal(ILpal *Pal);
 
 //
 // Utility functions
@@ -177,13 +172,12 @@ ILAPI ILpal*    ILAPIENTRY iConvertPal     (ILpal *Pal, ILenum DestFormat);
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
 ILAPI ILboolean	ILAPIENTRY iMirror();
 ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
-ILubyte*				   iFlipNewBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
 ILAPI void      ILAPIENTRY iGetIntegervImage(ILimage *Image, ILenum Mode, ILint *Param);
 
 // Internal library functions in ILU
-ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
-ILAPI ILimage* ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
-ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
+ILAPI ILimage* 	ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
+ILAPI ILimage* 	ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
+ILAPI ILimage* 	ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
 
 #ifdef __cplusplus
 }

@@ -43,36 +43,33 @@ enum {
 	CARD_SKIP
 };
 
-ILboolean	iIsValidFits(void);
-ILboolean	iCheckFits(FITSHEAD *Header);
-ILenum		GetCardImage(FITSHEAD *Header);
-ILboolean	GetCardInt(char *Buffer, ILint *Val);
+static ILenum			GetCardImage(SIO *io, FITSHEAD *Header);
+static ILboolean	GetCardInt(char *Buffer, ILint *Val);
 
 
 // Internal function used to get the FITS header from the current file.
-ILboolean iGetFitsHead(FITSHEAD *Header)
-{
-	ILenum	CardKey;
+static ILboolean 
+iGetFitsHead(SIO *io, FITSHEAD *Header) {
+	ILint	CardKey;
 
-//@TODO: Use something other than memset?
-	memset(Header, 0, sizeof(Header));  // Clear the header to all 0s first.
+	imemclear(&Header, sizeof(Header));  // Clear the header to all 0s first.
 
 	do {
-		CardKey = GetCardImage(Header);
+		CardKey = GetCardImage(io, Header);
 		if (CardKey == CARD_END)  // End of the header
 			break;
 		if (CardKey == CARD_READ_FAIL)
 			return IL_FALSE;
 		if (CardKey == CARD_NOT_SIMPLE)
 			return IL_FALSE;
-	} while (!iCurImage->io.eof(iCurImage->io.handle));
+	} while (!SIOeof(io));
 
 	// The header should never reach the end of the file.
-	if (iCurImage->io.eof(iCurImage->io.handle))
+	if (SIOeof(io))
 		return IL_FALSE;  // Error needed?
 
 	// The header must always be a multiple of 2880, so we skip the padding bytes (spaces).
-	iCurImage->io.seek(iCurImage->io.handle, (2880 - (iCurImage->io.tell(iCurImage->io.handle) % 2880)) % 2880, IL_SEEK_CUR);
+	SIOseek(io, (2880 - (SIOtell(io) % 2880)) % 2880, IL_SEEK_CUR);
 
 	switch (Header->BitsPixel)
 	{
@@ -126,24 +123,9 @@ ILboolean iGetFitsHead(FITSHEAD *Header)
 }
 
 
-// Internal function to get the header and check it.
-ILboolean iIsValidFits(void)
-{
-	FITSHEAD	Header;
-	ILuint		Pos = iCurImage->io.tell(iCurImage->io.handle);
-
-	if (!iGetFitsHead(&Header))
-		return IL_FALSE;
-	// The length of the header varies, so we just go back to the original position.
-	iCurImage->io.seek(iCurImage->io.handle, Pos, IL_SEEK_CUR);
-
-	return iCheckFits(&Header);
-}
-
-
 // Internal function used to check if the HEADER is a valid FITS header.
-ILboolean iCheckFits(FITSHEAD *Header)
-{
+static ILboolean 
+iCheckFits(FITSHEAD *Header) {
 	switch (Header->BitsPixel)
 	{
 		case 8:  // These are the only values accepted.
@@ -177,8 +159,8 @@ ILboolean iCheckFits(FITSHEAD *Header)
 
 
 // Internal function used to load the FITS.
-ILboolean iLoadFitsInternal(ILimage* image)
-{
+static ILboolean
+iLoadFitsInternal(ILimage* image) {
 	FITSHEAD	Header;
 	ILuint		i, NumPix;
 	ILfloat		MaxF = 0.0f;
@@ -189,8 +171,11 @@ ILboolean iLoadFitsInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-	if (!iGetFitsHead(&Header))
+	SIO *io = &image->io;
+
+	if (!iGetFitsHead(io, &Header))
 		return IL_FALSE;
+
 	if (!iCheckFits(&Header))
 		return IL_FALSE;
 
@@ -205,22 +190,22 @@ ILboolean iLoadFitsInternal(ILimage* image)
 	switch (Header.Type)
 	{
 		case IL_UNSIGNED_BYTE:
-			if (iCurImage->io.read(iCurImage->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData)
+			if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData)
 				return IL_FALSE;
 			break;
 		case IL_SHORT:
 			for (i = 0; i < NumPix; i++) {
-				((ILshort*)image->Data)[i] = GetBigShort(&iCurImage->io);
+				((ILshort*)image->Data)[i] = GetBigShort(io);
 			}
 			break;
 		case IL_INT:
 			for (i = 0; i < NumPix; i++) {
-				((ILint*)image->Data)[i] = GetBigInt(&iCurImage->io);
+				((ILint*)image->Data)[i] = GetBigInt(io);
 			}
 			break;
 		case IL_FLOAT:
 			for (i = 0; i < NumPix; i++) {
-				((ILfloat*)image->Data)[i] = GetBigFloat(&iCurImage->io);
+				((ILfloat*)image->Data)[i] = GetBigFloat(io);
 				if (((ILfloat*)image->Data)[i] > MaxF)
 					MaxF = ((ILfloat*)image->Data)[i];
 			}
@@ -236,7 +221,7 @@ ILboolean iLoadFitsInternal(ILimage* image)
 			break;
 		case IL_DOUBLE:
 			for (i = 0; i < NumPix; i++) {
-				((ILdouble*)image->Data)[i] = GetBigDouble(&iCurImage->io);
+				((ILdouble*)image->Data)[i] = GetBigDouble(io);
 				if (((ILdouble*)image->Data)[i] > MaxD)
 					MaxD = ((ILdouble*)image->Data)[i];
 			}
@@ -256,11 +241,11 @@ ILboolean iLoadFitsInternal(ILimage* image)
 
 
 //@TODO: NAXISx have to come in order.  Check this!
-ILenum GetCardImage(FITSHEAD *Header)
-{
+static ILenum 
+GetCardImage(SIO *io, FITSHEAD *Header) {
 	char	Buffer[80];
 
-	if (iCurImage->io.read(iCurImage->io.handle, Buffer, 1, 80) != 80)  // Each card image is exactly 80 bytes long.
+	if (SIOread(io, Buffer, 1, 80) != 80)  // Each card image is exactly 80 bytes long.
 		return CARD_READ_FAIL;
 
 //@TODO: Use something other than !strncmp?
@@ -355,9 +340,8 @@ ILenum GetCardImage(FITSHEAD *Header)
 	return CARD_SKIP;  // This is a card that we do not recognize, so skip it.
 }
 
-
-ILboolean GetCardInt(char *Buffer, ILint *Val)
-{
+static ILboolean
+GetCardInt(char *Buffer, ILint *Val) {
 	ILuint	i;
 	char	ValString[22];
 
@@ -379,5 +363,42 @@ ILboolean GetCardInt(char *Buffer, ILint *Val)
 
 	return IL_TRUE;
 }
+
+// Internal function to get the header and check it.
+static ILboolean
+iIsValidFits(SIO *io) {
+	char Sig[7];
+  ILuint Read = SIOread(io, &Sig, 1, 7);
+
+  SIOseek(io, -Read, IL_SEEK_CUR);
+  return Read == 7 && memcmp(Sig, "SIMPLE ", 7) == 0;
+
+	/*
+	FITSHEAD	Header;
+	ILuint		Pos = SIOtell(io);
+
+	if (!iGetFitsHead(io, &Header)) {
+		SIOseek(io, Pos, IL_SEEK_SET);
+		return IL_FALSE;
+	}
+
+	// The length of the header varies, so we just go back to the original position.
+	SIOseek(io, Pos, IL_SEEK_SET);
+	return iCheckFits(&Header);
+	*/
+}
+
+ILconst_string iFormatExtsFITS[] = { 
+	"fit",
+	"fits",
+	NULL 
+};
+
+ILformat iFormatFITS = { 
+	.Validate = iIsValidFits, 
+	.Load     = iLoadFitsInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsFITS
+};
 
 #endif//IL_NO_FITS

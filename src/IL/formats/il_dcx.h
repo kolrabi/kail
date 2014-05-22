@@ -16,9 +16,7 @@
 
 #include "il_internal.h"
 
-
-#pragma pack(push)
-#pragma pack(1)
+#include "pack_push.h"
 
 typedef struct DCXHEAD
 {
@@ -37,8 +35,8 @@ typedef struct DCXHEAD
 	ILushort	HScreenSize;
 	ILushort	VScreenSize;
 	ILubyte		Filler[54];
-} IL_PACKSTRUCT DCXHEAD;
+} DCXHEAD;
 
-#pragma pack(pop)
+#include "pack_pop.h"
 
 #endif//PCX_H

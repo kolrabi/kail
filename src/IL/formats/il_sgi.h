@@ -16,6 +16,8 @@
 
 #include "il_internal.h"
 
+#include "pack_push.h"
+
 typedef struct iSgiHeader
 {
 	ILshort		MagicNum;	// IRIS image file magic number
@@ -35,7 +37,9 @@ typedef struct iSgiHeader
 	ILbyte		Name[80];	// Image name
 	ILint		ColMap;		// Colormap ID
 	ILbyte		Dummy[404];	// Ignored
-} IL_PACKSTRUCT iSgiHeader;
+} iSgiHeader;
+
+#include "pack_pop.h"
 
 // Sgi format #define's
 #define SGI_VERBATIM		0

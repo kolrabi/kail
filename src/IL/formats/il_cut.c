@@ -19,18 +19,14 @@
 
 
 // Wrap it just in case...
-#ifdef _MSC_VER
-#pragma pack(push, packed_struct, 1)
-#endif
+#include "pack_push.h"
 typedef struct CUT_HEAD
 {
 	ILushort	Width;
 	ILushort	Height;
 	ILushort	Dummy;
-} IL_PACKSTRUCT CUT_HEAD;
-#ifdef _MSC_VER
-#pragma pack(pop,  packed_struct)
-#endif
+} CUT_HEAD;
+#include "pack_pop.h"
 
 struct HaloPalette
 {

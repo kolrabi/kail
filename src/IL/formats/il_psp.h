@@ -131,29 +131,26 @@ enum PSPLayerType {
 	TRUE
 };*/
 
+#include "pack_push.h"
 
-
-#ifdef _MSC_VER
-#pragma pack(push, packed_struct, 1)
-#endif
 typedef struct PSPRECT
 {
 	ILuint x1,y1,x2,y2;
-} IL_PACKSTRUCT PSPRECT;
+} PSPRECT;
 
 typedef struct PSPHEAD
 {
 	char		FileSig[32];
 	ILushort	MajorVersion;
 	ILushort	MinorVersion;
-} IL_PACKSTRUCT PSPHEAD;
+} PSPHEAD;
 
 typedef struct BLOCKHEAD
 {
 	ILubyte		HeadID[4];
 	ILushort	BlockID;
 	ILuint		BlockLen;
-} IL_PACKSTRUCT BLOCKHEAD;
+} BLOCKHEAD;
 
 typedef struct GENATT_CHUNK
 {
@@ -170,7 +167,7 @@ typedef struct GENATT_CHUNK
 	ILint		ActiveLayer;
 	ILushort	LayerCount;
 	ILuint		GraphicContents;
-} IL_PACKSTRUCT GENATT_CHUNK;
+} GENATT_CHUNK;
 
 typedef struct LAYERINFO_CHUNK
 {
@@ -198,13 +195,13 @@ typedef struct LAYERINFO_CHUNK
 	ILubyte		DestBlend4[4];
 	ILubyte		SourceBlend5[4];
 	ILubyte		DestBlend5[4];
-} IL_PACKSTRUCT LAYERINFO_CHUNK;
+} LAYERINFO_CHUNK;
 
 typedef struct LAYERBITMAP_CHUNK
 {
 	ILushort	NumBitmaps;
 	ILushort	NumChannels;
-} IL_PACKSTRUCT LAYERBITMAP_CHUNK;
+} LAYERBITMAP_CHUNK;
 
 typedef struct CHANNEL_CHUNK
 {
@@ -212,24 +209,21 @@ typedef struct CHANNEL_CHUNK
 	ILuint		Length;
 	ILushort	BitmapType;
 	ILushort	ChanType;
-} IL_PACKSTRUCT CHANNEL_CHUNK;
+} CHANNEL_CHUNK;
 
 typedef struct ALPHAINFO_CHUNK
 {
 	PSPRECT		AlphaRect;
 	PSPRECT		AlphaSavedRect;
-} IL_PACKSTRUCT ALPHAINFO_CHUNK;
+} ALPHAINFO_CHUNK;
 
 typedef struct ALPHA_CHUNK
 {
 	ILushort	BitmapCount;
 	ILushort	ChannelCount;
-} IL_PACKSTRUCT ALPHA_CHUNK;
+} ALPHA_CHUNK;
 
-#ifdef _MSC_VER
-#pragma pack(pop,  packed_struct)
-#endif
-
+#include "pack_pop.h"
 
 // Function definitions
 ILboolean	iLoadPspInternal(void);

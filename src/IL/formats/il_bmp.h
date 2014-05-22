@@ -16,8 +16,7 @@
 
 #include "il_internal.h"
 
-#pragma pack(push)
-#pragma pack(1)
+#include "pack_push.h"
 
 typedef struct BMPHEAD {
 	ILbyte		bfType[2];
@@ -35,7 +34,7 @@ typedef struct BMPHEAD {
 	ILint		biYPelsPerMeter;
 	ILint		biClrUsed;
 	ILint		biClrImportant;
-} IL_PACKSTRUCT BMPHEAD;
+} BMPHEAD;
 
 typedef struct OS2_HEAD
 {
@@ -53,8 +52,8 @@ typedef struct OS2_HEAD
 	ILushort		cy;
 	ILushort	cPlanes;
 	ILushort	cBitCount;
-} IL_PACKSTRUCT OS2_HEAD;
+} OS2_HEAD;
 
-#pragma pack(pop)
+#include "pack_pop.h"
 
 #endif//BMP_H

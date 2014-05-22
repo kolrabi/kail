@@ -14,7 +14,7 @@
 #define _IL_BUILD_LIBRARY
 
 // Local headers
-#include <config.h>
+#include <IL/config.h>
 
 // Standard headers
 #include <stdlib.h>
@@ -150,10 +150,6 @@ int iStrCmp(ILconst_string src1, ILconst_string src2);
 // < 2^31, if we should need it
 int iSqrt(int x);
 
-#ifndef min
-#define min(a, b)	(((a) < (b)) ? (a) : (b))
-#endif
-
 //
 // Useful miscellaneous functions
 //
@@ -204,14 +200,6 @@ char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 //
 #include "il_formats.h"
 
-ILboolean iLoadDoomInternal();
-ILboolean iLoadDoomFlatInternal();
-
-ILboolean ilIsValidDpx(ILconst_string FileName);
-ILboolean ilIsValidDpxF(ILHANDLE File);
-ILboolean ilIsValidDpxL(const void *Lump, ILuint Size);
-ILboolean iLoadDpxInternal(ILimage* image);
-
 ILboolean ilIsValidExr(ILconst_string FileName);
 ILboolean ilIsValidExrF(ILHANDLE File);
 ILboolean ilIsValidExrL(const void *Lump, ILuint Size);
@@ -220,18 +208,6 @@ ILboolean ilLoadExr(ILconst_string FileName);
 ILboolean ilLoadExrF(ILHANDLE File);
 ILboolean ilLoadExrL(const void *Lump, ILuint Size);
 ILboolean iLoadExrInternal();
-
-ILboolean iIsValidFits(void);
-ILboolean iLoadFitsInternal(ILimage* image);
-
-ILboolean iLoadFtxInternal(void);
-
-//ILboolean iIsValidGif(SIO* io);
-//ILboolean iLoadGifInternal(ILimage* image);
-
-ILboolean iIsValidHdr(SIO* io);
-ILboolean iLoadHdrInternal(ILimage* image);
-ILboolean iSaveHdrInternal(ILimage* image);
 
 ILboolean iLoadIconInternal(ILimage* image);
 ILboolean iIsValidIcon();
@@ -328,10 +304,6 @@ ILboolean iSaveSgiInternal();
 ILboolean iIsValidSun(SIO* io);
 ILboolean iLoadSunInternal(ILimage* image);
 
-ILboolean iIsValidTarga(SIO* io);
-ILboolean iLoadTargaInternal(ILimage* image);
-ILboolean iSaveTargaInternal(ILimage* image);
-
 ILboolean ilLoadTexture(ILconst_string FileName);
 ILboolean ilLoadTextureF(ILHANDLE File);
 ILboolean ilLoadTextureL(ILimage* image, const void *Lump, ILuint Size);
@@ -390,6 +362,8 @@ ILboolean iLoadXpmInternal();
 #endif*/
 
 //ILboolean ilLoadExr(ILconst_string FileName);
+
+#define imemclear(x,y) memset(x,0,y);
 
 extern FILE *iTraceOut;
 

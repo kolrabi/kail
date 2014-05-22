@@ -17,9 +17,8 @@
 #include "il_internal.h"
 
 
-#ifdef _WIN32
-#pragma pack(push, packed_struct, 1)
-#endif
+#include "pack_push.h"
+
 typedef struct PCXHEAD
 {
 	ILubyte		Manufacturer;
@@ -37,10 +36,9 @@ typedef struct PCXHEAD
 	ILushort	HScreenSize;
 	ILushort	VScreenSize;
 	ILubyte		Filler[54];
-} IL_PACKSTRUCT PCXHEAD;
-#ifdef _WIN32
-#pragma pack(pop, packed_struct)
-#endif
+} PCXHEAD;
+
+#include "pack_pop.h"
 
 // For checking and reading
 ILboolean iIsValidPcx(SIO* io);
