@@ -37,6 +37,8 @@
 #define IL_VERSION_1_8_3
 #define IL_VERSION              183
 
+#define IL_VARIANT_KAIL
+
 #ifdef __cplusplus
 extern "C" {
 #endif

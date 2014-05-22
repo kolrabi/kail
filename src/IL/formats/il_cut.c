@@ -86,7 +86,7 @@ ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y
 			if (chunkOffset+1 < chunkSize) {
 				// RLE decoding
 				ILubyte value = chunk[chunkOffset+1];
-				ILuint toCopy = min(controlByte-128, image->Width-outOffset);
+				ILuint toCopy = IL_MIN(controlByte-128, image->Width-outOffset);
 				memset(&data[outOffset], value, toCopy);
 				chunkOffset += 2;
 				outOffset += toCopy;
@@ -98,7 +98,7 @@ ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y
 			ILuint bytesToCopy = controlByte;
 			if (chunkOffset+bytesToCopy+1 < chunkSize) {
 				// Raw copying
-				bytesToCopy = min(bytesToCopy, image->Width-outOffset);
+				bytesToCopy = IL_MIN(bytesToCopy, image->Width-outOffset);
 				memcpy(&data[outOffset], &chunk[chunkOffset+1], bytesToCopy);
 				chunkOffset += bytesToCopy+1;
 				outOffset += bytesToCopy;

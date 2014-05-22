@@ -15,10 +15,6 @@
 
 #include "ilut_internal.h"
 
-#ifndef min
-#define min(a, b)	(((a) < (b)) ? (a) : (b))
-#endif
-
 #ifdef ILUT_USE_OPENGL
 ILenum    ilutGLFormat(ILenum, ILubyte);
 ILimage*  MakeGLCompliant2D(ILimage *Src);

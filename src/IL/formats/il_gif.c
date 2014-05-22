@@ -548,6 +548,8 @@ GifLoadFrame(
 			iTrace("**** GifHandleDisposal failed!\n");
 			return IL_FALSE;
 		}
+	} else {
+		Ctx->Image->Origin 	= IL_ORIGIN_UPPER_LEFT;
 	}
 
 	Ctx->Image->Duration = Ctx->Delay;
