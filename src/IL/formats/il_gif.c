@@ -76,6 +76,8 @@ GifLoadSubBlock(
 		return IL_FALSE;
 	}
 
+	iTrace("---- Subblock of size to %u @ %08x", *Length, SIOtell(&Ctx->Target->io)-1);
+
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, SubBlock, 1, *Length) != *Length) {
 		return IL_FALSE;
 	}
@@ -299,6 +301,7 @@ LZWInputStreamReadCode(
 	*Code = Stream->InputBits & ((1 << BitsLeftToRead) - 1);
 	Stream->InputBitCount -= BitsLeftToRead;
 	Stream->InputBits = (Stream->InputBits >> BitsLeftToRead);// & ((1<<Stream->InputBitCount)-1);
+
 	return IL_TRUE;
 }
 
@@ -411,7 +414,7 @@ LZWInputStreamAppendCode(
 		if (Stream->CodeSize < 12) {
 			Stream->CodeSize++;
 		} else {
-			iTrace("**** Not increasing code size to %u\n", Stream->CodeSize + 1);
+			iTrace("**** Not increasing code size to %u @ %08x", Stream->CodeSize + 1, SIOtell(&Stream->Ctx->Target->io)-1-Stream->InputAvail);
 		}
 	}
 
@@ -441,7 +444,9 @@ LZWInputStreamDecode(
 
 		ILuint K;
 		if (!LZWInputStreamGetFirstOfCode(Stream, Code, &K)) return IL_FALSE;
-		if (!LZWInputStreamAppendCode(Stream, K)) return IL_FALSE;
+
+		// if dictionary is not full, create new entry
+		if (Stream->NextCode < 4096 && !LZWInputStreamAppendCode(Stream, K)) return IL_FALSE;
 
 		Stream->PrevCode = Code;
 	} else {
@@ -454,22 +459,12 @@ LZWInputStreamDecode(
 
 		if (!LZWInputStreamBufferCode(Stream, Stream->PrevCode)) return IL_FALSE;
 		if (!LZWInputStreamBufferCode(Stream, K)) return IL_FALSE;
-		if (!LZWInputStreamAppendCode(Stream, K)) return IL_FALSE;
+
+		// if dictionary is not full, create new entry
+		if (Stream->NextCode < 4096 && !LZWInputStreamAppendCode(Stream, K)) return IL_FALSE;
 
 		Stream->PrevCode = Stream->NextCode-1;
 	}
-
-/*
-	if ( Stream->NextCode == (ILuint)(1<<Stream->CodeSize ) 
-	  || Code             == (ILuint)((1<<Stream->CodeSize)-1)) {
-		if (Stream->CodeSize < 12) {
-			Stream->CodeSize++;
-		} else {
-			iTrace("**** Not increasing code size to %u\n", Stream->CodeSize + 1);
-		}
-	}
-	*/
-
 	return IL_TRUE;
 }
 
@@ -505,7 +500,8 @@ LZWInputStreamReadByte(
 		// handle code table entries
 		if (!LZWInputStreamDecode(Stream, Code)) {
 			iTrace("**** Could not decode\n");
-			return IL_FALSE;
+			Stream->InputAvail = 0;
+			//return IL_FALSE;
 		}
 	}
 
@@ -600,6 +596,9 @@ GifLoadFrame(
 				)
 		) {
 			((ILuint*)Ctx->Image->Data)[x + y * Ctx->Screen.Width] = ((ILuint*)SourcePal->Palette)[B];
+			if (!Ctx->Frame && B == Ctx->TransparentColor && Ctx->UseTransparentColor) {
+				Ctx->Image->Data[(x + y * Ctx->Screen.Width)*4+3] = 0;
+			}
 		}
 
 		x++;
@@ -655,11 +654,11 @@ GifLoad(
 	GifLoadingContext *Ctx
 ) {
 	ILubyte ID;
-	if (Ctx->Target->io.read(Ctx->Target->io.handle, &ID, 1, 1) != 1) {
+	if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
 		return IL_FALSE;
 	}
 
-	iTrace("---- Block ID %02x", ID);
+	iTrace("---- Block ID %02x @ %08x", ID, SIOtell(&Ctx->Target->io)-1);
 	while (ID != GifID_End) {
 		switch (ID) {
 			case GifID_Extension:
@@ -679,7 +678,7 @@ GifLoad(
 				break;
 
 			default:
-				iTrace("---- Unknown block at %08x", SIOtell(&Ctx->Target->io));
+				iTrace("---- Unknown block @ %08x", SIOtell(&Ctx->Target->io)-1);
 
 				// just read next byte and hope for the best
 				if (SIOread(&Ctx->Target->io, &ID, 1, 1) != 1) {
@@ -693,7 +692,7 @@ GifLoad(
 			iTrace("---- EOF", ID);
 			break;
 		}
-		iTrace("---- Block ID %02x", ID);
+		iTrace("---- Block ID %02x @ %08x", ID, SIOtell(&Ctx->Target->io)-1);
 	}
 	return IL_TRUE;
 }
