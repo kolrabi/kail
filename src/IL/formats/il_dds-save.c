@@ -83,7 +83,7 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
 
 
 // Internal function used to save the Dds.
-ILboolean iSaveDdsInternal()
+ILboolean iSaveDdsInternal(ILimage *Image)
 {
 	ILenum	DXTCFormat;
 	ILuint	counter, numMipMaps, image, numFaces, i;
@@ -91,7 +91,9 @@ ILboolean iSaveDdsInternal()
 	ILint	CubeTable[6] = { 0 };
 	ILuint	CubeFlags;
 
-	CubeFlags = GetCubemapInfo(iCurImage, CubeTable);
+	(void)Image; // FIXME: don't use iCurImage
+
+	CubeFlags = GetCubemapInfo(Image, CubeTable);
 
 	image = ilGetInteger(IL_CUR_IMAGE);
 	DXTCFormat = iGetInt(IL_DXTC_FORMAT);

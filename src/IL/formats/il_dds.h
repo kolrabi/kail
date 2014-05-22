@@ -17,9 +17,9 @@
 #include "il_internal.h"
 
 
-#ifdef _WIN32
-	#pragma pack(push, dds_struct, 1)
-#endif
+#pragma pack(push)
+#pragma pack(1)
+
 typedef struct DDSHEAD
 {
 	ILbyte	Signature[4];
@@ -47,11 +47,8 @@ typedef struct DDSHEAD
 	ILuint	ddsCaps1, ddsCaps2, ddsCaps3, ddsCaps4; // direct draw surface capabilities
 	ILuint	TextureStage;
 } IL_PACKSTRUCT DDSHEAD;
-#ifdef _WIN32
-	#pragma pack(pop, dds_struct)
-#endif
 
-
+#pragma pack(pop)
 
 // use cast to struct instead of RGBA_MAKE as struct is
 //  much
@@ -168,8 +165,8 @@ enum PixFormat
 #define CUBEMAP_SIDES 6
 
 // Internal functions
-ILboolean	iLoadDdsInternal(ILimage *image);
-ILboolean	iIsValidDds(SIO *io);
+// ILboolean	iLoadDdsInternal(ILimage *image);
+// ILboolean	iIsValidDds(SIO *io);
 ILboolean	iCheckDds(DDSHEAD *Head);
 void		AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat);
 ILboolean	ReadData();
@@ -193,7 +190,7 @@ ILboolean	iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
 ILboolean	DecompressFloat(ILuint lCompFormat);
 void		CorrectPreMult();
 void		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
-ILboolean	iSaveDdsInternal(void);
+ILboolean	iSaveDdsInternal(ILimage *);
 ILboolean	WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags);
 ILushort	*CompressTo565(ILimage *Image);
 ILubyte		*CompressTo88(ILimage *Image);

@@ -48,6 +48,12 @@ iInitFormats() {
 #ifndef IL_NO_DCX
   ADD_FORMAT(DCX);
 #endif
+#ifndef IL_NO_DDS
+  ADD_FORMAT(DDS);
+#endif
+#ifndef IL_NO_DICOM
+  ADD_FORMAT(DICOM);
+#endif
 #ifndef IL_NO_GIF
   ADD_FORMAT(GIF);
 #endif

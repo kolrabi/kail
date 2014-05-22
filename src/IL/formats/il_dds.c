@@ -83,7 +83,7 @@ ILboolean iGetDdsHead(SIO* io, DDSHEAD *Header)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidDds(SIO* io)
+static ILboolean iIsValidDds(SIO* io)
 {
 	ILboolean	IsValid;
 	DDSHEAD		Head;
@@ -2438,7 +2438,16 @@ ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha()
 	return iInvertSurfaceDxtcDataAlpha(iCurImage);
 }
 
+ILconst_string iFormatExtsDDS[] = { 
+	IL_TEXT("dds"), 
+	NULL 
+};
 
-
+ILformat iFormatDDS = { 
+	.Validate = iIsValidDds, 
+	.Load     = iLoadDdsInternal, 
+	.Save     = iSaveDdsInternal, 
+	.Exts     = iFormatExtsDDS
+};
 
 #endif//IL_NO_DDS

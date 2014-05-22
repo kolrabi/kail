@@ -68,12 +68,8 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 	else if (!iStrCmp(Ext, IL_TEXT("jp2")) || !iStrCmp(Ext, IL_TEXT("jpx")) ||
 		!iStrCmp(Ext, IL_TEXT("j2k")) || !iStrCmp(Ext, IL_TEXT("j2c")))
 		Type = IL_JP2;
-	else if (!iStrCmp(Ext, IL_TEXT("dds")))
-		Type = IL_DDS;
 	else if (!iStrCmp(Ext, IL_TEXT("png")))
 		Type = IL_PNG;
-	else if (!iStrCmp(Ext, IL_TEXT("dcm")) || !iStrCmp(Ext, IL_TEXT("dicom")))
-		Type = IL_DICOM;
 	else if (!iStrCmp(Ext, IL_TEXT("dpx")))
 		Type = IL_DPX;
 	else if (!iStrCmp(Ext, IL_TEXT("exr")))
@@ -308,11 +304,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 		}
 	}
 
-	#ifndef IL_NO_DDS
-	if (iIsValidDds(&iCurImage->io))
-		return IL_DDS;
-	#endif
-
 	#ifndef IL_NO_ICNS
 	if (iIsValidIcns(&iCurImage->io))
 		return IL_ICNS;
@@ -416,19 +407,9 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 			return iIsValidJpeg(io);
 		#endif
 
-		#ifndef IL_NO_DDS
-		case IL_DDS:
-			return iIsValidDds(io);
-		#endif
-
 		#ifndef IL_NO_PNG
 		case IL_PNG:
 			return iIsValidPng(io);
-		#endif
-
-		#ifndef IL_NO_DICOM
-		case IL_DICOM:
-			return iIsValidDicom(io);
 		#endif
 
 		#ifndef IL_NO_EXR
@@ -723,11 +704,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadMngInternal();
 		#endif
 
-		#ifndef IL_NO_DDS
-		case IL_DDS:
-			return iLoadDdsInternal(image);
-		#endif
-
 		#ifndef IL_NO_PSD
 		case IL_PSD:
 			return iLoadPsdInternal(image);
@@ -788,11 +764,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadFitsInternal(image);
 		#endif
 
-		#ifndef IL_NO_DICOM
-		case IL_DICOM:
-			return iLoadDicomInternal(image);
-		#endif
-
 		#ifndef IL_NO_DOOM
 		case IL_DOOM:
 			return iLoadDoomInternal();
@@ -805,8 +776,8 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			//return ilLoadTextureF(File);
 			// From http://forums.totalwar.org/vb/showthread.php?t=70886, all that needs to be done
 			//  is to strip out the first 48 bytes, and then it is DDS data.
-			iCurImage->io.seek(iCurImage->io.handle, 48, IL_SEEK_CUR);
-			return iLoadDdsInternal(image);
+			image->io.seek(image->io.handle, 48, IL_SEEK_CUR);
+			return ilLoadFuncs2(image, IL_DDS);
 		#endif
 
 		#ifndef IL_NO_DPX
@@ -989,12 +960,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 	#ifndef IL_NO_MNG
 	case IL_MNG:
 		bRet = iSaveMngInternal();
-		break;
-	#endif
-
-	#ifndef IL_NO_DDS
-	case IL_DDS:
-		bRet = iSaveDdsInternal();
 		break;
 	#endif
 

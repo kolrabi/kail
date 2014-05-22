@@ -35,8 +35,8 @@ typedef struct DICOMHEAD
 	ILenum	Type;
 } DICOMHEAD;
 
-ILboolean	iIsValidDicom(SIO *);
-ILboolean	iLoadDicomInternal(ILimage *);
+//ILboolean	iIsValidDicom(SIO *);
+//ILboolean	iLoadDicomInternal(ILimage *);
 ILboolean	SkipElement(DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum);
 ILboolean	GetNumericValue(DICOMHEAD *Header, ILushort GroupNum, ILuint *Number);
 ILboolean	GetUID(ILubyte *UID);
@@ -214,7 +214,7 @@ ILboolean iCheckDicom(DICOMHEAD *Header)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidDicom(SIO* io)
+static ILboolean iIsValidDicom(SIO* io)
 {
 	DICOMHEAD	Header;
 	ILuint		Pos = io->tell(io->handle);
@@ -413,7 +413,7 @@ ILboolean GetUID(ILubyte *UID)
 
 
 // Internal function used to load the DICOM.
-ILboolean iLoadDicomInternal(ILimage* image)
+static ILboolean iLoadDicomInternal(ILimage* image)
 {
 	DICOMHEAD	Header;
 	ILuint		i;
@@ -514,6 +514,18 @@ ILboolean iLoadDicomInternal(ILimage* image)
 	return ilFixImage();
 }
 
+ILconst_string iFormatExtsDICOM[] = { 
+	IL_TEXT("dcm"), 
+	IL_TEXT("dicom"), 
+	NULL 
+};
+
+ILformat iFormatDICOM = { 
+	.Validate = iIsValidDicom, 
+	.Load     = iLoadDicomInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsDICOM
+};
 
 
 #endif//IL_NO_DICOM

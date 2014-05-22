@@ -204,26 +204,6 @@ char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 //
 #include "il_formats.h"
 
-// ILboolean ilSaveCHeader(ILimage* image, char *InternalName);
-
-// ILboolean iLoadCutInternal(ILimage* image);
-
-/*
-ILboolean ilIsValidDcx(ILconst_string FileName);
-ILboolean ilIsValidDcxF(ILHANDLE File);
-ILboolean ilIsValidDcxL(const void *Lump, ILuint Size);
-ILboolean ilLoadDcx(ILconst_string FileName);
-ILboolean ilLoadDcxF(ILHANDLE File);
-ILboolean ilLoadDcxL(const void *Lump, ILuint Size);
-*/
-
-ILboolean iIsValidDds(SIO* io);
-ILboolean iLoadDdsInternal(ILimage* image);
-ILboolean iSaveDdsInternal();
-
-ILboolean iIsValidDicom(SIO* io);
-ILboolean iLoadDicomInternal(ILimage* image);
-
 ILboolean iLoadDoomInternal();
 ILboolean iLoadDoomFlatInternal();
 
