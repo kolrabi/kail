@@ -77,10 +77,6 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 	else if (!iStrCmp(Ext, IL_TEXT("ilbm")) || !iStrCmp(Ext, IL_TEXT("lbm")) ||
         !iStrCmp(Ext, IL_TEXT("ham")))
 		Type = IL_ILBM;
-	else if (!iStrCmp(Ext, IL_TEXT("ico")) || !iStrCmp(Ext, IL_TEXT("cur")))
-		Type = IL_ICO;
-	else if (!iStrCmp(Ext, IL_TEXT("icns")))
-		Type = IL_ICNS;
 	else if (!iStrCmp(Ext, IL_TEXT("iwi")))
 		Type = IL_IWI;
 	else if (!iStrCmp(Ext, IL_TEXT("iwi")))
@@ -272,11 +268,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 			break;
 	}
 
-	#ifndef IL_NO_ICNS
-	if (iIsValidIcns(&iCurImage->io))
-		return IL_ICNS;
-	#endif
-
 	#ifndef IL_NO_ILBM
 	if (iIsValidIlbm())
 		return IL_ILBM;
@@ -327,13 +318,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 		return IL_XPM;
 	#endif
 
-	// Some file types have a weak signature, so we test for these formats 
-	// after checking for most other formats
-	#ifndef IL_NO_ICO
-	if (iIsValidIcon())
-		return IL_ICO;
-	#endif
-
 	return iIdentifyFormat(&iCurImage->io);
 }
 
@@ -371,11 +355,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return ilIsValidExr(io);
-		#endif
-
-		#ifndef IL_NO_ICNS
-		case IL_ICNS:
-			return iIsValidIcns(io);
 		#endif
 
 		#ifndef IL_NO_IWI
@@ -587,11 +566,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		case IL_TYPE_UNKNOWN:
 			return IL_FALSE;
 
-		#ifndef IL_NO_ICO
-		case IL_ICO:
-			return iLoadIconInternal(image);
-		#endif
-
 		#ifndef IL_NO_JPG
 			#ifndef IL_USE_IJL
 			case IL_JPG:
@@ -673,11 +647,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#ifndef IL_NO_XPM
 		case IL_XPM:
 			return iLoadXpmInternal();
-		#endif
-
-		#ifndef IL_NO_ICNS
-		case IL_ICNS:
-			return iLoadIcnsInternal(image);
 		#endif
 
 		#ifndef IL_NO_VTF

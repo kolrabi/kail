@@ -35,28 +35,20 @@
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidIcns(SIO* io)
-{
-	ICNSHEAD	Header;
+static ILboolean iIsValidIcns(SIO* io) {
+	char Sig[4];
+	ILint read = SIOread(io, Sig, 1, 4);
+	SIOseek(io, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
-	ILint read = io->read(io->handle, Header.Head, 1, 4);
-	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
-
-	if (read != 4 || strncmp(Header.Head, "icns", 4) != 0)  // First 4 bytes have to be 'icns'.
-		return IL_FALSE;
-
-	return IL_TRUE;
+	return read == 4 && memcmp(Sig, "icns", 4) == 0;  // First 4 bytes have to be 'icns'.
 }
 
-
 // Internal function used to load the icon.
-ILboolean iLoadIcnsInternal(ILimage* image)
-{
+static ILboolean iLoadIcnsInternal(ILimage* image) {
 	ICNSHEAD	Header;
 	ICNSDATA	Entry;
 	ILimage		*Image = NULL;
 	ILboolean	BaseCreated = IL_FALSE;
-
 
 	if (image == NULL)
 	{
@@ -269,5 +261,17 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
 	ifree(Data);
 	return IL_TRUE;
 }
+
+ILconst_string iFormatExtsICNS[] = { 
+	IL_TEXT("icns"), 
+	NULL 
+};
+
+ILformat iFormatICNS = { 
+	.Validate = iIsValidIcns, 
+	.Load     = iLoadIcnsInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsICNS
+};
 
 #endif//IL_NO_ICNS

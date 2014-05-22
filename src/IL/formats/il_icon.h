@@ -62,7 +62,4 @@ typedef struct ICOIMAGE
 
 #include "pack_pop.h"
 
-ILboolean iLoadIconInternal();
-ILboolean iLoadIconPNG(ICOIMAGE *Icon);
-
 #endif//ICON_H

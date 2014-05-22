@@ -138,7 +138,6 @@ iLoadDcxInternal(ILimage *TargetImage)
 		else {
 			Prev->Next = Image;
 			Prev = Prev->Next;
-			iCurImage = Image;
 		}
 	}
 

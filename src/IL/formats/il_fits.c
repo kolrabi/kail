@@ -52,7 +52,7 @@ static ILboolean
 iGetFitsHead(SIO *io, FITSHEAD *Header) {
 	ILint	CardKey;
 
-	imemclear(&Header, sizeof(Header));  // Clear the header to all 0s first.
+	imemclear(Header, sizeof(*Header));  // Clear the header to all 0s first.
 
 	do {
 		CardKey = GetCardImage(io, Header);

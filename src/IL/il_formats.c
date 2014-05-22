@@ -89,6 +89,12 @@ iInitFormats() {
   ADD_FORMAT(TIF);
 #endif
 
+  // Some file types have a weak signature, so we test for these formats 
+  // after checking for most other formats
+#ifndef IL_NO_ICO
+  ADD_FORMAT(ICO);
+#endif
+
   //moved tga to end of list because it has no magic number
   //in header to assure that this is really a tga... (20040218)
 #ifndef IL_NO_TGA

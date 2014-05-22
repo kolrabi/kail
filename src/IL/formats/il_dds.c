@@ -545,6 +545,7 @@ ILboolean ReadData()
 			return IL_FALSE;
 		}
 
+		// FIXME: no iCurImage
 		if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, Head.LinearSize) != (ILuint)Head.LinearSize) {
 			ifree(CompData);
 			CompData = NULL;

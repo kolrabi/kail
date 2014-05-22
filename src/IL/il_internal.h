@@ -209,12 +209,6 @@ ILboolean ilLoadExrF(ILHANDLE File);
 ILboolean ilLoadExrL(const void *Lump, ILuint Size);
 ILboolean iLoadExrInternal();
 
-ILboolean iLoadIconInternal(ILimage* image);
-ILboolean iIsValidIcon();
-
-ILboolean iIsValidIcns(SIO* io);
-ILboolean iLoadIcnsInternal(ILimage* image);
-
 ILboolean iLoadIffInternal(void);
 
 ILboolean iIsValidIlbm();
