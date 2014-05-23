@@ -517,7 +517,7 @@ typedef ILuint    (ILAPIENTRY *fReadProc)   (ILHANDLE, void*, ILuint, ILuint);
 typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint64, ILuint);
 typedef ILuint    (ILAPIENTRY *fTellProc)   (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fPutcProc)   (ILubyte, ILHANDLE);
-typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE);
+typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME
 
 // Callback functions for allocation and deallocation
 typedef void*     (ILAPIENTRY *mAlloc)      (const ILsizei);

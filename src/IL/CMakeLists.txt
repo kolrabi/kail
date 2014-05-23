@@ -33,7 +33,6 @@ SET                     ( SOURCES
                           formats/il_mdl.c
                           formats/il_mng.c
                           formats/il_mp3.c
-                          formats/il_nvidia.c
                           formats/il_pal.c
                           formats/il_pcd.c
                           formats/il_pcx.c
@@ -77,6 +76,7 @@ SET                     ( SOURCES
                           il_main.c
                           il_manip.c
                           il_neuquant.c
+                          il_nvidia.cc
                           il_profiles.c
                           il_quantizer.c
                           il_register.c

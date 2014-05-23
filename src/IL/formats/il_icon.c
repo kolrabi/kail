@@ -106,11 +106,23 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   Short(&IconDir.Type);
   Short(&IconDir.Count);
 
-  if (SIOeof(io))
-    goto file_read_error;
+  if (IconDir.Reserved != 0) {
+    ilSetError(IL_INVALID_FILE_HEADER);
+    return IL_FALSE;
+  }
+
+  if (IconDir.Type != 1 && IconDir.Type != 2) {
+    ilSetError(IL_INVALID_FILE_HEADER);
+    return IL_FALSE;
+  }
+
+  if (IconDir.Count == 0) {
+    return IL_FALSE;
+  }
 
   DirEntries = (ICODIRENTRY*)ialloc(sizeof(ICODIRENTRY) * IconDir.Count);
-  IconImages = (ICOIMAGE*)ialloc(sizeof(ICOIMAGE) * IconDir.Count);
+  IconImages = (ICOIMAGE*)   ialloc(sizeof(ICOIMAGE)    * IconDir.Count);
+
   if (DirEntries == NULL || IconImages == NULL) {
     ifree(DirEntries);
     ifree(IconImages);
@@ -133,6 +145,8 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     Short(&DirEntries[i].Bpp);
     UInt (&DirEntries[i].SizeOfData);
     UInt (&DirEntries[i].Offset);
+
+    iTrace("---- ICONDIR[%2d]: %d %d %d %08x %dx%x", i, DirEntries[i].Planes, DirEntries[i].Bpp, DirEntries[i].SizeOfData, DirEntries[i].Offset, DirEntries[i].Width, DirEntries[i].Height);
   }
 
   for (i = 0; i < IconDir.Count; i++) {
@@ -143,6 +157,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     if (SIOread(io, PNGTest, 3, 1) && memcmp(PNGTest, "PNG", 3) == 0)  // Characters 'P', 'N', 'G' for PNG header
     {
 #ifdef IL_NO_PNG
+      iTrace("**** PNG icons not supported");
       ilSetError(IL_FORMAT_NOT_SUPPORTED);  // Cannot handle these without libpng.
       goto file_read_error;
 #else
@@ -153,6 +168,8 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     }
     else
     {
+      iTrace("---- ICON %5d : is a %c%c%c", i, PNGTest[0], PNGTest[1], PNGTest[2]);
+
       // Need to go back the 4 bytes that were just read.
       SIOseek(io, DirEntries[i].Offset, IL_SEEK_SET);
 
@@ -171,6 +188,8 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       Int  (&IconImages[i].Head.YPixPerMeter);
       Int  (&IconImages[i].Head.ColourUsed);
       Int  (&IconImages[i].Head.ColourImportant);
+
+      iTrace("---- ICOIMG [%2d]: %d %dx%x", i, IconImages[i].Head.Size, IconImages[i].Head.Width, IconImages[i].Head.Height);
 
       if (IconImages[i].Head.BitCount < 8) {
         if (IconImages[i].Head.ColourUsed == 0) {
@@ -202,20 +221,23 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       }
 
       PadSize    = (4 - ((IconImages[i].Head.Width*IconImages[i].Head.BitCount + 7) / 8) % 4) % 4;  // Has to be DWORD-aligned.
-      ANDPadSize = (4 - ((IconImages[i].Head.Width + 7) / 8) % 4) % 4;  // AND is 1 bit/pixel
+      ANDPadSize = (4 - ((IconImages[i].Head.Width                             + 7) / 8) % 4) % 4;  // AND is 1 bit/pixel
       Size = ((IconImages[i].Head.Width*IconImages[i].Head.BitCount + 7) / 8 + PadSize)
             * (IconImages[i].Head.Height / 2);
 
       IconImages[i].Data = (ILubyte*)ialloc(Size);
       if (IconImages[i].Data == NULL)
         goto file_read_error;
+
       if (SIOread(io, IconImages[i].Data, 1, Size) != Size)
         goto file_read_error;
 
       Size = (((IconImages[i].Head.Width + 7) /8) + ANDPadSize) * (IconImages[i].Head.Height / 2);
+
       IconImages[i].AND = (ILubyte*)ialloc(Size);
       if (IconImages[i].AND == NULL)
         goto file_read_error;
+
       if (SIOread(io, IconImages[i].AND, 1, Size) != Size)
         goto file_read_error;
     }
@@ -223,29 +245,33 @@ static ILboolean iLoadIconInternal(ILimage* image) {
 
   for (i = 0; i < IconDir.Count; i++) {
     if (IconImages[i].Head.BitCount != 1 && IconImages[i].Head.BitCount != 4 &&
-      IconImages[i].Head.BitCount != 8 && IconImages[i].Head.BitCount != 24 &&
-
-      IconImages[i].Head.BitCount != 32)
+        IconImages[i].Head.BitCount != 8 && IconImages[i].Head.BitCount != 24 &&
+        IconImages[i].Head.BitCount != 32) {
+      iTrace("**** Skipping icon %d. Unsupported bit count %d", i, IconImages[i].Head.BitCount);
       continue;
+    }
 
     if (!BaseCreated) {
-      if (IconImages[i].Head.Size == 0)  // PNG compressed icon
+      // first icon
+      if (IconImages[i].Head.Size == 0) { // PNG compressed icon
         ilTexImage_(image, IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
-      else
+      } else {
         ilTexImage_(image, IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
-      image->Origin = IL_ORIGIN_LOWER_LEFT;
-      Image = image;
-      BaseCreated = IL_TRUE;
-    }
-    else {
-      if (IconImages[i].Head.Size == 0)  // PNG compressed icon
+      }
+      Image         = image;
+      BaseCreated   = IL_TRUE;
+    } else {
+      // next icon
+      if (IconImages[i].Head.Size == 0) { // PNG compressed icon
         Image->Next = ilNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, 1);
-      else
+      } else {
         Image->Next = ilNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, 1);
-      Image = Image->Next;
+      }
+      Image         = Image->Next;
       Image->Format = IL_BGRA;
     }
-    Image->Type = IL_UNSIGNED_BYTE;
+    Image->Origin = IL_ORIGIN_LOWER_LEFT;
+    Image->Type   = IL_UNSIGNED_BYTE;
 
     j = 0;  k = 0;  l = 128;  CurAndByte = 0; x = 0;
 
@@ -256,17 +282,19 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     // AndBytes = (w + 7) / 8;
 
     if (IconImages[i].Head.BitCount == 1) {
+      // monochrome icon
       for (; j < Image->SizeOfData; k++) {
         for (m = 128; m && x < w; m >>= 1) {
-          Image->Data[j  ] = IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4];
-          Image->Data[j+1] = IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4 + 1];
-          Image->Data[j+2] = IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4 + 2];
+          Image->Data[j  ] =  IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4    ];
+          Image->Data[j+1] =  IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4 + 1];
+          Image->Data[j+2] =  IconImages[i].Pal[!!(IconImages[i].Data[k] & m) * 4 + 2];
           Image->Data[j+3] = (IconImages[i].AND[CurAndByte] & l) != 0 ? 0 : 255;
           j += 4;
           l >>= 1;
 
           ++x;
         }
+
         if (l == 0 || x == w) {
           l = 128;
           CurAndByte++;
@@ -275,15 +303,14 @@ static ILboolean iLoadIconInternal(ILimage* image) {
             k += PadSize;
             x = 0;
           }
-
         }
       }
-    }
-    else if (IconImages[i].Head.BitCount == 4) {
+    } else if (IconImages[i].Head.BitCount == 4) {
+      // 16 color icon
       for (; j < Image->SizeOfData; j += 8, k++) {
-        Image->Data[j] = IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4];
-        Image->Data[j+1] = IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4 + 1];
-        Image->Data[j+2] = IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4 + 2];
+        Image->Data[j  ] =  IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4    ];
+        Image->Data[j+1] =  IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4 + 1];
+        Image->Data[j+2] =  IconImages[i].Pal[((IconImages[i].Data[k] & 0xF0) >> 4) * 4 + 2];
         Image->Data[j+3] = (IconImages[i].AND[CurAndByte] & l) != 0 ? 0 : 255;
         l >>= 1;
 
@@ -297,13 +324,9 @@ static ILboolean iLoadIconInternal(ILimage* image) {
           l >>= 1;
 
           ++x;
-
-        }
-
-        else
-
+        } else {
           j -= 4;
-
+        }
 
         if (l == 0 || x == w) {
           l = 128;
@@ -316,18 +339,15 @@ static ILboolean iLoadIconInternal(ILimage* image) {
           }
         }
       }
-    }
-    else if (IconImages[i].Head.BitCount == 8) {
+    } else if (IconImages[i].Head.BitCount == 8) {
+      // 256 color palette
       for (; j < Image->SizeOfData; j += 4, k++) {
-        Image->Data[j] = IconImages[i].Pal[IconImages[i].Data[k] * 4];
+        Image->Data[j  ] = IconImages[i].Pal[IconImages[i].Data[k] * 4    ];
         Image->Data[j+1] = IconImages[i].Pal[IconImages[i].Data[k] * 4 + 1];
         Image->Data[j+2] = IconImages[i].Pal[IconImages[i].Data[k] * 4 + 2];
-        if (IconImages[i].AND == NULL)  // PNG Palette
-        {
+        if (IconImages[i].AND == NULL) { // PNG Palette
           Image->Data[j+3] = IconImages[i].Pal[IconImages[i].Data[k] * 4 + 3];
-        }
-        else
-        {
+        } else {
           Image->Data[j+3] = (IconImages[i].AND[CurAndByte] & l) != 0 ? 0 : 255;
         }
         l >>= 1;
@@ -344,10 +364,10 @@ static ILboolean iLoadIconInternal(ILimage* image) {
           }
         }
       }
-    }
-    else if (IconImages[i].Head.BitCount == 24) {
+    } else if (IconImages[i].Head.BitCount == 24) {
+      // 24 bit true color, transparency from AND
       for (; j < Image->SizeOfData; j += 4, k += 3) {
-        Image->Data[j] = IconImages[i].Data[k];
+        Image->Data[j  ] = IconImages[i].Data[k  ];
         Image->Data[j+1] = IconImages[i].Data[k+1];
         Image->Data[j+2] = IconImages[i].Data[k+2];
         if (IconImages[i].AND != NULL)
@@ -366,11 +386,10 @@ static ILboolean iLoadIconInternal(ILimage* image) {
           }
         }
       }
-    }
-
-    else if (IconImages[i].Head.BitCount == 32) {
+    } else if (IconImages[i].Head.BitCount == 32) {
+      // 32 bit trucolor + alpha
       for (; j < Image->SizeOfData; j += 4, k += 4) {
-        Image->Data[j] = IconImages[i].Data[k];
+        Image->Data[j  ] = IconImages[i].Data[k];
         Image->Data[j+1] = IconImages[i].Data[k+1];
         Image->Data[j+2] = IconImages[i].Data[k+2];
 
@@ -381,7 +400,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     }
   }
 
-
+  // cleanup
   for (i = 0; i < IconDir.Count; i++) {
     ifree(IconImages[i].Pal);
     ifree(IconImages[i].Data);
@@ -409,7 +428,6 @@ file_read_error:
   return IL_FALSE;
 }
 
-
 #ifndef IL_NO_PNG
 // 08-22-2008: Copying a lot of this over from il_png.c for the moment.
 // @TODO: Make .ico and .png use the same functions.
@@ -419,70 +437,23 @@ struct IconData {
   ILint   ico_color_type;
 };
 
-#define GAMMA_CORRECTION 1.0  // Doesn't seem to be doing anything...
-
-ILint ico_readpng_init(SIO *io, struct IconData* data);
-ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon);
-void ico_readpng_cleanup(struct IconData* data);
-#endif
-
-static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon)
-{
-#ifndef IL_NO_PNG
-  struct IconData data;
-  ILint init = ico_readpng_init(io, &data);
-  if (init)
-    return IL_FALSE;
-  if (!ico_readpng_get_image(&data, Icon))
-    return IL_FALSE;
-
-  ico_readpng_cleanup(&data);
-  Icon->Head.Size = 0;  // Easiest way to tell that this is a PNG.
-              // In the normal routine, it will not be 0.
-
-  return IL_TRUE;
-#else
-  Icon;
-  return IL_FALSE;
-#endif
-}
-
-#ifndef IL_NO_PNG
-static void ico_png_read(png_structp png_ptr, png_bytep data, png_size_t length)
-{
+static void ico_png_read(png_structp png_ptr, png_bytep data, png_size_t length) {
   SIO *io = (SIO*)png_get_io_ptr(png_ptr);
   SIOread(io, data, 1, (ILuint)length);
-  return;
 }
 
-
-static void ico_png_error_func(png_structp png_ptr, png_const_charp message)
-{
-  iTrace("**** %s", message);
+static void ico_png_error_func(png_structp png_ptr, png_const_charp message) {
+  iTrace("**** PNG Error : %s", message);
   ilSetError(IL_LIB_PNG_ERROR);
-
-  /*
-    changed 20040224
-    From the libpng docs:
-    "Errors handled through png_error() are fatal, meaning that png_error()
-     should never return to its caller. Currently, this is handled via
-     setjmp() and longjmp()"
-  */
-  //return;
   longjmp(png_jmpbuf(png_ptr), 1);
 }
 
-static void ico_png_warn_func(png_structp png_ptr, png_const_charp message)
-{
+static void ico_png_warn_func(png_structp png_ptr, png_const_charp message) {
   (void)png_ptr;
-
-  iTrace("---- %s", message);
-  return;
+  iTrace("**** PNG Warning : %s", message);
 }
 
-
-ILint ico_readpng_init(SIO *io, struct IconData* data)
-{
+static ILint ico_readpng_init(SIO *io, struct IconData* data) {
   if (data == NULL)
     return 1;
 
@@ -528,19 +499,21 @@ ILint ico_readpng_init(SIO *io, struct IconData* data)
   return 0;
 }
 
+static void ico_readpng_cleanup(struct IconData* data) {
+  if (data->ico_png_ptr && data->ico_info_ptr) {
+    png_destroy_read_struct(&data->ico_png_ptr, &data->ico_info_ptr, NULL);
+    data->ico_png_ptr = NULL;
+    data->ico_info_ptr = NULL;
+  }
+}
 
-ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon)
-{
+static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
   png_bytepp  row_pointers = NULL;
   png_uint_32 width, height; // Changed the type to fix AMD64 bit problems, thanks to Eric Werness
-  ILdouble  screen_gamma = 1.0;
   ILuint    i;
   ILenum    format;
   png_colorp  palette;
   ILint   num_palette, j, bit_depth;
-#if _WIN32 || DJGPP
-  ILdouble image_gamma;
-#endif
 
   /* setjmp() must be called in every function that calls a PNG-reading
    * libpng function */
@@ -576,20 +549,12 @@ ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon)
 
   // Perform gamma correction.
   // @TODO:  Determine if we should call png_set_gamma if image_gamma is 1.0.
-#if _WIN32 || DJGPP
-  screen_gamma = 2.2;
-  if (png_get_gAMA(data->ico_png_ptr, data->ico_info_ptr, &image_gamma))
-    png_set_gamma(data->ico_png_ptr, screen_gamma, image_gamma);
-#else
-  screen_gamma = screen_gamma;
-#endif
 
   //fix endianess
 #ifdef __LITTLE_ENDIAN__
   if (bit_depth == 16)
     png_set_swap(data->ico_png_ptr);
 #endif
-
 
   png_read_update_info(data->ico_png_ptr, data->ico_info_ptr);
   // channels = (ILint)png_get_channels(data->ico_png_ptr, data->ico_info_ptr);
@@ -691,17 +656,29 @@ ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon)
   return IL_TRUE;
 }
 
+static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon) {
+  struct IconData data;
+  ILint init = ico_readpng_init(io, &data);
+  if (init)
+    return IL_FALSE;
+  if (!ico_readpng_get_image(&data, Icon))
+    return IL_FALSE;
 
-void ico_readpng_cleanup(struct IconData* data)
-{
-  if (data->ico_png_ptr && data->ico_info_ptr) {
-    png_destroy_read_struct(&data->ico_png_ptr, &data->ico_info_ptr, NULL);
-    data->ico_png_ptr = NULL;
-    data->ico_info_ptr = NULL;
-  }
+  ico_readpng_cleanup(&data);
+  Icon->Head.Size = 0;  // Easiest way to tell that this is a PNG.
+              // In the normal routine, it will not be 0.
+
+  return IL_TRUE;
 }
-#endif//IL_NO_PNG
+#else
 
+static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon) {
+  (void)io;
+  (void)Icon;
+  return IL_FALSE;
+}
+
+#endif
 
 ILconst_string iFormatExtsICO[] = { 
   IL_TEXT("ico"), 

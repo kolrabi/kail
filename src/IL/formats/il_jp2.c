@@ -26,39 +26,48 @@
 	#endif
 #endif
 
+static ILboolean		iLoadJp2InternalStream(ILimage* image, void *Stream);
+static ILboolean		iSaveJp2Internal(ILimage* image);
+static jas_stream_t	*iJp2ReadStream();
+
+
 
 ILboolean JasperInit = IL_FALSE;
 
-
 // Internal function to get the header and check it.
-ILboolean iIsValidJp2(SIO* io)
-{
+static ILboolean iIsValidJp2(SIO* io) {
 	ILubyte Signature[4];
 
-	io->seek(io->handle, 4, IL_SEEK_CUR);  // Skip the 4 bytes that tell the size of the signature box.
-	if (io->read(io->handle, Signature, 1, 4) != 4) {
-		io->seek(io->handle, -4, IL_SEEK_CUR);
+	ILuint Pos = SIOtell(io);
+
+	SIOseek(io, 4, IL_SEEK_CUR);  // Skip the 4 bytes that tell the size of the signature box.
+
+	if (SIOread(io, Signature, 1, 4) != 4) {
+		SIOseek(io, Pos, IL_SEEK_SET);
 		return IL_FALSE;  // File read error
 	}
 
-	io->seek(io->handle, -8, IL_SEEK_CUR);  // Restore to previous state
+	SIOseek(io, Pos, IL_SEEK_SET); // Restore to previous state
 
 	// Signature is 'jP\040\040' by the specs (or 0x6A502020).
 	//  http://www.jpeg.org/public/fcd15444-6.pdf
-	if (Signature[0] != 0x6A || Signature[1] != 0x50 ||
-		Signature[2] != 0x20 || Signature[3] != 0x20)
+	if ( Signature[0] != 0x6A 
+		|| Signature[1] != 0x50 
+		|| Signature[2] != 0x20 
+		|| Signature[3] != 0x20 )
 		return IL_FALSE;
 
 	return IL_TRUE;
 }
 
-
 //! This is separated so that it can be called for other file types, such as .icns.
-ILboolean ilLoadJp2LInternal(ILimage* image, const void *Lump, ILuint Size)
-{
-	ILboolean		bRet;
-	jas_stream_t	*Stream;
+ILboolean iLoadJp2Internal(ILimage* Image) {
+	if (Image == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 
+	// initialize jasper once
 	if (!JasperInit) {
 		if (jas_init()) {
 			ilSetError(IL_LIB_JP2_ERROR);
@@ -66,23 +75,58 @@ ILboolean ilLoadJp2LInternal(ILimage* image, const void *Lump, ILuint Size)
 		}
 		JasperInit = IL_TRUE;
 	}
-	Stream = jas_stream_memopen((char*)Lump, Size);
+
+	SIO *io = &Image->io;
+
+	// open stream
+	jas_stream_t *Stream = iJp2ReadStream(io);
 	if (!Stream)
 	{
 		ilSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
-	bRet = iLoadJp2Internal(image, Stream);
+	ILboolean bRet = iLoadJp2InternalStream(Image, Stream);
+
 	// Close the input stream.
 	jas_stream_close(Stream);
-
 	return bRet;
 }
 
 
+//! This is separated so that it can be called for other file types, such as .icns.
+ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
+	if (Image == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	// initialize jasper once
+	if (!JasperInit) {
+		if (jas_init()) {
+			ilSetError(IL_LIB_JP2_ERROR);
+			return IL_FALSE;
+		}
+		JasperInit = IL_TRUE;
+	}
+
+	// open stream
+	jas_stream_t *Stream = jas_stream_memopen((char*)Lump, Size);;
+	if (!Stream)
+	{
+		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		return IL_FALSE;
+	}
+
+	ILboolean bRet = iLoadJp2InternalStream(Image, Stream);
+
+	// Close the input stream.
+	jas_stream_close(Stream);
+	return bRet;
+}
+
 // Internal function used to load the Jpeg2000 stream.
-ILboolean iLoadJp2Internal(ILimage* image, void	*StreamP)
+static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 {
 	jas_stream_t  *Stream = (jas_stream_t*)StreamP;
 	jas_image_t		*Jp2Image = NULL;
@@ -208,36 +252,36 @@ ILboolean iLoadJp2Internal(ILimage* image, void	*StreamP)
 
 static int iJp2_file_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
-	obj;
-	return iCurImage->io.read(iCurImage->io.handle, buf, 1, cnt);
+	SIO *io = (SIO*)obj;
+	return SIOread(io, buf, 1, cnt);
 }
 
 static int iJp2_file_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
-	obj;
-	return iCurImage->io.write(buf, 1, cnt, iCurImage->io.handle);
+	SIO *io = (SIO*)obj;
+	return SIOwrite(io, buf, 1, cnt);
 }
 
 static long iJp2_file_seek(jas_stream_obj_t *obj, long offset, int origin)
 {
-	obj;
+	SIO *io = (SIO*)obj;
 
 	// We could just pass origin to iseek, but this is probably more portable.
 	switch (origin)
 	{
 		case SEEK_SET:
-			return iCurImage->io.seek(iCurImage->io.handle, offset, IL_SEEK_SET);
+			return SIOseek(io, offset, IL_SEEK_SET);
 		case SEEK_CUR:
-			return iCurImage->io.seek(iCurImage->io.handle, offset, IL_SEEK_CUR);
+			return SIOseek(io, offset, IL_SEEK_CUR);
 		case SEEK_END:
-			return iCurImage->io.seek(iCurImage->io.handle, offset, IL_SEEK_END);
+			return SIOseek(io, offset, IL_SEEK_END);
 	}
 	return 0;  // Failed
 }
 
 static int iJp2_file_close(jas_stream_obj_t *obj)
 {
-	obj;
+	(void)obj;
 	return 0;  // We choose when we want to close the file.
 }
 
@@ -255,10 +299,10 @@ static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf, int
 
 // Modified version of jas_stream_fopen and jas_stream_memopen from jas_stream.c of JasPer
 //  so that we can use our own file routines.
-jas_stream_t *iJp2ReadStream()
+jas_stream_t *iJp2ReadStream(SIO *io)
 {
 	jas_stream_t *stream;
-	jas_stream_memobj_t *obj;
+	//jas_stream_memobj_t *obj;
 
 	if (!(stream = jas_stream_create())) {
 		return 0;
@@ -275,15 +319,15 @@ jas_stream_t *iJp2ReadStream()
 	stream->ops_ = &jas_stream_devilops;
 
 	/* Allocate memory for the underlying memory stream object. */
-	if (!(obj = (jas_stream_memobj_t *) jas_malloc(sizeof(jas_stream_memobj_t)))) {
+	/*if (!(obj = (jas_stream_memobj_t *) jas_malloc(sizeof(jas_stream_memobj_t)))) {
 		jas_stream_destroy(stream);
 		return 0;
-	}
-	stream->obj_ = (void *) obj;
+	}*/
+	stream->obj_ = (void *) io;
 
 	/* Initialize a few important members of the memory stream object. */
-	obj->myalloc_ = 0;
-	obj->buf_ = 0;
+	//obj->myalloc_ = 0;
+	//obj->buf_ = 0;
 
 	// Shouldn't need any of this.
 
@@ -563,7 +607,7 @@ done:
 //  http://openscenegraph.sourcearchive.com/documentation/2.2.0/ReaderWriterJP2_8cpp-source.html
 
 //@TODO: Do we need to worry about images with depths > 1?
-ILboolean iSaveJp2Internal(ILimage* image)
+static ILboolean iSaveJp2Internal(ILimage* image)
 {
 	jas_image_t *Jp2Image;
 	jas_image_cmptparm_t cmptparm[4];
@@ -711,5 +755,19 @@ ILboolean iSaveJp2Internal(ILimage* image)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsJp2[] = { 
+  IL_TEXT("jp2"), 
+  IL_TEXT("jpx"), 
+  IL_TEXT("j2k"), 
+  IL_TEXT("j2c"), 
+  NULL 
+};
+
+ILformat iFormatJP2= { 
+  .Validate = iIsValidJp2, 
+  .Load     = iLoadJp2Internal, 
+  .Save     = iSaveJp2Internal, 
+  .Exts     = iFormatExtsJp2
+};
 
 #endif//IL_NO_JP2

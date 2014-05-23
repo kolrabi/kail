@@ -31,13 +31,13 @@
 #include <mm_malloc.h>
 #endif
 
-static void ILAPIENTRY DefaultFreeFunc(const void * CONST_RESTRICT Ptr);
+static void  ILAPIENTRY DefaultFreeFunc(const void * CONST_RESTRICT Ptr);
 static void* ILAPIENTRY DefaultAllocFunc(const ILsizei Size);
 
 // Global variables: functions to allocate and deallocate memory
 // Access would have to be protected by mutexes in a multithreaded environment
 static mAlloc ialloc_ptr = DefaultAllocFunc;
-static mFree  ifree_ptr = DefaultFreeFunc;
+static mFree  ifree_ptr  = DefaultFreeFunc;
 
 /*** Vector Allocation/Deallocation Function ***/
 #ifdef VECTORMEM

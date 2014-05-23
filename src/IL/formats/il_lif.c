@@ -15,184 +15,102 @@
 #ifndef IL_NO_LIF
 #include "il_lif.h"
 
-
-//! Checks if the file specified in FileName is a valid Lif file.
-ILboolean ilIsValidLif(ILconst_string FileName)
-{
-	ILHANDLE	LifFile;
-	ILboolean	bLif = IL_FALSE;
-
-	if (!iCheckExtension(FileName, IL_TEXT("lif"))) {
-		ilSetError(IL_INVALID_EXTENSION);
-		return bLif;
-	}
-
-	LifFile = iopenr(FileName);
-	if (LifFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bLif;
-	}
-
-	bLif = ilIsValidLifF(LifFile);
-	icloser(LifFile);
-
-	return bLif;
-}
-
-
-//! Checks if the ILHANDLE contains a valid Lif file at the current position.
-ILboolean ilIsValidLifF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iIsValidLif();
-	iseek(FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Checks if Lump is a valid Lif lump.
-ILboolean ilIsValidLifL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidLif();
-}
-
+static ILboolean iCheckLif(LIF_HEAD *Header);
 
 // Internal function used to get the Lif header from the current file.
-ILboolean iGetLifHead(LIF_HEAD *Header)
-{
+static ILboolean iGetLifHead(SIO *io, LIF_HEAD *Header) {
+	if (SIOread(io, Header, sizeof(*Header), 1) != 1)
+		return IL_FALSE;
 
-	iread(Header->Id, 1, 8);
-
-	Header->Version = GetLittleUInt();
-
-	Header->Flags = GetLittleUInt();
-
-	Header->Width = GetLittleUInt();
-
-	Header->Height = GetLittleUInt();
-
-	Header->PaletteCRC = GetLittleUInt();
-
-	Header->ImageCRC = GetLittleUInt();
-
-	Header->PalOffset = GetLittleUInt();
-
-	Header->TeamEffect0 = GetLittleUInt();
-
-	Header->TeamEffect1 = GetLittleUInt();
-
+	UInt(&Header->Version);
+	UInt(&Header->Flags);
+	UInt(&Header->Width);
+	UInt(&Header->Height);
+	UInt(&Header->PaletteCRC);
+	UInt(&Header->ImageCRC);
+	UInt(&Header->PalOffset);
+	UInt(&Header->TeamEffect0);
+	UInt(&Header->TeamEffect1);
 
 	return IL_TRUE;
 }
 
-
 // Internal function to get the header and check it.
-ILboolean iIsValidLif()
-{
+static ILboolean iIsValidLif(SIO *io) {
+	ILuint    Pos = SIOtell(io);
 	LIF_HEAD	Head;
 
-	if (!iGetLifHead(&Head))
+	if (!iGetLifHead(io, &Head)) {
+		SIOseek(io, Pos, IL_SEEK_SET);
 		return IL_FALSE;
-	iseek(-(ILint)sizeof(LIF_HEAD), IL_SEEK_CUR);
+	}
+	SIOseek(io, Pos, IL_SEEK_SET);
 
 	return iCheckLif(&Head);
 }
 
-
 // Internal function used to check if the HEADER is a valid Lif header.
-ILboolean iCheckLif(LIF_HEAD *Header)
-{
+static ILboolean iCheckLif(LIF_HEAD *Header) {
 	if (Header->Version != 260 || Header->Flags != 50)
 		return IL_FALSE;
-	if (stricmp(Header->Id, "Willy 7"))
+
+	if (memcmp(Header->Id, "Willy 7", 7))
 		return IL_FALSE;
+
 	return IL_TRUE;
 }
 
-
-//! Reads a .Lif file
-ILboolean ilLoadLif(ILconst_string FileName)
-{
-	ILHANDLE	LifFile;
-	ILboolean	bLif = IL_FALSE;
-
-	LifFile = iopenr(FileName);
-	if (LifFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bLif;
-	}
-
-	bLif = ilLoadLifF(LifFile);
-	icloser(LifFile);
-
-	return bLif;
-}
-
-
-//! Reads an already-opened .Lif file
-ILboolean ilLoadLifF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iLoadLifInternal();
-	iseek(FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Reads from a memory "lump" that contains a .Lif
-ILboolean ilLoadLifL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iLoadLifInternal();
-}
-
-
-ILboolean iLoadLifInternal()
-{
+static ILboolean iLoadLifInternal(ILimage *Image) {
 	LIF_HEAD	LifHead;
 	ILuint		i;
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	SIO *io = &Image->io;
 	
-	if (!iGetLifHead(&LifHead))
+	if (!iGetLifHead(io, &LifHead))
 		return IL_FALSE;
 
-	if (!ilTexImage(LifHead.Width, LifHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(Image, LifHead.Width, LifHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	iCurImage->Pal.Palette = (ILubyte*)ialloc(1024);
-	if (iCurImage->Pal.Palette == NULL)
-		return IL_FALSE;
-	iCurImage->Pal.PalSize = 1024;
-	iCurImage->Pal.PalType = IL_PAL_RGBA32;
+	Image->Pal.Palette = (ILubyte*)ialloc(1024);
 
-	if (iread(iCurImage->Data, LifHead.Width * LifHead.Height, 1) != 1)
+	if (Image->Pal.Palette == NULL)
 		return IL_FALSE;
-	if (iread(iCurImage->Pal.Palette, 1, 1024) != 1024)
+
+	Image->Pal.PalSize = 1024;
+	Image->Pal.PalType = IL_PAL_RGBA32;
+
+	if (SIOread(io, Image->Data, LifHead.Width * LifHead.Height, 1) != 1)
+		return IL_FALSE;
+
+	if (SIOread(io, Image->Pal.Palette, 1, 1024) != 1024)
 		return IL_FALSE;
 
 	// Each data offset is offset by -1, so we add one.
-	for (i = 0; i < iCurImage->SizeOfData; i++) {
-		iCurImage->Data[i]++;
+	for (i = 0; i < Image->SizeOfData; i++) {
+		Image->Data[i]++;
 	}
 
 	return ilFixImage();
 }
+
+ILconst_string iFormatExtsLIF[] = { 
+  IL_TEXT("lif"), 
+  NULL 
+};
+
+ILformat iFormatLIF = { 
+  .Validate = iIsValidLif, 
+  .Load     = iLoadLifInternal, 
+  .Save     = NULL, 
+  .Exts     = iFormatExtsLIF
+};
 
 #endif//IL_NO_LIF

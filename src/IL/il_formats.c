@@ -85,6 +85,48 @@ iInitFormats() {
 #ifndef IL_NO_HDR
   ADD_FORMAT(HDR);
 #endif
+#ifndef IL_NO_IFF
+  ADD_FORMAT(IFF);
+#endif
+#ifndef IL_NO_IWI
+  ADD_FORMAT(IWI);
+#endif
+#ifndef IL_NO_JP2
+  ADD_FORMAT(JP2);
+#endif
+#ifndef IL_NO_JPG
+  ADD_FORMAT(JPG);
+#endif
+#ifndef IL_NO_LIF
+  ADD_FORMAT(LIF);
+#endif
+#ifndef IL_NO_MDL
+  ADD_FORMAT(MDL);
+#endif
+#ifndef IL_NO_MNG
+  ADD_FORMAT(MNG);
+#endif
+#ifndef IL_NO_MP3
+  ADD_FORMAT(MP3);
+#endif
+#ifndef IL_NO_PCD
+  ADD_FORMAT(PCD);
+#endif
+#ifndef IL_NO_PCX
+  ADD_FORMAT(PCX);
+#endif
+#ifndef IL_NO_PIC
+  ADD_FORMAT(PIC);
+#endif
+#ifndef IL_NO_PIX
+  ADD_FORMAT(PIX);
+#endif
+#ifndef IL_NO_PNG
+  ADD_FORMAT(PNG);
+#endif
+#ifndef IL_NO_PNM
+  ADD_FORMAT(PNM);
+#endif
 #ifndef IL_NO_TIF
   ADD_FORMAT(TIF);
 #endif

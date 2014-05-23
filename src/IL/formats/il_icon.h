@@ -42,8 +42,8 @@ typedef struct INFOHEAD
 	ILint		Size;
 	ILint		Width;
 	ILint		Height;
-	ILshort		Planes;
-	ILshort		BitCount;
+	ILshort	Planes;
+	ILshort	BitCount;
 	ILint		Compression;
 	ILint		SizeImage;
 	ILint		XPixPerMeter;

@@ -59,49 +59,10 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 		return IL_TYPE_UNKNOWN;
 	}
 
-	if (!iStrCmp(Ext, IL_TEXT("tga")) || !iStrCmp(Ext, IL_TEXT("vda")) ||
-		!iStrCmp(Ext, IL_TEXT("icb")) || !iStrCmp(Ext, IL_TEXT("vst")))
-		Type = IL_TGA;
-	else if (!iStrCmp(Ext, IL_TEXT("jpg")) || !iStrCmp(Ext, IL_TEXT("jpe")) ||
-		!iStrCmp(Ext, IL_TEXT("jpeg")) || !iStrCmp(Ext, IL_TEXT("jif")) || !iStrCmp(Ext, IL_TEXT("jfif")))
-		Type = IL_JPG;
-	else if (!iStrCmp(Ext, IL_TEXT("jp2")) || !iStrCmp(Ext, IL_TEXT("jpx")) ||
-		!iStrCmp(Ext, IL_TEXT("j2k")) || !iStrCmp(Ext, IL_TEXT("j2c")))
-		Type = IL_JP2;
-	else if (!iStrCmp(Ext, IL_TEXT("png")))
-		Type = IL_PNG;
 	else if (!iStrCmp(Ext, IL_TEXT("exr")))
 		Type = IL_EXR;
-	else if (!iStrCmp(Ext, IL_TEXT("iff")))
-		Type = IL_IFF;
-	else if (!iStrCmp(Ext, IL_TEXT("ilbm")) || !iStrCmp(Ext, IL_TEXT("lbm")) ||
-        !iStrCmp(Ext, IL_TEXT("ham")))
-		Type = IL_ILBM;
-	else if (!iStrCmp(Ext, IL_TEXT("iwi")))
-		Type = IL_IWI;
-	else if (!iStrCmp(Ext, IL_TEXT("iwi")))
-		Type = IL_IWI;
 	else if (!iStrCmp(Ext, IL_TEXT("jng")))
 		Type = IL_JNG;
-	else if (!iStrCmp(Ext, IL_TEXT("lif")))
-		Type = IL_LIF;
-	else if (!iStrCmp(Ext, IL_TEXT("mdl")))
-		Type = IL_MDL;
-	else if (!iStrCmp(Ext, IL_TEXT("mng")) || !iStrCmp(Ext, IL_TEXT("jng")))
-		Type = IL_MNG;
-	else if (!iStrCmp(Ext, IL_TEXT("mp3")))
-		Type = IL_MP3;
-	else if (!iStrCmp(Ext, IL_TEXT("pcd")))
-		Type = IL_PCD;
-	else if (!iStrCmp(Ext, IL_TEXT("pcx")))
-		Type = IL_PCX;
-	else if (!iStrCmp(Ext, IL_TEXT("pic")))
-		Type = IL_PIC;
-	else if (!iStrCmp(Ext, IL_TEXT("pix")))
-		Type = IL_PIX;
-	else if (!iStrCmp(Ext, IL_TEXT("pbm")) || !iStrCmp(Ext, IL_TEXT("pgm")) ||
-		!iStrCmp(Ext, IL_TEXT("pnm")) || !iStrCmp(Ext, IL_TEXT("ppm")))
-		Type = IL_PNM;
 	else if (!iStrCmp(Ext, IL_TEXT("psd")) || !iStrCmp(Ext, IL_TEXT("pdd")))
 		Type = IL_PSD;
 	else if (!iStrCmp(Ext, IL_TEXT("psp")))
@@ -183,12 +144,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				#endif
 					return IL_SGI;
 			break;
-		#ifndef IL_NO_PCX
-		case 0x0a:
-			if (iIsValidPcx(&iCurImage->io))
-				return IL_PCX;
-			break;
-		#endif
 		case '8':
 			if (buf[1] == 'B' && buf[2] == 'P' && buf[3] == 'S')
 				#ifndef IL_NO_PSD
@@ -214,8 +169,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				if (iIsValidPsp())
 				#endif
 					return IL_PSP;
-			} else if (buf[1] >= '1' && buf[1] <= '6') {
-					return IL_PNM; // il_pnm's test doesn't add anything here
 			}
 			break;
 		case 'V':
@@ -241,72 +194,7 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 				#endif
 					return IL_EXR;
 			break;
-		case 0x89:
-			if (buf[1] == 'P' && buf[2] == 'N' && buf[3] == 'G')
-				#ifndef IL_NO_PNG
-				if (iIsValidPng(&iCurImage->io))
-					return IL_PNG;
-				#else
-				return IL_PNG;
-				#endif
-			break;
-		case 0x8a:
-			if (buf[1] == 0x4D
-			&&  buf[2] == 0x4E
-			&&  buf[3] == 0x47
-			&&  buf[4] == 0x0D
-			&&  buf[5] == 0x0A
-			&&  buf[6] == 0x1A
-			&&  buf[7] == 0x0A)
-			{
-				return IL_MNG;
-			}
-			break;
-		case 0xff:
-			if (buf[1] == 0xd8)
-				return IL_JPG;
-			break;
 	}
-
-	#ifndef IL_NO_ILBM
-	if (iIsValidIlbm())
-		return IL_ILBM;
-	#endif
-
-	#ifndef IL_NO_IWI
-	if (ilIsValidIwiF(File))
-		return IL_IWI;
-	#endif
-
-	#ifndef IL_NO_JP2
-	if (iIsValidJp2(&iCurImage->io))
-		return IL_JP2;
-	#endif
-
-	#ifndef IL_NO_LIF
-	if (ilIsValidLifF(File))
-		return IL_LIF;
-	#endif
-
-	#ifndef IL_NO_MDL
-	if (ilIsValidMdlF(File))
-		return IL_MDL;
-	#endif
-
-	#ifndef IL_NO_MDL
-	if (ilIsValidMp3F(File))
-		return IL_MP3;
-	#endif
-
-	#ifndef IL_NO_PIC
-	if (iIsValidPic(&iCurImage->io))
-		return IL_PIC;
-	#endif
-
-	#ifndef IL_NO_PIX
-	if (iIsValidPix(&iCurImage->io))
-		return IL_PIX;
-	#endif
 
 	#ifndef IL_NO_TPL
 	if (ilIsValidTplF(File))
@@ -342,64 +230,9 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 
 	switch (Type)
 	{
-		#ifndef IL_NO_JPG
-		case IL_JPG:
-			return iIsValidJpeg(io);
-		#endif
-
-		#ifndef IL_NO_PNG
-		case IL_PNG:
-			return iIsValidPng(io);
-		#endif
-
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return ilIsValidExr(io);
-		#endif
-
-		#ifndef IL_NO_IWI
-		case IL_IWI:
-			return ilIsValidIwi(io);
-		#endif
-
-    	#ifndef IL_NO_ILBM
-        case IL_ILBM:
-            return iIsValidIlbm();
-	    #endif
-
-		#ifndef IL_NO_JP2
-		case IL_JP2:
-			return iIsValidJp2(io);
-		#endif
-
-		#ifndef IL_NO_LIF
-		case IL_LIF:
-			return ilIsValidLif(io);
-		#endif
-
-		#ifndef IL_NO_MDL
-		case IL_MDL:
-			return ilIsValidMdl(io);
-		#endif
-
-		#ifndef IL_NO_MP3
-		case IL_MP3:
-			return iIsValidMp3(io);
-		#endif
-
-		#ifndef IL_NO_PCX
-		case IL_PCX:
-			return iIsValidPcx(io);
-		#endif
-
-		#ifndef IL_NO_PIC
-		case IL_PIC:
-			return iIsValidPic(io);
-		#endif
-
-		#ifndef IL_NO_PNM
-		case IL_PNM:
-			return iIsValidPnm();
 		#endif
 
 		#ifndef IL_NO_PSD
@@ -566,43 +399,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		case IL_TYPE_UNKNOWN:
 			return IL_FALSE;
 
-		#ifndef IL_NO_JPG
-			#ifndef IL_USE_IJL
-			case IL_JPG:
-				return iLoadJpegInternal(image);
-			#endif
-		#endif
-
-		#ifndef IL_NO_ILBM
-		case IL_ILBM:
-			return iLoadIlbmInternal();
-		#endif
-
-		#ifndef IL_NO_PCD
-		case IL_PCD:
-			return iLoadPcdInternal(image);
-		#endif
-
-		#ifndef IL_NO_PCX
-		case IL_PCX:
-			return iLoadPcxInternal(image);
-		#endif
-
-		#ifndef IL_NO_PIC
-		case IL_PIC:
-			return iLoadPicInternal(image);
-		#endif
-
-		#ifndef IL_NO_PNG
-		case IL_PNG:
-			return iLoadPngInternal(image);
-		#endif
-
-		#ifndef IL_NO_PNM
-		case IL_PNM:
-			return iLoadPnmInternal();
-		#endif
-
 		#ifndef IL_NO_SGI
 		case IL_SGI:
 			return iLoadSgiInternal();
@@ -613,17 +409,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadRawInternal();
 		#endif
 
-		// Currently broken - need wrappers for streams?
-		/*#ifndef IL_NO_JP2
-		case IL_JP2:
-			return iLoadJp2Internal(image);
-		#endif*/
-
-		#ifndef IL_NO_MNG
-		case IL_MNG:
-			return iLoadMngInternal();
-		#endif
-
 		#ifndef IL_NO_PSD
 		case IL_PSD:
 			return iLoadPsdInternal(image);
@@ -632,11 +417,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#ifndef IL_NO_PSP
 		case IL_PSP:
 			return iLoadPspInternal();
-		#endif
-
-		#ifndef IL_NO_PIX
-		case IL_PIX:
-			return iLoadPixInternal(image);
 		#endif
 
 		#ifndef IL_NO_PXR
@@ -664,11 +444,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 			return iLoadSunInternal(iCurImage);
 		#endif
 
-		#ifndef IL_NO_IFF
-		case IL_IFF:
-			return iLoadIffInternal();
-		#endif
-
 		#ifndef IL_NO_TEXTURE
 		case IL_TEXTURE:
 			//return ilLoadTextureF(File);
@@ -681,26 +456,6 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return iLoadExrInternal();
-		#endif
-
-		#ifndef IL_NO_IWI
-		case IL_IWI:
-			return ilLoadIwiF(File);
-		#endif
-
-		#ifndef IL_NO_LIF
-		case IL_LIF:
-			return ilLoadLifF(File);
-		#endif
-
-		#ifndef IL_NO_MDL
-		case IL_MDL:
-			return ilLoadMdlF(File);
-		#endif
-
-		#ifndef IL_NO_MP3
-		case IL_MP3:
-			return iLoadMp3Internal(image);
 		#endif
 
 		#ifndef IL_NO_ROT
@@ -748,7 +503,7 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type)
 	if (type == IL_TYPE_UNKNOWN)
 		type = ilDetermineTypeFuncs();
 
-	return ilLoadFuncs2(iCurImage, type);
+	return ilLoadFuncs2(iCurImage, type); // FIXME: call ilFixImage here instead of in loaders
 }
 
 //! Attempts to load an image from a memory buffer.  The file format is specified by the user.
@@ -803,29 +558,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 	ILboolean bRet = IL_FALSE;
 
 	switch(type) {
-	#ifndef IL_NO_JPG
-	case IL_JPG:
-		bRet = iSaveJpegInternal(image);
-		break;
-	#endif
-
-	#ifndef IL_NO_PCX
-	case IL_PCX:
-		bRet = iSavePcxInternal(image);
-		break;
-	#endif
-
-	#ifndef IL_NO_PNG
-	case IL_PNG:
-		bRet = iSavePngInternal(image);
-		break;
-	#endif
-
-	#ifndef IL_NO_PNM  // Not sure if binary or ascii should be defaulted...maybe an option?
-	case IL_PNM:
-		bRet = iSavePnmInternal();
-		break;
-	#endif
 
 	#ifndef IL_NO_SGI
 	case IL_SGI:
@@ -839,21 +571,9 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		break;
 	#endif
 
-	#ifndef IL_NO_MNG
-	case IL_MNG:
-		bRet = iSaveMngInternal();
-		break;
-	#endif
-
 	#ifndef IL_NO_PSD
 	case IL_PSD:
 		bRet = iSavePsdInternal(image);
-		break;
-	#endif
-
-	#ifndef IL_NO_JP2
-	case IL_JP2:
-		bRet = iSaveJp2Internal(image);
 		break;
 	#endif
 

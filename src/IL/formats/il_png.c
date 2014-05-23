@@ -43,18 +43,18 @@ struct PNGData {
 	ILint		png_color_type;
 };
 
+// must not be static, used by other loaders
 ILboolean	iLoadPngInternal(ILimage* image);
 ILboolean	iSavePngInternal(ILimage* image);
 
-ILint		readpng_init(struct PNGData* data);
-ILboolean	readpng_get_image(ILimage* image, struct PNGData * data, ILdouble display_exponent);
-void		readpng_cleanup(struct PNGData * data);
+static ILint			readpng_init(ILimage *, struct PNGData* data);
+static ILboolean	readpng_get_image(ILimage* image, struct PNGData * data, ILdouble display_exponent);
+static void				readpng_cleanup(struct PNGData * data);
 
 #define GAMMA_CORRECTION 1.0  // Doesn't seem to be doing anything...
 
 
-ILboolean iIsValidPng(SIO* io)
-{
+static ILboolean iIsValidPng(SIO* io) {
 	ILubyte 	Signature[8];
 	ILint		Read;
 
@@ -80,7 +80,7 @@ ILboolean iLoadPngInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-	if (readpng_init(&data))
+	if (readpng_init(image, &data))
 		return IL_FALSE;
 	if (!readpng_get_image(image, &data, GAMMA_CORRECTION))
 		return IL_FALSE;
@@ -93,8 +93,8 @@ ILboolean iLoadPngInternal(ILimage* image)
 
 static void png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	(void)png_ptr;
-	iCurImage->io.read(iCurImage->io.handle, data, 1, (ILuint)length);
+	ILimage *Image = (ILimage*)png_get_io_ptr(png_ptr);
+	SIOread(&Image->io, data, 1, (ILuint)length);
 	return;
 }
 
@@ -102,7 +102,7 @@ static void png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 static void png_error_func(png_structp png_ptr, png_const_charp message)
 {
 	ilSetError(IL_LIB_PNG_ERROR);
-
+	iTrace("**** PNG Error : %s", message);
 	/*
 	  changed 20040224
 	  From the libpng docs:
@@ -116,12 +116,13 @@ static void png_error_func(png_structp png_ptr, png_const_charp message)
 
 static void png_warn_func(png_structp png_ptr, png_const_charp message)
 {
+	(void)png_ptr;
+	iTrace("---- PNG Warning : %s", message);
 	return;
 }
 
 
-ILint readpng_init(struct PNGData* data)
-{
+static ILint readpng_init(ILimage *image, struct PNGData* data) {
 	data->png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, png_error_func, png_warn_func);
 	if (!data->png_ptr)
 		return 4;	/* out of memory */
@@ -147,7 +148,7 @@ ILint readpng_init(struct PNGData* data)
 	}
 
 
-	png_set_read_fn(data->png_ptr, NULL, png_read);
+	png_set_read_fn(data->png_ptr, image, png_read);
 	png_set_error_fn(data->png_ptr, NULL, png_error_func, png_warn_func);
 
 //	png_set_sig_bytes(png_ptr, 8);	/* we already read the 8 signature bytes */
@@ -169,16 +170,14 @@ ILint readpng_init(struct PNGData* data)
 
 ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble display_exponent)
 {
+	(void)display_exponent;
+
 	png_bytepp	row_pointers = NULL;
 	png_uint_32 width, height; // Changed the type to fix AMD64 bit problems, thanks to Eric Werness
-	ILdouble	screen_gamma = 1.0;
 	ILuint		i, channels;
 	ILenum		format;
 	png_colorp	palette;
 	ILint		num_palette, j, bit_depth;
-#if _WIN32 || DJGPP
-	ILdouble image_gamma;
-#endif
 
 	/* setjmp() must be called in every function that calls a PNG-reading
 	 * libpng function */
@@ -212,22 +211,11 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 		png_set_packing(data->png_ptr);
 	}
 
-	// Perform gamma correction.
-	// @TODO:  Determine if we should call png_set_gamma if image_gamma is 1.0.
-#if _WIN32 || DJGPP
-	screen_gamma = 2.2;
-	if (png_get_gAMA(data->png_ptr, data->info_ptr, &image_gamma))
-		png_set_gamma(data->png_ptr, screen_gamma, image_gamma);
-#else
-	screen_gamma = screen_gamma;
-#endif
-
 	//fix endianess
 #ifdef __LITTLE_ENDIAN__
 	if (bit_depth == 16)
 		png_set_swap(data->png_ptr);
 #endif
-
 
 	png_read_update_info(data->png_ptr, data->info_ptr);
 	channels = (ILint)png_get_channels(data->png_ptr, data->info_ptr);
@@ -259,7 +247,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage(width, height, 1, (ILubyte)channels, format, ilGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
+	if (!ilTexImage_(image, width, height, 1, (ILubyte)channels, format, ilGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
 		png_destroy_read_struct(&data->png_ptr, &data->info_ptr, NULL);
 		return IL_FALSE;
 	}
@@ -339,20 +327,19 @@ void readpng_cleanup(struct PNGData* data)
 
 void png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 {
-	(void)png_ptr;
-	iCurImage->io.write(data, 1, (ILuint)length, iCurImage->io.handle);
+	ILimage *Image = (ILimage*)png_get_io_ptr(png_ptr);
+	SIOwrite(&Image->io, data, 1, (ILuint)length);
 	return;
 }
 
 void flush_data(png_structp png_ptr)
 {
-	return;
+	(void)png_ptr;
 }
 
 
 // Internal function used to save the Png.
-ILboolean iSavePngInternal(ILimage* image)
-{
+ILboolean iSavePngInternal(ILimage* image) {
 	png_structp png_ptr;
 	png_infop	info_ptr;
 	png_text	text[4];
@@ -589,5 +576,16 @@ error_label:
 	return IL_FALSE;
 }
 
+ILconst_string iFormatExtsPNG[] = { 
+  IL_TEXT("png"), 
+  NULL 
+};
+
+ILformat iFormatPNG = { 
+  .Validate = iIsValidPng, 
+  .Load     = iLoadPngInternal, 
+  .Save     = iSavePngInternal, 
+  .Exts     = iFormatExtsPNG
+};
 
 #endif//IL_NO_PNG

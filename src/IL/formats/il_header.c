@@ -22,7 +22,7 @@ static ILboolean
 iSaveCHEADInternal(ILimage* image)
 {
 	const char *InternalName = "IL_IMAGE";
-	FILE		*HeadFile;
+	// FILE		*HeadFile;
 	ILuint		i = 0, j;
 	ILimage		*TempImage;
 	const char	*Name;
@@ -31,6 +31,8 @@ iSaveCHEADInternal(ILimage* image)
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	SIO * io = &image->io;
 
 	Name = iGetString(IL_CHEAD_HEADER_STRING);
 	if (Name == NULL)
@@ -44,59 +46,83 @@ iSaveCHEADInternal(ILimage* image)
 		TempImage = image;
 	}
 
-	FILE* file = (FILE*) iCurImage->io.handle;
+	char tmp[512];
 
-	fprintf(HeadFile, "//#include <il/il.h>\n");
-	fprintf(HeadFile, "// C Image Header:\n\n\n");
-	fprintf(HeadFile, "// IMAGE_BPP is in bytes per pixel, *not* bits\n");
-	fprintf(HeadFile, "#define IMAGE_BPP %d\n",image->Bpp);
-	fprintf(HeadFile, "#define IMAGE_WIDTH   %d\n", image->Width);
-	fprintf(HeadFile, "#define IMAGE_HEIGHT  %d\n", image->Height);	
-	fprintf(HeadFile, "#define IMAGE_DEPTH   %d\n\n\n", image->Depth);
-	fprintf(HeadFile, "#define IMAGE_TYPE    0x%X\n", image->Type);
-	fprintf(HeadFile, "#define IMAGE_FORMAT  0x%X\n\n\n", image->Format);
-	fprintf(HeadFile, "ILubyte %s[] = {\n", Name);
+	SIOputs(io, "//#include <il/il.h>\n");
+	SIOputs(io, "// C Image Header:\n\n\n");
+	SIOputs(io, "// IMAGE_BPP is in bytes per pixel, *not* bits\n");
+
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_BPP     %d\n",image->Bpp);
+	SIOputs(io, tmp);
+
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_WIDTH   %d\n", image->Width);
+	SIOputs(io, tmp);
+	
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_HEIGHT  %d\n", image->Height);	
+	SIOputs(io, tmp);
+	
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_DEPTH   %d\n\n\n", image->Depth);
+	SIOputs(io, tmp);
+	
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_TYPE    0x%X\n", image->Type);
+	SIOputs(io, tmp);
+	
+	snprintf(tmp, sizeof(tmp), "#define IMAGE_FORMAT  0x%X\n\n\n", image->Format);
+	SIOputs(io, tmp);
+
+	snprintf(tmp, sizeof(tmp), "ILubyte %s[] = {\n", Name);
+	SIOputs(io, tmp);
         
-
 	for (; i < TempImage->SizeOfData; i += MAX_LINE_WIDTH) {
-		fprintf(HeadFile, "\t");
+		SIOputs(io, "\t");
 		for (j = 0; j < MAX_LINE_WIDTH; j++) {
 			if (i + j >= TempImage->SizeOfData - 1) {
-				fprintf(HeadFile, "%4d", TempImage->Data[i+j]);
+				snprintf(tmp, sizeof(tmp), " %4d", TempImage->Data[i+j]);
+				SIOputs(io, tmp);
 				break;
+			}	else {
+				snprintf(tmp, sizeof(tmp), " %4d,", TempImage->Data[i+j]);
+				SIOputs(io, tmp);
 			}
-			else
-				fprintf(HeadFile, "%4d,", TempImage->Data[i+j]);
 		}
-		fprintf(HeadFile, "\n");
+		SIOputs(io, "\n");
 	}
+
 	if (TempImage != image)
 		ilCloseImage(TempImage);
 
-	fprintf(HeadFile, "};\n");
-
+	SIOputs(io, "};\n");
 
 	if (image->Pal.Palette && image->Pal.PalSize && image->Pal.PalType != IL_PAL_NONE) {
-		fprintf(HeadFile, "\n\n");
-		fprintf(HeadFile, "#define IMAGE_PALSIZE %u\n\n", image->Pal.PalSize);
-		fprintf(HeadFile, "#define IMAGE_PALTYPE 0x%X\n\n", image->Pal.PalType);
-        fprintf(HeadFile, "ILubyte %sPal[] = {\n", Name);
+		SIOputs(io, "\n\n");
+
+		snprintf(tmp, sizeof(tmp), "#define IMAGE_PALSIZE %u\n\n", image->Pal.PalSize);
+		SIOputs(io, tmp);
+
+		snprintf(tmp, sizeof(tmp), "#define IMAGE_PALTYPE 0x%X\n\n", image->Pal.PalType);
+		SIOputs(io, tmp);
+
+		snprintf(tmp, sizeof(tmp), "ILubyte %sPal[] = {\n", Name);
+		SIOputs(io, tmp);
+
 		for (i = 0; i < image->Pal.PalSize; i += MAX_LINE_WIDTH) {
-			fprintf(HeadFile, "\t");
+			SIOputs(io, "\t");
 			for (j = 0; j < MAX_LINE_WIDTH; j++) {
 				if (i + j >= image->Pal.PalSize - 1) {
-					fprintf(HeadFile, " %4d", image->Pal.Palette[i+j]);
+					snprintf(tmp, sizeof(tmp), " %4d", image->Pal.Palette[i+j]);
+					SIOputs(io, tmp);
 					break;
+				} else {
+					snprintf(tmp, sizeof(tmp), " %4d,", image->Pal.Palette[i+j]);
+					SIOputs(io, tmp);
 				}
-				else
-					fprintf(HeadFile, " %4d,", image->Pal.Palette[i+j]);
 			}
-			fprintf(HeadFile, "\n");
+			SIOputs(io, "\n");
 		}
 
-		fprintf(HeadFile, "};\n");
+		SIOputs(io, "};\n");
 	}
-	fclose(HeadFile);
+
 	return IL_TRUE;
 }
 

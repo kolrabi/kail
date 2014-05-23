@@ -49,11 +49,10 @@
 #endif
 
 
-ILboolean ilIsValidMng(SIO* io)
-{
+static ILboolean iIsValidMng(SIO* io) {
 	unsigned char mngSig[8];
-	ILint read = io->read(io->handle, mngSig, 1, sizeof(mngSig));
-	io->seek(io->handle, -read, SEEK_CUR);
+	ILint read = SIOread(io, mngSig, 1, sizeof(mngSig));
+	SIOseek(io, -read, SEEK_CUR);
 
 	if (mngSig[0] == 0x8A 
 	&&  mngSig[1] == 0x4D
@@ -84,6 +83,7 @@ mng_ptr MNG_DECL mymngalloc(mng_size_t size)
 //---------------------------------------------------------------------------------------------
 void MNG_DECL mymngfree(mng_ptr p, mng_size_t size)
 {
+	(void)size;
 	ifree(p);
 }
 
@@ -93,6 +93,7 @@ void MNG_DECL mymngfree(mng_ptr p, mng_size_t size)
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngopenstream(mng_handle mng)
 {
+	(void)mng;
 	return MNG_TRUE;
 }
 
@@ -102,6 +103,7 @@ mng_bool MNG_DECL mymngopenstream(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngopenstreamwrite(mng_handle mng)
 {
+	(void)mng;
 	return MNG_TRUE;
 }
 
@@ -111,6 +113,7 @@ mng_bool MNG_DECL mymngopenstreamwrite(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngclosestream(mng_handle mng)
 {
+	(void)mng;
 	return MNG_TRUE; // We close the file ourself, mng_cleanup doesnt seem to do it...
 }
 
@@ -121,7 +124,8 @@ mng_bool MNG_DECL mymngclosestream(mng_handle mng)
 mng_bool MNG_DECL mymngreadstream(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *bytesread)
 {
 	// read the requested amount of data from the file
-	*bytesread = iCurImage->io.read(iCurImage->io.handle, buffer, 1, (ILuint)size);
+	ILimage *Image = (ILimage*)mng_get_userdata(mng);
+	*bytesread = SIOread(&Image->io, buffer, 1, (ILuint)size);
 
 	return MNG_TRUE;
 }
@@ -132,7 +136,8 @@ mng_bool MNG_DECL mymngreadstream(mng_handle mng, mng_ptr buffer, mng_size_t siz
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *byteswritten)
 {
-	*byteswritten = iCurImage->io.write(buffer, 1, (ILuint)size, iCurImage->io.handle);
+	ILimage *Image = (ILimage*)mng_get_userdata(mng);
+	*byteswritten = SIOwrite(&Image->io, buffer, 1, (ILuint)size);
 
 	if (*byteswritten < size) {
 		ilSetError(IL_FILE_WRITE_ERROR);
@@ -148,22 +153,23 @@ mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint32 height)
 {
+	ILimage *Image = (ILimage*)mng_get_userdata(mng);
 	ILuint	AlphaDepth;
 
 	AlphaDepth = mng_get_alphadepth(mng);
 
 	if (AlphaDepth == 0) {
 		ilTexImage(width, height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL);
-		iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
+		Image->Origin = IL_ORIGIN_LOWER_LEFT;
 		mng_set_canvasstyle(mng, MNG_CANVAS_BGR8);
 	}
 	else {  // Use alpha channel
 		ilTexImage(width, height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
-		iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
+		Image->Origin = IL_ORIGIN_LOWER_LEFT;
 		mng_set_canvasstyle(mng, MNG_CANVAS_BGRA8);
 	}
 
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	return MNG_TRUE;
 }
@@ -174,7 +180,8 @@ mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint3
 //---------------------------------------------------------------------------------------------
 mng_ptr MNG_DECL mymnggetcanvasline(mng_handle mng, mng_uint32 line)
 {
-	return (mng_ptr)(iCurImage->Data + iCurImage->Bps * line);
+	ILimage *Image = (ILimage*)mng_get_userdata(mng);
+	return (mng_ptr)(Image->Data + Image->Bps * line);
 }
 
 
@@ -183,6 +190,7 @@ mng_ptr MNG_DECL mymnggetcanvasline(mng_handle mng, mng_uint32 line)
 //---------------------------------------------------------------------------------------------
 mng_uint32 MNG_DECL mymnggetticks(mng_handle mng)
 {
+	(void)mng;
 	return 0;
 }
 
@@ -192,6 +200,11 @@ mng_uint32 MNG_DECL mymnggetticks(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngrefresh(mng_handle mng, mng_uint32 x, mng_uint32 y, mng_uint32 w, mng_uint32 h)
 {
+	(void)mng;
+	(void)x;
+  (void)y;
+  (void)w;
+  (void)h;
 	return MNG_TRUE;
 }
 
@@ -201,6 +214,8 @@ mng_bool MNG_DECL mymngrefresh(mng_handle mng, mng_uint32 x, mng_uint32 y, mng_u
 //---------------------------------------------------------------------------------------------
 mng_bool MNG_DECL mymngsettimer(mng_handle mng, mng_uint32 msecs)
 {
+	(void)mng;
+	(void)msecs;
 	return MNG_TRUE;
 }
 
@@ -217,16 +232,25 @@ mng_bool MNG_DECL mymngerror(
 	mng_int32 extra1, mng_int32 extra2, mng_pchar text
 	)
 {
+	(void)mng;
+	(void)code;
+	(void)severity;
+	(void)chunktype;
+	(void)chunkseq;
+	(void)extra1;
+	(void)extra2;
+
+	iTrace("**** MNG Error: %s", text);
 	// error occured;
 	return MNG_FALSE;
 }
 
 
-ILboolean iLoadMngInternal()
+static ILboolean iLoadMngInternal(ILimage *Image)
 {
 	mng_handle mng;
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
@@ -241,15 +265,17 @@ ILboolean iLoadMngInternal()
 	mng_set_usebkgd(mng, MNG_TRUE);
 
 	// Set the callbacks.
-	mng_setcb_errorproc(mng, mymngerror);
-    mng_setcb_openstream(mng, mymngopenstream);
-    mng_setcb_closestream(mng, mymngclosestream);
-    mng_setcb_readdata(mng, (mng_readdata)mymngreadstream);
-	mng_setcb_gettickcount(mng, mymnggetticks);
-	mng_setcb_settimer(mng, mymngsettimer);
-	mng_setcb_processheader(mng, mymngprocessheader);
-	mng_setcb_getcanvasline(mng, mymnggetcanvasline);
-	mng_setcb_refresh(mng, mymngrefresh);
+	mng_setcb_errorproc 		(mng, mymngerror);
+  mng_setcb_openstream 		(mng, mymngopenstream);
+  mng_setcb_closestream		(mng, mymngclosestream);
+  mng_setcb_readdata			(mng, (mng_readdata)mymngreadstream);
+	mng_setcb_gettickcount	(mng, mymnggetticks);
+	mng_setcb_settimer			(mng, mymngsettimer);
+	mng_setcb_processheader	(mng, mymngprocessheader);
+	mng_setcb_getcanvasline (mng, mymnggetcanvasline);
+	mng_setcb_refresh 			(mng, mymngrefresh);
+
+	mng_set_userdata 				(mng, Image);
 
 	mng_read(mng);
 	mng_display(mng);
@@ -298,5 +324,18 @@ ILboolean iSaveMngInternal()
 
 	//return IL_TRUE;
 }
+
+ILconst_string iFormatExtsMNG[] = { 
+  IL_TEXT("mng"), 
+  IL_TEXT("jng"),
+  NULL 
+};
+
+ILformat iFormatMNG = { 
+  .Validate = iIsValidMng, 
+  .Load     = iLoadMngInternal, 
+  .Save     = NULL, // FIXME: broken iSaveMngInternal, 
+  .Exts     = iFormatExtsMNG
+};
 
 #endif//IL_NO_MNG

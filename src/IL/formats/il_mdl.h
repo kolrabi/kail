@@ -16,6 +16,16 @@
 
 #include "il_internal.h"
 
+#include "pack_push.h"
+typedef struct {
+  ILubyte Magic[4];
+  ILuint  Version;
+} MDL_HEAD;
+
+typedef struct {
+  ILuint  NumTex, TexOff, TexDataOff;
+} TEX_INFO;
+
 typedef struct TEX_HEAD
 {
 	char	Name[64];
@@ -24,5 +34,6 @@ typedef struct TEX_HEAD
 	ILuint	Height;
 	ILuint	Offset;
 } TEX_HEAD;
+#include "pack_pop.h"
 
 #endif//MD2_H

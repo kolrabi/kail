@@ -40,10 +40,4 @@ typedef struct PCXHEAD
 
 #include "pack_pop.h"
 
-// For checking and reading
-ILboolean iIsValidPcx(SIO* io);
-ILboolean iCheckPcx(PCXHEAD *Header);
-ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header);
-ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header);
-
 #endif//PCX_H

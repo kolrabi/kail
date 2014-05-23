@@ -15,204 +15,127 @@
 #ifndef IL_NO_MDL
 #include "il_mdl.h"
 
-
-ILboolean iLoadMdlInternal(void);
-ILboolean iIsValidMdl(void);
-
-//! Checks if the file specified in FileName is a valid MDL file.
-ILboolean ilIsValidMdl(ILconst_string FileName)
-{
-	ILHANDLE	MdlFile;
-	ILboolean	bMdl = IL_FALSE;
-	
-	if (!iCheckExtension(FileName, IL_TEXT("mdl"))) {
-		ilSetError(IL_INVALID_EXTENSION);
-		return bMdl;
-	}
-	
-	MdlFile = iopenr(FileName);
-	if (MdlFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bMdl;
-	}
-	
-	bMdl = ilIsValidMdlF(MdlFile);
-	icloser(MdlFile);
-	
-	return bMdl;
-}
-
-
-//! Checks if the ILHANDLE contains a valid MDL file at the current position.
-ILboolean ilIsValidMdlF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iIsValidMdl();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
-}
-
-
-//! Checks if Lump is a valid MDL lump.
-ILboolean ilIsValidMdlL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidMdl();
-}
-
-
 // Internal function to get the header and check it.
-ILboolean iIsValidMdl(void)
+static ILboolean iIsValidMdl(SIO *io)
 {
-	ILuint Id, Version;
+	ILuint 		Pos = SIOtell(io);
+	MDL_HEAD 	Head;
+	ILuint  	Read = SIOread(io, &Head, 1, sizeof(Head));
 
-	Id = GetLittleUInt();
-	Version = GetLittleUInt();
-	iseek(-8, IL_SEEK_CUR);  // Restore to previous position.
+	UInt(Head.Version);
 
-	// 0x54534449 == "IDST"
-	if (Id != 0x54534449 || Version != 10)
-		return IL_FALSE;
-	return IL_TRUE;
+	SIOseek(io, Pos, IL_SEEK_SET);
+
+	return Read == sizeof(Head) && !memcmp(Head.Magic, "IDST", 4) && Head.Version == 10;
 }
 
-
-//! Reads a .mdl file
-ILboolean ilLoadMdl(ILconst_string FileName)
+static ILboolean iLoadMdlInternal(ILimage *Image)
 {
-	ILHANDLE	MdlFile;
-	ILboolean	bMdl = IL_FALSE;
+	ILimage *	BaseImage 	= NULL;
 
-	MdlFile = iopenr(FileName);
-	if (MdlFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bMdl;
-	}
-
-	bMdl = ilLoadMdlF(MdlFile);
-	icloser(MdlFile);
-
-	return bMdl;
-}
-
-
-//! Reads an already-opened .mdl file
-ILboolean ilLoadMdlF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iLoadMdlInternal();
-	iseek(FirstPos, IL_SEEK_SET);
-
-	return bRet;
-}
-
-
-//! Reads from a memory "lump" that contains a .mdl
-ILboolean ilLoadMdlL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iLoadMdlInternal();
-}
-
-
-ILboolean iLoadMdlInternal()
-{
-	ILuint		Id, Version, NumTex, TexOff, TexDataOff, Position, ImageNum;
-	ILubyte		*TempPal;
-	TEX_HEAD	TexHead;
-	ILimage		*BaseImage=NULL;
-	ILboolean	BaseCreated = IL_FALSE;
-
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	Id = GetLittleUInt();
-	Version = GetLittleUInt();
+	SIO *io = &Image->io;
+	MDL_HEAD Head;
 
-	// 0x54534449 == "IDST"
-	if (Id != 0x54534449 || Version != 10) {
+	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
+	UInt(Head.Version);
+
 	// Skips the actual model header.
-	iseek(172, IL_SEEK_CUR);
+	SIOseek(io, 172, IL_SEEK_CUR);
 
-	NumTex = GetLittleUInt();
-	TexOff = GetLittleUInt();
-	TexDataOff = GetLittleUInt();
+	TEX_INFO TexInfo;
 
-	if (NumTex == 0 || TexOff == 0 || TexDataOff == 0) {
+	if (SIOread(io, &TexInfo, 1, sizeof(TexInfo)) != sizeof(TexInfo)) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
+	}
+
+	UInt(&TexInfo.NumTex);
+	UInt(&TexInfo.TexOff);
+	UInt(&TexInfo.TexDataOff);
+
+	if (TexInfo.NumTex == 0 || TexInfo.TexOff == 0 || TexInfo.TexDataOff == 0) {
 		ilSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 
-	iseek(TexOff, IL_SEEK_SET);
+	SIOseek(io, TexInfo.TexOff, IL_SEEK_SET);
 
-	for (ImageNum = 0; ImageNum < NumTex; ImageNum++) {
-		if (iread(TexHead.Name, 1, 64) != 64)
+	ILuint ImageNum;
+	for (ImageNum = 0; ImageNum < TexInfo.NumTex; ImageNum++) {
+		TEX_HEAD	TexHead;
+		if (SIOread(io, &TexHead, 1, sizeof(TexHead)) != sizeof(TexHead)) {
 			return IL_FALSE;
-		TexHead.Flags = GetLittleUInt();
-		TexHead.Width = GetLittleUInt();
-		TexHead.Height = GetLittleUInt();
-		TexHead.Offset = GetLittleUInt();
-		Position = itell();
+		}
+
+		UInt(&TexHead.Flags);
+		UInt(&TexHead.Width);
+		UInt(&TexHead.Height);
+		UInt(&TexHead.Offset);
+
+		ILuint Position = SIOtell(io);
 
 		if (TexHead.Offset == 0) {
 			ilSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 
-		if (!BaseCreated) {
-			ilTexImage(TexHead.Width, TexHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL);
-			iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
-			BaseCreated = IL_TRUE;
-			BaseImage = iCurImage;
-			//iCurImage->NumNext = NumTex - 1;  // Don't count the first image.
-		}
-		else {
-			//iCurImage->Next = ilNewImage(TexHead.Width, TexHead.Height, 1, 1, 1);
-			iCurImage = iCurImage->Next;
-			iCurImage->Format = IL_COLOUR_INDEX;
-			iCurImage->Type = IL_UNSIGNED_BYTE;
+		if (!BaseImage) {
+			ilTexImage_(Image, TexHead.Width, TexHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL);
+			Image->Origin = IL_ORIGIN_LOWER_LEFT;
+			BaseImage 		= Image;
+		} else {
+			Image->Next 	= ilNewImage(TexHead.Width, TexHead.Height, 1, 1, 1);
+			Image 				= Image->Next;
+			Image->Format = IL_COLOUR_INDEX;
+			Image->Type 	= IL_UNSIGNED_BYTE;
 		}
 
-		TempPal	= (ILubyte*)ialloc(768);
+		ILubyte *TempPal	= (ILubyte*)ialloc(768);
 		if (TempPal == NULL) {
-			iCurImage = BaseImage;
 			return IL_FALSE;
 		}
-		iCurImage->Pal.Palette = TempPal;
-		iCurImage->Pal.PalSize = 768;
-		iCurImage->Pal.PalType = IL_PAL_RGB24;
 
-		iseek(TexHead.Offset, IL_SEEK_SET);
-		if (iread(iCurImage->Data, TexHead.Width * TexHead.Height, 1) != 1)
+		Image->Pal.Palette = TempPal;
+		Image->Pal.PalSize = 768;
+		Image->Pal.PalType = IL_PAL_RGB24;
+
+		SIOseek(io, TexHead.Offset, IL_SEEK_SET);
+		
+		if (SIOread(io, Image->Data, TexHead.Width * TexHead.Height, 1) != 1)
 			return IL_FALSE;
-		if (iread(iCurImage->Pal.Palette, 1, 768) != 768)
+
+		if (SIOread(io, Image->Pal.Palette, 1, 768) != 768)
 			return IL_FALSE;
 
 		if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
 			ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
 		}
 
-		iseek(Position, IL_SEEK_SET);
+		SIOseek(io, Position, IL_SEEK_SET);
 	}
-
-	iCurImage = BaseImage;
 
 	return ilFixImage();
 }
+
+ILconst_string iFormatExtsMDL[] = { 
+  IL_TEXT("mdl"), 
+  NULL 
+};
+
+ILformat iFormatMDL = { 
+  .Validate = iIsValidMdl, 
+  .Load     = iLoadMdlInternal, 
+  .Save     = NULL, 
+  .Exts     = iFormatExtsMDL
+};
 
 #endif//IL_NO_MDL

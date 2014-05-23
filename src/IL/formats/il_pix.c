@@ -29,8 +29,7 @@ typedef struct PIXHEAD
 #include "pack_pop.h"
 
 // Internal function used to check if the HEADER is a valid Pix header.
-ILboolean iCheckPix(PIXHEAD *Header)
-{
+static ILboolean iCheckPix(PIXHEAD *Header) {
 	if (Header->Width == 0 || Header->Height == 0)
 		return IL_FALSE;
 	if (Header->Bpp != 24)
@@ -43,27 +42,24 @@ ILboolean iCheckPix(PIXHEAD *Header)
 
 
 // Internal function used to get the Pix header from the current file.
-ILint iGetPixHead(SIO* io, PIXHEAD *Header)
+static ILuint iGetPixHead(SIO* io, PIXHEAD *Header)
 {
-	auto read = io->read(io->handle, Header, 1, sizeof(PIXHEAD));
+	ILuint read = io->read(io->handle, Header, 1, sizeof(PIXHEAD));
 
-#ifdef __LITTLE_ENDIAN__
-	iSwapUShort(&Header->Width);
-	iSwapUShort(&Header->Height);
-	iSwapUShort(&Header->OffX);
-	iSwapUShort(&Header->OffY);
-	iSwapUShort(&Header->Bpp);
-#endif
+	UShort(&Header->Width);
+	UShort(&Header->Height);
+	UShort(&Header->OffX);
+	UShort(&Header->OffY);
+	UShort(&Header->Bpp);
 
 	return read;
 }
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidPix(SIO* io)
-{
+static ILboolean iIsValidPix(SIO* io) {
 	PIXHEAD	Head;
-	auto read = iGetPixHead(io, &Head);
+	ILuint read = iGetPixHead(io, &Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);
 
 	if (read == sizeof(Head))
@@ -74,8 +70,7 @@ ILboolean iIsValidPix(SIO* io)
 
 
 // Internal function used to load the Pix.
-ILboolean iLoadPixInternal(ILimage* image)
-{
+static ILboolean iLoadPixInternal(ILimage* image) {
 	PIXHEAD	Header;
 	ILuint	i, j;
 	ILubyte	ByteHead, Colour[3];
@@ -92,7 +87,7 @@ ILboolean iLoadPixInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	for (i = 0; i < image->SizeOfData; ) {
@@ -110,5 +105,17 @@ ILboolean iLoadPixInternal(ILimage* image)
 
 	return ilFixImage();
 }
+
+ILconst_string iFormatExtsPIX[] = { 
+  IL_TEXT("pix"), 
+  NULL 
+};
+
+ILformat iFormatPIX = { 
+  .Validate = iIsValidPix, 
+  .Load     = iLoadPixInternal, 
+  .Save     = NULL, 
+  .Exts     = iFormatExtsPIX
+};
 
 #endif//IL_NO_PIX

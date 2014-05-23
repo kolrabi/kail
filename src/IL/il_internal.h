@@ -200,6 +200,9 @@ char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 //
 #include "il_formats.h"
 
+ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type);
+
+/* FIXME:
 ILboolean ilIsValidExr(ILconst_string FileName);
 ILboolean ilIsValidExrF(ILHANDLE File);
 ILboolean ilIsValidExrL(const void *Lump, ILuint Size);
@@ -208,68 +211,7 @@ ILboolean ilLoadExr(ILconst_string FileName);
 ILboolean ilLoadExrF(ILHANDLE File);
 ILboolean ilLoadExrL(const void *Lump, ILuint Size);
 ILboolean iLoadExrInternal();
-
-ILboolean iLoadIffInternal(void);
-
-ILboolean iIsValidIlbm();
-ILboolean iLoadIlbmInternal();
-
-ILboolean ilIsValidIwi(ILconst_string FileName);
-ILboolean ilIsValidIwiF(ILHANDLE File);
-ILboolean ilIsValidIwiL(const void *Lump, ILuint Size);
-ILboolean ilLoadIwi(ILconst_string FileName);
-ILboolean ilLoadIwiF(ILHANDLE File);
-ILboolean ilLoadIwiL(const void *Lump, ILuint Size);
-
-ILboolean iIsValidJp2(SIO* io);
-ILboolean iLoadJp2Internal(ILimage *Image, void	*Stream);
-ILboolean ilLoadJp2LInternal(ILimage* image, const void *Lump, ILuint Size);
-ILboolean iSaveJp2Internal(ILimage* image);
-
-ILboolean iIsValidJpeg(SIO* io);
-ILboolean iLoadJpegInternal(ILimage* image);
-ILboolean iSaveJpegInternal(ILimage* image);
-
-ILboolean ilIsValidLif(ILconst_string FileName);
-ILboolean ilIsValidLifF(ILHANDLE File);
-ILboolean ilIsValidLifL(const void *Lump, ILuint Size);
-ILboolean ilLoadLif(ILconst_string FileName);
-ILboolean ilLoadLifF(ILHANDLE File);
-ILboolean ilLoadLifL(const void *Lump, ILuint Size);
-
-ILboolean ilIsValidMdl(ILconst_string FileName);
-ILboolean ilIsValidMdlF(ILHANDLE File);
-ILboolean ilIsValidMdlL(const void *Lump, ILuint Size);
-ILboolean ilLoadMdl(ILconst_string FileName);
-ILboolean ilLoadMdlF(ILHANDLE File);
-ILboolean ilLoadMdlL(const void *Lump, ILuint Size);
-
-ILboolean ilIsValidMng();
-ILboolean iLoadMngInternal();
-ILboolean iSaveMngInternal();
-
-ILboolean iIsValidMp3(SIO* io);
-ILboolean iLoadMp3Internal(ILimage* image);
-
-ILboolean iLoadPcdInternal(ILimage* image);
-
-ILboolean iIsValidPcx(SIO* io);
-ILboolean iLoadPcxInternal(ILimage* image);
-ILboolean iSavePcxInternal(ILimage* image);
-
-ILboolean iIsValidPic(SIO* io);
-ILboolean iLoadPicInternal(ILimage* image);
-
-ILboolean iIsValidPix(SIO* io);
-ILboolean iLoadPixInternal(ILimage* image);
-
-ILboolean iIsValidPng(SIO* io);
-ILboolean iLoadPngInternal(ILimage* image);
-ILboolean iSavePngInternal(ILimage* image);
-
-ILboolean iIsValidPnm();
-ILboolean iLoadPnmInternal(void);
-ILboolean iSavePnmInternal(void);
+*/
 
 ILboolean iIsValidPsd();
 ILboolean iLoadPsdInternal(ILimage* image);

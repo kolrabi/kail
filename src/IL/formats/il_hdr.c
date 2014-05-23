@@ -144,9 +144,11 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
+	SIO *io = &image->io;
+
 	// Header consists of text which must be parsed
 	char header[1024]; // should be sufficient...
-	int	read = image->io.read(image->io.handle, header, 1, sizeof(header));
+	ILuint read = SIOread(io, header, 1, sizeof(header));
 	const char* wstr = strnstr(header, "+X ", read) + 3;
 	const char* hstr = strnstr(header, "-Y ", read) + 3;
 	ILuint width = 0;
@@ -157,10 +159,11 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 		height = atoi(hstr);
 
 	// Seek to start of data
-	auto headerEnd = hstr-header;
+	ILuint headerEnd = hstr-header;
 	while (headerEnd < read && header[headerEnd] != 0x0a)
 		++headerEnd;
-	image->io.seek(image->io.handle, headerEnd+1, IL_SEEK_SET);
+
+	SIOseek(io, headerEnd+1, IL_SEEK_SET);
 
 	if (width == 0 || height == 0) {
 		ilSetError(IL_INVALID_FILE_HEADER);
@@ -168,7 +171,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	}
 
 	// Update the current image with the new dimensions
-	if (!ilTexImage(width, height, 1, 3, IL_RGB, IL_FLOAT, NULL)) {
+	if (!ilTexImage_(image, width, height, 1, 3, IL_RGB, IL_FLOAT, NULL)) {
 		return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -267,26 +270,37 @@ typedef struct {
 
 
 /* default minimal header. modify if you want more information in header */
-ILboolean RGBE_WriteHeader(ILuint width, ILuint height, rgbe_header_info *info)
+ILboolean RGBE_WriteHeader(SIO *io, ILuint width, ILuint height, rgbe_header_info *info)
 {
+	char tmp[512];
 	char *programtype = "RGBE";
 
 	if (info && (info->valid & RGBE_VALID_PROGRAMTYPE))
 		programtype = (char*) info->programtype;
-	if (ilprintf("#?%s\n",programtype) < 0)
+
+	snprintf(tmp, sizeof(tmp), "#?%s\n",programtype);
+	if (!SIOputs(io, tmp))
 		return IL_FALSE;
+
 	/* The #? is to identify file type, the programtype is optional. */
 	if (info && (info->valid & RGBE_VALID_GAMMA)) {
-		if (ilprintf("GAMMA=%g\n",info->gamma) < 0)
+		snprintf(tmp, sizeof(tmp), "GAMMA=%g\n",info->gamma);
+		if (!SIOputs(io, tmp))
 		  return IL_FALSE;
 	}
+
 	if (info && (info->valid & RGBE_VALID_EXPOSURE)) {
-		if (ilprintf("EXPOSURE=%g\n",info->exposure) < 0)
+		snprintf(tmp, sizeof(tmp), "EXPOSURE=%g\n",info->exposure);
+		if (!SIOputs(io, tmp))
 		  return IL_FALSE;
 	}
-	if (ilprintf("FORMAT=32-bit_rle_rgbe\n\n") < 0)
+
+	snprintf(tmp, sizeof(tmp), "FORMAT=32-bit_rle_rgbe\n\n");
+	if (!SIOputs(io, tmp))
 		return IL_FALSE;
-	if (ilprintf("-Y %d +X %d\n", height, width) < 0)
+
+	snprintf(tmp, sizeof(tmp), "-Y %d +X %d\n", height, width);
+	if (!SIOputs(io, tmp))
 		return IL_FALSE;
 	return IL_TRUE;
 }
@@ -385,6 +399,8 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
+	SIO *io = &image->io;
+
 	stHeader.exposure = 0;
 	stHeader.gamma = 0;
 	stHeader.programtype[0] = 0;
@@ -398,7 +414,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	else
 		TempImage = image;
 
-	if (!RGBE_WriteHeader(TempImage->Width, TempImage->Height, &stHeader))
+	if (!RGBE_WriteHeader(io, TempImage->Width, TempImage->Height, &stHeader))
 		return IL_FALSE;
 
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)

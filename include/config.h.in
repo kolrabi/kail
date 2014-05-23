@@ -154,8 +154,7 @@
 
 /* iwi support (IWI is the Infinity Ward Image format used in the Call of Duty
    games.) */
-// #cmakedefine IL_NO_IWI
-#define IL_NO_IWI // broken
+#cmakedefine IL_NO_IWI
 
 /* jp2 support (JP2 (JPEG 2000) is a better, but not so widespread,
    alternative to JPEG. JasPer powered) */
@@ -168,13 +167,10 @@
 #cmakedefine IL_NO_LCMS
 
 /* lif support (LIF is the image format of the game Homeworld.) */
-// #cmakedefine IL_NO_LIF
-
-#define IL_NO_LIF // broken
+#cmakedefine IL_NO_LIF
 
 /* mdl support (MDL is the format for models in the game Half-Life.) */
-// #cmakedefine IL_NO_MDL
-#define IL_NO_MDL // broken
+#cmakedefine IL_NO_MDL
 
 /* mng support (MNG is basically the animated version of PNG but is not
    widespread.) */

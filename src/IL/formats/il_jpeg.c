@@ -14,6 +14,8 @@
 // I have left most of the libjpeg example's comments intact, though.
 //
 
+// FIXME: ijl based implementation broken
+
 #include "il_internal.h"
 
 #ifndef IL_NO_JPG
@@ -63,88 +65,74 @@
 #endif
 
 // Global variables
-static ILboolean jpgErrorOccured = IL_FALSE;
-jmp_buf	JpegJumpBuffer;
+static ILboolean 	jpgErrorOccured = IL_FALSE;
+static jmp_buf		JpegJumpBuffer;
 
 // define a protype of ilLoadFromJpegStruct
 ILboolean ilLoadFromJpegStruct(ILimage* image, void *_JpegInfo);
 
 // Internal function used to get the .jpg header from the current file.
-ILint iGetJpgHead(SIO* io, ILubyte *Header)
-{
-	/*Header[0] = gIO.getc(gIO.handle);
-	Header[1] = gIO.getc(gIO.handle);
-	return;*/
-	return io->read(io->handle, Header, 1, 2);
+ILint iGetJpgHead(SIO* io, ILubyte *Header) {
+	return SIOread(io, Header, 1, 2);
 }
 
-
 // Internal function used to check if the HEADER is a valid .Jpg header.
-ILboolean iCheckJpg(ILubyte Header[2])
-{
+ILboolean iCheckJpg(ILubyte Header[2]) {
 	if (Header[0] != 0xFF || Header[1] != 0xD8)
 		return IL_FALSE;
+
 	return IL_TRUE;
 }
 
-
 // Internal function to get the header and check it.
-ILboolean iIsValidJpeg(SIO* io)
-{
+static ILboolean iIsValidJpeg(SIO* io) {
 	ILubyte Head[2];
 
-	auto read = iGetJpgHead(io, Head);
+	ILuint read = iGetJpgHead(io, Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
-	if (read == 2)
-		return iCheckJpg(Head);
-	else
-		return IL_FALSE;
+	return read == 2 && iCheckJpg(Head);
 }
-
 
 #ifndef IL_USE_IJL // Use libjpeg instead of the IJL.
 
 // Overrides libjpeg's stupid error/warning handlers. =P
-void ExitErrorHandle (struct jpeg_common_struct *JpegInfo)
-{
+void ExitErrorHandle (struct jpeg_common_struct *JpegInfo) {
+	(void)JpegInfo;
 	ilSetError(IL_LIB_JPEG_ERROR);
 	jpgErrorOccured = IL_TRUE;
 	return;
 }
-void OutputMsg(struct jpeg_common_struct *JpegInfo)
-{
+
+void OutputMsg(struct jpeg_common_struct *JpegInfo) {
+	(void)JpegInfo;
+	// iTrace(...)
 	return;
 }
 
-
 typedef struct {
   struct jpeg_source_mgr pub;	/* public fields */
-
-  JOCTET * buffer;		/* start of buffer */
-  boolean start_of_file;	/* have we gotten any data yet? */
+  JOCTET * buffer;						/* start of buffer */
+  boolean start_of_file;			/* have we gotten any data yet? */
+  SIO *io;
 } iread_mgr;
 
 typedef iread_mgr * iread_ptr;
 
 #define INPUT_BUF_SIZE  4096  // choose an efficiently iread'able size
 
-
 METHODDEF(void)
-init_source (j_decompress_ptr cinfo)
-{
+init_source (j_decompress_ptr cinfo) {
 	iread_ptr src = (iread_ptr) cinfo->src;
 	src->start_of_file = TRUE;
 }
 
-
-METHODDEF(boolean)
-fill_input_buffer (j_decompress_ptr cinfo)
-{
+METHODDEF(boolean) 
+fill_input_buffer (j_decompress_ptr cinfo) {
 	iread_ptr src = (iread_ptr) cinfo->src;
 	ILint nbytes;
 
-	nbytes = iCurImage->io.read(iCurImage->io.handle, src->buffer, 1, INPUT_BUF_SIZE);
+	nbytes = SIOread(src->io, src->buffer, 1, INPUT_BUF_SIZE);
 
 	if (nbytes <= 0) {
 		if (src->start_of_file) {  // Treat empty input file as fatal error
@@ -189,12 +177,14 @@ skip_input_data (j_decompress_ptr cinfo, long num_bytes)
 METHODDEF(void)
 term_source (j_decompress_ptr cinfo)
 {
+	(void)cinfo;
+	
 	// no work necessary here
 }
 
 
 GLOBAL(void)
-devil_jpeg_read_init (j_decompress_ptr cinfo)
+devil_jpeg_read_init (SIO *io, j_decompress_ptr cinfo)
 {
 	iread_ptr src;
 
@@ -208,13 +198,14 @@ devil_jpeg_read_init (j_decompress_ptr cinfo)
 	}
 
 	src = (iread_ptr) cinfo->src;
-	src->pub.init_source = init_source;
-	src->pub.fill_input_buffer = fill_input_buffer;
-	src->pub.skip_input_data = skip_input_data;
-	src->pub.resync_to_restart = jpeg_resync_to_restart;  // use default method
-	src->pub.term_source = term_source;
-	src->pub.bytes_in_buffer = 0;  // forces fill_input_buffer on first read
-	src->pub.next_input_byte = NULL;  // until buffer loaded
+	src->io = io;
+	src->pub.init_source 				= init_source;
+	src->pub.fill_input_buffer 	= fill_input_buffer;
+	src->pub.skip_input_data 		= skip_input_data;
+	src->pub.resync_to_restart 	= jpeg_resync_to_restart;  // use default method
+	src->pub.term_source 				= term_source;
+	src->pub.bytes_in_buffer 		= 0;  // forces fill_input_buffer on first read
+	src->pub.next_input_byte 		= NULL;  // until buffer loaded
 }
 
 
@@ -225,7 +216,7 @@ static void iJpegErrorExit( j_common_ptr cinfo )
 	longjmp( JpegJumpBuffer, 1 );
 }
 
-// Internal function used to load the jpeg.
+// Internal function used to load the jpeg. must not be static, used by other loaders
 ILboolean iLoadJpegInternal(ILimage* image)
 {
 	struct jpeg_error_mgr			Error;
@@ -248,7 +239,7 @@ ILboolean iLoadJpegInternal(ILimage* image)
 
 		//jpeg_stdio_src(&JpegInfo, iGetFile());
 
-		devil_jpeg_read_init(&JpegInfo);
+		devil_jpeg_read_init(&image->io, &JpegInfo);
 		jpeg_read_header(&JpegInfo, IL_TRUE);
 
 		result = ilLoadFromJpegStruct(image, &JpegInfo);
@@ -272,7 +263,8 @@ typedef struct
 {
 	struct jpeg_destination_mgr		pub;
 	JOCTET							*buffer;
-	ILboolean						bah;
+	ILboolean						bah; // humbug
+	SIO *               io;
 } iwrite_mgr;
 
 typedef iwrite_mgr *iwrite_ptr;
@@ -297,7 +289,7 @@ METHODDEF(boolean)
 empty_output_buffer (j_compress_ptr cinfo)
 {
 	iwrite_ptr dest = (iwrite_ptr)cinfo->dest;
-	iCurImage->io.write(dest->buffer, 1, OUTPUT_BUF_SIZE, iCurImage->io.handle);
+	SIOwrite(dest->io, dest->buffer, 1, OUTPUT_BUF_SIZE);
 	dest->pub.next_output_byte = dest->buffer;
 	dest->pub.free_in_buffer = OUTPUT_BUF_SIZE;
 	return IL_TRUE;
@@ -307,7 +299,7 @@ METHODDEF(void)
 term_destination (j_compress_ptr cinfo)
 {
 	iwrite_ptr dest = (iwrite_ptr)cinfo->dest;
-	iCurImage->io.write(dest->buffer, 1, OUTPUT_BUF_SIZE - (ILuint)dest->pub.free_in_buffer, iCurImage->io.handle);
+	SIOwrite(dest->io, dest->buffer, 1, OUTPUT_BUF_SIZE - (ILuint)dest->pub.free_in_buffer);
 	return;
 }
 
@@ -855,5 +847,21 @@ ILboolean ilSaveFromJpegStruct(ILimage* image, void *_JpegInfo)
 	#pragma warning(pop)
 	//#pragma warning(disable : 4756)  // Disables 'named type definition in parentheses' warning
 #endif
+
+ILconst_string iFormatExtsJPG[] = { 
+  IL_TEXT("jfif"), 
+  IL_TEXT("jif"), 
+  IL_TEXT("jpe"), 
+  IL_TEXT("jpeg"), 
+  IL_TEXT("jpg"), 
+  NULL 
+};
+
+ILformat iFormatJPG = { 
+  .Validate = iIsValidJpeg, 
+  .Load     = iLoadJpegInternal, 
+  .Save     = iSaveJpegInternal, 
+  .Exts     = iFormatExtsJPG
+};
 
 #endif//IL_NO_JPG

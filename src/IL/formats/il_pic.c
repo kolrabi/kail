@@ -20,26 +20,24 @@
 
 
 // Internal function used to get the .pic header from the current file.
-ILint iGetPicHead(SIO* io, PIC_HEAD *Header)
+static ILuint iGetPicHead(SIO* io, PIC_HEAD *Header)
 {
-	auto read = io->read(io->handle, Header, 1, sizeof(Header));
+	ILuint read = io->read(io->handle, Header, 1, sizeof(Header));
 
-	#ifdef __LITTLE_ENDIAN__
-	iSwapInt(&Header->Magic);
-	iSwapFloat(&Header->Version);
-	iSwapShort(&Header->Width);
-	iSwapShort(&Header->Height);
-	iSwapFloat(&Header->Ratio);
-	iSwapShort(&Header->Fields);
-	iSwapShort(&Header->Padding);
-	#endif
+	Int  (&Header->Magic);
+	Float(&Header->Version);
+	Short(&Header->Width);
+	Short(&Header->Height);
+	Float(&Header->Ratio);
+	Short(&Header->Fields);
+	Short(&Header->Padding);
 
 	return read;
 }
 
 
 // Internal function used to check if the header is a valid .pic header.
-ILboolean iCheckPic(PIC_HEAD *Header)
+static ILboolean iCheckPic(PIC_HEAD *Header)
 {
 	if (Header->Magic != 0x5380F634)
 		return IL_FALSE;
@@ -55,11 +53,11 @@ ILboolean iCheckPic(PIC_HEAD *Header)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidPic(SIO* io)
+static ILboolean iIsValidPic(SIO* io)
 {
 	PIC_HEAD	Head;
 
-	auto read = iGetPicHead(io, &Head);
+	ILuint read = iGetPicHead(io, &Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 	if (read == sizeof(Head))
 		return iCheckPic(&Head);
@@ -68,7 +66,7 @@ ILboolean iIsValidPic(SIO* io)
 }
 
 
-ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
+static ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
 {
 	ILint	count;
 	int		i, j, k;
@@ -132,7 +130,7 @@ ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILi
 }
 
 
-ILboolean channelReadRaw(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
+static ILboolean channelReadRaw(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
 {
 	ILint i, j;
 
@@ -148,7 +146,7 @@ ILboolean channelReadRaw(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint
 }
 
 
-ILboolean channelReadPure(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
+static ILboolean channelReadPure(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILint *off, ILint bytes)
 {
 	ILubyte		col[4];
 	ILint		count;
@@ -178,7 +176,7 @@ ILboolean channelReadPure(SIO* io, ILubyte *scan, ILint width, ILint noCol, ILin
 }
 
 
-ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel, ILint bytes)
+static ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel, ILint bytes)
 {
 	ILint		noCol;
 	ILint		off[4];
@@ -226,7 +224,7 @@ ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel, ILint
 	return status;
 }
 
-ILboolean readScanlines(SIO* io, ILuint *image, ILint width, ILint height, CHANNEL *channel, ILuint alpha)
+static ILboolean readScanlines(SIO* io, ILuint *image, ILint width, ILint height, CHANNEL *channel, ILuint alpha)
 {
 	ILint	i;
 	ILuint	*scan;
@@ -247,7 +245,7 @@ ILboolean readScanlines(SIO* io, ILuint *image, ILint width, ILint height, CHANN
 
 
 // Internal function used to load the .pic
-ILboolean iLoadPicInternal(ILimage* image)
+static ILboolean iLoadPicInternal(ILimage* image)
 {
 	ILuint		Alpha = IL_FALSE;
 	ILubyte		Chained;
@@ -334,6 +332,17 @@ finish:
 	return ilFixImage();
 }
 
+ILconst_string iFormatExtsPIC[] = { 
+  IL_TEXT("pic"), 
+  NULL 
+};
+
+ILformat iFormatPIC = { 
+  .Validate = iIsValidPic, 
+  .Load     = iLoadPicInternal, 
+  .Save     = NULL, 
+  .Exts     = iFormatExtsPIC
+};
 
 #endif//IL_NO_PIC
 

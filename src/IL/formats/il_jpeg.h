@@ -15,6 +15,9 @@
 
 #include "il_internal.h"
 
+ILboolean iLoadJpegInternal(ILimage *);
+
+/*
 ILboolean iCheckJpg(ILubyte Header[2]);
 ILboolean iIsValidJpeg(SIO* io);
 
@@ -26,4 +29,5 @@ ILboolean iIsValidJpeg(SIO* io);
 	ILboolean iSaveJpegInternal(ILconst_string FileName, ILvoid *Lump, ILuint Size);
 #endif
 
+*/
 #endif//JPEG_H

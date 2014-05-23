@@ -22,6 +22,8 @@
 #include "il_icns.h"
 
 #ifndef IL_NO_JP2
+#include "il_jp2.h"
+
 	#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
 		#if defined(_MSC_VER) || defined(__BORLANDC__)
 			#ifndef _DEBUG

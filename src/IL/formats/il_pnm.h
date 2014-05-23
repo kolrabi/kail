@@ -32,12 +32,4 @@ typedef struct PPMINFO
 	ILubyte	Bpp;
 } PPMINFO;
 
-ILboolean	iCheckPnm(char Header[2]);
-ILimage		*ilReadAsciiPpm(PPMINFO *Info);
-ILimage		*ilReadBinaryPpm(PPMINFO *Info);
-ILimage		*ilReadBitPbm(PPMINFO *Info);
-ILboolean	iGetWord(ILboolean);
-void		PbmMaximize(ILimage *Image);
-
-
 #endif//PPMPGM_H

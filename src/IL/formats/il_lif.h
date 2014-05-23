@@ -16,6 +16,7 @@
 
 #include "il_internal.h"
 
+#include "pack_push.h"
 typedef struct LIF_HEAD
 {
     char	Id[8];			//"Willy 7"
@@ -29,9 +30,6 @@ typedef struct LIF_HEAD
 	ILuint	TeamEffect0;	// Team effect offset 0
 	ILuint	TeamEffect1;	// Team effect offset 1
 } LIF_HEAD;
-
-ILboolean iIsValidLif(void);
-ILboolean iCheckLif(LIF_HEAD *Header);
-ILboolean iLoadLifInternal(void);
+#include "pack_pop.h"
 
 #endif//LIF_H

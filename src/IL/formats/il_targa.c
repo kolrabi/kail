@@ -734,6 +734,9 @@ void iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Mi
 
 ILconst_string iFormatExtsTGA[] = { 
 	IL_TEXT("tga"), 
+	IL_TEXT("vda"), 
+	IL_TEXT("icb"), 
+	IL_TEXT("vst"), 
 	NULL 
 };
 
