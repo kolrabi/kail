@@ -16,50 +16,44 @@
 #include "il_manip.h"
 #include <limits.h>
 
-static char *FName = NULL;
+// static char *FName = NULL;
+
+// Internal functions
+static ILboolean	iCheckSgi(iSgiHeader *Header);
+//void		iExpandScanLine(ILubyte *Dest, ILubyte *Src, ILuint Bpc);
+static ILint		iGetScanLine(SIO *, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length);
+static void				sgiSwitchData(ILubyte *Data, ILuint SizeOfData);
+static ILboolean	iNewSgi(ILimage *, iSgiHeader *Head);
+static ILboolean	iReadNonRleSgi(ILimage *, iSgiHeader *Head);
+static ILboolean	iReadRleSgi(ILimage *, iSgiHeader *Head);
+static ILboolean 	iSaveRleSgi(SIO *, 	ILubyte *Data, ILuint w, ILuint h, ILuint numChannels, ILuint bps);
+
 
 
 /*----------------------------------------------------------------------------*/
 
 // Internal function used to get the .sgi header from the current file.
-ILint iGetSgiHead(iSgiHeader *Header)
+static ILuint iGetSgiHead(SIO *io, iSgiHeader *Header)
 {
-	auto read = iCurImage->io.read(iCurImage->io.handle, Header, 1, sizeof(iSgiHeader));
+	ILuint read = SIOread(io, Header, 1, sizeof(iSgiHeader));
 
-	#ifdef __LITTLE_ENDIAN__
-	iSwapShort(&Header->MagicNum);
-	iSwapUShort(&Header->Dim);
-	iSwapUShort(&Header->XSize);
-	iSwapUShort(&Header->YSize);
-	iSwapUShort(&Header->ZSize);
-	iSwapInt(&Header->PixMin);
-	iSwapInt(&Header->PixMax);
-	iSwapInt(&Header->Dummy1);
-	iSwapInt(&Header->ColMap);
-	#endif
+	BigShort (&Header->MagicNum);
+	BigUShort(&Header->Dim);
+	BigUShort(&Header->XSize);
+	BigUShort(&Header->YSize);
+	BigUShort(&Header->ZSize);
+	BigInt   (&Header->PixMin);
+	BigInt   (&Header->PixMax);
+	BigInt   (&Header->Dummy1);
+	BigInt   (&Header->ColMap);
 
 	return read;
 }
 
 /*----------------------------------------------------------------------------*/
 
-/* Internal function to get the header and check it. */
-ILboolean iIsValidSgi()
-{
-	iSgiHeader	Head;
-	ILint read = iGetSgiHead(&Head);
-	iCurImage->io.seek(iCurImage->io.handle, -read, IL_SEEK_CUR);  // Restore previous file position
-
-	if (read == sizeof(Head))
-		return iCheckSgi(&Head);
-	else
-		return IL_FALSE;
-}
-
-/*----------------------------------------------------------------------------*/
-
 /* Internal function used to check if the HEADER is a valid .sgi header. */
-ILboolean iCheckSgi(iSgiHeader *Header)
+static ILboolean iCheckSgi(iSgiHeader *Header)
 {
 	if (Header->MagicNum != SGI_MAGICNUM)
 		return IL_FALSE;
@@ -75,81 +69,56 @@ ILboolean iCheckSgi(iSgiHeader *Header)
 
 /*----------------------------------------------------------------------------*/
 
-/* Internal function used to load the SGI image */
-ILboolean iLoadSgiInternal()
+/* Internal function to get the header and check it. */
+static ILboolean iIsValidSgi(SIO *io)
 {
-	iSgiHeader	Header;
-	ILboolean	bSgi;
-
-	if (iCurImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-
-	if (!iGetSgiHead(&Header))
-		return IL_FALSE;
-	if (!iCheckSgi(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
-		return IL_FALSE;
-	}
-
-	// Bugfix for #1060946.
-	//  The ZSize should never really be 2 by the specifications.  Some
-	//  application is outputting these, and it looks like the ZSize
-	//  should really be 1.
-	if (Header.ZSize == 2)
-		Header.ZSize = 1;
+	iSgiHeader	Head;
+	ILuint 			read = iGetSgiHead(io, &Head);
 	
-	if (Header.Storage == SGI_RLE) {  // RLE
-		bSgi = iReadRleSgi(&Header);
-	}
-	else {  // Non-RLE  //(Header.Storage == SGI_VERBATIM)
-		bSgi = iReadNonRleSgi(&Header);
-	}
+	SIOseek(io, -read, IL_SEEK_CUR);  // Restore previous file position
 
-	if (!bSgi)
-		return IL_FALSE;
-	return ilFixImage();
+	return read == sizeof(Head) && iCheckSgi(&Head);
 }
 
 /*----------------------------------------------------------------------------*/
 
-ILboolean iReadRleSgi(iSgiHeader *Head)
+static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 {
-	#ifdef __LITTLE_ENDIAN__
-	ILuint ixTable;
-	#endif
+	ILuint 		ixTable;
 	ILuint 		ChanInt = 0;
 	ILuint  	ixPlane, ixHeight,ixPixel, RleOff, RleLen;
 	ILuint		*OffTable=NULL, *LenTable=NULL, TableSize, Cur;
 	ILubyte		**TempData=NULL;
+	SIO *			io = &Image->io;
 
-	if (!iNewSgi(Head))
+	if (!iNewSgi(Image, Head))
 		return IL_FALSE;
 
 	TableSize = Head->YSize * Head->ZSize;
-	OffTable = (ILuint*)ialloc(TableSize * sizeof(ILuint));
-	LenTable = (ILuint*)ialloc(TableSize * sizeof(ILuint));
+	OffTable  = (ILuint*)ialloc(TableSize * sizeof(ILuint));
+	LenTable  = (ILuint*)ialloc(TableSize * sizeof(ILuint));
+
 	if (OffTable == NULL || LenTable == NULL)
 		goto cleanup_error;
-	if (iCurImage->io.read(iCurImage->io.handle, OffTable, TableSize * sizeof(ILuint), 1) != 1)
-		goto cleanup_error;
-	if (iCurImage->io.read(iCurImage->io.handle, LenTable, TableSize * sizeof(ILuint), 1) != 1)
+
+	if (SIOread(io, OffTable, TableSize * sizeof(ILuint), 1) != 1)
 		goto cleanup_error;
 
-#ifdef __LITTLE_ENDIAN__
+	if (SIOread(io, LenTable, TableSize * sizeof(ILuint), 1) != 1)
+		goto cleanup_error;
+
 	// Fix the offset/len table (it's big endian format)
 	for (ixTable = 0; ixTable < TableSize; ixTable++) {
-		iSwapUInt(OffTable + ixTable);
-		iSwapUInt(LenTable + ixTable);
+		BigUInt(OffTable + ixTable);
+		BigUInt(LenTable + ixTable);
 	}
-#endif //__LITTLE_ENDIAN__
 
 	// We have to create a temporary buffer for the image, because SGI
 	//	images are plane-separated.
 	TempData = (ILubyte**)ialloc(Head->ZSize * sizeof(ILubyte*));
 	if (TempData == NULL)
 		goto cleanup_error;
+
 	imemclear(TempData, Head->ZSize * sizeof(ILubyte*));  // Just in case ialloc fails then cleanup_error.
 	for (ixPlane = 0; ixPlane < Head->ZSize; ixPlane++) {
 		TempData[ixPlane] = (ILubyte*)ialloc(Head->XSize * Head->YSize * Head->Bpc);
@@ -166,9 +135,9 @@ ILboolean iReadRleSgi(iSgiHeader *Head)
 			RleLen = LenTable[ixHeight + ixPlane * Head->YSize];
 			
 			// Seeks to the offset table position
-			iCurImage->io.seek(iCurImage->io.handle, RleOff, IL_SEEK_SET);
-			if (iGetScanLine((TempData[ixPlane]) + (ixHeight * Head->XSize * Head->Bpc),
-				Head, RleLen) != Head->XSize * Head->Bpc) {
+			SIOseek(io, RleOff, IL_SEEK_SET);
+			ILint Scan = iGetScanLine(io, (TempData[ixPlane]) + (ixHeight * Head->XSize * Head->Bpc),	Head, RleLen);
+			if (Scan != Head->XSize * Head->Bpc) {
 					ilSetError(IL_ILLEGAL_FILE_VALUE);
 					goto cleanup_error;
 			}
@@ -184,18 +153,18 @@ ILboolean iReadRleSgi(iSgiHeader *Head)
 	}*/
 	
 	// Assemble the image from its planes
-	for (ixPixel = 0; ixPixel < iCurImage->SizeOfData;
+	for (ixPixel = 0; ixPixel < Image->SizeOfData;
 		ixPixel += Head->ZSize * Head->Bpc, ChanInt += Head->Bpc) {
 		for (ixPlane = 0; (ILint)ixPlane < Head->ZSize * Head->Bpc;	ixPlane += Head->Bpc) {
-			iCurImage->Data[ixPixel + ixPlane] = TempData[ixPlane][ChanInt];
+			Image->Data[ixPixel + ixPlane] = TempData[ixPlane][ChanInt];
 			if (Head->Bpc == 2)
-				iCurImage->Data[ixPixel + ixPlane + 1] = TempData[ixPlane][ChanInt + 1];
+				Image->Data[ixPixel + ixPlane + 1] = TempData[ixPlane][ChanInt + 1];
 		}
 	}
 
 	#ifdef __LITTLE_ENDIAN__
 	if (Head->Bpc == 2)
-		sgiSwitchData(iCurImage->Data, iCurImage->SizeOfData);
+		sgiSwitchData(Image->Data, Image->SizeOfData);
 	#endif
 
 	ifree(OffTable);
@@ -223,36 +192,34 @@ cleanup_error:
 
 /*----------------------------------------------------------------------------*/
 
-ILint iGetScanLine(ILubyte *ScanLine, iSgiHeader *Head, ILuint Length)
-{
+static ILint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length) {
 	ILushort Pixel, Count;  // For current pixel
 	ILuint	 BppRead = 0, CurPos = 0, Bps = Head->XSize * Head->Bpc;
 
 	while (BppRead < Length && CurPos < Bps)
 	{
 		Pixel = 0;
-		if (iCurImage->io.read(iCurImage->io.handle, &Pixel, Head->Bpc, 1) != 1)
+		if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
 			return -1;
 		
-#ifndef __LITTLE_ENDIAN__
-		iSwapUShort(&Pixel);
-#endif
+		UShort(&Pixel);
 
-		if (!(Count = (Pixel & 0x7f)))  // If 0, line ends
+		Count = Pixel & 0x7f;
+		if (!Count)  // If 0, line ends
 			return CurPos;
+
 		if (Pixel & 0x80) {  // If top bit set, then it is a "run"
-			if (iCurImage->io.read(iCurImage->io.handle, ScanLine, Head->Bpc, Count) != Count)
+			if (SIOread(io, ScanLine, Head->Bpc, Count) != Count)
 				return -1;
+
 			BppRead += Head->Bpc * Count + Head->Bpc;
 			ScanLine += Head->Bpc * Count;
 			CurPos += Head->Bpc * Count;
-		}
-		else {
-			if (iCurImage->io.read(iCurImage->io.handle, &Pixel, Head->Bpc, 1) != 1)
+		}	else {
+			if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
 				return -1;
-#ifndef __LITTLE_ENDIAN__
-			iSwapUShort(&Pixel);
-#endif
+
+			UShort(&Pixel);
 			if (Head->Bpc == 1) {
 				while (Count--) {
 					*ScanLine = (ILubyte)Pixel;
@@ -270,7 +237,6 @@ ILint iGetScanLine(ILubyte *ScanLine, iSgiHeader *Head, ILuint Length)
 			BppRead += Head->Bpc + Head->Bpc;
 		}
 	}
-
 	return CurPos;
 }
 
@@ -278,18 +244,19 @@ ILint iGetScanLine(ILubyte *ScanLine, iSgiHeader *Head, ILuint Length)
 /*----------------------------------------------------------------------------*/
 
 // Much easier to read - just assemble from planes, no decompression
-ILboolean iReadNonRleSgi(iSgiHeader *Head)
+static ILboolean iReadNonRleSgi(ILimage *Image, iSgiHeader *Head)
 {
 	ILuint		i, c;
-	ILboolean	Cache = IL_FALSE;
+	// ILboolean	Cache = IL_FALSE;
+	SIO *     io 		= &Image->io;
 
-	if (!iNewSgi(Head)) {
+	if (!iNewSgi(Image, Head)) {
 		return IL_FALSE;
 	}
 
-	for (c = 0; c < iCurImage->Bpp; c++) {
-		for (i = c; i < iCurImage->SizeOfData; i += iCurImage->Bpp) {
-			if (iCurImage->io.read(iCurImage->io.handle, iCurImage->Data + i, 1, 1) != 1) {
+	for (c = 0; c < Image->Bpp; c++) {
+		for (i = c; i < Image->SizeOfData; i += Image->Bpp) {
+			if (SIOread(io, Image->Data + i, 1, 1) != 1) {
 				return IL_FALSE;
 			}
 		}
@@ -300,8 +267,7 @@ ILboolean iReadNonRleSgi(iSgiHeader *Head)
 
 /*----------------------------------------------------------------------------*/
 
-void sgiSwitchData(ILubyte *Data, ILuint SizeOfData)
-{	
+static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {	
 	ILubyte	Temp;
 	ILuint	i;
 	#ifdef ALTIVEC_GCC
@@ -332,26 +298,26 @@ void sgiSwitchData(ILubyte *Data, ILuint SizeOfData)
 /*----------------------------------------------------------------------------*/
 
 // Just an internal convenience function for reading SGI files
-ILboolean iNewSgi(iSgiHeader *Head)
+static ILboolean iNewSgi(ILimage *Image, iSgiHeader *Head)
 {
-	if (!ilTexImage(Head->XSize, Head->YSize, Head->Bpc, (ILubyte)Head->ZSize, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(Image, Head->XSize, Head->YSize, Head->Bpc, (ILubyte)Head->ZSize, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
-	iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
+	Image->Origin = IL_ORIGIN_LOWER_LEFT;
 
 	switch (Head->ZSize)
 	{
 		case 1:
-			iCurImage->Format = IL_LUMINANCE;
+			Image->Format = IL_LUMINANCE;
 			break;
 		/*case 2:
-			iCurImage->Format = IL_LUMINANCE_ALPHA; 
+			Image->Format = IL_LUMINANCE_ALPHA; 
 			break;*/
 		case 3:
-			iCurImage->Format = IL_RGB;
+			Image->Format = IL_RGB;
 			break;
 		case 4:
-			iCurImage->Format = IL_RGBA;
+			Image->Format = IL_RGBA;
 			break;
 		default:
 			ilSetError(IL_ILLEGAL_FILE_VALUE);
@@ -362,87 +328,37 @@ ILboolean iNewSgi(iSgiHeader *Head)
 	{
 		case 1:
 			if (Head->PixMin < 0)
-				iCurImage->Type = IL_BYTE;
+				Image->Type = IL_BYTE;
 			else
-				iCurImage->Type = IL_UNSIGNED_BYTE;
+				Image->Type = IL_UNSIGNED_BYTE;
 			break;
 		case 2:
 			if (Head->PixMin < 0)
-				iCurImage->Type = IL_SHORT;
+				Image->Type = IL_SHORT;
 			else
-				iCurImage->Type = IL_UNSIGNED_SHORT;
+				Image->Type = IL_UNSIGNED_SHORT;
 			break;
 		default:
 			ilSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
-	iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
+	Image->Origin = IL_ORIGIN_LOWER_LEFT;
 
 	return IL_TRUE;
 }
 
 /*----------------------------------------------------------------------------*/
 
-//! Writes a SGI file
-/*ILboolean ilSaveSgi(const ILstring FileName)
+static ILenum DetermineSgiType(ILenum Type)
 {
-	ILHANDLE	SgiFile;
-	ILuint		SgiSize;
+	if (Type == IL_INT)
+		return IL_SHORT;
 
-	if (ilGetBoolean(IL_FILE_MODE) == IL_FALSE) {
-		if (iFileExists(FileName)) {
-			ilSetError(IL_FILE_ALREADY_EXISTS);
-			return IL_FALSE;
-		}
-	}
-
-	SgiFile = iCurImage->io.openWrite(FileName);
-	if (SgiFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return IL_FALSE;
-	}
-
-	SgiSize = ilSaveSgiF(SgiFile);
-	iCurImage->io.close(SgiFile);
-
-	if (SgiSize == 0)
-		return IL_FALSE;
-	return IL_TRUE;
-}
-
-
-//! Writes a Sgi to an already-opened file
-ILuint ilSaveSgiF(ILHANDLE File)
-{
-	ILuint Pos;
-	iSetOutputFile(File);
-	Pos = iCurImage->io.tell(iCurImage->io.handle);
-	if (iSaveSgiInternal() == IL_FALSE)
-		return 0;  // Error occurred
-	return iCurImage->io.tell(iCurImage->io.handle) - Pos;  // Return the number of bytes written.
-}
-
-
-//! Writes a Sgi to a memory "lump"
-ILuint ilSaveSgiL(void *Lump, ILuint Size)
-{
-	ILuint Pos;
-	iSetOutputLump(Lump, Size);
-	Pos = iCurImage->io.tell(iCurImage->io.handle);
-	if (iSaveSgiInternal() == IL_FALSE)
-		return 0;  // Error occurred
-	return iCurImage->io.tell(iCurImage->io.handle) - Pos;  // Return the number of bytes written.
-}*/
-
-
-ILenum DetermineSgiType(ILenum Type)
-{
 	if (Type > IL_UNSIGNED_SHORT) {
-		if (iCurImage->Type == IL_INT)
-			return IL_SHORT;
 		return IL_UNSIGNED_SHORT;
 	}
+
 	return Type;
 }
 
@@ -452,32 +368,34 @@ ILenum DetermineSgiType(ILenum Type)
 
 // Internal function used to save the Sgi.
 // @todo: write header in one call
-ILboolean iSaveSgiInternal()
+static ILboolean iSaveSgiInternal(ILimage *Image)
 {
 	ILuint		i, c;
 	ILboolean	Compress;
-	ILimage		*Temp = iCurImage;
+	ILimage		*Temp = Image;
 	ILubyte		*TempData;
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	if (iCurImage->Format != IL_LUMINANCE
+	SIO * 		io = &Image->io;
+
+	if (Image->Format != IL_LUMINANCE
 	    //while the sgi spec doesn't directly forbid rgb files with 2
 	    //channels, they are quite uncommon and most apps don't support
 	    //them. so convert lum_a images to rgba before writing.
-	    //&& iCurImage->Format != IL_LUMINANCE_ALPHA
-	    && iCurImage->Format != IL_RGB
-	    && iCurImage->Format != IL_RGBA) {
-		if (iCurImage->Format == IL_BGRA || iCurImage->Format == IL_LUMINANCE_ALPHA)
-			Temp = iConvertImage(iCurImage, IL_RGBA, DetermineSgiType(iCurImage->Type));
+	    //&& Image->Format != IL_LUMINANCE_ALPHA
+	    && Image->Format != IL_RGB
+	    && Image->Format != IL_RGBA) {
+		if (Image->Format == IL_BGRA || Image->Format == IL_LUMINANCE_ALPHA)
+			Temp = iConvertImage(Image, IL_RGBA, DetermineSgiType(Image->Type));
 		else
-			Temp = iConvertImage(iCurImage, IL_RGB, DetermineSgiType(iCurImage->Type));
+			Temp = iConvertImage(Image, IL_RGB, DetermineSgiType(Image->Type));
 	}
-	else if (iCurImage->Type > IL_UNSIGNED_SHORT) {
-		Temp = iConvertImage(iCurImage, iCurImage->Format, DetermineSgiType(iCurImage->Type));
+	else if (Image->Type > IL_UNSIGNED_SHORT) {
+		Temp = iConvertImage(Image, Image->Format, DetermineSgiType(Image->Type));
 	}
 	
 	//compression of images with 2 bytes per channel doesn't work yet
@@ -486,76 +404,77 @@ ILboolean iSaveSgiInternal()
 	if (Temp == NULL)
 		return IL_FALSE;
 
-	SaveBigUShort(&iCurImage->io, SGI_MAGICNUM);  // 'Magic' number
+	SaveBigUShort(io, SGI_MAGICNUM);  // 'Magic' number
 	if (Compress)
-		iCurImage->io.putchar(1, iCurImage->io.handle);
+		SIOputc(io, 1);
 	else
-		iCurImage->io.putchar(0, iCurImage->io.handle);
+		SIOputc(io, 0);
 
 	if (Temp->Type == IL_UNSIGNED_BYTE)
-		iCurImage->io.putchar(1, iCurImage->io.handle);
+		SIOputc(io, 1);
 	else if (Temp->Type == IL_UNSIGNED_SHORT)
-		iCurImage->io.putchar(2, iCurImage->io.handle);
+		SIOputc(io, 2);
 	// Need to error here if not one of the two...
 
 	if (Temp->Format == IL_LUMINANCE || Temp->Format == IL_COLOUR_INDEX)
-		SaveBigUShort(&iCurImage->io, 2);
+		SaveBigUShort(io, 2);
 	else
-		SaveBigUShort(&iCurImage->io, 3);
+		SaveBigUShort(io, 3);
 
-	SaveBigUShort(&iCurImage->io, (ILushort)Temp->Width);
-	SaveBigUShort(&iCurImage->io, (ILushort)Temp->Height);
-	SaveBigUShort(&iCurImage->io, (ILushort)Temp->Bpp);
+	SaveBigUShort(io, (ILushort)Temp->Width);
+	SaveBigUShort(io, (ILushort)Temp->Height);
+	SaveBigUShort(io, (ILushort)Temp->Bpp);
 
 	switch (Temp->Type)
 	{
 		case IL_BYTE:
-			SaveBigInt(&iCurImage->io, SCHAR_MIN);	// Minimum pixel value
-			SaveBigInt(&iCurImage->io, SCHAR_MAX);	// Maximum pixel value
+			SaveBigInt(io, SCHAR_MIN);	// Minimum pixel value
+			SaveBigInt(io, SCHAR_MAX);	// Maximum pixel value
 			break;
 		case IL_UNSIGNED_BYTE:
-			SaveBigInt(&iCurImage->io, 0);			// Minimum pixel value
-			SaveBigInt(&iCurImage->io, UCHAR_MAX);	// Maximum pixel value
+			SaveBigInt(io, 0);			// Minimum pixel value
+			SaveBigInt(io, UCHAR_MAX);	// Maximum pixel value
 			break;
 		case IL_SHORT:
-			SaveBigInt(&iCurImage->io, SHRT_MIN);	// Minimum pixel value
-			SaveBigInt(&iCurImage->io, SHRT_MAX);	// Maximum pixel value
+			SaveBigInt(io, SHRT_MIN);	// Minimum pixel value
+			SaveBigInt(io, SHRT_MAX);	// Maximum pixel value
 			break;
 		case IL_UNSIGNED_SHORT:
-			SaveBigInt(&iCurImage->io, 0);			// Minimum pixel value
-			SaveBigInt(&iCurImage->io, USHRT_MAX);	// Maximum pixel value
+			SaveBigInt(io, 0);			// Minimum pixel value
+			SaveBigInt(io, USHRT_MAX);	// Maximum pixel value
 			break;
 	}
 
-	SaveBigInt(&iCurImage->io, 0);  // Dummy value
+	SaveBigInt(io, 0);  // Dummy value
 
-	if (FName) {
+	/*if (FName) {
 		c = ilCharStrLen(FName);
 		c = c < 79 ? 79 : c;
-		iCurImage->io.write(FName, 1, c, iCurImage->io.handle);
+		SIOwrite(io, FName, 1, c);
 		c = 80 - c;
 		for (i = 0; i < c; i++) {
-			iCurImage->io.putchar(0, iCurImage->io.handle);
+			SIOputc(io, 0);
 		}
 	}
 	else {
+		*/
 		for (i = 0; i < 80; i++) {
-			iCurImage->io.putchar(0, iCurImage->io.handle);
+			SIOputc(io, 0);
 		}
-	}
+	//}
 
-	SaveBigUInt(&iCurImage->io, 0);  // Colormap
+	SaveBigUInt(io, 0);  // Colormap
 
 	// Padding
 	for (i = 0; i < 101; i++) {
-		SaveLittleInt(&iCurImage->io, 0);
+		SaveLittleInt(io, 0);
 	}
 
 
-	if (iCurImage->Origin == IL_ORIGIN_UPPER_LEFT) {
+	if (Image->Origin == IL_ORIGIN_UPPER_LEFT) {
 		TempData = iGetFlipped(Temp);
 		if (TempData == NULL) {
-			if (Temp!= iCurImage)
+			if (Temp!= Image)
 				ilCloseImage(Temp);
 			return IL_FALSE;
 		}
@@ -568,18 +487,18 @@ ILboolean iSaveSgiInternal()
 	if (!Compress) {
 		for (c = 0; c < Temp->Bpp; c++) {
 			for (i = c; i < Temp->SizeOfData; i += Temp->Bpp) {
-				iCurImage->io.putchar(TempData[i], iCurImage->io.handle);  // Have to save each colour plane separately.
+				SIOputc(io, TempData[i]);  // Have to save each colour plane separately.
 			}
 		}
 	}
 	else {
-		iSaveRleSgi(TempData, Temp->Width, Temp->Height, Temp->Bpp, Temp->Bps);
+		iSaveRleSgi(io, TempData, Temp->Width, Temp->Height, Temp->Bpp, Temp->Bps);
 	}
 
 
 	if (TempData != Temp->Data)
 		ifree(TempData);
-	if (Temp != iCurImage)
+	if (Temp != Image)
 		ilCloseImage(Temp);
 
 	return IL_TRUE;
@@ -587,7 +506,7 @@ ILboolean iSaveSgiInternal()
 
 /*----------------------------------------------------------------------------*/
 
-ILboolean iSaveRleSgi(ILubyte *Data, ILuint w, ILuint h, ILuint numChannels,
+static ILboolean iSaveRleSgi(SIO *io, ILubyte *Data, ILuint w, ILuint h, ILuint numChannels,
 		ILuint bps)
 {
 	//works only for sgi files with only 1 bpc
@@ -610,11 +529,11 @@ ILboolean iSaveRleSgi(ILubyte *Data, ILuint w, ILuint h, ILuint numChannels,
 	}
 
 	// These just contain dummy values at this point.
-	TableOff = iCurImage->io.tell(iCurImage->io.handle);
-	iCurImage->io.write(StartTable, sizeof(ILuint), h * numChannels, iCurImage->io.handle);
-	iCurImage->io.write(LenTable, sizeof(ILuint), h * numChannels, iCurImage->io.handle);
+	TableOff = SIOtell(io);
+	SIOwrite(io, StartTable, sizeof(ILuint), h * numChannels);
+	SIOwrite(io, LenTable,   sizeof(ILuint), h * numChannels);
 
-	DataOff = iCurImage->io.tell(iCurImage->io.handle);
+	DataOff = SIOtell(io);
 	for (c = 0; c < numChannels; c++) {
 		for (y = 0; y < h; y++) {
 			i = y * bps + c;
@@ -623,24 +542,22 @@ ILboolean iSaveRleSgi(ILubyte *Data, ILuint w, ILuint h, ILuint numChannels,
 			}
 
 			ilRleCompressLine(ScanLine, w, 1, CompLine, LenTable + h * c + y, IL_SGICOMP);
-			iCurImage->io.write(CompLine, 1, *(LenTable + h * c + y), iCurImage->io.handle);
+			SIOwrite(io, CompLine, 1, *(LenTable + h * c + y));
 		}
 	}
 
-	iCurImage->io.seek(iCurImage->io.handle, TableOff, IL_SEEK_SET);
+	SIOseek(io, TableOff, IL_SEEK_SET);
 
 	j = h * numChannels;
 	for (y = 0; y < j; y++) {
 		StartTable[y] = DataOff;
 		DataOff += LenTable[y];
-#ifdef __LITTLE_ENDIAN__
-		iSwapUInt(&StartTable[y]);
- 		iSwapUInt(&LenTable[y]);
-#endif
+		BigUInt(&StartTable[y]);
+ 		BigUInt(&LenTable[y]);
 	}
 
-	iCurImage->io.write(StartTable, sizeof(ILuint), h * numChannels, iCurImage->io.handle);
-	iCurImage->io.write(LenTable, sizeof(ILuint), h * numChannels, iCurImage->io.handle);
+	SIOwrite(io, StartTable, sizeof(ILuint), h * numChannels);
+	SIOwrite(io, LenTable,   sizeof(ILuint), h * numChannels);
 
 	ifree(ScanLine);
 	ifree(CompLine);
@@ -651,5 +568,60 @@ ILboolean iSaveRleSgi(ILubyte *Data, ILuint w, ILuint h, ILuint numChannels,
 }
 
 /*----------------------------------------------------------------------------*/
+
+/*----------------------------------------------------------------------------*/
+
+/* Internal function used to load the SGI image */
+static ILboolean iLoadSgiInternal(ILimage *Image)
+{
+	iSgiHeader	Header;
+	ILboolean		bSgi;
+
+	if (Image == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	if (!iGetSgiHead(&Image->io, &Header))
+		return IL_FALSE;
+
+	if (!iCheckSgi(&Header)) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
+	}
+
+	// Bugfix for #1060946.
+	//  The ZSize should never really be 2 by the specifications.  Some
+	//  application is outputting these, and it looks like the ZSize
+	//  should really be 1.
+	if (Header.ZSize == 2)
+		Header.ZSize = 1;
+	
+	if (Header.Storage == SGI_RLE) {  // RLE
+		bSgi = iReadRleSgi(Image, &Header);
+	}
+	else {  // Non-RLE  //(Header.Storage == SGI_VERBATIM)
+		bSgi = iReadNonRleSgi(Image, &Header);
+	}
+
+	if (!bSgi)
+		return IL_FALSE;
+	return ilFixImage();
+}
+
+ILconst_string iFormatExtsSGI[] = { 
+	IL_TEXT("sgi"), 
+	IL_TEXT("bw"), 
+	IL_TEXT("rgb"), 
+	IL_TEXT("rgba"), 
+	NULL 
+};
+
+ILformat iFormatSGI = { 
+	.Validate = iIsValidSgi, 
+	.Load     = iLoadSgiInternal, 
+	.Save     = iSaveSgiInternal, 
+	.Exts     = iFormatExtsSGI
+};
 
 #endif//IL_NO_SGI

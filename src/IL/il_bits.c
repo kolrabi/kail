@@ -36,6 +36,7 @@
 
 
 // Converts a FILE to a BITFILE.
+// TODO: make this take a SIO *
 BITFILE *bfile(ILHANDLE File)
 {
 	BITFILE *ToReturn = NULL;

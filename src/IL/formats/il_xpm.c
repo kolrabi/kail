@@ -15,6 +15,9 @@
 #ifndef IL_NO_XPM
 #include <ctype.h>
 
+static ILboolean iIsValidXpm(SIO* io);
+static ILboolean iLoadXpmInternal(ILimage *);
+
 // Global variables
 typedef ILubyte XpmPixel[4];
 
@@ -26,8 +29,7 @@ typedef ILubyte XpmPixel[4];
 //#define XPM_DONT_USE_HASHTABLE
 
 
-ILint XpmGetsInternal(SIO* io, ILubyte *Buffer, ILint MaxLen)
-{
+static ILint XpmGetsInternal(SIO* io, ILubyte *Buffer, ILint MaxLen) {
 	ILint	i = 0, Current;
 
 	if (io->eof(io->handle))
@@ -60,8 +62,7 @@ ILint XpmGetsInternal(SIO* io, ILubyte *Buffer, ILint MaxLen)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidXpm(SIO* io)
-{
+static ILboolean iIsValidXpm(SIO* io) {
 	ILubyte	Buffer[10];
 	ILuint	Pos = io->tell(io->handle);
 
@@ -447,8 +448,7 @@ ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XpmPixel* Colours)
 }
 
 
-ILboolean iLoadXpmInternal()
-{
+static ILboolean iLoadXpmInternal(ILimage *Image) {
 #define BUFFER_SIZE 2000
 	ILubyte			Buffer[BUFFER_SIZE], *Data;
 	ILint			Size, Pos, Width, Height, NumColours, i, x, y;
@@ -462,16 +462,23 @@ ILboolean iLoadXpmInternal()
 	ILint		Offset;
 #endif
 
-	Size = XpmGetsInternal(&iCurImage->io, Buffer, BUFFER_SIZE);
+	if (Image == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	SIO* io = &Image->io;
+
+	Size = XpmGetsInternal(io, Buffer, BUFFER_SIZE);
 	if (strncmp("/* XPM */", (char*)Buffer, strlen("/* XPM */"))) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
-	Size = XpmGets(&iCurImage->io, Buffer, BUFFER_SIZE);
+	Size = XpmGets(io, Buffer, BUFFER_SIZE);
 	// @TODO:  Actually check the variable name here.
 
-	Size = XpmGets(&iCurImage->io, Buffer, BUFFER_SIZE);
+	Size = XpmGets(io, Buffer, BUFFER_SIZE);
 	Pos = 0;
 	Width = XpmGetInt(Buffer, Size, &Pos);
 	Height = XpmGetInt(Buffer, Size, &Pos);
@@ -504,7 +511,7 @@ ILboolean iLoadXpmInternal()
 #endif
 
 	for (i = 0; i < NumColours; i++) {
-		Size = XpmGets(&iCurImage->io, Buffer, BUFFER_SIZE);
+		Size = XpmGets(io, Buffer, BUFFER_SIZE);
 #ifndef XPM_DONT_USE_HASHTABLE
 		if (!XpmGetColour(Buffer, Size, CharsPerPixel, HashTable)) {
 			XpmDestroyHashTable(HashTable);
@@ -525,10 +532,10 @@ ILboolean iLoadXpmInternal()
 		return IL_FALSE;
 	}
 
-	Data = iCurImage->Data;
+	Data = Image->Data;
 
 	for (y = 0; y < Height; y++) {
-		Size = XpmGets(&iCurImage->io, Buffer, BUFFER_SIZE);
+		Size = XpmGets(io, Buffer, BUFFER_SIZE);
 		for (x = 0; x < Width; x++) {
 #ifndef XPM_DONT_USE_HASHTABLE
 			XpmGetEntry(HashTable, &Buffer[1 + x*CharsPerPixel], CharsPerPixel, &Data[(x << 2)]);
@@ -541,12 +548,11 @@ ILboolean iLoadXpmInternal()
 #endif
 		}
 
-		Data += iCurImage->Bps;
+		Data += Image->Bps;
 	}
 
 	//added 20040218
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
-
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 #ifndef XPM_DONT_USE_HASHTABLE
 	XpmDestroyHashTable(HashTable);
@@ -557,6 +563,18 @@ ILboolean iLoadXpmInternal()
 
 #undef BUFFER_SIZE
 }
+
+ILconst_string iFormatExtsXPM[] = { 
+	IL_TEXT("xpm"), 
+	NULL 
+};
+
+ILformat iFormatXPM = { 
+	.Validate = iIsValidXpm, 
+	.Load     = iLoadXpmInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsXPM
+};
 
 #endif//IL_NO_XPM
 

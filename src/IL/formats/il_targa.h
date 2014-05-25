@@ -44,8 +44,6 @@ typedef struct TARGAFOOTER
 	ILbyte NullChar;		// NULL
 } TARGAFOOTER;
 
-#include "pack_pop.h"
-
 #define TGA_EXT_LEN		495
 typedef struct TARGAEXT
 {
@@ -65,6 +63,7 @@ typedef struct TARGAEXT
 	ILint	KeyColor;			// the transparent colour
 } TARGAEXT;
 
+#include "pack_pop.h"
 
 // Different Targa formats
 #define TGA_NO_DATA				0

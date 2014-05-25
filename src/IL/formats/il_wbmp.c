@@ -16,13 +16,12 @@
 #ifndef IL_NO_WBMP
 #include "il_bits.h"
 
+// In il_quantizer.c
+ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols);
+// In il_neuquant.c
+ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
 
-ILboolean	iLoadWbmpInternal(SIO *io);
-ILboolean	iSaveWbmpInternal(SIO *io);
-
-
-ILuint WbmpGetMultibyte(SIO* io)
-{
+static ILuint WbmpGetMultibyte(SIO* io) {
 	ILuint Val = 0, i;
 	ILubyte Cur;
 
@@ -37,24 +36,37 @@ ILuint WbmpGetMultibyte(SIO* io)
 	return Val;
 }
 
+static ILboolean iIsValidWbmp(SIO *io) {
+	ILuint 		Start 	= SIOtell(io);
+	ILushort  Head  	= GetLittleUShort(io);
+	ILuint 	 	Width 	= WbmpGetMultibyte(io);
+	ILuint    Height 	= WbmpGetMultibyte(io);
+	ILboolean Eof     = SIOeof(io);
 
-ILboolean iLoadWbmpInternal(SIO* io)
+	SIOseek(io, Start, IL_SEEK_SET);
+
+	return Head == 0 && Width != 0 && Height != 0 && !Eof;
+}
+
+static ILboolean iLoadWbmpInternal(ILimage *Image)
 {
 	ILuint	Width, Height, BitPadding, i;
 	BITFILE	*File;
 	ILubyte	Padding[8];
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	SIO* io = &Image->io;
 	
-	if (io->getchar(io->handle) != 0 || io->getchar(io->handle) != 0) {  // The first two bytes have to be 0 (the "header")
+	if (SIOgetc(io) != 0 || SIOgetc(io) != 0) {  // The first two bytes have to be 0 (the "header")
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
-	Width = WbmpGetMultibyte(io);  // Next follows the width and height.
+	Width  = WbmpGetMultibyte(io);  // Next follows the width and height.
 	Height = WbmpGetMultibyte(io);
 
 	if (Width == 0 || Height == 0) {  // Must have at least some height and width.
@@ -62,12 +74,13 @@ ILboolean iLoadWbmpInternal(SIO* io)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Width, Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(Image, Width, Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;  // Always has origin in the upper left.
+
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;  // Always has origin in the upper left.
 
 	BitPadding = (8 - (Width % 8)) % 8;  // Has to be aligned on a byte boundary.  The rest is padding.
-	File = bfile(iGetFile());
+	File = bfile(io->handle);
 	if (File == NULL)
 		return IL_FALSE;  //@TODO: Error?
 
@@ -75,8 +88,8 @@ ILboolean iLoadWbmpInternal(SIO* io)
 	//  the second loop.
 
 	// Reads the bits
-	for (i = 0; i < iCurImage->Height; i++) {
-		bread(&iCurImage->Data[iCurImage->Width * i], 1, iCurImage->Width, File);
+	for (i = 0; i < Image->Height; i++) {
+		bread(&Image->Data[iCurImage->Width * i], 1, Image->Width, File);
 		//bseek(File, BitPadding, IL_SEEK_CUR);  //@TODO: This function does not work correctly.
 		bread(Padding, 1, BitPadding, File);  // Skip padding bits.
 	}
@@ -92,8 +105,7 @@ ILboolean iLoadWbmpInternal(SIO* io)
 }
 
 
-ILboolean WbmpPutMultibyte(SIO* io, ILuint Val)
-{
+static ILboolean WbmpPutMultibyte(SIO* io, ILuint Val) {
 	ILint	i, NumBytes = 0;
 	ILuint	MultiVal = Val;
 
@@ -112,33 +124,31 @@ ILboolean WbmpPutMultibyte(SIO* io, ILuint Val)
 	return IL_TRUE;
 }
 
-
-// In il_quantizer.c
-ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols);
-// In il_neuquant.c
-ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
-
-
 // Internal function used to save the Wbmp.
-ILboolean iSaveWbmpInternal(SIO* io)
-{
+static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	ILimage	*TempImage = NULL;
 	ILuint	i, j;
 	ILint	k;
 	ILubyte	Val;
 	ILubyte	*TempData;
 
-	io->putchar(0, io->handle);  // First two header values
-	io->putchar(0, io->handle);  //  must be 0.
+	if (Image == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 
-	WbmpPutMultibyte(io, iCurImage->Width);  // Write the width
-	WbmpPutMultibyte(io, iCurImage->Height); //  and the height.
+	SIO* io = &Image->io;
+	
+	SIOputc(io, 0);  // First two header values
+	SIOputc(io, 0);  //  must be 0.
 
-	//TempImage = iConvertImage(iCurImage, IL_LUMINANCE, IL_UNSIGNED_BYTE);
+	WbmpPutMultibyte(io, Image->Width);  // Write the width
+	WbmpPutMultibyte(io, Image->Height); //  and the height.
+
 	if (iGetInt(IL_QUANTIZATION_MODE) == IL_NEU_QUANT)
-		TempImage = iNeuQuant(iCurImage, 2);
+		TempImage = iNeuQuant(Image, 2);
 	else // Assume IL_WU_QUANT otherwise.
-		TempImage = iQuantizeImage(iCurImage, 2);
+		TempImage = iQuantizeImage(Image, 2);
 
 	if (TempImage == NULL)
 		return IL_FALSE;
@@ -162,16 +172,29 @@ ILboolean iSaveWbmpInternal(SIO* io)
 					Val |= ((TempData[TempImage->Width * i + j + k] == 1) ? (0x80 >> k) : 0x00);
 				}
 			}
-			io->putchar(Val, io->handle);
+			SIOputc(io, Val);
 		}
 	}
 
 	if (TempData != TempImage->Data)
 		ifree(TempData);
+
 	ilCloseImage(TempImage);
 
 	return IL_TRUE;
 }
+
+ILconst_string iFormatExtsWBMP[] = { 
+	IL_TEXT("wbmp"), 
+	NULL 
+};
+
+ILformat iFormatWBMP = { 
+	.Validate = iIsValidWbmp, 
+	.Load     = iLoadWbmpInternal, 
+	.Save     = iSaveWbmpInternal, 
+	.Exts     = iFormatExtsWBMP
+};
 
 #endif//IL_NO_WBMP
 

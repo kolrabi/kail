@@ -14,38 +14,32 @@
 #include "il_internal.h"
 #ifndef IL_NO_TGA
 #include "il_targa.h"
-//#include <time.h>  // for ilMakeString()
+#include <time.h>  
 #include <string.h>
 #include "il_manip.h"
 #include "il_bits.h"
 #include "il_endian.h"
 
-#ifdef DJGPP
-#include <dos.h>
-#endif
-
 // Internal functions
-ILboolean	iCheckTarga(TARGAHEAD *Header);
+static ILboolean	iCheckTarga(TARGAHEAD *Header);
 static ILboolean	iLoadTargaInternal(ILimage* image);
 static ILboolean	iSaveTargaInternal(ILimage* image);
-ILboolean	iReadBwTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iReadColMapTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iReadUnmapTga(ILimage* image, TARGAHEAD *Header);
-ILboolean	iUncompressTgaData(ILimage *Image);
-ILboolean	i16BitTarga(ILimage *Image);
-void		iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec);
+static ILboolean	iReadBwTga(ILimage* image, TARGAHEAD *Header);
+static ILboolean	iReadColMapTga(ILimage* image, TARGAHEAD *Header);
+static ILboolean	iReadUnmapTga(ILimage* image, TARGAHEAD *Header);
+static ILboolean	iUncompressTgaData(ILimage *Image);
+static ILboolean	i16BitTarga(ILimage *Image);
+static void				iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec);
 
-ILint iGetTgaHead(SIO* io, TARGAHEAD *Header)
-{
-	return io->read(io->handle, Header, 1, sizeof(TARGAHEAD));
+static ILint iGetTgaHead(SIO* io, TARGAHEAD *Header) {
+	return SIOread(io, Header, 1, sizeof(TARGAHEAD));
 }
 
 // Internal function to get the header and check it.
-static ILboolean iIsValidTarga(SIO* io)
-{
+static ILboolean iIsValidTarga(SIO* io) {
 	TARGAHEAD	Head;
-	auto read = iGetTgaHead(io, &Head);
-	io->seek(io->handle, -read, IL_SEEK_CUR);
+	ILuint read = iGetTgaHead(io, &Head);
+	SIOseek(io, -read, IL_SEEK_CUR);
 
 	if (read == sizeof(Head)) 
 		return iCheckTarga(&Head);
@@ -55,12 +49,11 @@ static ILboolean iIsValidTarga(SIO* io)
 
 
 // Internal function used to check if the HEADER is a valid Targa header.
-ILboolean iCheckTarga(TARGAHEAD *Header)
-{
+static ILboolean iCheckTarga(TARGAHEAD *Header) {
 	if (Header->Width == 0 || Header->Height == 0)
 		return IL_FALSE;
-	if (Header->Bpp != 8 && Header->Bpp != 15 && Header->Bpp != 16 
-		&& Header->Bpp != 24 && Header->Bpp != 32)
+	if ( Header->Bpp != 8 && Header->Bpp != 15 && Header->Bpp != 16 
+    && Header->Bpp != 24 && Header->Bpp != 32 )
 		return IL_FALSE;
 	if (Header->ImageDesc & BIT_4)	// Supposed to be set to 0
 		return IL_FALSE;
@@ -82,10 +75,8 @@ ILboolean iCheckTarga(TARGAHEAD *Header)
 	return IL_TRUE;
 }
 
-
 // Internal function used to load the Targa.
-static ILboolean iLoadTargaInternal(ILimage* image)
-{
+static ILboolean iLoadTargaInternal(ILimage* image) {
 	TARGAHEAD	Header;
 	ILboolean	bTarga;
 	ILenum		iOrigin;
@@ -155,17 +146,17 @@ static ILboolean iLoadTargaInternal(ILimage* image)
 	return ilFixImage();
 }
 
-
-ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header)
-{
+static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
 	char		ID[255];
 	ILuint		i;
 	ILushort	Pixel;
+
+	SIO *io = &image->io;
 	
-	if (image->io.read(image->io.handle, ID, 1, Header->IDLen) != Header->IDLen)
+	if (SIOread(io, ID, 1, Header->IDLen) != Header->IDLen)
 		return IL_FALSE;
 	
-	if (!ilTexImage(Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	if (image->Pal.Palette && image->Pal.PalSize)
@@ -201,15 +192,15 @@ ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header)
 	//	image->io.read(image->io.handle, Image->Pal + Targa->FirstEntry, 1, Image->Pal.PalSize);  ??
 	if (Header->ColMapEntSize != 16)
 	{
-		if (image->io.read(image->io.handle, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
+		if (SIOread(io, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
 			return IL_FALSE;
 	}
 	else {
 		// 16 bit palette, so we have to break it up.
 		for (i = 0; i < image->Pal.PalSize; i += 4)
 		{
-			Pixel = GetBigUShort(&image->io);
-			if (image->io.eof(image->io.handle))
+			Pixel = GetBigUShort(io);
+			if (SIOeof(io))
 				return IL_FALSE;
 			image->Pal.Palette[3] = (Pixel & 0x8000) >> 12;
 			image->Pal.Palette[0] = (Pixel & 0xFC00) >> 7;
@@ -218,17 +209,12 @@ ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header)
 		}
 	}
 	
-	if (Header->ImageType == TGA_COLMAP_COMP)
-	{
-		if (!iUncompressTgaData(image))
-		{
+	if (Header->ImageType == TGA_COLMAP_COMP)	{
+		if (!iUncompressTgaData(image))	{
 			return IL_FALSE;
 		}
-	}
-	else
-	{
-		if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData)
-		{
+	}	else{
+		if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData) {
 			return IL_FALSE;
 		}
 	}
@@ -236,13 +222,12 @@ ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header)
 	return IL_TRUE;
 }
 
-
-ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header)
-{
+static ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header) {
 	ILubyte Bpp;
 	char	ID[255];
+	SIO *io = &image->io;
 	
-	if (image->io.read(image->io.handle, ID, 1, Header->IDLen) != Header->IDLen)
+	if (SIOread(io, ID, 1, Header->IDLen) != Header->IDLen)
 		return IL_FALSE;
 	
 	/*if (Header->Bpp == 16)
@@ -250,7 +235,7 @@ ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header)
 	else*/
 	Bpp = (ILubyte)(Header->Bpp >> 3);
 	
-	if (!ilTexImage(Header->Width, Header->Height, 1, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(image, Header->Width, Header->Height, 1, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	
@@ -300,7 +285,7 @@ ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header)
 		}
 	}
 	else {
-		if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData) {
+		if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData) {
 			return IL_FALSE;
 		}
 	}
@@ -315,18 +300,17 @@ ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header)
 	return IL_TRUE;
 }
 
-
-ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header)
-{
+static ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header) {
 	char ID[255];
+	SIO *io = &image->io;
 	
-	if (image->io.read(image->io.handle, ID, 1, Header->IDLen) != Header->IDLen)
+	if (SIOread(io, ID, 1, Header->IDLen) != Header->IDLen)
 		return IL_FALSE;
 	
 	// We assume that no palette is present, but it's possible...
 	//	Should we mess with it or not?
 	
-	if (!ilTexImage(Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	
@@ -336,7 +320,7 @@ ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header)
 		}
 	}
 	else {
-		if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData) {
+		if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData) {
 			return IL_FALSE;
 		}
 	}
@@ -344,12 +328,11 @@ ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header)
 	return IL_TRUE;
 }
 
-
-ILboolean iUncompressTgaData(ILimage *image)
-{
+static ILboolean iUncompressTgaData(ILimage *image) {
 	ILuint	BytesRead = 0, Size, RunLen, i, ToRead;
 	ILubyte Header, Color[4];
 	ILint	c;
+	SIO *io = &image->io;
 	
 	Size = image->Width * image->Height * image->Depth * image->Bpp;
 	
@@ -357,7 +340,7 @@ ILboolean iUncompressTgaData(ILimage *image)
 		Header = (ILubyte)image->io.getchar(image->io.handle);
 		if (Header & BIT_7) {
 			ClearBits(Header, BIT_7);
-			if (image->io.read(image->io.handle, Color, 1, image->Bpp) != image->Bpp) {
+			if (SIOread(io, Color, 1, image->Bpp) != image->Bpp) {
 				return IL_FALSE;
 			}
 			RunLen = (Header+1) * image->Bpp;
@@ -376,13 +359,13 @@ ILboolean iUncompressTgaData(ILimage *image)
 				ToRead = Size - BytesRead;
 			else
 				ToRead = RunLen;
-			if (image->io.read(image->io.handle, image->Data + BytesRead, 1, ToRead) != ToRead) {
+			if (SIOread(io, image->Data + BytesRead, 1, ToRead) != ToRead) {
 				return IL_FALSE;
 			}
 			BytesRead += RunLen;
 
 			if (BytesRead + RunLen > Size)
-				image->io.seek(image->io.handle, RunLen - ToRead, IL_SEEK_CUR);
+				SIOseek(io, RunLen - ToRead, IL_SEEK_CUR);
 		}
 	}
 	
@@ -391,8 +374,7 @@ ILboolean iUncompressTgaData(ILimage *image)
 
 
 // Pretty damn unoptimized
-ILboolean i16BitTarga(ILimage *image)
-{
+static ILboolean i16BitTarga(ILimage *image) {
 	ILushort	*Temp1;
 	ILubyte 	*Data, *Temp2;
 	ILuint		x, PixSize = image->Width * image->Height;
@@ -427,7 +409,7 @@ ILboolean i16BitTarga(ILimage *image)
 		*Temp++ = s;*/
 	}
 	
-	if (!ilTexImage(image->Width, image->Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, Data)) {
+	if (!ilTexImage_(image, image->Width, image->Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}
@@ -452,18 +434,20 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	ILboolean	Compress;
 	ILuint		RleLen;
 	ILubyte 	*Rle;
-	ILpal		*TempPal = NULL;
+	ILpal		* TempPal = NULL;
 	ILimage 	*TempImage = NULL;
 	ILuint		ExtOffset, i;
-	char		*Footer = "TRUEVISION-XFILE.\0";
-	char		*idString = "Developer's Image Library (DevIL)";
+	char		* Footer = "TRUEVISION-XFILE.\0";
+	char		* idString = "kolrabi's another Image Library (DevIL)";
 	ILuint		Day, Month, Year, Hour, Minute, Second;
-	char		*TempData;
+	char		* TempData;
 
 	if (image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	SIO *io = &image->io;
 	
 	if (iGetInt(IL_TGA_RLE) == IL_TRUE)
 		Compress = IL_TRUE;
@@ -478,8 +462,8 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	else
 		UsePal = IL_FALSE;
 	
-	image->io.write(&IDLen, sizeof(ILubyte), 1, image->io.handle);
-	image->io.write(&UsePal, sizeof(ILubyte), 1, image->io.handle);
+	SIOwrite(io, &IDLen,  sizeof(ILubyte), 1);
+	SIOwrite(io, &UsePal, sizeof(ILubyte), 1);
 
 	Format = image->Format;
 	switch (Format) {
@@ -519,8 +503,8 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			return IL_FALSE;
 	}
 	
-	image->io.write(&Type, sizeof(ILubyte), 1, image->io.handle);
-	SaveLittleShort(&image->io, ColMapStart);
+	SIOwrite(io, &Type, sizeof(ILubyte), 1);
+	SaveLittleShort(io, ColMapStart);
 	
 	switch (image->Pal.PalType)
 	{
@@ -554,8 +538,8 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			PalEntSize = 0;
 			return IL_FALSE;
 	}
-	SaveLittleShort(&image->io, PalSize);
-	image->io.write(&PalEntSize, sizeof(ILubyte), 1, image->io.handle);
+	SaveLittleShort(io, PalSize);
+	SIOwrite(io, &PalEntSize, sizeof(ILubyte), 1);
 	
 	if (image->Bpc > 1) {
 		TempImage = iConvertImage(image, image->Format, IL_UNSIGNED_BYTE);
@@ -581,25 +565,25 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	image->io.write(&Temp, sizeof(ILshort), 1, image->io.handle);
 	
 	Temp = image->Bpp << 3;  // Changes to bits per pixel
-	SaveLittleUShort(&image->io, (ILushort)image->Width);
-	SaveLittleUShort(&image->io, (ILushort)image->Height);
-	image->io.write(&Temp, sizeof(ILubyte), 1, image->io.handle);
+	SaveLittleUShort(io, (ILushort)image->Width);
+	SaveLittleUShort(io, (ILushort)image->Height);
+	SIOwrite(io, &Temp, sizeof(ILubyte), 1);
 	
 	// Still don't know what exactly this is for...
 	Temp = 0;
-	image->io.write(&Temp, sizeof(ILubyte), 1, image->io.handle);
-	image->io.write(ID, sizeof(char), IDLen, image->io.handle);
+	SIOwrite(io, &Temp, sizeof(ILubyte), 1);
+	SIOwrite(io, ID, sizeof(char), IDLen);
 	ifree(ID);
 	//iwrite(ID, sizeof(ILbyte), IDLen - sizeof(ILuint));
 	//iwrite(&image->Depth, sizeof(ILuint), 1);
 	
 	// Write out the colormap
 	if (UsePal)
-		image->io.write(TempPal->Palette, sizeof(ILubyte), TempPal->PalSize, image->io.handle);
+		SIOwrite(io, TempPal->Palette, sizeof(ILubyte), TempPal->PalSize);
 	// else do nothing
 	
 	if (!Compress)
-		image->io.write(TempData, sizeof(ILubyte), TempImage->SizeOfData, image->io.handle);
+		SIOwrite(io, TempData, sizeof(ILubyte), TempImage->SizeOfData);
 	else {
 		Rle = (ILubyte*)ialloc(TempImage->SizeOfData + TempImage->SizeOfData / 2 + 1);	// max
 		if (Rle == NULL) {
@@ -610,58 +594,58 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 		RleLen = ilRleCompress((unsigned char*)TempData, TempImage->Width, TempImage->Height,
 		                       TempImage->Depth, TempImage->Bpp, Rle, IL_TGACOMP, NULL);
 		
-		image->io.write(Rle, 1, RleLen, image->io.handle);
+		SIOwrite(io, Rle, 1, RleLen);
 		ifree(Rle);
 	}
 	
 	// Write the extension area.
-	ExtOffset = image->io.tell(image->io.handle);
-	SaveLittleUShort(&image->io, 495);	// Number of bytes in the extension area (TGA 2.0 spec)
-	image->io.write(AuthName, 1, ilCharStrLen(AuthName), image->io.handle);
-	ipad(41 - ilCharStrLen(AuthName));
-	image->io.write(AuthComment, 1, ilCharStrLen(AuthComment), image->io.handle);
-	ipad(324 - ilCharStrLen(AuthComment));
+	ExtOffset = SIOtell(io);
+	SaveLittleUShort(io, 495);	// Number of bytes in the extension area (TGA 2.0 spec)
+	SIOwrite(io, AuthName, 1, ilCharStrLen(AuthName));
+	SIOpad(io, 41 - ilCharStrLen(AuthName));
+	SIOwrite(io, AuthComment, 1, ilCharStrLen(AuthComment));
+	SIOpad(io, 324 - ilCharStrLen(AuthComment));
 	ifree(AuthName);
 	ifree(AuthComment);
 	
 	// Write time/date
 	iGetDateTime(&Month, &Day, &Year, &Hour, &Minute, &Second);
-	SaveLittleUShort(&image->io, (ILushort)Month);
-	SaveLittleUShort(&image->io, (ILushort)Day);
-	SaveLittleUShort(&image->io, (ILushort)Year);
-	SaveLittleUShort(&image->io, (ILushort)Hour);
-	SaveLittleUShort(&image->io, (ILushort)Minute);
-	SaveLittleUShort(&image->io, (ILushort)Second);
+	SaveLittleUShort(io, (ILushort)Month);
+	SaveLittleUShort(io, (ILushort)Day);
+	SaveLittleUShort(io, (ILushort)Year);
+	SaveLittleUShort(io, (ILushort)Hour);
+	SaveLittleUShort(io, (ILushort)Minute);
+	SaveLittleUShort(io, (ILushort)Second);
 	
 	for (i = 0; i < 6; i++) {  // Time created
-		SaveLittleUShort(&image->io, 0);
+		SaveLittleUShort(io, 0);
 	}
 	for (i = 0; i < 41; i++) {	// Job name/ID
-		image->io.putchar(0, image->io.handle);
+		SIOputc(io, 0);
 	}
 	for (i = 0; i < 3; i++) {  // Job time
-		SaveLittleUShort(&image->io, 0);
+		SaveLittleUShort(io, 0);
 	}
 	
-	image->io.write(idString, 1, ilCharStrLen(idString), image->io.handle);	// Software ID
+	SIOwrite(io, idString, 1, ilCharStrLen(idString));	// Software ID
 	for (i = 0; i < 41 - ilCharStrLen(idString); i++) {
-		image->io.putchar(0, image->io.handle);
+		SIOputc(io, 0);
 	}
-	SaveLittleUShort(&image->io, IL_VERSION);  // Software version
-	image->io.putchar(' ', image->io.handle);  // Release letter (not beta anymore, so use a space)
+	SaveLittleUShort(io, IL_VERSION);  // Software version
+	SIOputc(io, ' ');  // Release letter (not beta anymore, so use a space)
 	
-	SaveLittleUInt(&image->io, 0);	// Key colour
-	SaveLittleUInt(&image->io, 0);	// Pixel aspect ratio
-	SaveLittleUInt(&image->io, 0);	// Gamma correction offset
-	SaveLittleUInt(&image->io, 0);	// Colour correction offset
-	SaveLittleUInt(&image->io, 0);	// Postage stamp offset
-	SaveLittleUInt(&image->io, 0);	// Scan line offset
-	image->io.putchar(3, image->io.handle);  // Attributes type
+	SaveLittleUInt(io, 0);	// Key colour
+	SaveLittleUInt(io, 0);	// Pixel aspect ratio
+	SaveLittleUInt(io, 0);	// Gamma correction offset
+	SaveLittleUInt(io, 0);	// Colour correction offset
+	SaveLittleUInt(io, 0);	// Postage stamp offset
+	SaveLittleUInt(io, 0);	// Scan line offset
+	SIOputc(io, 3);  // Attributes type
 	
 	// Write the footer.
-	SaveLittleUInt(&image->io, ExtOffset);	// No extension area
-	SaveLittleUInt(&image->io, 0);	// No developer directory
-	image->io.write(Footer, 1, ilCharStrLen(Footer), image->io.handle);
+	SaveLittleUInt(io, ExtOffset);	// No extension area
+	SaveLittleUInt(io, 0);	// No developer directory
+	SIOwrite(io, Footer, 1, ilCharStrLen(Footer));
 	
 	if (TempImage->Origin != IL_ORIGIN_LOWER_LEFT) {
 		ifree(TempData);
@@ -681,10 +665,8 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	return IL_TRUE;
 }
 
-
 //changed name to iGetDateTime on 20031221 to fix bug 830196
-void iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec)
-{
+static void iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Min, ILuint *Sec) {
 #ifdef DJGPP
 	struct date day;
 	struct time curtime;
@@ -719,14 +701,18 @@ void iGetDateTime(ILuint *Month, ILuint *Day, ILuint *Yr, ILuint *Hr, ILuint *Mi
 	return;
 #else
 	
-	*Month = 0;
-	*Day = 0;
-	*Yr = 0;
-	
-	*Hr = 0;
-	*Min = 0;
-	*Sec = 0;
-	
+	// FIXME: reentrancy
+	time_t now = time(NULL);
+	struct tm *tm = gmtime(&now);
+
+	*Month = tm->tm_mon;
+	*Day = tm->tm_mday;
+	*Yr = tm->tm_year;
+
+	*Hr = tm->tm_hour;
+	*Min = tm->tm_min;
+	*Sec = tm->tm_sec;
+
 	return;
 #endif
 #endif

@@ -213,78 +213,14 @@ ILboolean ilLoadExrL(const void *Lump, ILuint Size);
 ILboolean iLoadExrInternal();
 */
 
-ILboolean iIsValidPsd();
-ILboolean iLoadPsdInternal(ILimage* image);
-ILboolean iSavePsdInternal(ILimage* image);
-
-ILboolean iIsValidPsp();
-ILboolean iIsValidPsp(void);
-ILboolean iLoadPspInternal();
-
-ILboolean iLoadPxrInternal(void);
-
-ILboolean iLoadRawInternal();
-ILboolean iSaveRawInternal();
-
-ILboolean ilLoadRot(ILconst_string FileName);
-ILboolean ilLoadRotF(ILHANDLE File);
-ILboolean ilLoadRotL(const void *Lump, ILuint Size);
-ILboolean ilIsValidRot(ILconst_string FileName);
-ILboolean ilIsValidRotF(ILHANDLE File);
-ILboolean ilIsValidRotL(const void *Lump, ILuint Size);
-
-ILboolean iIsValidSgi();
-ILboolean iLoadSgiInternal();
-ILboolean iSaveSgiInternal();
-
-ILboolean iIsValidSun(SIO* io);
-ILboolean iLoadSunInternal(ILimage* image);
-
-ILboolean ilLoadTexture(ILconst_string FileName);
-ILboolean ilLoadTextureF(ILHANDLE File);
-ILboolean ilLoadTextureL(ILimage* image, const void *Lump, ILuint Size);
-
-//ILboolean ilIsValidTiffFunc(SIO* io);
-//ILboolean iLoadTiffInternal(ILimage* image);
-//ILboolean iSaveTiffInternal(ILimage* image);
-
-ILboolean ilIsValidTpl(ILconst_string FileName);
-ILboolean ilIsValidTplF(ILHANDLE File);
-ILboolean ilIsValidTplL(const void *Lump, ILuint Size);
-ILboolean ilLoadTpl(ILconst_string FileName);
-ILboolean ilLoadTplF(ILHANDLE File);
-ILboolean ilLoadTplL(const void *Lump, ILuint Size);
-
-ILboolean ilLoadUtx(ILconst_string FileName);
-ILboolean ilLoadUtxF(ILHANDLE File);
-ILboolean ilLoadUtxL(const void *Lump, ILuint Size);
-
-ILboolean iIsValidVtf(SIO* io);
-ILboolean iLoadVtfInternal(ILimage* image);
-ILboolean iSaveVtfInternal(ILimage* image);
-
-ILboolean ilLoadWalF(ILHANDLE File);
-ILboolean ilLoadWalL(const void *Lump, ILuint Size);
-
-ILboolean iLoadWbmpInternal(SIO* io);
-ILboolean iSaveWbmpInternal(SIO* io);
-
+/* FIXME:
 ILboolean ilIsValidWdp(ILconst_string FileName);
 ILboolean ilIsValidWdpF(ILHANDLE File);
 ILboolean ilIsValidWdpL(const void *Lump, ILuint Size);
 ILboolean ilLoadWdp(ILconst_string FileName);
 ILboolean ilLoadWdpF(ILHANDLE File);
 ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
-
-ILboolean ilIsValidXpm(ILconst_string FileName);
-ILboolean ilIsValidXpmF(SIO* io, ILHANDLE File);
-ILboolean ilIsValidXpmL(const void *Lump, ILuint Size);
-ILboolean iIsValidXpm(SIO* io);
-ILboolean iLoadXpmInternal();
-//ILboolean ilLoadXpm(ILconst_string FileName);
-//ILboolean ilLoadXpmF(ILHANDLE File);
-//ILboolean ilLoadXpmL(const void *Lump, ILuint Size);
-
+*/
 
 // OpenEXR is written in C++, so we have to wrap this to avoid linker errors.
 /*#ifndef IL_NO_EXR
@@ -306,6 +242,13 @@ extern FILE *iTraceOut;
 #define iTrace(...) if (iTraceOut) {\
 	fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
 	fprintf(iTraceOut, __VA_ARGS__); \
+	fputc('\n', iTraceOut); \
+	fflush(iTraceOut); \
+}
+
+#define iTraceV(fmt, args) if (iTraceOut) {\
+	fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
+	vfprintf(iTraceOut, fmt, args); \
 	fputc('\n', iTraceOut); \
 	fflush(iTraceOut); \
 }

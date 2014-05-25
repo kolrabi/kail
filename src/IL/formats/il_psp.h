@@ -225,19 +225,4 @@ typedef struct ALPHA_CHUNK
 
 #include "pack_pop.h"
 
-// Function definitions
-ILboolean	iLoadPspInternal(void);
-ILboolean	iCheckPsp(void);
-ILboolean	ReadGenAttributes(void);
-ILboolean	ParseChunks(void);
-ILboolean	ReadLayerBlock(ILuint BlockLen);
-ILboolean	ReadAlphaBlock(ILuint BlockLen);
-ILubyte		*GetChannel(void);
-ILboolean	UncompRLE(ILubyte *CompData, ILubyte *Data, ILuint CompLen);
-ILboolean	ReadPalette(ILuint BlockLen);
-ILboolean	AssembleImage(void);
-ILboolean	Cleanup(void);
-
-
-
 #endif//PSP_H

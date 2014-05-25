@@ -19,89 +19,96 @@
 #ifndef IL_NO_ROT
 #include "il_dds.h"
 
-ILboolean iLoadRotInternal(void);
+static ILboolean iLoadRotInternal(ILimage *);
 
 #define ROT_RGBA32	1024
-#define ROT_DXT1	1028
-#define ROT_DXT3	1029
-#define ROT_DXT5	1030
+#define ROT_DXT1		1028
+#define ROT_DXT3		1029
+#define ROT_DXT5		1030
 
+#include "pack_push.h"
+typedef struct {
+	ILuint 	FORM;
+	ILuint  FormLength;
+	ILuint  FormName;
+} FORM_HEAD;
 
-//! Reads a ROT file
-ILboolean ilLoadRot(ILconst_string FileName)
-{
-	ILHANDLE	RotFile;
-	ILboolean	bRot = IL_FALSE;
-	
-	RotFile = iopenr(FileName);
-	if (RotFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bRot;
-	}
+typedef struct {
+	FORM_HEAD 	FormHead;
+	ILuint  		Width, Height, Format;
+} ROT_HEAD;
+#include "pack_pop.h"
 
-	bRot = ilLoadRotF(RotFile);
-	icloser(RotFile);
+static ILboolean iGetFormHeader(SIO *io, FORM_HEAD *Head) {
+	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
+		return IL_FALSE;
 
-	return bRot;
+	BigUInt(&Head->FORM);
+	BigUInt(&Head->FormLength);
+	BigUInt(&Head->FormName);
+
+	return memcmp(&Head->FORM, "FORM", 4) == 0;
 }
 
+static ILboolean iIsValidRot(SIO *io) {
+	ILuint 		Start = SIOtell(io);
+	ROT_HEAD 	Head;
+	ILuint 		Read = SIOread(io, &Head, 1, sizeof(Head));
 
-//! Reads an already-opened ROT file
-ILboolean ilLoadRotF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iLoadRotInternal();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
+	SIOseek(io, Start, IL_SEEK_SET);
+
+	BigUInt(&Head.FormHead.FORM);
+	BigUInt(&Head.FormHead.FormLength);
+	BigUInt(&Head.FormHead.FormName);
+
+	return Read == sizeof(Head) 
+	    && !memcmp(&Head.FormHead.FORM, "FORM", 4)
+			&& Head.FormHead.FormLength == 0x14 
+			&& !memcmp(&Head.FormHead.FormName, "HEAD", 4);
 }
-
-
-//! Reads from a memory "lump" that contains a ROT
-ILboolean ilLoadRotL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iLoadRotInternal();
-}
-
 
 // Internal function used to load the ROT.
-ILboolean iLoadRotInternal(void)
-{
-	ILubyte		Form[4], FormName[4];
-	ILuint		FormLen, Width, Height, Format, Channels, CompSize;
-	ILuint		MipSize, MipLevel, MipWidth, MipHeight;
+static ILboolean iLoadRotInternal(ILimage *Image) {
+	ILuint    Channels, CompSize;
+	ILuint		MipSize, MipWidth, MipHeight;
 	ILenum		FormatIL;
-	ILimage		*Image;
-	ILboolean	BaseCreated = IL_FALSE;
 	ILubyte		*CompData = NULL;
+	FORM_HEAD Form;
+	ILimage * BaseImage = Image;
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
+	SIO * 		io = &Image->io;
+	ROT_HEAD 	Head;
+
+	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
+		return IL_FALSE;
+
+	BigUInt(&Head.FormHead.FORM);
+	BigUInt(&Head.FormHead.FormLength);
+	BigUInt(&Head.FormHead.FormName);
+	UInt   (&Head.Width);
+	UInt   (&Head.Height);
+	UInt   (&Head.Format);
+
 	// The first entry in the file must be 'FORM', 0x20 in a big endian integer and then 'HEAD'.
-	iread(Form, 1, 4);
-	FormLen = GetBigUInt();
-	iread(FormName, 1, 4);
-	if (strncmp(Form, "FORM", 4) || FormLen != 0x14 || strncmp(FormName, "HEAD", 4)) {
+	if ( memcmp(&Head.FormHead.FORM, "FORM", 4) 
+		|| Head.FormHead.FormLength != 0x14 
+		|| memcmp(&Head.FormHead.FormName, "HEAD", 4)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
-	// Next follows the width, height and format in the header.
-	Width = GetLittleUInt();
-	Height = GetLittleUInt();
-	Format = GetLittleUInt();
+	if (Head.Width == 0 || Head.Height == 0) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
+	}
 
 	//@TODO: More formats.
-	switch (Format)
-	{
+	switch (Head.Format)	{
 		case ROT_RGBA32:  // 32-bit RGBA format
 			Channels = 4;
 			FormatIL = IL_RGBA;
@@ -116,11 +123,12 @@ ILboolean iLoadRotInternal(void)
 		case ROT_DXT5:  // DXT5
 			Channels = 4;
 			FormatIL = IL_RGBA;
+			/* not used?
 			// Allocates the maximum needed (the first width/height given in the file).
-			CompSize = ((Width + 3) / 4) * ((Height + 3) / 4) * 16;
+			CompSize = ((Head.Width + 3) / 4) * ((Head.Height + 3) / 4) * 16;
 			CompData = ialloc(CompSize);
 			if (CompData == NULL)
-				return IL_FALSE;
+				return IL_FALSE; */
 			break;
 
 		default:
@@ -128,72 +136,53 @@ ILboolean iLoadRotInternal(void)
 			return IL_FALSE;
 	}
 
-	if (Width == 0 || Height == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
-		return IL_FALSE;
-	}
-
 	//@TODO: Find out what this is.
-	GetLittleUInt();  // Skip this for the moment.  This appears to be the number of channels.
+	GetLittleUInt(io);  // Skip this for the moment.  This appears to be the number of channels.
 
 	// Next comes 'FORM', a length and 'MIPS'.
-	iread(Form, 1, 4);
-	FormLen = GetBigUInt();
-	iread(FormName, 1, 4);
 	//@TODO: Not sure if the FormLen has to be anything specific here.
-	if (strncmp(Form, "FORM", 4) || strncmp(FormName, "MIPS", 4)) {
+	if ( !iGetFormHeader(io, &Form)
+		|| memcmp(&Form.FormName, "MIPS", 4)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	//@TODO: Can these mipmap levels be in any order?  Some things may be easier if the answer is no.
-	Image = iCurImage;
 	do {
-		// Then we have 'FORM' again.
-		iread(Form, 1, 4);
-		// This is the size of the mipmap data.
-		MipSize = GetBigUInt();
-		iread(FormName, 1, 4);
-		if (strncmp(Form, "FORM", 4)) {
-			if (!BaseCreated) {  // Our file is malformed.
+		if ( !iGetFormHeader(io, &Form)
+		  || memcmp(&Form.FormName, "MLVL", 4)) {
+			if (!BaseImage) {
 				ilSetError(IL_INVALID_FILE_HEADER);
 				return IL_FALSE;
 			}
-			// We have reached the end of the mipmap data.
 			break;
-		}
-		if (strncmp(FormName, "MLVL", 4)) {
-			ilSetError(IL_INVALID_FILE_HEADER);
-			return IL_FALSE;
 		}
 
 		// Next is the mipmap attributes (level number, width, height and length)
-		MipLevel = GetLittleUInt();
-		MipWidth = GetLittleUInt();
-		MipHeight = GetLittleUInt();
-		MipSize = GetLittleUInt();  // This is the same as the previous size listed -20 (for attributes).
+		/* MipLevel = */ GetLittleUInt(io);
+		MipWidth 	= GetLittleUInt(io);
+		MipHeight = GetLittleUInt(io);
+		MipSize 	= GetLittleUInt(io);  // This is the same as the previous size listed -20 (for attributes).
 
 		// Lower level mipmaps cannot be larger than the main image.
-		if (MipWidth > Width || MipHeight > Height || MipSize > CompSize) {
+		if (MipWidth > Head.Width || MipHeight > Head.Height || MipSize > CompSize) {
 			ilSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}
 
 		// Just create our images here.
-		if (!BaseCreated) {
-			if (!ilTexImage(MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL))
+		if (!BaseImage) {
+			if (!ilTexImage_(Image, MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
-			BaseCreated = IL_TRUE;
-		}
-		else {
+			BaseImage = Image;
+		}	else {
 			Image->Mipmaps = ilNewImageFull(MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL);
 			Image = Image->Mipmaps;
 		}
 
-		switch (Format)
-		{
+		switch (Head.Format) {
 			case ROT_RGBA32:  // 32-bit RGBA format
-				if (iread(Image->Data, Image->SizeOfData, 1) != 1)
+				if (SIOread(io, Image->Data, Image->SizeOfData, 1) != 1)
 					return IL_FALSE;
 				break;
 
@@ -204,21 +193,26 @@ ILboolean iLoadRotInternal(void)
 					ilSetError(IL_INVALID_FILE_HEADER);
 					return IL_FALSE;
 				}
+
 				CompData = ialloc(CompSize);
 				if (CompData == NULL)
 					return IL_FALSE;
 
 				// Read in the DXT1 data...
-				if (iread(CompData, CompSize, 1) != 1)
+				if (SIOread(io, CompData, CompSize, 1) != 1) {
+					ifree(CompData);
 					return IL_FALSE;
+				}
+
 				// ...and decompress it.
 				if (!DecompressDXT1(Image, CompData)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
+
 				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
-					Image->DxtcSize = CompSize;
-					Image->DxtcData = CompData;
+					Image->DxtcSize   = CompSize;
+					Image->DxtcData   = CompData;
 					Image->DxtcFormat = IL_DXT1;
 					CompData = NULL;
 				}
@@ -231,18 +225,23 @@ ILboolean iLoadRotInternal(void)
 					ilSetError(IL_INVALID_FILE_HEADER);
 					return IL_FALSE;
 				}
+
 				CompData = ialloc(CompSize);
 				if (CompData == NULL)
 					return IL_FALSE;
 
 				// Read in the DXT3 data...
-				if (iread(CompData, MipSize, 1) != 1)
+				if (SIOread(io, CompData, MipSize, 1) != 1) {
+					ifree(CompData);
 					return IL_FALSE;
+				}
+
 				// ...and decompress it.
 				if (!DecompressDXT3(Image, CompData)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
+
 				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
 					Image->DxtcSize = CompSize;
 					Image->DxtcData = CompData;
@@ -263,27 +262,43 @@ ILboolean iLoadRotInternal(void)
 					return IL_FALSE;
 
 				// Read in the DXT5 data...
-				if (iread(CompData, MipSize, 1) != 1)
+				if (SIOread(io, CompData, MipSize, 1) != 1){
+					ifree(CompData);
 					return IL_FALSE;
+				}
+
 				// ...and decompress it.
 				if (!DecompressDXT5(Image, CompData)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
+
 				// Keeps a copy
 				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
-					Image->DxtcSize = CompSize;
-					Image->DxtcData = CompData;
+					Image->DxtcSize   = CompSize;
+					Image->DxtcData   = CompData;
 					Image->DxtcFormat = IL_DXT5;
 					CompData = NULL;
 				}
 				break;
 		}
 		ifree(CompData);  // Free it if it was not saved.
-	} while (!ieof());  //@TODO: Is there any other condition that should end this?
+	} while (!SIOeof(io));  //@TODO: Is there any other condition that should end this?
 
 	return ilFixImage();
 }
+
+ILconst_string iFormatExtsROT[] = { 
+	IL_TEXT("rot"), 
+	NULL 
+};
+
+ILformat iFormatROT = { 
+	.Validate = iIsValidRot, 
+	.Load     = iLoadRotInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsROT
+};
 
 #endif//IL_NO_ROT
 

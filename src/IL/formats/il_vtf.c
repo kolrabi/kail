@@ -18,29 +18,33 @@
 #include "il_vtf.h"
 #include "il_dds.h"
 
+// Internal functions
+static ILboolean	iCheckVtf(VTFHEAD *Header);
+static ILboolean	iLoadVtfInternal(ILimage *Image);
+static ILboolean	iSaveVtfInternal(ILimage *Image);
+
+static ILboolean	VtfInitFacesMipmaps(ILimage *BaseImage, ILuint NumFaces, VTFHEAD *Header);
+static ILboolean	VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header);
 
 // Internal function used to get the VTF header from the current file.
-ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header)
-{
-	ILuint read = io->read(io->handle, Header, 1, sizeof(*Header));
+static ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header) {
+	ILuint read = SIOread(io, Header, 1, sizeof(*Header));
 
 	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
-	#ifdef __BIG_ENDIAN__
-	iSwapUInt(Header->Version[0]);
-	iSwapUInt(Header->Version[1]);
-	iSwapUInt(Header->HeaderSize);
-	iSwapUShort(Header->Width);
-	iSwapUShort(Header->Height);
-	iSwapUInt(Header->Flags);
-	iSwapUShort(Header->Frames);
-	iSwapUShort(Header->FirstFrame);
-	iSwapFloat(Header->Reflectivity[0]);
-	iSwapFloat(Header->Reflectivity[1]);
-	iSwapFloat(Header->Reflectivity[2]);
-	iSwapFloat(Header->BumpmapScale);
-	iSwapUInt(Header->HighResImageFormat);
-	iSwapInt(Header->LowResImageFormat);
-	#endif
+	UInt(Header->Version[0]);
+	UInt(Header->Version[1]);
+	UInt(Header->HeaderSize);
+	UShort(Header->Width);
+	UShort(Header->Height);
+	UInt(Header->Flags);
+	UShort(Header->Frames);
+	UShort(Header->FirstFrame);
+	Float(Header->Reflectivity[0]);
+	Float(Header->Reflectivity[1]);
+	Float(Header->Reflectivity[2]);
+	Float(Header->BumpmapScale);
+	UInt(Header->HighResImageFormat);
+	Int(Header->LowResImageFormat);
 
 	//@TODO: This is a hack for the moment.
 	if (Header->HeaderSize == 64) {
@@ -56,8 +60,7 @@ ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header)
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidVtf(SIO* io)
-{
+static ILboolean iIsValidVtf(SIO* io) {
 	VTFHEAD Header;
 
 	ILint64 oldReadPos = io->tell(io->handle);
@@ -75,8 +78,7 @@ ILboolean iIsValidVtf(SIO* io)
 // Should we check for Frames, MipmapCount and Depth != 0?
 
 // Internal function used to check if the HEADER is a valid VTF header.
-ILboolean iCheckVtf(VTFHEAD *Header)
-{
+static ILboolean iCheckVtf(VTFHEAD *Header) {
 	// The file signature is "VTF\0".
 	if ((Header->Signature[0] != 'V') || (Header->Signature[1] != 'T') || (Header->Signature[2] != 'F')
 		|| (Header->Signature[3] != 0))
@@ -123,25 +125,26 @@ ILboolean iCheckVtf(VTFHEAD *Header)
 
 
 // Internal function used to load the VTF.
-ILboolean iLoadVtfInternal(ILimage* iCurImage)
-{
+static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 	ILboolean	bVtf = IL_TRUE;
-	ILimage		*Image, *BaseImage;
+	ILimage		*Image; //, *BaseImage;
 	ILenum		Format, Type;
 	ILint		Frame, Face, Mipmap;
 	ILuint		SizeOfData, Channels, k;
 	ILubyte		*CompData = NULL, SwapVal, *Data16Bit, *Temp, NumFaces;
 	VTFHEAD		Head;
-	ILuint		CurName;
+	ILuint    CurName = ilGetCurName(); // FIXME
 
 	if (iCurImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
-	CurName = ilGetCurName();
+
+	SIO *io = &iCurImage->io;
 	
-	if (!iGetVtfHead(&iCurImage->io, &Head))
+	if (!iGetVtfHead(io, &Head))
 		return IL_FALSE;
+
 	if (!iCheckVtf(&Head)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
@@ -160,7 +163,8 @@ ILboolean iLoadVtfInternal(ILimage* iCurImage)
 	SizeOfData = IL_MAX(Head.LowResImageWidth * Head.LowResImageHeight / 2, 8);
 	if (Head.LowResImageWidth == 0 && Head.LowResImageHeight == 0)
 		SizeOfData = 0;  // No low resolution image present.
-	iCurImage->io.seek(iCurImage->io.handle, SizeOfData, IL_SEEK_CUR);
+
+	SIOseek(io, SizeOfData, IL_SEEK_CUR);
 
 	//@TODO: Make this a helper function that set channels, bpc and format.
 	switch (Head.HighResImageFormat)
@@ -266,7 +270,7 @@ ILboolean iLoadVtfInternal(ILimage* iCurImage)
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
+	if (!ilTexImage_(iCurImage, Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
 		return IL_FALSE;
 	// The origin should be in the upper left.
 	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -274,7 +278,7 @@ ILboolean iLoadVtfInternal(ILimage* iCurImage)
 	VtfInitFacesMipmaps(iCurImage, NumFaces, &Head);
 
 	// Create our animation chain
-	BaseImage = Image = iCurImage;  // Top-level image
+	/* BaseImage = */ Image = iCurImage;  // Top-level image
 	for (Frame = 1; Frame < Head.Frames; Frame++) {
 		Image->Next = ilNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
 		if (Image->Next == NULL)
@@ -800,5 +804,16 @@ ILboolean iSaveVtfInternal(ILimage* iCurImage)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsVTF[] = { 
+	IL_TEXT("vtf"), 
+	NULL 
+};
+
+ILformat iFormatVTF = { 
+	.Validate = iIsValidVtf, 
+	.Load     = iLoadVtfInternal, 
+	.Save     = iSaveVtfInternal, 
+	.Exts     = iFormatExtsVTF
+};
 
 #endif//IL_NO_VTF

@@ -20,6 +20,24 @@
 #ifndef IL_NO_PSD
 #include "il_psd.h"
 
+
+ILushort	ChannelNum;
+
+static ILboolean	iCheckPsd (PSDHEAD *Header);
+static ILboolean	ReadPsd 	(ILimage* image, PSDHEAD *Head);
+static ILboolean	ReadGrey(ILimage* image, PSDHEAD *Head);
+static ILboolean	ReadIndexed(ILimage* image, PSDHEAD *Head);
+static ILboolean	ReadRGB(ILimage* image, PSDHEAD *Head);
+static ILboolean	ReadCMYK(ILimage* image, PSDHEAD *Head);
+static ILuint		* GetCompChanLen(SIO*io, PSDHEAD *Head);
+
+// static ILboolean	iLoadPsdInternal(ILimage *image);
+ILboolean	PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed);
+ILboolean	ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources);
+ILboolean	GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboolean Compressed);
+ILboolean	iSavePsdInternal(ILimage* image);
+
+// TODO: share these
 static float ubyte_to_float(ILubyte val)
 {
 	return ((float)val) / 255.0f;
@@ -40,60 +58,61 @@ static ILushort float_to_ushort(float val)
 
 
 // Internal function used to get the Psd header from the current file.
-ILboolean iGetPsdHead(PSDHEAD *Header)
+static ILboolean iGetPsdHead(SIO *io, PSDHEAD *Header)
 {
-	iCurImage->io.read(iCurImage->io.handle, Header->Signature, 1, 4);
-	Header->Version = GetBigUShort(&iCurImage->io);;
-	iCurImage->io.read(iCurImage->io.handle, Header->Reserved, 1, 6);
-	Header->Channels = GetBigUShort(&iCurImage->io);;
-	Header->Height = GetBigUInt(&iCurImage->io);;
-	Header->Width = GetBigUInt(&iCurImage->io);;
-	Header->Depth = GetBigUShort(&iCurImage->io);;
-	Header->Mode = GetBigUShort(&iCurImage->io);;
+	if (SIOread(io, Header, sizeof(*Header), 1) != 1)
+		return IL_FALSE;
+
+	UShort(&Header->Version);
+	UShort(&Header->Channels);
+
+	UInt  (&Header->Height);
+	UInt  (&Header->Width);
+	UShort(&Header->Depth);
+	UShort(&Header->Mode);
 
 	return IL_TRUE;
 }
 
-
 // Internal function to get the header and check it.
-ILboolean iIsValidPsd()
-{
-	PSDHEAD	Head;
+static ILboolean iIsValidPsd(SIO *io) {
+	PSDHEAD		Head;
+	ILuint  	Start     = SIOtell(io);
+	ILboolean GotHeader = iGetPsdHead(io, &Head);
+	SIOseek(io, Start, IL_SEEK_SET);
 
-	iGetPsdHead(&Head);
-	iCurImage->io.seek(iCurImage->io.handle, -(ILint)sizeof(PSDHEAD), IL_SEEK_CUR);
-
-	return iCheckPsd(&Head);
+	return GotHeader && iCheckPsd(&Head);
 }
 
-
 // Internal function used to check if the HEADER is a valid Psd header.
-ILboolean iCheckPsd(PSDHEAD *Header)
-{
+static ILboolean iCheckPsd(PSDHEAD *Header) {
 	ILuint i;
 
-	if (strncmp((char*)Header->Signature, "8BPS", 4))
+	if (memcmp(Header->Signature, "8BPS", 4))
 		return IL_FALSE;
+
 	if (Header->Version != 1)
 		return IL_FALSE;
+
 	for (i = 0; i < 6; i++) {
 		if (Header->Reserved[i] != 0)
 			return IL_FALSE;
 	}
+
 	if (Header->Channels < 1 || Header->Channels > 24)
 		return IL_FALSE;
+
 	if (Header->Height < 1 || Header->Width < 1)
 		return IL_FALSE;
+
 	if (Header->Depth != 1 && Header->Depth != 8 && Header->Depth != 16)
 		return IL_FALSE;
 
 	return IL_TRUE;
 }
 
-
 // Internal function used to load the Psd.
-ILboolean iLoadPsdInternal(ILimage* image)
-{
+static ILboolean iLoadPsdInternal(ILimage* image) {
 	PSDHEAD	Header;
 
 	if (image == NULL) {
@@ -101,24 +120,23 @@ ILboolean iLoadPsdInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-	iGetPsdHead(&Header);
-	if (!iCheckPsd(&Header)) {
+	SIO *io = &image->io;
+
+	if (!iGetPsdHead(io, &Header) || !iCheckPsd(&Header)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if (!ReadPsd(image, &Header))
 		return IL_FALSE;
+
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	return ilFixImage();
 }
 
-
-ILboolean ReadPsd(ILimage* image, PSDHEAD *Head)
-{
-	switch (Head->Mode)
-	{
+static ILboolean ReadPsd(ILimage* image, PSDHEAD *Head) {
+	switch (Head->Mode) {
 		case 1:  // Greyscale
 			return ReadGrey(image, Head);
 		case 2:  // Indexed
@@ -133,38 +151,34 @@ ILboolean ReadPsd(ILimage* image, PSDHEAD *Head)
 	return IL_FALSE;
 }
 
-
-ILboolean ReadGrey(ILimage* image, PSDHEAD *Head)
-{
+static ILboolean ReadGrey(ILimage* image, PSDHEAD *Head) {
 	ILuint		ColorMode, ResourceSize, MiscInfo;
 	ILushort	Compressed;
 	ILenum		Type;
-	ILubyte		*Resources = NULL;
+	ILubyte * Resources = NULL;
+	SIO *     io = &image->io; 
 
-	ColorMode = GetBigUInt(&iCurImage->io);;  // Skip over the 'color mode data section'
-	iCurImage->io.seek(iCurImage->io.handle, ColorMode, IL_SEEK_CUR);
+	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
+	SIOseek(io, ColorMode, IL_SEEK_CUR);
 
-	ResourceSize = GetBigUInt(&iCurImage->io);;  // Read the 'image resources section'
-	Resources = (ILubyte*)ialloc(ResourceSize);
+	ResourceSize 	= GetBigUInt(io);  // Read the 'image resources section'
+	Resources 		= (ILubyte*)ialloc(ResourceSize);
 	if (Resources == NULL) {
 		return IL_FALSE;
 	}
-	if (iCurImage->io.read(iCurImage->io.handle, Resources, 1, ResourceSize) != ResourceSize)
+
+	if (SIOread(io, Resources, 1, ResourceSize) != ResourceSize)
 		goto cleanup_error;
 
-	MiscInfo = GetBigUInt(&iCurImage->io);;
-	iCurImage->io.seek(iCurImage->io.handle, MiscInfo, IL_SEEK_CUR);
+	MiscInfo = GetBigUInt(io);
+	SIOseek(io, MiscInfo, IL_SEEK_CUR);
 
-	Compressed = GetBigUShort(&iCurImage->io);;
+	Compressed = GetBigUShort(io);
 
 	ChannelNum = Head->Channels;
 	Head->Channels = 1;  // Temporary to read only one channel...some greyscale .psd files have 2.
-	if (Head->Channels != 1) {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
-		return IL_FALSE;
-	}
-	switch (Head->Depth)
-	{
+
+	switch (Head->Depth) {
 		case 8:
 			Type = IL_UNSIGNED_BYTE;
 			break;
@@ -176,12 +190,15 @@ ILboolean ReadGrey(ILimage* image, PSDHEAD *Head)
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage(Head->Width, Head->Height, 1, 1, IL_LUMINANCE, Type, NULL))
+	if (!ilTexImage_(image, Head->Width, Head->Height, 1, 1, IL_LUMINANCE, Type, NULL))
 		goto cleanup_error;
+
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
 		goto cleanup_error;
+
 	if (!ParseResources(image, ResourceSize, Resources))
 		goto cleanup_error;
+
 	ifree(Resources);
 
 	return IL_TRUE;
@@ -191,48 +208,53 @@ cleanup_error:
 	return IL_FALSE;
 }
 
-
-ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head)
-{
+static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 	ILuint		ColorMode, ResourceSize, MiscInfo, i, j, NumEnt;
 	ILushort	Compressed;
-	ILubyte		*Palette = NULL, *Resources = NULL;
+	ILubyte * Palette = NULL;
+	ILubyte * Resources = NULL;
+	SIO *     io = &image->io; 
 
-	ColorMode = GetBigUInt(&iCurImage->io);;  // Skip over the 'color mode data section'
+	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
 	if (ColorMode % 3 != 0) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
+
 	Palette = (ILubyte*)ialloc(ColorMode);
 	if (Palette == NULL)
 		return IL_FALSE;
-	if (iCurImage->io.read(iCurImage->io.handle, Palette, 1, ColorMode) != ColorMode)
+
+	if (SIOread(io, Palette, 1, ColorMode) != ColorMode)
 		goto cleanup_error;
 
-	ResourceSize = GetBigUInt(&iCurImage->io);;  // Read the 'image resources section'
+	ResourceSize = GetBigUInt(io);  // Read the 'image resources section'
 	Resources = (ILubyte*)ialloc(ResourceSize);
 	if (Resources == NULL) {
 		return IL_FALSE;
 	}
-	if (iCurImage->io.read(iCurImage->io.handle, Resources, 1, ResourceSize) != ResourceSize)
+
+	if (SIOread(io, Resources, 1, ResourceSize) != ResourceSize)
 		goto cleanup_error;
 
-	MiscInfo = GetBigUInt(&iCurImage->io);;
-	if (iCurImage->io.eof(iCurImage->io.handle))
+	MiscInfo = GetBigUInt(io);
+	if (SIOeof(io))
 		goto cleanup_error;
-	iCurImage->io.seek(iCurImage->io.handle, MiscInfo, IL_SEEK_CUR);
 
-	Compressed = GetBigUShort(&iCurImage->io);;
-	if (iCurImage->io.eof(iCurImage->io.handle))
+	SIOseek(io, MiscInfo, IL_SEEK_CUR);
+
+	Compressed = GetBigUShort(io);
+	if (SIOeof(io))
 		goto cleanup_error;
 
 	if (Head->Channels != 1 || Head->Depth != 8) {
 		ilSetError(IL_FORMAT_NOT_SUPPORTED);
 		goto cleanup_error;
 	}
+
 	ChannelNum = Head->Channels;
 
-	if (!ilTexImage(Head->Width, Head->Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(image, Head->Width, Head->Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 		goto cleanup_error;
 
 	image->Pal.Palette = (ILubyte*)ialloc(ColorMode);
@@ -268,52 +290,46 @@ cleanup_error:
 }
 
 
-ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
+static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 {
 	ILuint		ColorMode, ResourceSize, MiscInfo;
 	ILushort	Compressed;
 	ILenum		Format, Type;
-	ILubyte		*Resources = NULL;
+	ILubyte * Resources = NULL;
+	SIO *  		io = &image->io;
 
-	ColorMode = GetBigUInt(&iCurImage->io);;  // Skip over the 'color mode data section'
-	iCurImage->io.seek(iCurImage->io.handle, ColorMode, IL_SEEK_CUR);
+	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
+	SIOseek(io, ColorMode, IL_SEEK_CUR);
 
-	ResourceSize = GetBigUInt(&iCurImage->io);;  // Read the 'image resources section'
+	ResourceSize = GetBigUInt(io);  // Read the 'image resources section'
 	Resources = (ILubyte*)ialloc(ResourceSize);
 	if (Resources == NULL)
 		return IL_FALSE;
-	if (iCurImage->io.read(iCurImage->io.handle, Resources, 1, ResourceSize) != ResourceSize)
+
+	if (SIOread(io, Resources, 1, ResourceSize) != ResourceSize)
 		goto cleanup_error;
 
-	MiscInfo = GetBigUInt(&iCurImage->io);;
-	iCurImage->io.seek(iCurImage->io.handle, MiscInfo, IL_SEEK_CUR);
+	MiscInfo = GetBigUInt(io);;
+	SIOseek(io, MiscInfo, IL_SEEK_CUR);
 
-	Compressed = GetBigUShort(&iCurImage->io);;
+	Compressed = GetBigUShort(io);
 
 	ChannelNum = Head->Channels;
-	if (Head->Channels == 3)
- 	{
+	if (Head->Channels == 3) {
 		Format = IL_RGB;
-	}
-	else if (Head->Channels == 4)
-	{
+	} else if (Head->Channels == 4) {
 		Format = IL_RGBA;
-	}
-	else if (Head->Channels >= 5)
-	{
+	}	else if (Head->Channels >= 5)	{
 		// Additional channels are accumulated as a single alpha channel, since
 		// if an image does not have a layer set as the "background", but also
 		// has a real alpha channel, there will be 5 channels (or more).
 		Format = IL_RGBA;
-	}
-	else
-	{
+	}	else {
 		ilSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 
-	switch (Head->Depth)
-	{
+	switch (Head->Depth) {
 		case 8:
 			Type = IL_UNSIGNED_BYTE;
 			break;
@@ -324,12 +340,16 @@ ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 			ilSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
-	if (!ilTexImage(Head->Width, Head->Height, 1, (Format==IL_RGB) ? 3 : 4, Format, Type, NULL))
+
+	if (!ilTexImage_(image, Head->Width, Head->Height, 1, (Format==IL_RGB) ? 3 : 4, Format, Type, NULL))
 		goto cleanup_error;
+
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
 		goto cleanup_error;
+
 	if (!ParseResources(image, ResourceSize, Resources))
 		goto cleanup_error;
+
 	ifree(Resources);
 
 	return IL_TRUE;
@@ -340,28 +360,30 @@ cleanup_error:
 }
 
 
-ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head)
-{
+ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 	ILuint		ColorMode, ResourceSize, MiscInfo, Size, i, j;
 	ILushort	Compressed;
 	ILenum		Format, Type;
-	ILubyte		*Resources = NULL, *KChannel = NULL;
+	ILubyte * Resources = NULL;
+	ILubyte * KChannel = NULL;
+	SIO *  		io = &image->io;
 
-	ColorMode = GetBigUInt(&iCurImage->io);;  // Skip over the 'color mode data section'
-	iCurImage->io.seek(iCurImage->io.handle, ColorMode, IL_SEEK_CUR);
+	ColorMode = GetBigUInt(io);;  // Skip over the 'color mode data section'
+	SIOseek(io, ColorMode, IL_SEEK_CUR);
 
-	ResourceSize = GetBigUInt(&iCurImage->io);;  // Read the 'image resources section'
+	ResourceSize = GetBigUInt(io);  // Read the 'image resources section'
 	Resources = (ILubyte*)ialloc(ResourceSize);
 	if (Resources == NULL) {
 		return IL_FALSE;
 	}
-	if (iCurImage->io.read(iCurImage->io.handle, Resources, 1, ResourceSize) != ResourceSize)
+
+	if (SIOread(io, Resources, 1, ResourceSize) != ResourceSize)
 		goto cleanup_error;
 
-	MiscInfo = GetBigUInt(&iCurImage->io);;
-	iCurImage->io.seek(iCurImage->io.handle, MiscInfo, IL_SEEK_CUR);
+	MiscInfo = GetBigUInt(io);
+	SIOseek(io, MiscInfo, IL_SEEK_CUR);
 
-	Compressed = GetBigUShort(&iCurImage->io);;
+	Compressed = GetBigUShort(io);
 
 	switch (Head->Channels)
 	{
@@ -391,8 +413,10 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head)
 			ilSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
-	if (!ilTexImage(Head->Width, Head->Height, 1, (ILubyte)Head->Channels, Format, Type, NULL))
+
+	if (!ilTexImage_(image, Head->Width, Head->Height, 1, (ILubyte)Head->Channels, Format, Type, NULL))
 		goto cleanup_error;
+
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
 		goto cleanup_error;
 
@@ -400,6 +424,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head)
 	KChannel = (ILubyte*)ialloc(Size);
 	if (KChannel == NULL)
 		goto cleanup_error;
+
 	if (!GetSingleChannel(image, Head, KChannel, (ILboolean)Compressed))
 		goto cleanup_error;
 
@@ -434,9 +459,7 @@ cleanup_error:
 	return IL_FALSE;
 }
 
-
-ILuint *GetCompChanLen(PSDHEAD *Head)
-{
+static ILuint *GetCompChanLen(SIO *io, PSDHEAD *Head) {
 	ILushort	*RleTable;
 	ILuint		*ChanLen, c, i, j;
 
@@ -446,7 +469,7 @@ ILuint *GetCompChanLen(PSDHEAD *Head)
 		return NULL;
 	}
 
-	if (iCurImage->io.read(iCurImage->io.handle, RleTable, sizeof(ILushort), Head->Height * ChannelNum) != Head->Height * ChannelNum) {
+	if (SIOread(io, RleTable, sizeof(ILushort), Head->Height * ChannelNum) != Head->Height * ChannelNum) {
 		ifree(RleTable);
 		ifree(ChanLen);
 		return NULL;
@@ -476,15 +499,18 @@ static const ILuint READ_COMPRESSED_SUCCESS					= 0;
 static const ILuint READ_COMPRESSED_ERROR_FILE_CORRUPT		= 1;
 static const ILuint READ_COMPRESSED_ERROR_FILE_READ_ERROR	= 2;
 
-static ILuint ReadCompressedChannel(const ILuint ChanLen, ILuint Size, ILubyte* Channel)
+static ILuint ReadCompressedChannel(SIO *io, const ILuint ChanLen, ILuint Size, ILubyte* Channel)
 {
 	ILuint		i;
 	ILint		Run;
-	ILboolean	PreCache = IL_FALSE;
 	ILbyte		HeadByte;
 
+	(void)ChanLen;
+
+	/*
 	if (iGetHint(IL_MEM_SPEED_HINT) == IL_FASTEST)
 		PreCache = IL_TRUE;
+	*/
 
 	for (i = 0; i < Size; ) {
 		HeadByte = iCurImage->io.getchar(iCurImage->io.handle);
@@ -494,7 +520,7 @@ static ILuint ReadCompressedChannel(const ILuint ChanLen, ILuint Size, ILubyte* 
 			{
 				return READ_COMPRESSED_ERROR_FILE_CORRUPT;
 			}
-			if (iCurImage->io.read(iCurImage->io.handle, Channel + i, HeadByte + 1, 1) != 1)
+			if (SIOread(io, Channel + i, HeadByte + 1, 1) != 1)
 			{
 				return READ_COMPRESSED_ERROR_FILE_READ_ERROR;
 			}
@@ -502,7 +528,7 @@ static ILuint ReadCompressedChannel(const ILuint ChanLen, ILuint Size, ILubyte* 
 			i += HeadByte + 1;
 		}
 		if (HeadByte >= -127 && HeadByte <= -1) {
-			Run = iCurImage->io.getchar(iCurImage->io.handle);
+			Run = SIOgetc(io);
 			if (Run == IL_EOF)
 			{
 				return READ_COMPRESSED_ERROR_FILE_READ_ERROR;
@@ -529,6 +555,10 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 	ILubyte		*Channel = NULL;
 	ILushort	*ShortPtr;
 	ILuint		*ChanLen = NULL;
+
+	SIO *     io = &image->io;
+
+	(void)Buffer;
 
 	// Added 01-07-2009: This is needed to correctly load greyscale and
 	//  paletted images.
@@ -559,7 +589,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 		if (image->Bpc == 1) {
 			for (c = 0; c < NumChan; c++) {
 				i = 0;
-				if (iCurImage->io.read(iCurImage->io.handle, Channel, Head->Width * Head->Height, 1) != 1) {
+				if (SIOread(io, Channel, Head->Width * Head->Height, 1) != 1) {
 					ifree(Channel);
 					return IL_FALSE;
 				}
@@ -573,7 +603,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 			//@TODO: This needs to be changed for greyscale images.
 			for (; c < Head->Channels; c++) {
 				i = 0;
-				if (iCurImage->io.read(iCurImage->io.handle, Channel, Head->Width * Head->Height, 1) != 1) {
+				if (SIOread(io, Channel, Head->Width * Head->Height, 1) != 1) {
 					ifree(Channel);
 					return IL_FALSE;
 				}
@@ -589,7 +619,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 		else {  // image->Bpc == 2
 			for (c = 0; c < NumChan; c++) {
 				i = 0;
-				if (iCurImage->io.read(iCurImage->io.handle, Channel, Head->Width * Head->Height * 2, 1) != 1) {
+				if (SIOread(io, Channel, Head->Width * Head->Height * 2, 1) != 1) {
 					ifree(Channel);
 					return IL_FALSE;
 				}
@@ -608,7 +638,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 			//@TODO: This needs to be changed for greyscale images.
 			for (; c < Head->Channels; c++) {
 				i = 0;
-				if (iCurImage->io.read(iCurImage->io.handle, Channel, Head->Width * Head->Height * 2, 1) != 1) {
+				if (SIOread(io, Channel, Head->Width * Head->Height * 2, 1) != 1) {
 					ifree(Channel);
 					return IL_FALSE;
 				}
@@ -625,11 +655,11 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 		}
 	}
 	else {
-		ChanLen = GetCompChanLen(Head);
+		ChanLen = GetCompChanLen(io, Head);
 
 		Size = Head->Width * Head->Height;
 		for (c = 0; c < NumChan; c++) {
-			ReadResult = ReadCompressedChannel(ChanLen[c], Size, Channel);
+			ReadResult = ReadCompressedChannel(io, ChanLen[c], Size, Channel);
 			if (ReadResult == READ_COMPRESSED_ERROR_FILE_CORRUPT)
 				goto file_corrupt;
 			else if (ReadResult == READ_COMPRESSED_ERROR_FILE_READ_ERROR)
@@ -653,7 +683,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 			}
 					
 			for (; c < Head->Channels; c++) {
-				ReadResult = ReadCompressedChannel(ChanLen[c], Size, Channel);
+				ReadResult = ReadCompressedChannel(io, ChanLen[c], Size, Channel);
 				if (ReadResult == READ_COMPRESSED_ERROR_FILE_CORRUPT)
 					goto file_corrupt;
 				else if (ReadResult == READ_COMPRESSED_ERROR_FILE_READ_ERROR)
@@ -756,19 +786,20 @@ ILboolean ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources
 ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboolean Compressed)
 {
 	ILuint		i;
-	ILushort	*ShortPtr;
+	// ILushort	*ShortPtr;
 	ILbyte		HeadByte;
 	ILint		Run;
+	SIO *  		io = &image->io;
 
-	ShortPtr = (ILushort*)Buffer;
+	// ShortPtr = (ILushort*)Buffer;
 
 	if (!Compressed) {
 		if (image->Bpc == 1) {
-			if (iCurImage->io.read(iCurImage->io.handle, Buffer, Head->Width * Head->Height, 1) != 1)
+			if (SIOread(io, Buffer, Head->Width * Head->Height, 1) != 1)
 				return IL_FALSE;
 		}
 		else {  // image->Bpc == 2
-			if (iCurImage->io.read(iCurImage->io.handle, Buffer, Head->Width * Head->Height * 2, 1) != 1)
+			if (SIOread(io, Buffer, Head->Width * Head->Height * 2, 1) != 1)
 				return IL_FALSE;
 		}
 	}
@@ -777,7 +808,7 @@ ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboo
 			HeadByte = iCurImage->io.getchar(iCurImage->io.handle);
 
 			if (HeadByte >= 0) {  //  && HeadByte <= 127
-				if (iCurImage->io.read(iCurImage->io.handle, Buffer + i, HeadByte + 1, 1) != 1)
+				if (SIOread(io, Buffer + i, HeadByte + 1, 1) != 1)
 					return IL_FALSE;
 				i += HeadByte + 1;
 			}
@@ -813,18 +844,20 @@ ILboolean iSavePsdInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
+	SIO *io = &image->io;
+
 	Format = image->Format;
 	Type = image->Type;
 
 	// All of these comprise the actual signature.
 	iCurImage->io.write(Signature, 1, 4, iCurImage->io.handle);
-	SaveBigShort(&iCurImage->io,1);
-	SaveBigInt(&iCurImage->io,0);
-	SaveBigShort(&iCurImage->io,0);
+	SaveBigShort(io,1);
+	SaveBigInt(io,0);
+	SaveBigShort(io,0);
 
-	SaveBigShort(&iCurImage->io,image->Bpp);
-	SaveBigInt(&iCurImage->io,image->Height);
-	SaveBigInt(&iCurImage->io,image->Width);
+	SaveBigShort(io,image->Bpp);
+	SaveBigInt(io,image->Height);
+	SaveBigInt(io,image->Width);
 	if (image->Bpc > 2)
 		Type = IL_UNSIGNED_SHORT;
 
@@ -841,20 +874,20 @@ ILboolean iSavePsdInternal(ILimage* image)
 	else {
 		TempImage = image;
 	}
-	SaveBigShort(&iCurImage->io,(ILushort)(TempImage->Bpc * 8));
+	SaveBigShort(io,(ILushort)(TempImage->Bpc * 8));
 
 	// @TODO:  Put the other formats here.
 	switch (TempImage->Format)
 	{
 		case IL_COLOUR_INDEX:
-			SaveBigShort(&iCurImage->io,2);
+			SaveBigShort(io,2);
 			break;
 		case IL_LUMINANCE:
-			SaveBigShort(&iCurImage->io,1);
+			SaveBigShort(io,1);
 			break;
 		case IL_RGB:
 		case IL_RGBA:
-			SaveBigShort(&iCurImage->io,3);
+			SaveBigShort(io,3);
 			break;
 		default:
 			ilSetError(IL_INTERNAL_ERROR);
@@ -867,7 +900,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 		TempPal = iConvertPal(&TempImage->Pal, IL_PAL_RGB24);
 		if (TempPal == NULL)
 			return IL_FALSE;
-		SaveBigInt(&iCurImage->io,768);
+		SaveBigInt(io,768);
 
 		// Have to save the palette in a planar format.
 		for (c = 0; c < 3; c++) {
@@ -879,12 +912,12 @@ ILboolean iSavePsdInternal(ILimage* image)
 		ifree(TempPal->Palette);
 	}
 	else {
-		SaveBigInt(&iCurImage->io,0);  // No colour mode data.
+		SaveBigInt(io,0);  // No colour mode data.
 	}
 
-	SaveBigInt(&iCurImage->io,0);  // No image resources.
-	SaveBigInt(&iCurImage->io,0);  // No layer information.
-	SaveBigShort(&iCurImage->io,0);  // Psd data, no compression.
+	SaveBigInt(io,0);  // No image resources.
+	SaveBigInt(io,0);  // No layer information.
+	SaveBigShort(io,0);  // Psd data, no compression.
 
 	// @TODO:  Add RLE compression.
 
@@ -911,7 +944,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 		TempImage->SizeOfPlane /= 2;
 		for (c = 0; c < TempImage->Bpp; c++) {
 			for (i = c; i < TempImage->SizeOfPlane; i += TempImage->Bpp) {
-				SaveBigUShort(&iCurImage->io, ShortPtr[i]);
+				SaveBigUShort(io, ShortPtr[i]);
 			}
 		}
 		TempImage->SizeOfPlane *= 2;
@@ -927,5 +960,17 @@ ILboolean iSavePsdInternal(ILimage* image)
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsPSD[] = { 
+  IL_TEXT("psd"), 
+  IL_TEXT("pdd"), 
+  NULL 
+};
+
+ILformat iFormatPSD = { 
+  .Validate = iIsValidPsd, 
+  .Load     = iLoadPsdInternal, 
+  .Save     = iSavePsdInternal, 
+  .Exts     = iFormatExtsPSD
+};
 
 #endif//IL_NO_PSD

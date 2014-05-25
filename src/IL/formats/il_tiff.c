@@ -38,61 +38,57 @@
 
 // No need for a separate header
 static char*     iMakeString(void);
-static TIFF*     iTIFFOpen(char *Mode);
+static TIFF*     iTIFFOpen(SIO *io, char *Mode);
 
 /*----------------------------------------------------------------------------*/
 
-ILboolean iIsValidTiff(SIO* io)
-{
-	ILushort Header1 = 0, Header2 = 0;
+static ILboolean iIsValidTiff(SIO* io) {
+	ILushort 	Header1 = 0, Header2 = 0;
+	ILuint 		Start = SIOtell(io);
 
 	Header1 = GetLittleUShort(io);
 	ILboolean bRet = IL_TRUE;
 
 	if (Header1 == MAGIC_HEADER1) {
 		Header2 = GetLittleUShort(io);
-		io->seek(io->handle, -4, SEEK_CUR);
 	} else if (Header1 == MAGIC_HEADER2) {
 		Header2 = GetBigUShort(io);
-		io->seek(io->handle, -4, SEEK_CUR);
 	} else {
 		bRet = IL_FALSE;
-		io->seek(io->handle, -2, SEEK_CUR);
 	}
 
 	if (Header2 != 42)
 		bRet = IL_FALSE;
+
+	SIOseek(io, Start, IL_SEEK_SET);
 
 	return bRet;
 }
 
 /*----------------------------------------------------------------------------*/
 
-void warningHandler(const char* mod, const char* fmt, va_list ap)
+static void warningHandler(const char* mod, const char* fmt, va_list ap)
 {
-	mod; fmt; ap;
-	//char buff[1024];
-	//vsnprintf(buff, 1024, fmt, ap);
+	(void)mod;
+	iTraceV(fmt, ap);
 }
 
 void errorHandler(const char* mod, const char* fmt, va_list ap)
 {
-	mod; fmt; ap;
-	//char buff[1024];
-	//vsnprintf(buff, 1024, fmt, ap);
+	(void)mod;
+	iTraceV(fmt, ap);
 }
 
 ////
 
 
 // Internal function used to load the Tiff.
-ILboolean iLoadTiffInternal(ILimage* image)
-{
+static ILboolean iLoadTiffInternal(ILimage* image) {
 	TIFF	 *tif;
 	uint16	 photometric, planarconfig, orientation;
 	uint16	 samplesperpixel, bitspersample, *sampleinfo, extrasamples;
 	uint32	 w, h, d, linesize, tilewidth, tilelength;
-	ILubyte  *pImageData;
+	// ILubyte  *pImageData;
 	ILuint	 i, ProfileLen, DirCount = 0;
 	void	 *Buffer;
 	ILimage  *Image, *TempImage;
@@ -109,14 +105,12 @@ ILboolean iLoadTiffInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-	TIFFSetWarningHandler (NULL);
-	TIFFSetErrorHandler   (NULL);
+	SIO *io = &image->io;
 
-	//for debugging only
-	//TIFFSetWarningHandler(warningHandler);
-	//TIFFSetErrorHandler(errorHandler);
+	TIFFSetWarningHandler(warningHandler);
+	TIFFSetErrorHandler(errorHandler);
 
-	tif = iTIFFOpen("r");
+	tif = iTIFFOpen(io, "r");
 	if (tif == NULL) {
 		ilSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
@@ -328,7 +322,7 @@ ILboolean iLoadTiffInternal(ILimage* image)
 			&& (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
 			&& tilewidth == w && tilelength == h
 			) {
-			ILubyte *strip, *dat;
+			ILubyte *strip; //, *dat;
 			tsize_t stripsize;
 			ILuint y;
 			uint32 rowsperstrip, j, linesread;
@@ -356,7 +350,7 @@ ILboolean iLoadTiffInternal(ILimage* image)
 
 			strip = (ILubyte*)ialloc(stripsize);
 
-			dat = Image->Data;
+			// dat = Image->Data;
 			for (y = 0; y < h; y += rowsperstrip) {
 				//the last strip may contain less data if the image
 				//height is not evenly divisible by rowsperstrip
@@ -396,7 +390,7 @@ ILboolean iLoadTiffInternal(ILimage* image)
 		else {
 				//not direclty supported format
 			if(!Image) {
-				if(!ilTexImage(w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+				if(!ilTexImage_(image, w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
 					TIFFClose(tif);
 					return IL_FALSE;
 				}
@@ -470,7 +464,7 @@ ILboolean iLoadTiffInternal(ILimage* image)
 					break; 
 					
 				case 4:
-					pImageData = Image->Data;
+					// pImageData = Image->Data;
 					//removed on 2003-08-26...why was this here? libtiff should and does
 					//take care of these things???
 					/*			
@@ -555,8 +549,7 @@ ILboolean iLoadTiffInternal(ILimage* image)
 static tsize_t 
 _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	fd;
-	return iCurImage->io.read(iCurImage->io.handle, pData, 1, tSize);
+	return SIOread((SIO*)fd, pData, 1, tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -568,7 +561,9 @@ _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 static tsize_t 
 _tiffFileReadProcW(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	fd;
+	(void)fd;
+	(void)pData;
+	(void)tSize;
 	return 0;
 }
 
@@ -577,8 +572,7 @@ _tiffFileReadProcW(thandle_t fd, tdata_t pData, tsize_t tSize)
 static tsize_t 
 _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	fd;
-	return iCurImage->io.write(pData, 1, tSize, iCurImage->io.handle);
+	return SIOwrite((SIO*)fd, pData, 1, tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -586,13 +580,12 @@ _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 static toff_t
 _tiffFileSeekProc(thandle_t fd, toff_t tOff, int whence)
 {
-	fd;
 	/* we use this as a special code, so avoid accepting it */
 	if (tOff == 0xFFFFFFFF)
 		return 0xFFFFFFFF;
 
-	iCurImage->io.seek(iCurImage->io.handle, tOff, whence);
-	return iCurImage->io.tell(iCurImage->io.handle);
+	SIOseek((SIO*)fd, tOff, whence);
+	return SIOtell((SIO*)fd);
 	//return tOff;
 }
 
@@ -605,8 +598,8 @@ _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 	if (tOff == 0xFFFFFFFF)
 		return 0xFFFFFFFF;
 
-	iCurImage->io.seek(iCurImage->io.handle, tOff, whence);
-	return iCurImage->io.tell(iCurImage->io.handle);
+	SIOseek((SIO*)fd, tOff, whence);
+	return SIOtell((SIO*)fd);
 	//return tOff;
 }
 
@@ -615,7 +608,7 @@ _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 static int
 _tiffFileCloseProc(thandle_t fd)
 {
-	fd;
+	(void)fd;
 	return (0);
 }
 
@@ -625,12 +618,12 @@ static toff_t
 _tiffFileSizeProc(thandle_t fd)
 {
 	ILint Offset, Size;
-	Offset = iCurImage->io.tell(iCurImage->io.handle);
-	iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_END);
-	Size = iCurImage->io.tell(iCurImage->io.handle);
-	iCurImage->io.seek(iCurImage->io.handle, Offset, IL_SEEK_SET);
+	
+	Offset = SIOtell((SIO*)fd);
+	SIOseek((SIO*)fd, 0, IL_SEEK_END);
 
-	fd;
+	Size = SIOtell((SIO*)fd);
+	SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
 
 	return Size;
 }
@@ -641,54 +634,54 @@ static toff_t
 _tiffFileSizeProcW(thandle_t fd)
 {
 	ILint Offset, Size;
-	Offset = iCurImage->io.tell(iCurImage->io.handle);
-	iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_END);
-	Size = iCurImage->io.tell(iCurImage->io.handle);
-	iCurImage->io.seek(iCurImage->io.handle, Offset, IL_SEEK_SET);
+
+	Offset = SIOtell((SIO*)fd);
+	SIOseek((SIO*)fd, 0, IL_SEEK_END);
+
+	Size = SIOtell((SIO*)fd);
+	SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
 
 	return Size;
 }
 
 /*----------------------------------------------------------------------------*/
 
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 static int
 _tiffDummyMapProc(thandle_t fd, tdata_t* pbase, toff_t* psize)
 {
-	fd; pbase; psize;
+	(void)fd;
+	(void)pbase;
+	(void)psize;
 	return 0;
 }
 
 /*----------------------------------------------------------------------------*/
 
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 static void
 _tiffDummyUnmapProc(thandle_t fd, tdata_t base, toff_t size)
 {
-	fd; base; size;
+	(void)fd;
+	(void)base;
+	(void)size;
 	return;
 }
 
 /*----------------------------------------------------------------------------*/
 
-TIFF *iTIFFOpen(char *Mode)
+static TIFF *iTIFFOpen(SIO *io, char *Mode)
 {
 	TIFF *tif;
 
 	if (Mode[0] == 'w')
 		tif = TIFFClientOpen("TIFFMemFile", Mode,
-							NULL,
+							io,
 							_tiffFileReadProcW, _tiffFileWriteProc,
 							_tiffFileSeekProcW, _tiffFileCloseProc,
 							_tiffFileSizeProcW, _tiffDummyMapProc,
 							_tiffDummyUnmapProc);
 	else
 		tif = TIFFClientOpen("TIFFMemFile", Mode,
-							NULL,
+							io,
 							_tiffFileReadProc, _tiffFileWriteProc,
 							_tiffFileSeekProc, _tiffFileCloseProc,
 							_tiffFileSizeProc, _tiffDummyMapProc,
@@ -720,14 +713,9 @@ ILboolean iSaveTiffInternal(ILimage* image)
 		return IL_FALSE;
 	}
 
-#if 1
-	TIFFSetWarningHandler (NULL);
-	TIFFSetErrorHandler   (NULL);
-#else
-	//for debugging only
 	TIFFSetWarningHandler(warningHandler);
 	TIFFSetErrorHandler(errorHandler);
-#endif
+
 	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION)
 		Compression = COMPRESSION_LZW;
 	else
@@ -754,7 +742,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	#endif*/
 
 	// Control writing functions ourself.
-	File = iTIFFOpen("w");
+	File = iTIFFOpen(&image->io, "w");
 	if (File == NULL) {
 		ilSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;

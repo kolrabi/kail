@@ -83,7 +83,7 @@ ILboolean iGetDdsHead(SIO* io, DDSHEAD *Header)
 
 
 // Internal function to get the header and check it.
-static ILboolean iIsValidDds(SIO* io)
+ILboolean iIsValidDds(SIO* io)
 {
 	char Sig[4];
 

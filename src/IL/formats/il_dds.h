@@ -164,8 +164,6 @@ enum PixFormat
 #define CUBEMAP_SIDES 6
 
 // Internal functions
-// ILboolean	iLoadDdsInternal(ILimage *image);
-// ILboolean	iIsValidDds(SIO *io);
 ILboolean	iCheckDds(DDSHEAD *Head);
 void		AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat);
 ILboolean	ReadData();

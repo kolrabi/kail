@@ -16,24 +16,10 @@
 #ifndef UTX_H
 #define UTX_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "il_internal.h"
 #include "il_dds.h"
 
-#ifdef __cplusplus
-}
-#endif
-
-
-#include <memory>
-#include <vector>
-#include <string>
-using namespace std;
-
-
+#include "pack_push.h"
 typedef struct UTXHEADER
 {
 	ILuint		Signature;
@@ -50,8 +36,7 @@ typedef struct UTXHEADER
 
 typedef struct UTXENTRYNAME
 {
-	//char	*Name;
-	string	Name;
+	char	*	Name;
 	ILuint	Flags;
 } UTXENTRYNAME;
 
@@ -80,6 +65,15 @@ typedef struct UTXIMPORTTABLE
 	ILboolean	PackageImported;
 } UTXIMPORTTABLE;
 
+typedef struct {
+	ILuint 		Count;
+	ILint     Name;
+	ILubyte * Pal;
+} UTXPALETTE;
+
+#include "pack_pop.h"
+
+/*
 class UTXPALETTE
 {
 public:
@@ -91,10 +85,10 @@ public:
 	ILuint	Name;
 };
 
+*/
+
 // Data formats
 #define UTX_P8		0x00
 #define UTX_DXT1	0x03
-
-ILboolean iLoadUtxInternal(void);
 
 #endif//UTX_H

@@ -84,6 +84,7 @@ typedef struct SIO {
 #define SIOputc(  io,       c) (io)->putchar((c), (io)->handle          )
 #define SIOwrite( io, p, s, n) (io)->write  ((p), (s), (n), (io)->handle)
 #define SIOputs(  io,       s) SIOwrite(io, s, strlen(s), 1)
+#define SIOpad(   io,       n) for (ILuint i=0; i<n; i++) SIOputc((io), 0);
 
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.*/

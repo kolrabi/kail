@@ -577,5 +577,4 @@ ILformat iFormatPNM = {
   .Exts     = iFormatExtsPNM
 };
 
-
 #endif//IL_NO_PNM

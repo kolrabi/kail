@@ -61,40 +61,8 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 
 	else if (!iStrCmp(Ext, IL_TEXT("exr")))
 		Type = IL_EXR;
-	else if (!iStrCmp(Ext, IL_TEXT("jng")))
-		Type = IL_JNG;
-	else if (!iStrCmp(Ext, IL_TEXT("psd")) || !iStrCmp(Ext, IL_TEXT("pdd")))
-		Type = IL_PSD;
-	else if (!iStrCmp(Ext, IL_TEXT("psp")))
-		Type = IL_PSP;
-	else if (!iStrCmp(Ext, IL_TEXT("pxr")))
-		Type = IL_PXR;
-	else if (!iStrCmp(Ext, IL_TEXT("rot")))
-		Type = IL_ROT;
-	else if (!iStrCmp(Ext, IL_TEXT("sgi")) || !iStrCmp(Ext, IL_TEXT("bw")) ||
-		!iStrCmp(Ext, IL_TEXT("rgb")) || !iStrCmp(Ext, IL_TEXT("rgba")))
-		Type = IL_SGI;
-	else if (!iStrCmp(Ext, IL_TEXT("sun")) || !iStrCmp(Ext, IL_TEXT("ras")) ||
-			 !iStrCmp(Ext, IL_TEXT("rs")) || !iStrCmp(Ext, IL_TEXT("im1")) ||
-			 !iStrCmp(Ext, IL_TEXT("im8")) || !iStrCmp(Ext, IL_TEXT("im24")) ||
-			 !iStrCmp(Ext, IL_TEXT("im32")))
-		Type = IL_SUN;
-	else if (!iStrCmp(Ext, IL_TEXT("texture")))
-		Type = IL_TEXTURE;
-	else if (!iStrCmp(Ext, IL_TEXT("tpl")))
-		Type = IL_TPL;
-	else if (!iStrCmp(Ext, IL_TEXT("utx")))
-		Type = IL_UTX;
-	else if (!iStrCmp(Ext, IL_TEXT("vtf")))
-		Type = IL_VTF;
-	else if (!iStrCmp(Ext, IL_TEXT("wal")))
-		Type = IL_WAL;
-	else if (!iStrCmp(Ext, IL_TEXT("wbmp")))
-		Type = IL_WBMP;
 	else if (!iStrCmp(Ext, IL_TEXT("wdp")) || !iStrCmp(Ext, IL_TEXT("hdp")))
 		Type = IL_WDP;
-	else if (!iStrCmp(Ext, IL_TEXT("xpm")))
-		Type = IL_XPM;
 	else
 		iIdentifyFormatExt(Ext);
 
@@ -137,22 +105,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 		return IL_TYPE_UNKNOWN;
 
 	switch(buf[0]) {
-		case 0x01:
-			if (buf[1] == 0xda)
-				#ifndef IL_NO_SGI
-				if (iIsValidSgi())
-				#endif
-					return IL_SGI;
-			break;
-		case '8':
-			if (buf[1] == 'B' && buf[2] == 'P' && buf[3] == 'S')
-				#ifndef IL_NO_PSD
-				if (iIsValidPsd())
-					return IL_PSD;
-				#else
-				return IL_PSD;
-				#endif
-			break;
 		case 'A':
 			if (buf[1] == 'H')
 				return IL_HALO_PAL;
@@ -163,30 +115,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 					return IL_WDP;
 				}
 			}
-		case 'P':
-			if (strnicmp((const char*) buf, "Paint Shop Pro Image File", 25) == 0) {
-				#ifndef IL_NO_PSP
-				if (iIsValidPsp())
-				#endif
-					return IL_PSP;
-			}
-			break;
-		case 'V':
-			if (buf[1] == 'T' && buf[2] == 'F')
-				#ifndef IL_NO_VTF
-				if (iIsValidVtf(&iCurImage->io))
-					return IL_VTF;
-				#else
-				return IL_VTF;
-				#endif
-			break;
-		case 0x59:
-			if (buf[1] == 0xA6 && buf[2] == 0x6A && buf[3] == 0x95)
-				#ifndef IL_NO_SUN
-				if (iIsValidSun(&iCurImage->io))
-					return IL_SUN;
-				#endif
-			break;
 		case 'v':
 			if (buf[1] == '/' && buf[2] == '1' && buf[3] == 1)
 				#ifndef IL_NO_EXR
@@ -195,16 +123,6 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 					return IL_EXR;
 			break;
 	}
-
-	#ifndef IL_NO_TPL
-	if (ilIsValidTplF(File))
-		return IL_TPL;
-	#endif
-
-	#ifndef IL_NO_XPM
-	if (iIsValidXpm(&iCurImage->io))
-		return IL_XPM;
-	#endif
 
 	return iIdentifyFormat(&iCurImage->io);
 }
@@ -233,41 +151,6 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return ilIsValidExr(io);
-		#endif
-
-		#ifndef IL_NO_PSD
-		case IL_PSD:
-			return iIsValidPsd();
-		#endif
-
-		#ifndef IL_NO_PSP
-		case IL_PSP:
-			return iIsValidPsp();
-		#endif
-
-		#ifndef IL_NO_SGI
-		case IL_SGI:
-			return iIsValidSgi();
-		#endif
-
-		#ifndef IL_NO_SUN
-		case IL_SUN:
-			return iIsValidSun(io);
-		#endif
-
-		#ifndef IL_NO_TPL
-		case IL_TPL:
-			return ilIsValidTpl(io);
-		#endif
-
-		#ifndef IL_NO_VTF
-		case IL_VTF:
-			return iIsValidVtf(io);
-		#endif
-
-		#ifndef IL_NO_XPM
-		case IL_XPM:
-			return iIsValidXpm(io);
 		#endif
 	}
 
@@ -399,87 +282,12 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 		case IL_TYPE_UNKNOWN:
 			return IL_FALSE;
 
-		#ifndef IL_NO_SGI
-		case IL_SGI:
-			return iLoadSgiInternal();
-		#endif
-
-		#ifndef IL_NO_RAW
-		case IL_RAW:
-			return iLoadRawInternal();
-		#endif
-
-		#ifndef IL_NO_PSD
-		case IL_PSD:
-			return iLoadPsdInternal(image);
-		#endif
-
-		#ifndef IL_NO_PSP
-		case IL_PSP:
-			return iLoadPspInternal();
-		#endif
-
-		#ifndef IL_NO_PXR
-		case IL_PXR:
-			return iLoadPxrInternal();
-		#endif
-
-		#ifndef IL_NO_XPM
-		case IL_XPM:
-			return iLoadXpmInternal();
-		#endif
-
-		#ifndef IL_NO_VTF
-		case IL_VTF:
-			return iLoadVtfInternal(iCurImage);
-		#endif
-
-		#ifndef IL_NO_WBMP
-		case IL_WBMP:
-			return iLoadWbmpInternal(&iCurImage->io);
-		#endif
-
-		#ifndef IL_NO_SUN
-		case IL_SUN:
-			return iLoadSunInternal(iCurImage);
-		#endif
-
-		#ifndef IL_NO_TEXTURE
-		case IL_TEXTURE:
-			//return ilLoadTextureF(File);
-			// From http://forums.totalwar.org/vb/showthread.php?t=70886, all that needs to be done
-			//  is to strip out the first 48 bytes, and then it is DDS data.
-			image->io.seek(image->io.handle, 48, IL_SEEK_CUR);
-			return ilLoadFuncs2(image, IL_DDS);
-		#endif
-
 		#ifndef IL_NO_EXR
 		case IL_EXR:
 			return iLoadExrInternal();
 		#endif
-
-		#ifndef IL_NO_ROT
-		case IL_ROT:
-			return ilLoadRotF(File);
-		#endif
-
-		#ifndef IL_NO_TPL
-		case IL_TPL:
-			return ilLoadTplF(File);
-		#endif
-
-		#ifndef IL_NO_UTX
-		case IL_UTX:
-			return ilLoadUtxF(File);
-		#endif
-
-		#ifndef IL_NO_WAL
-		case IL_WAL:
-			return ilLoadWalF(File);
-		#endif
 	}
 
-	iTrace("----");
 	const ILformat *format = iGetFormat(type);
 	if (format) {
 		return format->Load != NULL && format->Load(image);
@@ -559,24 +367,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 
 	switch(type) {
 
-	#ifndef IL_NO_SGI
-	case IL_SGI:
-		bRet = iSaveSgiInternal();
-		break;
-	#endif
-
-	#ifndef IL_NO_RAW
-	case IL_RAW:
-		bRet = iSaveRawInternal();
-		break;
-	#endif
-
-	#ifndef IL_NO_PSD
-	case IL_PSD:
-		bRet = iSavePsdInternal(image);
-		break;
-	#endif
-
 	#ifndef IL_NO_EXR
 	case IL_EXR:
 		bRet = iSaveExrInternal(FileName);
@@ -586,12 +376,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 	#ifndef IL_NO_VTF
 	case IL_VTF:
 		bRet = iSaveVtfInternal(iCurImage);
-		break;
-	#endif
-
-	#ifndef IL_NO_WBMP
-	case IL_WBMP:
-		bRet = iSaveWbmpInternal(&iCurImage->io);
 		break;
 	#endif
 

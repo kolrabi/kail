@@ -42,7 +42,7 @@ __FILES_EXTERN void				iSetOutputFake(void);
 __FILES_EXTERN ILHANDLE			ILAPIENTRY iGetFile(void);
 __FILES_EXTERN const ILubyte*	ILAPIENTRY iGetLump(void);
 
-__FILES_EXTERN ILuint			ILAPIENTRY ilprintf(const char *, ...);
-__FILES_EXTERN void				ipad(ILuint NumZeros);
+__FILES_EXTERN ILuint			ILAPIENTRY IL_DEPRECATED(ilprintf(const char *, ...));
+__FILES_EXTERN void				IL_DEPRECATED(ipad(ILuint NumZeros));
 
 #endif//FILES_H

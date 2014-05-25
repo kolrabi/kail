@@ -15,6 +15,8 @@
 //#ifndef IL_NO_DATA
 #include "il_manip.h"
 
+//seems to be unused
+#if 0
 
 ILboolean iLoadDataInternal(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 
@@ -117,5 +119,6 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName)
 	return IL_TRUE;
 }
 
+#endif
 
 //#endif//IL_NO_DATA

@@ -32,21 +32,4 @@ typedef struct PSDHEAD
 
 #include "pack_pop.h"
 
-ILushort	ChannelNum;
-
-ILboolean	iCheckPsd(PSDHEAD *Header);
-ILboolean	iLoadPsdInternal(ILimage *image);
-ILboolean	ReadPsd(ILimage* image, PSDHEAD *Head);
-ILboolean	ReadGrey(ILimage* image, PSDHEAD *Head);
-ILboolean	ReadIndexed(ILimage* image, PSDHEAD *Head);
-ILboolean	ReadRGB(ILimage* image, PSDHEAD *Head);
-ILboolean	ReadCMYK(ILimage* image, PSDHEAD *Head);
-ILuint		*GetCompChanLen(PSDHEAD *Head);
-ILboolean	PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed);
-ILboolean	ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources);
-ILboolean	GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboolean Compressed);
-ILboolean	iSavePsdInternal(ILimage* image);
-
-
-
 #endif//PSD_H

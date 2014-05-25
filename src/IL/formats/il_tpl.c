@@ -48,86 +48,36 @@ typedef struct TPLHEAD
 #define TPL_PAL_RGB565	1
 #define TPL_PAL_RGB5A3	2
 
-
-ILboolean iIsValidTpl(void);
-ILboolean iCheckTpl(TPLHEAD *Header);
-ILboolean iLoadTplInternal(void);
-ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat);
-
-
-//! Checks if the file specified in FileName is a valid TPL file.
-ILboolean ilIsValidTpl(ILconst_string FileName)
-{
-	ILHANDLE	TplFile;
-	ILboolean	bTpl = IL_FALSE;
-	
-	if (!iCheckExtension(FileName, IL_TEXT("tpl"))) {
-		ilSetError(IL_INVALID_EXTENSION);
-		return bTpl;
-	}
-	
-	TplFile = iopenr(FileName);
-	if (TplFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bTpl;
-	}
-	
-	bTpl = ilIsValidTplF(TplFile);
-	icloser(TplFile);
-	
-	return bTpl;
-}
-
-
-//! Checks if the ILHANDLE contains a valid TPL file at the current position.
-ILboolean ilIsValidTplF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iIsValidTpl();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
-}
-
-
-//! Checks if Lump is a valid TPL lump.
-ILboolean ilIsValidTplL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidTpl();
-}
-
+static ILboolean iIsValidTpl(SIO *io);
+static ILboolean iCheckTpl(TPLHEAD *Header);
+static ILboolean iLoadTplInternal(ILimage *);
+static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint DataFormat);
 
 // Internal function used to get the TPL header from the current file.
-ILboolean iGetTplHead(TPLHEAD *Header)
-{
-	Header->Magic = GetBigUInt();
-	Header->nTextures = GetBigUInt();
-	Header->HeaderSize = GetBigUInt();
+static ILboolean iGetTplHead(SIO *io, TPLHEAD *Header) {
+	if (SIOread(io, Header, sizeof(*Header), 1) != 1)
+		return IL_FALSE;
+
+	BigUInt(&Header->Magic);
+	BigUInt(&Header->nTextures);
+	BigUInt(&Header->HeaderSize);
+
 	return IL_TRUE;
 }
 
-
 // Internal function to get the header and check it.
-ILboolean iIsValidTpl(void)
-{
-	TPLHEAD Header;
+static ILboolean iIsValidTpl(SIO *io) {
+	TPLHEAD 	Header;
+	ILuint 		Start = SIOtell(io);
+	ILboolean	HasHead = iGetTplHead(io, &Header);
 
-	if (!iGetTplHead(&Header))
-		return IL_FALSE;
-	iseek(-12, IL_SEEK_CUR);
-	
-	return iCheckTpl(&Header);
+	SIOseek(io, Start, IL_SEEK_SET);
+
+	return HasHead && iCheckTpl(&Header);
 }
 
-
 // Internal function used to check if the HEADER is a valid TPL header.
-ILboolean iCheckTpl(TPLHEAD *Header)
-{
+static ILboolean iCheckTpl(TPLHEAD *Header) {
 	// The file signature is 0x0020AF30.
 	if (Header->Magic != 0x0020AF30)
 		return IL_FALSE;
@@ -141,55 +91,10 @@ ILboolean iCheckTpl(TPLHEAD *Header)
 	return IL_TRUE;
 }
 
-
-//! Reads a TPL file
-ILboolean ilLoadTpl(ILconst_string FileName)
-{
-	ILHANDLE	TplFile;
-	ILboolean	bTpl = IL_FALSE;
-	
-	TplFile = iopenr(FileName);
-	if (TplFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return bTpl;
-	}
-
-	bTpl = ilLoadTplF(TplFile);
-	icloser(TplFile);
-
-	return bTpl;
-}
-
-
-//! Reads an already-opened TPL file
-ILboolean ilLoadTplF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iLoadTplInternal();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
-}
-
-
-//! Reads from a memory "lump" that contains a TPL
-ILboolean ilLoadTplL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iLoadTplInternal();
-}
-
-
 // Internal function used to load the TPL.
-ILboolean iLoadTplInternal(void)
-{
+static ILboolean iLoadTplInternal(ILimage *image) {
 	TPLHEAD		Header;
-	ILimage		*Image/*, *BaseImage*/;
-	ILuint		Pos, TexOff, PalOff, DataFormat, Bpp, DataOff, WrapS, WrapT;
+	ILuint		Pos, TexOff, PalOff, DataFormat, Bpp, DataOff, WrapS;
 	ILuint		x, y, xBlock, yBlock, i, j, k, n;
 	ILenum		Format;
 	ILushort	Width, Height, ShortPixel;
@@ -197,38 +102,42 @@ ILboolean iLoadTplInternal(void)
 	Color8888	colours[4], *col;
 	ILushort	color_0, color_1;
 	ILuint		bitmask, Select;
+	ILimage * Image = image;
 
-	if (iCurImage == NULL) {
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
-	Image = iCurImage;  // Top-level image
+
+	SIO *io = &Image->io;
 	
-	if (!iGetTplHead(&Header))
+	if (!iGetTplHead(io, &Header))
 		return IL_FALSE;
+
 	if (!iCheckTpl(&Header)) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	// Points to the beginning of the texture header directory.
-	Pos = itell();
+	Pos = SIOtell(io);
 
 	for (n = 0; n < Header.nTextures; n++) {
 		// Go back to the texture header directory for texture number n+1.
-		iseek(Pos + n * 8, IL_SEEK_SET);
-		TexOff = GetBigUInt();
-		PalOff = GetBigUInt();
+		SIOseek(io, Pos + n * 8, IL_SEEK_SET);
+		TexOff = GetBigUInt(io);
+		PalOff = GetBigUInt(io);
 		// Go to the texture header.
-		if (iseek(TexOff, IL_SEEK_SET))
+		if (SIOseek(io, TexOff, IL_SEEK_SET))
 			return IL_FALSE;
 
-		Height = GetBigUShort();
-		Width = GetBigUShort();
+		Height = GetBigUShort(io);
+		Width  = GetBigUShort(io);
+
 		// It looks like files actually have n-1 images, with the nth one having 0 height and width.
 		if (Width == 0 || Height == 0) {
 			// If this is our first image, however, we error out.
-			if (Image == iCurImage) {
+			if (Image == image) {
 				ilSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
@@ -236,10 +145,10 @@ ILboolean iLoadTplInternal(void)
 			break;
 		}
 
-		DataFormat = GetBigUInt();
-		TexOff = GetBigUInt();
-		WrapS = GetBigUInt();
-		WrapT = GetBigUInt();
+		DataFormat 	= GetBigUInt(io);
+		TexOff 			= GetBigUInt(io);
+		WrapS 			= GetBigUInt(io);
+		/* WrapT =*/  GetBigUInt(io);
 		if (WrapS == TPL_REPEAT || WrapS == TPL_MIRROR) {
 			// By the specs, repeated and mirrored textures must have dimensions of power of 2.
 			if ((Width != ilNextPower2(Width)) || (Height != ilNextPower2(Height))) {
@@ -249,7 +158,7 @@ ILboolean iLoadTplInternal(void)
 		}
 
 		// Go to the actual texture data.
-		if (iseek(TexOff, IL_SEEK_SET))
+		if (SIOseek(io, TexOff, IL_SEEK_SET))
 			return IL_FALSE;
 
 		switch (DataFormat)
@@ -295,8 +204,8 @@ ILboolean iLoadTplInternal(void)
 				return IL_FALSE;
 		}
 
-		if (Image == iCurImage) {  // This is our first image.
-			if (!ilTexImage(Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
+		if (Image == image) {  // This is our first image.
+			if (!ilTexImage_(Image, Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 		}
 		else {
@@ -315,12 +224,12 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 8) {
 						for (yBlock = 0; yBlock < 8; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 8; xBlock += 2) {
-								BytePixel = igetc();
+								BytePixel = SIOgetc(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
 								Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
@@ -342,16 +251,16 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 8) {
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 8; xBlock++) {
 								if ((x + xBlock) >= Image->Width) {
-									igetc();  // Skip the pad byte.
+									SIOgetc(io);  // Skip the pad byte.
 									continue;
 								}
-								Image->Data[DataOff] = igetc();  // Luminance value
+								Image->Data[DataOff] = SIOgetc(io);  // Luminance value
 								DataOff++;
 							}
 						}
@@ -365,12 +274,12 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 8) {
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 8; xBlock += 2) {
-								BytePixel = igetc();
+								BytePixel = SIOgetc(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
 								Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
@@ -388,17 +297,17 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 4) {
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 4; xBlock += 2) {
 								if ((x + xBlock) >= Image->Width) {
-									iseek(2, IL_SEEK_CUR);  // Skip the pad bytes.
+									SIOseek(io, 2, IL_SEEK_CUR);  // Skip the pad bytes.
 									continue;
 								}
-								Image->Data[DataOff] = igetc();
-								Image->Data[DataOff+1] = igetc();
+								Image->Data[DataOff] = SIOgetc(io);
+								Image->Data[DataOff+1] = SIOgetc(io);
 								DataOff += 2;
 							}
 						}
@@ -412,17 +321,17 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 4) {
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 4; xBlock++) {
-								ShortPixel = GetBigUShort();
+								ShortPixel = GetBigUShort(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
-								Image->Data[DataOff] = ((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13); // Red
-								Image->Data[DataOff+1] = ((ShortPixel & 0x7E0) >> 3) | ((ShortPixel & 0x600) >> 9); // Green
-								Image->Data[DataOff+2] = ((ShortPixel & 0x1f) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
+								Image->Data[DataOff  ] = ((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13); // Red
+								Image->Data[DataOff+1] = ((ShortPixel & 0x07E0) >> 3) | ((ShortPixel & 0x600) >> 9); // Green
+								Image->Data[DataOff+2] = ((ShortPixel & 0x001f) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
 								DataOff += 3;
 							}
 						}
@@ -436,12 +345,12 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 4) {
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							if ((y + yBlock) >= Image->Height) {
-								iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+								SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 								continue;
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 4; xBlock++) {
-								ShortPixel = GetBigUShort();
+								ShortPixel = GetBigUShort(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
 
@@ -473,7 +382,7 @@ ILboolean iLoadTplInternal(void)
 						for (yBlock = 0; yBlock < 4; yBlock++) {
 							// Skip pad bytes at the bottom of the tile if any.
 							if ((y + yBlock) >= Image->Height) {
-								iseek(16, IL_SEEK_CUR);  // Entire row of pad bytes skipped
+								SIOseek(io, 16, IL_SEEK_CUR);  // Entire row of pad bytes skipped
 								continue;
 							}
 
@@ -481,11 +390,11 @@ ILboolean iLoadTplInternal(void)
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 4; xBlock++) {
 								if ((x + xBlock) >= Image->Width) {
-									iseek(2, IL_SEEK_CUR);  // Skip pad bytes.
+									SIOseek(io, 2, IL_SEEK_CUR);  // Skip pad bytes.
 									continue;
 								}
-								Image->Data[DataOff+3] = igetc();  // Alpha
-								Image->Data[DataOff] = igetc();  // Red
+								Image->Data[DataOff+3] = SIOgetc(io);  // Alpha
+								Image->Data[DataOff] = SIOgetc(io);  // Red
 								DataOff += 3;
 							}
 
@@ -493,11 +402,11 @@ ILboolean iLoadTplInternal(void)
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 4 && x + xBlock < Image->Width; xBlock++) {
 								if ((x + xBlock) >= Image->Width) {
-									iseek(2, IL_SEEK_CUR);  // Skip pad bytes.
+									SIOseek(io, 2, IL_SEEK_CUR);  // Skip pad bytes.
 									continue;
 								}
-								Image->Data[DataOff+1] = igetc();  // Green
-								Image->Data[DataOff+2] = igetc();  // Blue
+								Image->Data[DataOff+1] = SIOgetc(io);  // Green
+								Image->Data[DataOff+2] = SIOgetc(io);  // Blue
 								DataOff += 3;
 							}
 						}
@@ -509,9 +418,9 @@ ILboolean iLoadTplInternal(void)
 			case TPL_CI8:
 			case TPL_CI14X2:
 				// Seek to the palette header.
-				if (iseek(PalOff, IL_SEEK_SET))
+				if (SIOseek(io, PalOff, IL_SEEK_SET))
 					return IL_FALSE;
-				if (!TplGetIndexImage(Image, TexOff, DataFormat))
+				if (!TplGetIndexImage(io, Image, TexOff, DataFormat))
 					return IL_FALSE;
 				break;
 
@@ -523,7 +432,7 @@ ILboolean iLoadTplInternal(void)
 					for (x = 0; x < Image->Width; x += 8) {
 						for (yBlock = 0; yBlock < 8 && (y + yBlock) < Image->Height; yBlock += 4) {
 							for (xBlock = 0; xBlock < 8 && (x + xBlock) < Image->Width; xBlock += 4) {
-								if (iread(CompData, 1, 8) != 8)
+								if (SIOread(io, CompData, 1, 8) != 8)
 									return IL_FALSE;  //@TODO: Need to do any cleanup here?
 								color_0 = *((ILushort*)CompData);
 								UShort(&color_0);
@@ -592,21 +501,20 @@ ILboolean iLoadTplInternal(void)
 }
 
 
-ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
-{
+static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint DataFormat) {
 	ILushort	NumPal, ShortPixel;
 	ILubyte		LumVal, BytePixel;
 	ILuint		PalFormat, PalOff, PalBpp, DataOff;
 	ILuint		x, y, xBlock, yBlock, i;
 
-	NumPal = GetBigUShort();
-	iseek(2, IL_SEEK_CUR);  // Do we need to do anything with the 'unpacked' entry?  I see nothing in the specs about it.
-	PalFormat = GetBigUInt();
+	NumPal = GetBigUShort(io);
+	SIOseek(io, 2, IL_SEEK_CUR);  // Do we need to do anything with the 'unpacked' entry?  I see nothing in the specs about it.
+	PalFormat = GetBigUInt(io);
 
 	// Now we have to find out where the actual palette data is stored.
 	//@TODO: Do we need to set any errors here?
-	PalOff = GetBigUInt();
-	if (iseek(PalOff, IL_SEEK_SET))
+	PalOff = GetBigUInt(io);
+	if (SIOseek(io, PalOff, IL_SEEK_SET))
 		return IL_FALSE;
 
 	switch (PalFormat)
@@ -620,12 +528,12 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 			PalBpp = 4;
 
 			for (i = 0; i < NumPal; i++) {
-				LumVal = igetc();
+				LumVal = SIOgetc(io);
 				//@TODO: Do proper conversion of luminance, or support this format natively.
 				Image->Pal.Palette[i * 4] = LumVal;  // Assign the luminance value.
 				Image->Pal.Palette[i * 4 + 1] = LumVal;
 				Image->Pal.Palette[i * 4 + 2] = LumVal;
-				Image->Pal.Palette[i * 4 + 3] = igetc();  // Get alpha value.
+				Image->Pal.Palette[i * 4 + 3] = SIOgetc(io);  // Get alpha value.
 			}
 			break;
 
@@ -638,7 +546,7 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 			PalBpp = 3;
 
 			for (i = 0; i < NumPal; i++) {
-				ShortPixel = GetBigUShort();
+				ShortPixel = GetBigUShort(io);
 				// This is mostly the same code as in the TPL_RGB565 case.
 				Image->Pal.Palette[i*3] = ((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13); // Red
 				Image->Pal.Palette[i*3+1] = ((ShortPixel & 0x7E0) >> 3) | ((ShortPixel & 0x600) >> 9); // Green
@@ -655,7 +563,7 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 			PalBpp = 4;
 
 			for (i = 0; i < NumPal; i++) {
-				ShortPixel = GetBigUShort();
+				ShortPixel = GetBigUShort(io);
 				// This is mostly the same code as in the TPL_RGB565 case.
 				if (ShortPixel & 0x8000) {  // Check MSB.
 					// We have RGB5.
@@ -680,7 +588,7 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 	}
 
 	// Go back to the texture data.
-	if (iseek(TexOff, IL_SEEK_SET))
+	if (SIOseek(io, TexOff, IL_SEEK_SET))
 		return IL_FALSE;
 
 	switch (DataFormat)
@@ -692,12 +600,12 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 				for (x = 0; x < Image->Width; x += 8) {
 					for (yBlock = 0; yBlock < 8; yBlock++) {
 						if ((y + yBlock) >= Image->Height) {
-							iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+							SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 							continue;
 						}
 						DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 						for (xBlock = 0; xBlock < 8; xBlock += 2) {
-							BytePixel = igetc();
+							BytePixel = SIOgetc(io);
 							if ((x + xBlock) >= Image->Width)
 								continue;  // Already read the pad byte.
 							Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
@@ -720,16 +628,16 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 				for (x = 0; x < Image->Width; x += 8) {
 					for (yBlock = 0; yBlock < 4; yBlock++) {
 						if ((y + yBlock) >= Image->Height) {
-							iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+							SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 							continue;
 						}
 						DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 						for (xBlock = 0; xBlock < 8; xBlock++) {
 							if ((x + xBlock) >= Image->Width) {
-								igetc();  // Skip the pad byte.
+								SIOgetc(io);  // Skip the pad byte.
 								continue;
 							}
-							Image->Data[DataOff] = igetc();  // Color index
+							Image->Data[DataOff] = SIOgetc(io);  // Color index
 							DataOff++;
 						}
 					}
@@ -746,16 +654,16 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 				for (x = 0; x < Image->Width; x += 4) {
 					for (yBlock = 0; yBlock < 4; yBlock++) {
 						if ((y + yBlock) >= Image->Height) {
-							iseek(8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
+							SIOseek(io, 8, IL_SEEK_CUR);  // Entire row of pad bytes skipped.
 							continue;
 						}
 						DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 						for (xBlock = 0; xBlock < 4; xBlock++) {
 							if ((x + xBlock) >= Image->Width) {
-								GetBigUShort();  // Skip the pad short.
+								GetBigUShort(io);  // Skip the pad short.
 								continue;
 							}
-							ShortPixel = GetBigUShort();
+							ShortPixel = GetBigUShort(io);
 							ShortPixel >>= 2;  // Lower 2 bits are padding bits.
 							Image->Data[DataOff] = Image->Pal.Palette[ShortPixel * PalBpp];
 							Image->Data[DataOff+1] = Image->Pal.Palette[ShortPixel * PalBpp + 1];
@@ -779,4 +687,17 @@ ILboolean TplGetIndexImage(ILimage *Image, ILuint TexOff, ILuint DataFormat)
 
 	return IL_TRUE;
 }
+
+ILconst_string iFormatExtsTPL[] = { 
+	IL_TEXT("tpl"), 
+	NULL 
+};
+
+ILformat iFormatTPL = { 
+	.Validate = iIsValidTpl, 
+	.Load     = iLoadTplInternal, 
+	.Save     = NULL, 
+	.Exts     = iFormatExtsTPL
+};
+
 #endif//IL_NO_TPL

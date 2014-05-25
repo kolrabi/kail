@@ -17,33 +17,31 @@
 #include "il_internal.h"
 
 #include "pack_push.h"
-
 typedef struct iSgiHeader
 {
 	ILshort		MagicNum;	// IRIS image file magic number
 	ILbyte		Storage;	// Storage format
-	ILbyte		Bpc;		// Number of bytes per pixel channel
-	ILushort	Dim;		// Number of dimensions
-							//  1: single channel, 1 row with XSize pixels
-							//  2: single channel, XSize*YSize pixels
-							//  3: ZSize channels, XSize*YSize pixels
+	ILbyte		Bpc;			// Number of bytes per pixel channel
+	ILushort	Dim;			// Number of dimensions
+											//  1: single channel, 1 row with XSize pixels
+											//  2: single channel, XSize*YSize pixels
+											//  3: ZSize channels, XSize*YSize pixels
 	
 	ILushort	XSize;		// X size in pixels
 	ILushort	YSize;		// Y size in pixels
 	ILushort	ZSize;		// Number of channels
-	ILint		PixMin;		// Minimum pixel value
-	ILint		PixMax;		// Maximum pixel value
-	ILint		Dummy1;		// Ignored
+	ILint			PixMin;		// Minimum pixel value
+	ILint			PixMax;		// Maximum pixel value
+	ILint			Dummy1;		// Ignored
 	ILbyte		Name[80];	// Image name
-	ILint		ColMap;		// Colormap ID
+	ILint			ColMap;		// Colormap ID
 	ILbyte		Dummy[404];	// Ignored
 } iSgiHeader;
-
 #include "pack_pop.h"
 
 // Sgi format #define's
 #define SGI_VERBATIM		0
-#define SGI_RLE				1
+#define SGI_RLE					1
 #define SGI_MAGICNUM		474
 
 // Sgi colormap types
@@ -51,19 +49,5 @@ typedef struct iSgiHeader
 #define SGI_COLMAP_DITHERED	1
 #define SGI_COLMAP_SCREEN	2
 #define SGI_COLMAP_COLMAP	3
-
-
-// Internal functions
-ILboolean	iCheckSgi(iSgiHeader *Header);
-ILboolean	iLoadSgiInternal(void);
-ILboolean	iSaveSgiInternal(void);
-void		iExpandScanLine(ILubyte *Dest, ILubyte *Src, ILuint Bpc);
-ILint		iGetScanLine(ILubyte *ScanLine, iSgiHeader *Head, ILuint Length);
-ILint		iGetScanLineFast(ILubyte *ScanLine, iSgiHeader *Head, ILuint Length, ILubyte*);
-void		sgiSwitchData(ILubyte *Data, ILuint SizeOfData);
-ILboolean	iNewSgi(iSgiHeader *Head);
-ILboolean	iReadNonRleSgi(iSgiHeader *Head);
-ILboolean	iReadRleSgi(iSgiHeader *Head);
-ILboolean iSaveRleSgi(ILubyte *Data, ILuint w, ILuint h, ILuint numChannels, ILuint bps);
 
 #endif//SGI_H

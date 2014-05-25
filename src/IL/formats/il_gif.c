@@ -124,7 +124,7 @@ GifHandleExtensionSubBlock(
 
 		case GifExt_GraphicControl:
 			if (SubBlockLength != sizeof(GifGraphicControlExtension)) {
-				iTrace("**** GifGraphicControlExtension has wrong size %u expected %u\n", SubBlockLength, sizeof(GifGraphicControlExtension));
+				iTrace("**** GifGraphicControlExtension has wrong size %u expected %u\n", SubBlockLength, (ILuint)sizeof(GifGraphicControlExtension));
 				return IL_FALSE;
 			}
 			return GifHandleGraphicControlExtension(Ctx, (const GifGraphicControlExtension *)SubBlock);
@@ -178,7 +178,7 @@ GifHandleDisposal(
 
 		case GifDisposal_Restore:
 			if (Ctx->PrevImage){
-				memcpy(Ctx->Image->Next->Data, Ctx->PrevImage, Ctx->Image->SizeOfData);
+				memcpy(Ctx->Image->Next->Data, Ctx->PrevImage->Data, Ctx->Image->SizeOfData);
 			} else  {
 				memset(Ctx->Image->Next->Data, 0, Ctx->Image->SizeOfData);
 			}
@@ -700,7 +700,6 @@ GifLoad(
 // Internal function used to load the Gif.
 ILboolean iLoadGifInternal(ILimage* TargetImage)
 {
-	iTrace("---- load image!\n");
 	if (TargetImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;

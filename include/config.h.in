@@ -215,8 +215,7 @@
 #cmakedefine IL_NO_RAW
 
 /* rot support (ROT is the image format for the game Homeworld 2.) */
-// #cmakedefine IL_NO_ROT
-#define IL_NO_ROT // broken
+#cmakedefine IL_NO_ROT
 
 /* sgi support (SGI is the native raster graphics file format for Silicon
    Graphics workstations) */
@@ -238,13 +237,11 @@
 #cmakedefine IL_NO_TIF
 
 /* tpl support (TPL is the format used by many GameCube and Wii games.) */
-// #cmakedefine IL_NO_TPL
-#define IL_NO_TPL // broken
+#cmakedefine IL_NO_TPL
 
 /* utx support (UTX is the format used in the Unreal Tournament game series.)
    */
-// #cmakedefine IL_NO_UTX
-#define IL_NO_UTX // broken
+#cmakedefine IL_NO_UTX
 
 /* vtf support (VTF (Valve Texture Format) is used by games based on Valve's
    Source engine.) */
@@ -254,8 +251,7 @@
 #cmakedefine IL_NO_WAD
 
 /* wal support (WAL is the image format used for the game Quake 2.) */
-// #cmakedefine IL_NO_WAL
-#define IL_NO_WAL // broken
+#cmakedefine IL_NO_WAL
 
 /* wbmp support (WBMP (Wireless Application Protocol Bitmap) is a monochrome
    graphics file format optimized for mobile computing devices) */

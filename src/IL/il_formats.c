@@ -127,8 +127,44 @@ iInitFormats() {
 #ifndef IL_NO_PNM
   ADD_FORMAT(PNM);
 #endif
+#ifndef IL_NO_PSD
+  ADD_FORMAT(PSD);
+#endif
+#ifndef IL_NO_PSP
+  ADD_FORMAT(PSP);
+#endif
+#ifndef IL_NO_PXR
+  ADD_FORMAT(PXR);
+#endif
+#ifndef IL_NO_RAW
+  ADD_FORMAT(RAW);
+#endif
+#ifndef IL_NO_ROT
+  ADD_FORMAT(ROT);
+#endif
+#ifndef IL_NO_SGI
+  ADD_FORMAT(SGI);
+#endif
+#ifndef IL_NO_SUN
+  ADD_FORMAT(SUN);
+#endif
+#ifndef IL_NO_TEXTURE
+  ADD_FORMAT(TEXTURE);
+#endif
+#ifndef IL_NO_TPL
+  ADD_FORMAT(TPL);
+#endif
 #ifndef IL_NO_TIF
   ADD_FORMAT(TIF);
+#endif
+#ifndef IL_NO_VTF
+  ADD_FORMAT(VTF);
+#endif
+#ifndef IL_NO_WAL
+  ADD_FORMAT(WAL);
+#endif
+#ifndef IL_NO_XPM
+  ADD_FORMAT(XPM);
 #endif
 
   // Some file types have a weak signature, so we test for these formats 
