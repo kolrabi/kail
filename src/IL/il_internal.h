@@ -67,9 +67,13 @@ extern "C" {
 		#define _wfopen fopen
 	#endif
 	#define iStrCpy wcscpy
+	#define iStrCat wcscat
+	#define iStrLen wcslen
 #else
 	#define IL_TEXT(s) (s)
 	#define iStrCpy strcpy
+	#define iStrCat strcat
+	#define iStrLen strlen
 #endif
 
 #ifdef IL_INLINE_ASM

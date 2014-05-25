@@ -373,12 +373,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		break;
 	#endif
 
-	#ifndef IL_NO_VTF
-	case IL_VTF:
-		bRet = iSaveVtfInternal(iCurImage);
-		break;
-	#endif
-
 	// Check if we just want to save the palette.
 	// @todo: must be ported to use iCurImage->io
 /*	case IL_JASC_PAL:

@@ -17,6 +17,27 @@ typedef struct ILformatEntry {
 
 static ILformatEntry *FormatHead = NULL;
 
+ILchar* _ilLoadExt = NULL;
+/*    = "" IL_BLP_EXT IL_BMP_EXT IL_CUT_EXT IL_DCX_EXT IL_DDS_EXT
+                  IL_DCM_EXT IL_DPX_EXT IL_EXR_EXT IL_FITS_EXT IL_FTX_EXT
+                  IL_GIF_EXT IL_HDR_EXT IL_ICNS_EXT IL_ICO_EXT IL_IFF_EXT
+                  IL_IWI_EXT IL_JPG_EXT IL_JP2_EXT IL_LIF_EXT IL_MDL_EXT
+                  IL_MNG_EXT IL_MP3_EXT IL_PCD_EXT IL_PCX_EXT IL_PIC_EXT
+                  IL_PIX_EXT IL_PNG_EXT IL_PNM_EXT IL_PSD_EXT IL_PSP_EXT
+                  IL_PXR_EXT IL_RAW_EXT IL_ROT_EXT IL_SGI_EXT IL_SUN_EXT
+                  IL_TEX_EXT IL_TGA_EXT IL_TIF_EXT IL_TPL_EXT IL_UTX_EXT
+                  IL_VTF_EXT IL_WAL_EXT IL_WDP_EXT IL_XPM_EXT;
+*/
+
+ILchar* _ilSaveExt = NULL;
+/*   = "" IL_BMP_EXT IL_CHEAD_EXT IL_DDS_EXT IL_EXR_EXT
+                  IL_HDR_EXT IL_JP2_EXT IL_JPG_EXT IL_PCX_EXT
+                  IL_PNG_EXT IL_PNM_EXT IL_PSD_EXT IL_RAW_EXT
+                  IL_SGI_EXT IL_TGA_EXT IL_TIF_EXT IL_VTF_EXT
+                  IL_WBMP_EXT;
+*/
+
+
 #define ADD_FORMAT(name) \
   extern ILformat iFormat ## name; \
   iAddFormat(IL_ ## name, #name, &iFormat ## name);
@@ -178,6 +199,49 @@ iInitFormats() {
 #ifndef IL_NO_TGA
   ADD_FORMAT(TGA);
 #endif
+
+  ILuint saveExtLen = 1;
+  ILuint loadExtLen = 1;
+
+  ILformatEntry *entry = FormatHead; 
+  while (entry) {
+    ILconst_string *formatExt = entry->format->Exts;
+    while (*formatExt) {
+      if (entry->format->Load)
+        loadExtLen += 1 + iStrLen(*formatExt);
+
+      if (entry->format->Save)
+        saveExtLen += 1 + iStrLen(*formatExt);
+
+      formatExt++;
+    }
+    entry = entry->next;
+  }
+
+  _ilLoadExt = (ILchar*)ialloc(loadExtLen);
+  imemclear(_ilLoadExt, loadExtLen);
+
+  _ilSaveExt = (ILchar*)ialloc(saveExtLen);
+  imemclear(_ilSaveExt, saveExtLen);
+
+  entry = FormatHead;
+  while (entry) {
+    ILconst_string *formatExt = entry->format->Exts;
+    while (*formatExt) {
+      if (entry->format->Load) {
+        if (_ilLoadExt[0]) iStrCat(_ilLoadExt, IL_TEXT(" "));
+        iStrCat(_ilLoadExt, *formatExt);
+      }
+
+      if (entry->format->Save) {
+        if (_ilSaveExt[0]) iStrCat(_ilSaveExt, IL_TEXT(" "));
+        iStrCat(_ilSaveExt, *formatExt);
+      }
+
+      formatExt++;
+    }
+    entry = entry->next;
+  }
 }
 
 void 
@@ -189,6 +253,9 @@ iDeinitFormats() {
     entry = next;
   }
   FormatHead = NULL;
+
+  ifree(_ilLoadExt);
+  ifree(_ilSaveExt);
 }
 
 const ILformat *

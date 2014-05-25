@@ -633,8 +633,7 @@ ILboolean VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header)
 
 
 // Internal function used to save the Vtf.
-ILboolean iSaveVtfInternal(ILimage* iCurImage)
-{
+static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 	ILimage	*TempImage = iCurImage;
 	ILubyte	*TempData, *CompData;
 	ILuint	Format, i, CompSize;

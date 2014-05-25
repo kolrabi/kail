@@ -482,61 +482,6 @@ jas_stream_t *iJp2WriteStream()
 	return stream;
 }
 
-
-
-//! Writes a Jp2 file
-/*ILboolean ilSaveJp2(ILimage* image, const ILstring FileName)
-{
-	ILHANDLE	Jp2File;
-	ILuint		Jp2Size;
-
-	if (ilGetBoolean(IL_FILE_MODE) == IL_FALSE) {
-		if (iFileExists(FileName)) {
-			ilSetError(IL_FILE_ALREADY_EXISTS);
-			return IL_FALSE;
-		}
-	}
-
-	Jp2File = iCurImage->io.openWrite(FileName);
-	if (Jp2File == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
-		return IL_FALSE;
-	}
-
-	Jp2Size = ilSaveJp2F(image, Jp2File);
-	iCurImage->io.close(Jp2File);
-
-	if (Jp2Size == 0)
-		return IL_FALSE;
-	return IL_TRUE;
-}
-
-
-//! Writes a Jp2 to an already-opened file
-ILuint ilSaveJp2F(ILimage* image, ILHANDLE File)
-{
-	ILuint Pos;
-	iSetOutputFile(File);
-	Pos = iCurImage->io.tell(iCurImage->io.handle);
-	if (iSaveJp2Internal(image) == IL_FALSE)
-		return 0;  // Error occurred
-	return iCurImage->io.tell(iCurImage->io.handle) - Pos;  // Return the number of bytes written.
-}
-
-
-//! Writes a Jp2 to a memory "lump"
-ILuint ilSaveJp2L(ILimage* image, void *Lump, ILuint Size)
-{
-	ILuint Pos;
-	iSetOutputLump(Lump, Size);
-	Pos = iCurImage->io.tell(iCurImage->io.handle);
-	if (iSaveJp2Internal(image) == IL_FALSE)
-		return 0;  // Error occurred
-	return iCurImage->io.tell(iCurImage->io.handle) - Pos;  // Return the number of bytes written.
-}*/
-
-
-
 // Function from OpenSceneGraph (originally called getdata in their sources):
 //  http://openscenegraph.sourcearchive.com/documentation/2.2.0/ReaderWriterJP2_8cpp-source.html
 ILint Jp2ConvertData(jas_stream_t *in, jas_image_t *image)
