@@ -48,7 +48,7 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 	ILenum		Type;
 	ILstring	Ext;
 
-	if (FileName == NULL || ilStrLen(FileName) < 1) {
+	if (FileName == NULL || iStrLen(FileName) < 1) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_TYPE_UNKNOWN;
 	}
@@ -212,7 +212,7 @@ ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size)
 	       have been tried and failed.*/
 ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 {
-	if (FileName == NULL || ilStrLen(FileName) < 1) {
+	if (FileName == NULL || iStrLen(FileName) < 1) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
@@ -225,7 +225,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 
 		if (Type == IL_CUT) {
 			// Attempt to load the palette
-			size_t fnLen = ilStrLen(FileName);
+			size_t fnLen = iStrLen(FileName);
 			if (fnLen > 4) {
 				if (FileName[fnLen-4] == '.'
 				&&  FileName[fnLen-3] == 'c'
@@ -418,7 +418,7 @@ ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type)
 	\return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
 ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 {
-	if (FileName == NULL || ilStrLen(FileName) < 1) {
+	if (FileName == NULL || iStrLen(FileName) < 1) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
@@ -446,7 +446,7 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 	\return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
 ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
 {
-	if (FileName == NULL || ilStrLen(FileName) < 1) {
+	if (FileName == NULL || iStrLen(FileName) < 1) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}

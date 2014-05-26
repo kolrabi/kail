@@ -48,7 +48,7 @@ ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
 		TempNode->Next = NewNode;
 	}
 
-	NewNode->Ext = ilStrDup(Ext);
+	NewNode->Ext = iStrDup(Ext);
 	NewNode->Load = Load;
 	NewNode->Next = NULL;
 
@@ -82,7 +82,7 @@ ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save)
 		TempNode->Next = NewNode;
 	}
 
-	NewNode->Ext = ilStrDup(Ext);
+	NewNode->Ext = iStrDup(Ext);
 	NewNode->Save = Save;
 	NewNode->Next = NULL;
 

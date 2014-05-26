@@ -122,8 +122,8 @@ typedef struct ILimage
 } ILimage;
 
 // Memory functions
-ILAPI void* 		ILAPIENTRY ialloc 	(const ILsizei Size);
-ILAPI void  		ILAPIENTRY ifree 		(const void *Ptr);
+ILAPI void* 		ILAPIENTRY ialloc 	(ILsizei Size);
+ILAPI void  		ILAPIENTRY ifree 		(void *Ptr);
 ILAPI void* 		ILAPIENTRY icalloc 	(const ILsizei Size, const ILsizei Num);
 #ifdef ALTIVEC_GCC
 ILAPI void* 		ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);

@@ -38,8 +38,5 @@ __FILES_EXTERN void       iSetInputLump(ILimage *, const void *Lump, ILuint Size
 __FILES_EXTERN void       iSetOutputFile(ILimage *, ILHANDLE File);
 __FILES_EXTERN void       iSetOutputLump(ILimage *, void *Lump, ILuint Size);
 __FILES_EXTERN void       iSetOutputFake(ILimage *);
- 
-__FILES_EXTERN ILuint     ILAPIENTRY IL_DEPRECATED(ilprintf(const char *, ...));
-__FILES_EXTERN void       IL_DEPRECATED(ipad(ILuint NumZeros));
 
 #endif//FILES_H

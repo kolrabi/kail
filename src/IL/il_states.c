@@ -138,6 +138,7 @@ ILconst_string ILAPIENTRY ilGetString(ILenum StringName)
 
 
 // Clips a string to a certain length and returns a new string.
+// FIXME: String is really made of ILchars. convert to chars
 char *iClipString(char *String, ILuint MaxLen)
 {
   char  *Clipped;
@@ -146,7 +147,7 @@ char *iClipString(char *String, ILuint MaxLen)
   if (String == NULL)
     return NULL;
 
-  Length = ilCharStrLen(String);  //ilStrLen(String);
+  Length = iCharStrLen(String);  //ilStrLen(String);
 
   Clipped = (char*)ialloc((MaxLen + 1) * sizeof(char) /*sizeof(ILchar)*/);  // Terminating NULL makes it +1.
   if (Clipped == NULL) {

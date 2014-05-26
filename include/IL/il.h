@@ -520,8 +520,8 @@ typedef ILint     (ILAPIENTRY *fPutcProc)   (ILubyte, ILHANDLE);
 typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME
 
 // Callback functions for allocation and deallocation
-typedef void*     (ILAPIENTRY *mAlloc)      (const ILsizei);
-typedef void      (ILAPIENTRY *mFree)       (const void* CONST_RESTRICT);
+typedef void*     (ILAPIENTRY *mAlloc)      (ILsizei);
+typedef void      (ILAPIENTRY *mFree)       (void*);
 
 // Registered format procedures
 typedef ILenum    (ILAPIENTRY *IL_LOADPROC) (ILconst_string);

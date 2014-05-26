@@ -17,94 +17,17 @@
 
 // Global variable: stores the currently used image
 ILimage *iCurImage = NULL;
-
 FILE *   iTraceOut = NULL;
 
-
-/* Siigron: added this for Linux... a #define should work, but for some reason
-	it doesn't (anyone who knows why?) */
-#if !_WIN32 || (_WIN32 && __GNUC__) // Cygwin
-	int stricmp(const char *src1, const char *src2)
-	{
-		return strcasecmp(src1, src2);
-	}
-	int strnicmp(const char *src1, const char *src2, size_t max)
-	{
-		return strncasecmp(src1, src2, max);
-	}
-#elif _WIN32_WCE
-	int stricmp(const char *src1, const char *src2)
-	{
-		return _stricmp(src1, src2);
-	}
-	int strnicmp(const char *src1, const char *src2, size_t max)
-	{
-		return strnicmp(src1, src2, max);
-	}
-#elif _WIN32
-	#define strnicmp _strnicmp
-#endif /* _WIN32 */
-
-#ifdef _WIN32_WCE
-	char *strdup(const char *src)
-	{
-		return _strdup(src);
-	}
-#endif//_WIN32_WCE
-
-
-#ifdef _UNICODE
-	int iStrCmp(ILconst_string src1, ILconst_string src2)
-	{
-		return _wcsicmp(src1, src2);
-	}
-#else
-	int iStrCmp(ILconst_string src1, ILconst_string src2)
-	{
-		return stricmp(src1, src2);
-	}
-#endif
-
-
 //! Glut's portability.txt says to use this...
-ILstring ilStrDup(ILconst_string Str)
-{
+ILstring iStrDup(ILconst_string Str) {
 	ILstring copy;
 
-	copy = (ILstring)ialloc((ilStrLen(Str) + 1) * sizeof(ILchar));
+	copy = (ILstring)ialloc((iStrLen(Str) + 1) * sizeof(ILchar));
 	if (copy == NULL)
 		return NULL;
 	iStrCpy(copy, Str);
 	return copy;
-}
-
-
-// Because MSVC++'s version is too stupid to check for NULL...
-ILuint ilStrLen(ILconst_string Str)
-{
-	ILconst_string eos = Str;
-
-	if (Str == NULL)
-		return 0;
-
-	while (*eos++);
-
-	return((int)(eos - Str - 1));
-}
-
-
-// Because MSVC++'s version is too stupid to check for NULL...
-//  Passing NULL to strlen will definitely cause a crash.
-ILuint ilCharStrLen(const char *Str)
-{
-	const char *eos = Str;
-
-	if (Str == NULL)
-		return 0;
-
-	while (*eos++);
-
-	return((int)(eos - Str - 1));
 }
 
 
@@ -115,10 +38,10 @@ ILboolean iCheckExtension(ILconst_string Arg, ILconst_string Ext)
 	ILint i, Len;
 	ILstring Argu = (ILstring)Arg;
 
-	if (Arg == NULL || Ext == NULL || !ilStrLen(Arg) || !ilStrLen(Ext))  // if not a good filename/extension, exit early
+	if (Arg == NULL || Ext == NULL || !iStrLen(Arg) || !iStrLen(Ext))  // if not a good filename/extension, exit early
 		return IL_FALSE;
 
-	Len = ilStrLen(Arg);
+	Len = iStrLen(Arg);
 	Argu += Len;  // start at the end
 
 	for (i = Len; i >= 0; i--) {
@@ -143,7 +66,7 @@ ILstring iGetExtension(ILconst_string FileName)
 {
 	ILboolean PeriodFound = IL_FALSE;
 	ILstring Ext = (ILstring)FileName;
-	ILint i, Len = ilStrLen(FileName);
+	ILint i, Len = iStrLen(FileName);
 
 	if (FileName == NULL || !Len)  // if not a good filename/extension, exit early
 		return NULL;

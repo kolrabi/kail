@@ -423,9 +423,9 @@ static ILboolean i16BitTarga(ILimage *image) {
 // @todo: write header in one read() call
 static ILboolean iSaveTargaInternal(ILimage* image)
 {
-	const char	*ID = iGetString(IL_TGA_ID_STRING);
-	const char	*AuthName = iGetString(IL_TGA_AUTHNAME_STRING);
-	const char	*AuthComment = iGetString(IL_TGA_AUTHCOMMENT_STRING);
+	char	*ID = iGetString(IL_TGA_ID_STRING);
+	char	*AuthName = iGetString(IL_TGA_AUTHNAME_STRING);
+	char	*AuthComment = iGetString(IL_TGA_AUTHCOMMENT_STRING);
 	ILubyte 	IDLen = 0, UsePal, Type, PalEntSize;
 	ILshort 	ColMapStart = 0, PalSize;
 	ILubyte		Temp;
@@ -454,7 +454,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 		Compress = IL_FALSE;
 	
 	if (ID)
-		IDLen = (ILubyte)ilCharStrLen(ID);
+		IDLen = (ILubyte)iCharStrLen(ID);
 	
 	if (image->Pal.Palette && image->Pal.PalSize && image->Pal.PalType != IL_PAL_NONE)
 		UsePal = IL_TRUE;
@@ -600,10 +600,10 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	// Write the extension area.
 	ExtOffset = SIOtell(io);
 	SaveLittleUShort(io, 495);	// Number of bytes in the extension area (TGA 2.0 spec)
-	SIOwrite(io, AuthName, 1, ilCharStrLen(AuthName));
-	SIOpad(io, 41 - ilCharStrLen(AuthName));
-	SIOwrite(io, AuthComment, 1, ilCharStrLen(AuthComment));
-	SIOpad(io, 324 - ilCharStrLen(AuthComment));
+	SIOwrite(io, AuthName, 1, iCharStrLen(AuthName));
+	SIOpad(io, 41 - iCharStrLen(AuthName));
+	SIOwrite(io, AuthComment, 1, iCharStrLen(AuthComment));
+	SIOpad(io, 324 - iCharStrLen(AuthComment));
 	ifree(AuthName);
 	ifree(AuthComment);
 	
@@ -626,8 +626,8 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 		SaveLittleUShort(io, 0);
 	}
 	
-	SIOwrite(io, idString, 1, ilCharStrLen(idString));	// Software ID
-	for (i = 0; i < 41 - ilCharStrLen(idString); i++) {
+	SIOwrite(io, idString, 1, iCharStrLen(idString));	// Software ID
+	for (i = 0; i < 41 - iCharStrLen(idString); i++) {
 		SIOputc(io, 0);
 	}
 	SaveLittleUShort(io, IL_VERSION);  // Software version
@@ -644,7 +644,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	// Write the footer.
 	SaveLittleUInt(io, ExtOffset);	// No extension area
 	SaveLittleUInt(io, 0);	// No developer directory
-	SIOwrite(io, Footer, 1, ilCharStrLen(Footer));
+	SIOwrite(io, Footer, 1, iCharStrLen(Footer));
 	
 	if (TempImage->Origin != IL_ORIGIN_LOWER_LEFT) {
 		ifree(TempData);

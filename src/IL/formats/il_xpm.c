@@ -69,7 +69,7 @@ static ILboolean iIsValidXpm(SIO* io) {
 	XpmGetsInternal(io, Buffer, 10);
 	io->seek(io->handle, Pos, IL_SEEK_SET);  // Restore position
 
-	if (strncmp("/* XPM */", (char*)Buffer, strlen("/* XPM */")))
+	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */")))
 		return IL_FALSE;
 	return IL_TRUE;
 }
@@ -305,7 +305,7 @@ ILboolean XpmPredefCol(char *Buff, XpmPixel *Colour)
 	}
 
 	//check for grayXXX codes (added 20040218)
-	len = ilCharStrLen(Buff);
+	len = iCharStrLen(Buff);
 	if (len >= 4) {
 		if (Buff[0] == 'g' || Buff[0] == 'G'
 			|| Buff[1] == 'r' || Buff[1] == 'R'
@@ -470,7 +470,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 	SIO* io = &Image->io;
 
 	Size = XpmGetsInternal(io, Buffer, BUFFER_SIZE);
-	if (strncmp("/* XPM */", (char*)Buffer, strlen("/* XPM */"))) {
+	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */"))) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}

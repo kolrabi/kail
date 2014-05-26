@@ -9,9 +9,6 @@
 //
 //-----------------------------------------------------------------------------
 
-// TODO: store current ifree ptr with allocated memory to enable
-// use of ilSetMemory when there are already allocated objects.
-
 #define __ALLOC_C
 
 // Memory leak detection
@@ -34,7 +31,7 @@
 #include <mm_malloc.h>
 #endif
 
-static void  ILAPIENTRY DefaultFreeFunc(const void * CONST_RESTRICT Ptr);
+static void  ILAPIENTRY DefaultFreeFunc(void *Ptr);
 static void* ILAPIENTRY DefaultAllocFunc(const ILsizei Size);
 
 // Global variables: functions to allocate and deallocate memory
@@ -71,17 +68,24 @@ void *vec_malloc(const ILsizei size) {
 
 /*** Allocation/Deallocation Function ***/
 void* ILAPIENTRY ialloc(const ILsizei Size) {
-	void *Ptr = ialloc_ptr(Size);
-	if (Ptr == NULL)
+	void **Ptr = (void**)ialloc_ptr(Size + sizeof(void*));
+	if (Ptr == NULL) {
 		ilSetError(IL_OUT_OF_MEMORY);
-	return Ptr;
+		return NULL;
+	}
+
+	// store appropriate ifree_ptr for this chunk of memory
+	*Ptr = ifree_ptr;
+	return (void*)(Ptr + 1);
 }
 
-void ILAPIENTRY ifree(const void * CONST_RESTRICT Ptr) {
+void ILAPIENTRY ifree(void *Ptr) {
 	if (Ptr == NULL)
 		return;
-	ifree_ptr(Ptr);
-	return;
+
+	void **pptr = (void **)Ptr;
+	pptr--;
+	((mFree)*pptr)(pptr);
 }
 
 void* ILAPIENTRY icalloc(const ILsizei Size, const ILsizei Num) {
@@ -101,17 +105,17 @@ static void* ILAPIENTRY DefaultAllocFunc(const ILsizei Size) {
 #endif //VECTORMEM
 }
 
-static void ILAPIENTRY DefaultFreeFunc(const void * CONST_RESTRICT ptr)
+static void ILAPIENTRY DefaultFreeFunc(void *ptr)
 {
 	if (ptr)
 	{
 #ifdef MM_MALLOC
-	    _mm_free((void*)ptr);
+	    _mm_free(ptr);
 #else
 #if defined(VECTORMEM) & !defined(POSIX_MEMALIGN) & !defined(VALLOC) & !defined(MEMALIGN) & !defined(MM_MALLOC)
 	    free(((char*)Ptr) - ((char*)Ptr)[-1]);
 #else	    
-	    free((void*)ptr);
+	    free(ptr);
 #endif //OTHERS...
 #endif //MM_MALLOC
 	}

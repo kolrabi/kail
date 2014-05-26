@@ -5,6 +5,8 @@ ENDIF                   ( )
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
 PROJECT                 ( KaIL C )
 
+INCLUDE                 ( Ctest )
+
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
   SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99" )
   SET                   ( GCC_X86_ASM   TRUE )
@@ -191,10 +193,9 @@ ADD_SUBDIRECTORY        ( src/IL )
 ADD_SUBDIRECTORY        ( src/ILU )
 ADD_SUBDIRECTORY        ( src/ILUT )
 ADD_SUBDIRECTORY        ( include )
+ADD_SUBDIRECTORY        ( src/test )
 
 INSTALL                 ( FILES       ${CMAKE_BINARY_DIR}/IL/config.h
                                       ${CMAKE_BINARY_DIR}/IL/ilut_config.h
                           DESTINATION include/IL
                         )
-
-MESSAGE (dep: ${IL_DEPENDENCIES})

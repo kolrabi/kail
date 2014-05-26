@@ -77,6 +77,8 @@ extern "C" {
 	#define iStrLen strlen
 #endif
 
+#define iCharStrLen strlen
+
 #ifdef IL_INLINE_ASM
 	#if (defined (_MSC_VER) && defined(_WIN32))  // MSVC++ only
 		#define USE_WIN32_ASM
@@ -146,11 +148,10 @@ int iSqrt(int x);
 // Useful miscellaneous functions
 //
 ILboolean	iCheckExtension(ILconst_string Arg, ILconst_string Ext);
-ILbyte*		iFgets(char *buffer, ILuint maxlen);
+ILbyte*		IL_DEPRECATED(iFgets(char *buffer, ILuint maxlen));
 ILboolean	iFileExists(ILconst_string FileName);
 ILstring	iGetExtension(ILconst_string FileName);
-ILstring	ilStrDup(ILconst_string Str);
-ILuint		ilStrLen(ILconst_string Str);
+ILstring	iStrDup(ILconst_string Str);
 ILuint		ilStrNCpy(ILconst_string Str);
 ILuint		ilCharStrLen(const char *Str);
 // Miscellaneous functions
