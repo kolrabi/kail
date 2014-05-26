@@ -12,34 +12,24 @@
 
 #include "il_internal.h"
 
-// FIXME: all of it
-
-ILuint iTargaSize(ILimage* image);
-
-
-// Global variables
-ILint64 CurPos;  // Fake "file" pointer.
-ILint64 MaxPos;
-
-
 //! Fake seek function
 ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint64 Offset, ILuint Mode)
 {
-	(void)h;
+	SIO *io = (SIO*)h;
 	switch (Mode)
 	{
 		case IL_SEEK_SET:
-			CurPos = Offset;
-			if (CurPos > MaxPos)
-				MaxPos = CurPos;
+			io->lumpPos = Offset;
+			if (io->lumpPos > io->lumpSize)
+				io->lumpSize = io->lumpPos;
 			break;
 
 		case IL_SEEK_CUR:
-			CurPos = CurPos + Offset;
+			io->lumpPos = io->lumpPos + Offset;
 			break;
 
 		case IL_SEEK_END:
-			CurPos = MaxPos + Offset;  // Offset should be negative in this case.
+			io->lumpPos = io->lumpSize + Offset;  // Offset should be negative in this case.
 			break;
 
 		default:
@@ -47,30 +37,35 @@ ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint64 Offset, ILuint Mode)
 			return -1;  // Error code
 	}
 
-	if (CurPos > MaxPos)
-		MaxPos = CurPos;
+	if (io->lumpPos > io->lumpSize)
+		io->lumpSize = io->lumpPos;
 
 	return 0;  // Code for success
 }
 
 ILuint ILAPIENTRY iSizeTell(ILHANDLE h)
 {
-	return CurPos;
+	SIO *io = (SIO*)h;
+	return io->lumpPos;
 }
 
 ILint ILAPIENTRY iSizePutc(ILubyte Char, ILHANDLE h)
 {
-	CurPos++;
-	if (CurPos > MaxPos)
-		MaxPos = CurPos;
+	SIO *io = (SIO*)h;
+	io->lumpPos++;
+	if (io->lumpPos > io->lumpSize)
+		io->lumpSize = io->lumpPos;
 	return Char;
 }
 
 ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
-	CurPos += Size * Number;
-	if (CurPos > MaxPos)
-		MaxPos = CurPos;
+	(void)Buffer;
+
+	SIO *io = (SIO*)h;
+	io->lumpPos += Size * Number;
+	if (io->lumpPos > io->lumpSize)
+		io->lumpSize = io->lumpPos;
 	return Number;
 }
 
@@ -86,8 +81,10 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
 //  A return value of 0 is an error.
 ILAPI ILuint	ILAPIENTRY ilDetermineSize(ILenum Type)
 {
-	MaxPos = CurPos = 0;
-	iSetOutputFake();  // Sets iputc, iwrite, etc. to functions above.
+	if (!iCurImage)
+		return 0;
+
+	iSetOutputFake(iCurImage);  // Sets iputc, iwrite, etc. to functions above.
 	ilSaveFuncs(Type);
-	return MaxPos;
+	return iCurImage->io.lumpSize;
 }

@@ -15,8 +15,6 @@
 #ifndef IL_NO_CUT
 #include "il_manip.h"
 #include "il_pal.h"
-#include "il_bits.h"
-
 
 // Wrap it just in case...
 #include "pack_push.h"

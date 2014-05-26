@@ -128,6 +128,8 @@ ILAPI void* 		ILAPIENTRY icalloc 	(const ILsizei Size, const ILsizei Num);
 #ifdef ALTIVEC_GCC
 ILAPI void* 		ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
 #endif
+#define                    iaalloc(T, n) (T*)icalloc(sizeof(T), (n))
+#define                    ioalloc(T)    iaalloc(T, 1)
 
 // Internal library functions in IL
 ILAPI ILimage* 	ILAPIENTRY ilGetCurImage(void);

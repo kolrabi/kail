@@ -18,7 +18,6 @@
 #include <limits.h>  // for maximum values
 #include <ctype.h>
 #include "il_manip.h"
-#include "il_bits.h"
 
 // According to the ppm specs, it's 70, but PSP
 //  likes to output longer lines.

@@ -71,6 +71,7 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 
 
 //changed 2003-09-17 to ILAPIENTRY
+// uses globally set io functions (ilSetRead/ilSetReadF)
 ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName)
 {
 	ILenum Type = IL_TYPE_UNKNOWN;
@@ -78,8 +79,9 @@ ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName)
 	if (FileName != NULL) {
 		// If we can open the file, determine file type from contents
 		// This is more reliable than the file name extension 
-		ilResetRead();
+		iSetFuncs(&iCurImage->io);
 		iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
+
 		if (iCurImage->io.handle != NULL) {
 			Type = ilDetermineTypeFuncs();
 			iCurImage->io.close(iCurImage->io.handle);
@@ -129,13 +131,13 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs()
 
 ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File)
 {
-	iSetInputFile(File);
+	iSetInputFile(iCurImage, File);
 	return ilDetermineTypeFuncs();
 }
 
 ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size)
 {
-	iSetInputLump(Lump, Size);
+	iSetInputLump(iCurImage, Lump, Size);
 	return ilDetermineTypeFuncs();
 }
 
@@ -170,7 +172,7 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName)
 	if (FileName != NULL) {
 		// If we can open the file, determine file type from contents
 		// This is more reliable than the file name extension 
-		ilResetRead();
+		iSetFuncs(&iCurImage->io);
 		iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
 		if (iCurImage->io.handle != NULL) {
 			result = iIsValid(Type, &iCurImage->io);
@@ -185,14 +187,14 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName)
 
 ILboolean ILAPIENTRY ilIsValidF(ILenum Type, ILHANDLE File)
 {
-	iSetInputFile(File);
+	iSetInputFile(iCurImage, File);
 	return iIsValid(Type, &iCurImage->io);
 }
 
 
 ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size)
 {
-	iSetInputLump(Lump, Size);
+	iSetInputLump(iCurImage, Lump, Size);
 	return iIsValid(Type, &iCurImage->io);
 }
 
@@ -215,7 +217,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 		return IL_FALSE;
 	}
 
-	ilResetRead();
+	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
 	if (iCurImage->io.handle != NULL) {
 		ILboolean bRet = ilLoadFuncs(Type);
@@ -264,13 +266,13 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File)
 		return IL_FALSE;
 	}
 
-	ilResetRead();
+	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = File;
 	iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_SET);
 	if (Type == IL_TYPE_UNKNOWN)
 		Type = ilDetermineTypeFuncs();
 
-	ILboolean bRet = ilLoadFuncs(Type);
+	ILboolean bRet = ilLoadFuncs2(iCurImage, Type);
 
 	return bRet;
 }
@@ -308,6 +310,7 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
 ILboolean ILAPIENTRY ilLoadFuncs(ILenum type)
 {
+	iSetFuncs(&iCurImage->io);
 	if (type == IL_TYPE_UNKNOWN)
 		type = ilDetermineTypeFuncs();
 
@@ -332,8 +335,8 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
 		return IL_FALSE;
 	}
 
-	iSetInputLump(Lump, Size);
-	return ilLoadFuncs(Type);
+	iSetInputLump(iCurImage, Lump, Size);
+	return ilLoadFuncs2(iCurImage, Type);
 }
 
 
@@ -350,6 +353,8 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
 	       have been tried and failed.*/
 ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName)
 {
+	iSetFuncs(&iCurImage->io);
+
 	ILenum type = ilDetermineType(FileName);
 
 	if (type != IL_TYPE_UNKNOWN) {
@@ -364,6 +369,8 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName)
 ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 {
 	ILboolean bRet = IL_FALSE;
+
+	iSetFuncs(&image->io);
 
 	switch(type) {
 
@@ -422,7 +429,7 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 	}
 
 	ILboolean	bRet = IL_FALSE;
-	ilResetWrite();
+	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = iCurImage->io.openWrite(FileName);
 	if (iCurImage->io.handle != NULL) {
 		bRet = ilSaveFuncs2(iCurImage, type);
@@ -451,7 +458,7 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
 
 	ILenum type = ilTypeFromExt(FileName);
 	ILboolean	bRet = IL_FALSE;
-	ilResetWrite();
+	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = iCurImage->io.openWrite(FileName);
 	if (iCurImage->io.handle != NULL) {
 		bRet = ilSaveFuncs2(iCurImage, type);
@@ -469,7 +476,7 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
 	\return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
 ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File)
 {
-	iSetOutputFile(File);
+	iSetOutputFile(iCurImage, File);
 	return ilSaveFuncs2(iCurImage, type);
 }
 
@@ -483,7 +490,7 @@ ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File)
 	\return The number of bytes written to the lump, or 0 in case of failure*/
 ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size)
 {
-	iSetOutputLump(Lump, Size);
+	iSetOutputLump(iCurImage, Lump, Size);
 	ILint64 pos1 = iCurImage->io.tell(iCurImage->io.handle);
 	ILboolean bRet = ilSaveFuncs2(iCurImage, Type);
 	ILint64 pos2 = iCurImage->io.tell(iCurImage->io.handle);

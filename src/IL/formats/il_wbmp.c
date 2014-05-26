@@ -80,7 +80,7 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;  // Always has origin in the upper left.
 
 	BitPadding = (8 - (Width % 8)) % 8;  // Has to be aligned on a byte boundary.  The rest is padding.
-	File = bfile(io->handle);
+	File = bitfile(io);
 	if (File == NULL)
 		return IL_FALSE;  //@TODO: Error?
 

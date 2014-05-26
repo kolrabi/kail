@@ -20,24 +20,21 @@
 // Struct for dealing with reading bits from a file
 typedef struct BITFILE
 {
-	ILHANDLE	File;
-	ILuint		BitPos;
-	ILint		ByteBitOff;
-	ILubyte		Buff;
+  SIO *     io;
+  ILuint    BitPos;
+  ILint     ByteBitOff;
+  ILubyte   Buff;
 } BITFILE;
 
 // Functions for reading bits from a file
-//BITFILE*	bopen(const char *FileName, const char *Mode);
-ILint		bclose(BITFILE *BitFile);
-BITFILE*	bfile(ILHANDLE File);
-ILint		btell(BITFILE *BitFile);
-ILint		bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode);
-ILint		bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
-//ILint		bwrite(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
+BITFILE* bitfile(SIO *io);
+ILint    bclose(BITFILE *BitFile);
+ILint    btell(BITFILE *BitFile);
+ILint    bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode);
+ILint    bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
 
 // Useful macros for manipulating bits
-#define SetBits(var, bits)		(var |= bits)
-#define ClearBits(var, bits)	(var &= ~(bits))
-
+#define SetBits(var, bits)    (var |= bits)
+#define ClearBits(var, bits)  (var &= ~(bits))
 
 #endif//BITS_H

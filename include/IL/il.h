@@ -601,13 +601,13 @@ ILAPI ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCo
 ILAPI void      ILAPIENTRY ilPopAttrib(void);
 ILAPI void      ILAPIENTRY ilPushAttrib(ILuint Bits);
 ILAPI void      ILAPIENTRY ilRegisterFormat(ILenum Format);
-ILAPI ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load);
+ILAPI ILboolean ILAPIENTRY IL_DEPRECATED(ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load));
 ILAPI ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num);
 ILAPI ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num);
 ILAPI ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num);
 ILAPI void      ILAPIENTRY ilRegisterOrigin(ILenum Origin);
 ILAPI void      ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type);
-ILAPI ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save);
+ILAPI ILboolean ILAPIENTRY IL_DEPRECATED(ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save));
 ILAPI void      ILAPIENTRY ilRegisterType(ILenum Type);
 ILAPI ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext);
 ILAPI ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext);
@@ -630,19 +630,9 @@ ILAPI ILboolean ILAPIENTRY ilSetDuration(ILuint Duration);
 ILAPI void      ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param);
 ILAPI void      ILAPIENTRY ilSetMemory(mAlloc, mFree);
 ILAPI void      ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
-
-// Set read functions - currently not useful, because it is not possible to read files using these functions
-// Only ilLoad* functions can be used to load images, and these will override the settings defined here,
-// Therefore, unfortunately, this function is currently useful only within ResIL
 ILAPI void      ILAPIENTRY ilSetRead(fOpenProc, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
-
 ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, const char *String);
-
-// Set write functions - currently not useful, because it is not possible to write files using these functions
-// Only ilSave* functions can be used to write images, and these will override the settings defined here,
-// Therefore, unfortunately, this function is currently useful only within ResIL
 ILAPI void      ILAPIENTRY ilSetWrite(fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
-
 ILAPI void      ILAPIENTRY ilShutDown(void);
 ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format);
 ILAPI ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void *Data);
@@ -655,8 +645,8 @@ ILAPI ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, IL
 ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 
 #ifdef IL_VERSION_1_8_3
-ILAPI void      ILAPIENTRY ilSetReadF(ILHANDLE, fOpenProc, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
-ILAPI void      ILAPIENTRY ilSetWriteF(ILHANDLE, fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
+ILAPI ILboolean ILAPIENTRY ilSetReadF(ILHANDLE, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
+ILAPI ILboolean ILAPIENTRY ilSetWriteF(ILHANDLE, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
 #endif
 
 // For all those weirdos that spell "colour" without the 'u'.

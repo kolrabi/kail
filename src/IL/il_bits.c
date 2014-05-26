@@ -14,40 +14,16 @@
 #include "il_internal.h"
 #include "il_bits.h"
 
-
-// Opens a BITFILE just like fopen opens a FILE.
-/*BITFILE *bopen(const char *FileName, const char *Mode)
-{
+BITFILE *bitfile(SIO *io) {
 	BITFILE *ToReturn = NULL;
 
-	if (FileName != NULL) {
-		ToReturn = (BITFILE*)ialloc(sizeof(BITFILE));
+	if (io != NULL && io->handle) {
+		ToReturn = ioalloc(BITFILE);
 		if (ToReturn != NULL) {
-			iopenr((char*)FileName);
-			ToReturn->File = iGetFile();
-			ToReturn->BitPos = 0;
-			ToReturn->ByteBitOff = 8;
-			ToReturn->Buff = 0;
-		}
-	}
-
-	return ToReturn;
-}*/
-
-
-// Converts a FILE to a BITFILE.
-// TODO: make this take a SIO *
-BITFILE *bfile(ILHANDLE File)
-{
-	BITFILE *ToReturn = NULL;
-
-	if (File != NULL) {
-		ToReturn = (BITFILE*)ialloc(sizeof(BITFILE));
-		if (ToReturn != NULL) {
-			ToReturn->File = File;
-			ToReturn->BitPos = iCurImage->io.tell(iCurImage->io.handle) << 3;
-			ToReturn->ByteBitOff = 8;
-			ToReturn->Buff = 0;
+			ToReturn->io  				= io;
+			ToReturn->BitPos 			= SIOtell(io) << 3;
+			ToReturn->ByteBitOff 	= 8;
+			ToReturn->Buff 				= 0;
 		}
 	}
 
@@ -58,12 +34,12 @@ BITFILE *bfile(ILHANDLE File)
 // Closes an open BITFILE and frees memory for it.
 ILint bclose(BITFILE *BitFile)
 {
-	if (BitFile == NULL || BitFile->File == NULL)
+	if (BitFile == NULL || BitFile->io == NULL)
 		return IL_EOF;
 
 	// Removed 01-26-2008.  The file will get closed later by
 	//  the calling function.
-	//icloser(BitFile->File);
+	//icloser(BitFile->io);
 	ifree(BitFile);
 
 	return 0;
@@ -80,36 +56,34 @@ ILint btell(BITFILE *BitFile)
 // Seeks in a BITFILE just like fseek for FILE.
 ILint bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode)
 {
-	ILint /*KeepPos, */ Len;
+	ILint Len;
 
-	if (BitFile == NULL || BitFile->File == NULL)
+	if (BitFile == NULL || BitFile->io == NULL)
 		return 1;
 
 	switch (Mode)
 	{
 		case IL_SEEK_SET:
-			if (!iCurImage->io.seek(iCurImage->io.handle, Offset >> 3, Mode)) {
+			if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
 				BitFile->BitPos = Offset;
 				BitFile->ByteBitOff = BitFile->BitPos % 8;
 			}
 			break;
 		case IL_SEEK_CUR:
-			if (!iCurImage->io.seek(iCurImage->io.handle, Offset >> 3, Mode)) {
+			if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
 				BitFile->BitPos += Offset;
 				BitFile->ByteBitOff = BitFile->BitPos % 8;
 			}
 			break;
 		case IL_SEEK_END:
-			/* KeepPos = */ iCurImage->io.tell(iCurImage->io.handle);
-			iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_END);
-			Len = iCurImage->io.tell(iCurImage->io.handle);
-			iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_SET);
+			SIOseek(BitFile->io, 0, IL_SEEK_END);
+			Len = SIOtell(BitFile->io);
+			SIOseek(BitFile->io, 0, IL_SEEK_SET);
 
-			if (!iCurImage->io.seek(iCurImage->io.handle, Offset >> 3, Mode)) {
-				BitFile->BitPos = (Len << 3) + Offset;
+			if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
+				BitFile->BitPos 		= (Len << 3) + Offset;
 				BitFile->ByteBitOff = BitFile->BitPos % 8;
 			}
-
 			break;
 
 		default:
@@ -118,7 +92,6 @@ ILint bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode)
 
 	return 0;
 }
-
 
 // hehe, "bread".  It reads data into Buffer from the BITFILE, just like fread for FILE.
 ILint bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile)
@@ -133,7 +106,7 @@ ILint bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile)
 	while (BuffPos < Count) {
 		if (BitFile->ByteBitOff < 0 || BitFile->ByteBitOff > 7) {
 			BitFile->ByteBitOff = 7;
-			if (iCurImage->io.read(iCurImage->io.handle, &BitFile->Buff, 1, 1) != 1)  // Reached eof or error...
+			if (SIOread(BitFile->io, &BitFile->Buff, 1, 1) != 1)  // Reached eof or error...
 				return BuffPos;
 		}
 
@@ -163,7 +136,7 @@ ILuint breadVal(ILuint NumBits, BITFILE *BitFile)
 		Buffer <<= 1;
 		if (BitFile->ByteBitOff < 0 || BitFile->ByteBitOff > 7) {
 			BitFile->ByteBitOff = 7;
-			if (iCurImage->io.read(iCurImage->io.handle, &BitFile->Buff, 1, 1) != 1)  // Reached eof or error...
+			if (SIOread(BitFile->io, &BitFile->Buff, 1, 1) != 1)  // Reached eof or error...
 				return BuffPos;
 		}
 
@@ -175,12 +148,3 @@ ILuint breadVal(ILuint NumBits, BITFILE *BitFile)
 
 	return BuffPos;
 }
-
-
-// Not implemented yet.
-/*ILint bwrite(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile)
-{
-
-
-	return 0;
-}*/

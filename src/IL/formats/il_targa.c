@@ -17,7 +17,6 @@
 #include <time.h>  
 #include <string.h>
 #include "il_manip.h"
-#include "il_bits.h"
 #include "il_endian.h"
 
 // Internal functions
@@ -339,7 +338,7 @@ static ILboolean iUncompressTgaData(ILimage *image) {
 	while (BytesRead < Size) {
 		Header = (ILubyte)image->io.getchar(image->io.handle);
 		if (Header & BIT_7) {
-			ClearBits(Header, BIT_7);
+			Header &= ~BIT_7;
 			if (SIOread(io, Color, 1, image->Bpp) != image->Bpp) {
 				return IL_FALSE;
 			}

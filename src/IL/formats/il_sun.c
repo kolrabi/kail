@@ -105,6 +105,7 @@ static ILboolean iIsValidSun(SIO* io) {
     return IL_FALSE;
 }
 
+/*
 static ILuint iSunGetRle(ILimage* image, ILubyte *Data, ILuint Length) {
   ILuint  i = 0, j;
   ILubyte Flag, Value;
@@ -139,7 +140,7 @@ static ILuint iSunGetRle(ILimage* image, ILubyte *Data, ILuint Length) {
 
   return i;
 }
-
+*/
 static void writeSunPixels(ILimage* image, ILuint *dataOffset, ILubyte value, int count) {
   if (*dataOffset < image->SizeOfData) {
     if (*dataOffset + count > image->SizeOfData)
@@ -214,7 +215,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
 
   switch (Header.BitsPerPixel) {
     case 1:  //@TODO: Find a file to test this on.
-      File = bfile(iGetFile());
+      File = bitfile(io);
       if (File == NULL)
         return IL_FALSE;
 

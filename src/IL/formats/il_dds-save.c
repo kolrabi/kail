@@ -10,6 +10,7 @@
 //
 //-----------------------------------------------------------------------------
 
+// TODO: remove references to iCurImage
 
 #include "il_internal.h"
 #include "il_dds.h"
@@ -303,7 +304,7 @@ ILuint ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum DXTCForm
 	}
 
 	//@TODO: Is this the best way to do this?
-	iSetOutputLump(Buffer, BufferSize);
+	iSetOutputLump(iCurImage, Buffer, BufferSize);
 	retVal = Compress(iCurImage, DXTCFormat);
 
 	if (iCurImage->Origin != IL_ORIGIN_UPPER_LEFT) {

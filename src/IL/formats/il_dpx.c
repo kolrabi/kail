@@ -16,7 +16,6 @@
 #include "il_internal.h"
 #ifndef IL_NO_DPX
 #include "il_dpx.h"
-#include "il_bits.h"
 
 static ILboolean 
 DpxGetFileInfo(SIO *io, DPX_FILE_INFO *FileInfo) {
