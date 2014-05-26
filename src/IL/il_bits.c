@@ -80,7 +80,7 @@ ILint btell(BITFILE *BitFile)
 // Seeks in a BITFILE just like fseek for FILE.
 ILint bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode)
 {
-	ILint KeepPos, Len;
+	ILint /*KeepPos, */ Len;
 
 	if (BitFile == NULL || BitFile->File == NULL)
 		return 1;
@@ -100,7 +100,7 @@ ILint bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode)
 			}
 			break;
 		case IL_SEEK_END:
-			KeepPos = iCurImage->io.tell(iCurImage->io.handle);
+			/* KeepPos = */ iCurImage->io.tell(iCurImage->io.handle);
 			iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_END);
 			Len = iCurImage->io.tell(iCurImage->io.handle);
 			iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_SET);

@@ -51,26 +51,27 @@ extern "C" {
 	#include <windows.h>
 #endif//_WIN32
 
-#ifdef _MSC_VER
-	#define IL_CDECL __cdecl	  
-#elif defined(__GNUC__)
-  #define IL_CDECL __attribute__((cdecl))
-#else
-  #define IL_CDECL
-#endif
-
 #ifdef _UNICODE
 	#define IL_TEXT(s) L##s
 	#ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
-		#define wcsicmp wcsncasecmp
-		#define _wcsicmp wcsncasecmp
+		#define iStrICmp wcscasecmp
 		#define _wfopen fopen
+	#else
+		#define iStrIcmp wcsicmp
 	#endif
+	#define iStrCmp wcscmp
 	#define iStrCpy wcscpy
 	#define iStrCat wcscat
 	#define iStrLen wcslen
 #else
-	#define IL_TEXT(s) (s)
+	#ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
+		#define stricmp strcasecmp
+	#endif
+
+	#define iStrIcmp stricmp
+
+	#define IL_TEXT(s) s
+	#define iStrCmp strcmp
 	#define iStrCpy strcpy
 	#define iStrCat strcat
 	#define iStrLen strlen
@@ -130,20 +131,7 @@ extern ILimage *iCurImage;
 #define BIT_31	0x80000000
 #define NUL '\0'  // Easier to type and ?portable?
 
-/* Siigron: added this for Linux... a #define should work, but for some reason
-	it doesn't (anyone who knows why?) */
-#if !_WIN32 || (_WIN32 && __GNUC__) // Cygwin
-	int stricmp(const char *src1, const char *src2);
-	int strnicmp(const char *src1, const char *src2, size_t max);
-#elif _WIN32_WCE
-	int stricmp(const char *src1, const char *src2);
-	int strnicmp(const char *src1, const char *src2, size_t max);
-	char *strdup(const char *src);
-#elif _WIN32
-	#define strnicmp _strnicmp
-#endif /* _WIN32 */
-
-int iStrCmp(ILconst_string src1, ILconst_string src2);
+// int iStrCmp(ILconst_string src1, ILconst_string src2);
 
 //
 // Some math functions

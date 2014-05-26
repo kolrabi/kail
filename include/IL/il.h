@@ -170,7 +170,7 @@ typedef double                      ILclampd;
   #define IL_TEXT(s)                L##s
 #else
   #define ILchar                    char
-  #define IL_TEXT(s)                (s)
+  #define IL_TEXT(s)                s
 #endif //_UNICODE
 
 //if we use a define instead of a typedef,

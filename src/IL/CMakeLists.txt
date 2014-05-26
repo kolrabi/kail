@@ -7,6 +7,16 @@ SET                     ( SOURCES
                           altivec/common.c
                           altivec/typeconversion.c
 
+                          algo/il_neuquant.c
+                          algo/il_nvidia.cc
+                          algo/il_quantizer.c
+                          algo/il_rle.c
+                          algo/il_squish.c
+
+                          conv/il_convbuff.c
+                          conv/il_convert.c 
+                          conv/il_fastconv.c
+
                           formats/il_blp.c
                           formats/il_bmp.c
                           formats/il_cut.c
@@ -47,8 +57,6 @@ SET                     ( SOURCES
                           formats/il_rawdata.c
                           formats/il_rot.c
                           formats/il_sgi.c
-                          formats/il_size.c
-                          formats/il_squish.c
                           formats/il_sun.c
                           formats/il_targa.c
                           formats/il_texture.c
@@ -63,11 +71,8 @@ SET                     ( SOURCES
 
                           il_alloc.c
                           il_bits.c
-                          il_convbuff.c
-                          il_convert.c 
                           il_endian.c
                           il_error.c 
-                          il_fastconv.c
                           il_files.c
                           il_formats.c
                           il_internal.c
@@ -75,12 +80,9 @@ SET                     ( SOURCES
                           il_kail.c
                           il_main.c
                           il_manip.c
-                          il_neuquant.c
-                          il_nvidia.cc
                           il_profiles.c
-                          il_quantizer.c
                           il_register.c
-                          il_rle.c
+                          il_size.c
                           il_skia.cc
                           il_stack.c
                           il_states.c
@@ -88,6 +90,8 @@ SET                     ( SOURCES
                         )
 
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )
+INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/algo )
+INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/conv )
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR}/formats )
 
 IF                      ( IL_STATIC_LIB )

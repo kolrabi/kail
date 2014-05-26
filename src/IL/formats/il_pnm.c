@@ -445,7 +445,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 	{
 		case IL_PBM_ASCII:
 			Bpp = 1;
-			ilprintf("P1\n");
+			SIOputs(io, "P1\n");
 			TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
 			break;
 		//case IL_PBM_BINARY:  // Don't want to mess with saving bits just yet...
@@ -457,22 +457,22 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 			return IL_FALSE;
 		case IL_PGM_ASCII:
 			Bpp = 1;
-			ilprintf("P2\n");
+			SIOputs(io, "P2\n");
 			TempImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
 			break;
 		case IL_PGM_BINARY:
 			Bpp = 1;
-			ilprintf("P5\n");
+			SIOputs(io, "P5\n");
 			TempImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
 			break;
 		case IL_PPM_ASCII:
 			Bpp = 3;
-			ilprintf("P3\n");
+			SIOputs(io, "P3\n");
 			TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
 			break;
 		case IL_PPM_BINARY:
 			Bpp = 3;
-			ilprintf("P6\n");
+			SIOputs(io, "P6\n");
 			TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
 			break;
 		default:
@@ -526,10 +526,16 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 					k = *((ILushort*)TempData + i);
 				*/
 				if (Type == IL_PBM_ASCII) {
-					LinePos += ilprintf("%d ", TempData[i] > 127 ? 1 : 0);
+					if (TempData[i] > 127)
+						SIOputs(io, "1 ");
+					else
+						SIOputs(io, "0 ");
+					LinePos += 2;
 				}
 				else {
-					LinePos += ilprintf("%d ", TempData[i]);
+					char tmp[32];
+					LinePos += snprintf(tmp, sizeof(tmp), "%d ", TempData[i]);
+					SIOputs(io, tmp);
 				}
 			}
 
@@ -539,7 +545,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		}
 
 		if (LinePos > 65) {  // Just a good number =]
-			ilprintf("\n");
+			SIOputs(io, "\n");
 			LinePos = 0;
 		}
 	}
