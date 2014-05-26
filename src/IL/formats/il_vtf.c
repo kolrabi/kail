@@ -30,21 +30,20 @@ static ILboolean	VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header);
 static ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header) {
 	ILuint read = SIOread(io, Header, 1, sizeof(*Header));
 
-	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
-	UInt(Header->Version[0]);
-	UInt(Header->Version[1]);
-	UInt(Header->HeaderSize);
-	UShort(Header->Width);
-	UShort(Header->Height);
-	UInt(Header->Flags);
-	UShort(Header->Frames);
-	UShort(Header->FirstFrame);
-	Float(Header->Reflectivity[0]);
-	Float(Header->Reflectivity[1]);
-	Float(Header->Reflectivity[2]);
-	Float(Header->BumpmapScale);
-	UInt(Header->HighResImageFormat);
-	Int(Header->LowResImageFormat);
+	UInt(&Header->Version[0]);
+	UInt(&Header->Version[1]);
+	UInt(&Header->HeaderSize);
+	UShort(&Header->Width);
+	UShort(&Header->Height);
+	UInt(&Header->Flags);
+	UShort(&Header->Frames);
+	UShort(&Header->FirstFrame);
+	Float(&Header->Reflectivity[0]);
+	Float(&Header->Reflectivity[1]);
+	Float(&Header->Reflectivity[2]);
+	Float(&Header->BumpmapScale);
+	UInt(&Header->HighResImageFormat);
+	UInt(&Header->LowResImageFormat);
 
 	//@TODO: This is a hack for the moment.
 	if (Header->HeaderSize == 64) {

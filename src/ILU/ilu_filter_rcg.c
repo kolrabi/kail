@@ -223,7 +223,7 @@ CLIST	*contrib;		/* array of contribution lists */
 
 	Returns -1 if error, 0 otherwise.
 */
-int calc_x_contrib( CLIST *contribX, double xscale, double fwidth, int dstwidth, int srcwidth, double (*filterf)(double), int i) {
+int calc_x_contrib( CLIST *contribX, double xscale, double fwidth, int srcwidth, double (*filterf)(double), int i) {
 	double width;
 	double fscale;
 	double center, left, right;
@@ -376,8 +376,7 @@ int zoom( ILimage *dst, ILimage *src, double (*filterf)(double), double fwidth) 
 
 	for(xx = 0; xx < (ILint)dst->Width; xx++)
 	{
-		if(0 != calc_x_contrib(&contribX, xscale, fwidth, 
-								dst->Width, src->Width, filterf, xx))
+		if(0 != calc_x_contrib(&contribX, xscale, fwidth, src->Width, filterf, xx))
 		{
 			goto __zoom_cleanup;
 		}

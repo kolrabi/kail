@@ -22,13 +22,14 @@
 static ILboolean	iCheckSgi(iSgiHeader *Header);
 //void		iExpandScanLine(ILubyte *Dest, ILubyte *Src, ILuint Bpc);
 static ILint		iGetScanLine(SIO *, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length);
-static void				sgiSwitchData(ILubyte *Data, ILuint SizeOfData);
 static ILboolean	iNewSgi(ILimage *, iSgiHeader *Head);
 static ILboolean	iReadNonRleSgi(ILimage *, iSgiHeader *Head);
 static ILboolean	iReadRleSgi(ILimage *, iSgiHeader *Head);
 static ILboolean 	iSaveRleSgi(SIO *, 	ILubyte *Data, ILuint w, ILuint h, ILuint numChannels, ILuint bps);
 
-
+#ifdef __LITTLE_ENDIAN__
+static void				sgiSwitchData(ILubyte *Data, ILuint SizeOfData);
+#endif
 
 /*----------------------------------------------------------------------------*/
 
@@ -267,6 +268,8 @@ static ILboolean iReadNonRleSgi(ILimage *Image, iSgiHeader *Head)
 
 /*----------------------------------------------------------------------------*/
 
+#ifdef __LITTLE_ENDIAN__
+
 static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {	
 	ILubyte	Temp;
 	ILuint	i;
@@ -294,6 +297,8 @@ static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {
 	}
 	return;
 }
+
+#endif
 
 /*----------------------------------------------------------------------------*/
 

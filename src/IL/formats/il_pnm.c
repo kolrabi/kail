@@ -230,7 +230,7 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 	while (DataInc < Size) {  // && !feof(File)) {
 		LineInc = 0;
 
-		if (iFgets((char *)LineBuffer, MAX_BUFFER) == NULL) {
+		if (SIOgets(&Image->io, (char *)LineBuffer, MAX_BUFFER) == NULL) {
 			//ilSetError(IL_ILLEGAL_FILE_VALUE);
 			//return NULL;
 			//return Image;

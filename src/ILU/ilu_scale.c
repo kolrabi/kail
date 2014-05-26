@@ -137,13 +137,13 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth)
 {
 	ILimage	*Scaled, *CurImage, *ToScale;
-	ILenum	Format, PalType;
+	ILenum	Format; // , PalType;
 
 	CurImage = ilGetCurImage();
 	Format = Image->Format;
 	if (Format == IL_COLOUR_INDEX) {
 		ilSetCurImage(Image);
-		PalType = Image->Pal.PalType;
+		// PalType = Image->Pal.PalType;
 		ToScale = iConvertImage(iluCurImage, ilGetPalBaseType(Image->Pal.PalType), iluCurImage->Type);
 	}
 	else {

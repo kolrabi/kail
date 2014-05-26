@@ -106,12 +106,12 @@ ILboolean iFileExists(ILconst_string FileName)
 
 
 // Last time I tried, MSVC++'s fgets() was really really screwy
-ILbyte *iFgets(char *buffer, ILuint maxlen)
+ILbyte *SIOgets(SIO *io, char *buffer, ILuint maxlen)
 {
 	ILuint	counter = 0;
 	ILint	temp = '\0';
 
-	while ((temp = iCurImage->io.getchar(iCurImage->io.handle)) && temp != '\n' && temp != IL_EOF && counter < maxlen) {
+	while ((temp = SIOgetc(io)) && temp != '\n' && temp != IL_EOF && counter < maxlen) {
 		buffer[counter] = temp;
 		counter++;
 	}

@@ -22,7 +22,7 @@ static ILboolean iIsValidMdl(SIO *io)
 	MDL_HEAD 	Head;
 	ILuint  	Read = SIOread(io, &Head, 1, sizeof(Head));
 
-	UInt(Head.Version);
+	UInt(&Head.Version);
 
 	SIOseek(io, Pos, IL_SEEK_SET);
 
@@ -46,7 +46,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	UInt(Head.Version);
+	UInt(&Head.Version);
 
 	// Skips the actual model header.
 	SIOseek(io, 172, IL_SEEK_CUR);

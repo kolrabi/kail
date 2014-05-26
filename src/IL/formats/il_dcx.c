@@ -29,7 +29,7 @@ iIsValidDcx(SIO *io) {
 	if (Read != 4)
 		return IL_FALSE;
 
-	UInt(Signature);
+	UInt(&Signature);
 
 	return (Signature == 987654321);
 }
@@ -40,16 +40,17 @@ iGetDcxHead(SIO *io, DCXHEAD *Head) {
 	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
 		return IL_FALSE;
 
-	UShort(Head->Xmin);
-	UShort(Head->Ymin);
-	UShort(Head->Xmax);
-	UShort(Head->Ymax);
-	UShort(Head->HDpi);
-	UShort(Head->VDpi);
-	UShort(Head->Bps);
-	UShort(Head->PaletteInfo);
-	UShort(Head->HScreenSize);
-	UShort(Head->VScreenSize);
+	//UInt  (&Head->Signature);
+	UShort(&Head->Xmin);
+	UShort(&Head->Ymin);
+	UShort(&Head->Xmax);
+	UShort(&Head->Ymax);
+	UShort(&Head->HDpi);
+	UShort(&Head->VDpi);
+	UShort(&Head->Bps);
+	UShort(&Head->PaletteInfo);
+	UShort(&Head->HScreenSize);
+	UShort(&Head->VScreenSize);
 
 	return IL_TRUE;
 }
@@ -113,7 +114,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 	do {
 		if (SIOread(io, &Entries[Num], 1, 4) != 4)
 			return IL_FALSE;
-		UShort(Entries[Num]);
+		UInt(&Entries[Num]);
 		Num++;
 	} while (Entries[Num-1] != 0);
 

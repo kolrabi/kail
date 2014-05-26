@@ -35,9 +35,9 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	UInt(Head.Width);
-	UInt(Head.Height);
-	UInt(Head.HasAlpha); // Kind of backwards from what I would think...
+	UInt(&Head.Width);
+	UInt(&Head.Height);
+	UInt(&Head.HasAlpha); // Kind of backwards from what I would think...
 
 	//@TODO: Right now, it appears that all images are in RGBA format.  See if I can find specs otherwise
 	//  or images that load incorrectly like this.

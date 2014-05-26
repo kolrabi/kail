@@ -704,7 +704,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	TIFF	*File;
 	char	Description[512];
 	ILimage *TempImage;
-	const char	*str;
+	char	*str;
 	ILboolean SwapColors;
 	ILubyte *OldData;
 

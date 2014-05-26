@@ -689,7 +689,7 @@ ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, 
 {
 	ILubyte	ClearCol[4];
 	ILint	TolVal, Distance, Dist1, Dist2, Dist3;
-	ILuint	i, NumPix;
+	ILuint	i; //, NumPix;
 
 	iluCurImage = ilGetCurImage();
 	if (iluCurImage == NULL) {
@@ -701,7 +701,7 @@ ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, 
 	if (Tolerance > 1.0f || Tolerance < -1.0f)
 		Tolerance = 1.0f;  // Clamp it.
 	TolVal = (ILuint)(fabs(Tolerance) * UCHAR_MAX);  // To be changed.
-	NumPix = iluCurImage->Width * iluCurImage->Height * iluCurImage->Depth;
+	// NumPix = iluCurImage->Width * iluCurImage->Height * iluCurImage->Depth;
 
 	if (Tolerance <= FLT_EPSILON && Tolerance >= 0) {
  			
@@ -769,8 +769,8 @@ ILboolean ILAPIENTRY iluEqualize() {
 	ILimage	*LumImage;
 	ILuint	NewColour[4];
 	ILubyte		*BytePtr;
-	ILushort	*ShortPtr;
-	ILuint		*IntPtr;
+	// ILushort	*ShortPtr;
+	// ILuint		*IntPtr;
 
 	NewColour[0] = NewColour[1] = NewColour[2] = NewColour[3] = 0;
 
@@ -816,8 +816,8 @@ ILboolean ILAPIENTRY iluEqualize() {
 
 
 	BytePtr = (iluCurImage->Format == IL_COLOUR_INDEX) ? iluCurImage->Pal.Palette : iluCurImage->Data;
-	ShortPtr = (ILushort*)iluCurImage->Data;
-	IntPtr = (ILuint*)iluCurImage->Data;
+	// ShortPtr = (ILushort*)iluCurImage->Data;
+	// IntPtr = (ILuint*)iluCurImage->Data;
 
 	// Transform image using new SumHistm as a LUT
 	for (i = 0; i < NumPixels; i++) {

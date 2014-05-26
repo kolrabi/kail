@@ -18,7 +18,7 @@
 
 ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth)
 {
-	ILuint	x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+	// ILuint	x1 = 0, x2 = 0, y1 = 0, y2 = 0;
 
 	if (Parent->Width == 1 && Parent->Height == 1 && Parent->Depth == 1) {  // Already at the last mipmap
 		return IL_TRUE;

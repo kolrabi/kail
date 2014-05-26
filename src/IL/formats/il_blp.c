@@ -96,18 +96,18 @@ iGetBlp1Head(SIO *io, BLP1HEAD *Header) {
 
 	ILuint i;
 
-	UInt(Header->Compression);
-	UInt(Header->Flags);
-	UInt(Header->Width);
-	UInt(Header->Height);
-	UInt(Header->PictureType);
-	UInt(Header->PictureSubType);
+	UInt(&Header->Compression);
+	UInt(&Header->Flags);
+	UInt(&Header->Width);
+	UInt(&Header->Height);
+	UInt(&Header->PictureType);
+	UInt(&Header->PictureSubType);
 
 	for (i = 0; i < 16; i++)
-		UInt(Header->MipOffsets[i]);
+		UInt(&Header->MipOffsets[i]);
 
 	for (i = 0; i < 16; i++)
-		UInt(Header->MipLengths[i]);
+		UInt(&Header->MipLengths[i]);
 
 	return IL_TRUE;
 }
@@ -139,7 +139,7 @@ ReadJpegHeader(SIO *io, ILuint *size) {
 		ilSetError(IL_FILE_READ_ERROR);
 		return IL_FALSE;
 	}
-	UInt(*JpegHeaderSize);
+	UInt(size);
 
 	ILubyte *JpegHeader = (ILubyte*)ialloc(*size);
 	if (JpegHeader == NULL)
@@ -353,15 +353,15 @@ iGetBlp2Head(SIO *io, BLP2HEAD *Header) {
 
 	ILuint i;
 
-	UInt(Header->Type);
-	UInt(Header->Width);
-	UInt(Header->Height);
+	UInt(&Header->Type);
+	UInt(&Header->Width);
+	UInt(&Header->Height);
 
 	for (i = 0; i < 16; i++)
-		UInt(Header->MipOffsets[i]);
+		UInt(&Header->MipOffsets[i]);
 
 	for (i = 0; i < 16; i++)
-		UInt(Header->MipLengths[i]);
+		UInt(&Header->MipLengths[i]);
 
 	return IL_TRUE;
 }

@@ -670,7 +670,7 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
 	ILubyte 	*Converted;
 	ILuint		DestName = ilGetCurName();
 	ILuint		c;
-	ILuint		StartX, StartY, StartZ;
+	// ILuint		StartX, StartY, StartZ;
 	ILboolean	DestFlipped = IL_FALSE;
 	ILboolean	DoAlphaBlend = IL_FALSE;
 	ILubyte 	*SrcTemp;
@@ -725,13 +725,14 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
 	if (Converted == NULL)
 		return IL_FALSE;
 	
-	ConvBps 	  = Dest->Bpp * Src->Width;
+	ConvBps 	    = Dest->Bpp * Src->Width;
 	ConvSizePlane = ConvBps   * Src->Height;
 	
 	//@NEXT in next version this would have to be removed since Dest* will be unsigned
-	StartX = DestX >= 0 ? 0 : -DestX;
-	StartY = DestY >= 0 ? 0 : -DestY;
-	StartZ = DestZ >= 0 ? 0 : -DestZ;
+	// BP: no, TODO: if dest is negative, adjust src and dest accordingly to blit in the overlapped region
+	//StartX = DestX >= 0 ? 0 : -DestX;
+	//StartY = DestY >= 0 ? 0 : -DestY;
+	//StartZ = DestZ >= 0 ? 0 : -DestZ;
 	
 	// Limit the copy of data inside of the destination image
 	if (Width  + DestX > Dest->Width)  Width  = Dest->Width  - DestX;

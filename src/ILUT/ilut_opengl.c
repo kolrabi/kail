@@ -563,7 +563,7 @@ ILimage* MakeGLCompliant2D(ILimage *Src)
 			iluImageParameter(ILU_FILTER, ILU_BILINEAR);
 			Temp = HasNonPowerOfTwoHardware == IL_TRUE ?
 				iluScale_(Dest, IL_MIN((ILuint)MaxTexW, Dest->Width), IL_MIN((ILuint)MaxTexH, Dest->Height), 1)
-			 :	iluScale_(Dest, IL_MIN((ILuint)MaxTexW, (ILint)ilNextPower2(Dest->Width)),
+			 :	iluScale_(Dest, IL_MIN((ILuint)MaxTexW, (ILuint)ilNextPower2(Dest->Width)),
 			 		IL_MIN(MaxTexH, (ILint)ilNextPower2(Dest->Height)), 1);
 			iluImageParameter(ILU_FILTER, Filter);
 		}
@@ -648,7 +648,7 @@ ILimage* MakeGLCompliant3D(ILimage *Src)
 			iluImageParameter(ILU_FILTER, ILU_BILINEAR);
 			Temp = HasNonPowerOfTwoHardware == IL_TRUE ?
 				iluScale_(Dest, IL_MIN((ILuint)MaxTexW, Dest->Width), IL_MIN((ILuint)MaxTexH, Dest->Height), IL_MIN((ILuint)MaxTexD, Dest->Depth))
-			 :	iluScale_(Dest, IL_MIN((ILuint)MaxTexW, (ILint)ilNextPower2(Dest->Width)),
+			 :	iluScale_(Dest, IL_MIN((ILuint)MaxTexW, (ILuint)ilNextPower2(Dest->Width)),
 			 		IL_MIN(MaxTexH, (ILint)ilNextPower2(Dest->Height)),
 					IL_MIN(MaxTexD, (ILint)ilNextPower2(Dest->Depth)));
 			iluImageParameter(ILU_FILTER, Filter);

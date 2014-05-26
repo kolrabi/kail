@@ -45,11 +45,11 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	UShort(head.width);
-	UShort(head.height);
-	UInt  (head.graphic_header);
+	UShort(&head.width);
+	UShort(&head.height);
+	UInt  (&head.graphic_header);
 
-	if (!ilTexImage(head.width, head.height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(Image, head.width, head.height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -71,7 +71,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 		if (!SIOread(io, &column_offset, 1, sizeof(column_offset)) != sizeof(column_offset))
 			return IL_FALSE;
 
-		UInt(column_offset);
+		UInt(&column_offset);
 		
 		ILuint pointer_position = SIOtell(io);
 		SIOseek(io, first_pos + column_offset, IL_SEEK_SET);

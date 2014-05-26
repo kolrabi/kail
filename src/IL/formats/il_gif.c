@@ -91,7 +91,7 @@ GifHandleGraphicControlExtension(
 	const GifGraphicControlExtension *	Gce
 ) {
 	ILushort Delay = Gce->Delay;
-	UShort(Delay);
+	UShort(&Delay);
 
 	Ctx->Delay 								= Delay * 10;
 	Ctx->UseTransparentColor 	= Gce->Flags & GifFlag_GCE_TransparentColor;
@@ -526,10 +526,10 @@ GifLoadFrame(
 		return IL_FALSE;
 	}
 
-	UShort(Img.Left);
-	UShort(Img.Top);
-	UShort(Img.Width);
-	UShort(Img.Height);
+	UShort(&Img.Left);
+	UShort(&Img.Top);
+	UShort(&Img.Width);
+	UShort(&Img.Height);
 
 	Ctx->UseLocalPal = Img.Flags & GifFlag_IMG_HasLocalColorTable;
 	if (Ctx->UseLocalPal 
@@ -730,11 +730,11 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 	}
 
 	// swap bytes if necessary
-	UShort(Ctx.Screen.Width);
-	UShort(Ctx.Screen.Height);
+	UShort(&Ctx.Screen.Width);
+	UShort(&Ctx.Screen.Height);
 
 	// create texture
-	if (!ilTexImage(Ctx.Screen.Width, Ctx.Screen.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(TargetImage, Ctx.Screen.Width, Ctx.Screen.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	// check for a global color table

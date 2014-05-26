@@ -8,7 +8,7 @@ INCLUDE_DIRECTORIES     ( ${CMAKE_SOURCE_DIR}/include )
 IF                      ( WIN32 )
   SET                   ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
 ELSE                    ()
-  TARGET_LINK_LIBRARIES ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
+  SET                   ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
 ENDIF                   ()
 
 

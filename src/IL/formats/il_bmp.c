@@ -36,26 +36,26 @@
 void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILuint * CONST_RESTRICT ShiftRight);
 
 // Internal function used to get the .bmp header from the current file.
-ILboolean iGetBmpHead(SIO* io, BMPHEAD * const header)
+ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
 {
-	ILint64 read = io->read(io->handle, header, 1, sizeof(BMPHEAD));
+	ILint64 read = io->read(io->handle, Header, 1, sizeof(BMPHEAD));
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
 	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
-	Int  (Header->bfSize);
-	UInt (Header->bfReserved);
-	Int  (Header->bfDataOff);
-	Int  (Header->biSize);
-	Int  (Header->biWidth);
-	Int  (Header->biHeight);
-	Short(Header->biPlanes);
-	Short(Header->biBitCount);
-	Int  (Header->biCompression);
-	Int  (Header->biSizeImage);
-	Int  (Header->biXPelsPerMeter);
-	Int  (Header->biYPelsPerMeter);
-	Int  (Header->biClrUsed);
-	Int  (Header->biClrImportant); 
+	Int  (&Header->bfSize);
+	UInt (&Header->bfReserved);
+	Int  (&Header->bfDataOff);
+	Int  (&Header->biSize);
+	Int  (&Header->biWidth);
+	Int  (&Header->biHeight);
+	Short(&Header->biPlanes);
+	Short(&Header->biBitCount);
+	Int  (&Header->biCompression);
+	Int  (&Header->biSizeImage);
+	Int  (&Header->biXPelsPerMeter);
+	Int  (&Header->biYPelsPerMeter);
+	Int  (&Header->biClrUsed);
+	Int  (&Header->biClrImportant); 
 
 	if (read == sizeof(BMPHEAD))
 		return IL_TRUE;

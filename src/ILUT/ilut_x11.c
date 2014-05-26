@@ -79,7 +79,7 @@ Bool iXGrabCurrentImage(void)
 }
 
 
-void iXConvertImage( Display * dpy, XImage * img )
+void iXConvertImage( XImage * img )
 {
 	int x,y,z;
 	int sX,dX;
@@ -200,7 +200,7 @@ XImage * ILAPIENTRY ilutXCreateImage( Display * dpy )
 		return NULL;
 	}
 
-	iXConvertImage( dpy,img );
+	iXConvertImage( img );
 
 	return img;
 }
@@ -308,7 +308,7 @@ XImage * ILAPIENTRY ilutXShmCreateImage( Display * dpy, XShmSegmentInfo * info )
 
 	// Copy image pixels to shared memory
 
-	iXConvertImage( dpy,img );
+	iXConvertImage( img );
 
 	return img;
 }

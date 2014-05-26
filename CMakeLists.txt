@@ -5,10 +5,10 @@ ENDIF                   ( )
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
 PROJECT                 ( KaIL C )
 
-INCLUDE                 ( Ctest )
+INCLUDE                 ( CTest )
 
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
-  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99" )
+  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99 -Werror" )
   SET                   ( GCC_X86_ASM   TRUE )
   SET                   ( IL_INLINE_ASM TRUE )
   SET                   ( RESTRICT_KEYWORD TRUE )
