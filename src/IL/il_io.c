@@ -370,8 +370,6 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 {
 	ILboolean bRet = IL_FALSE;
 
-	iSetFuncs(&image->io);
-
 	switch(type) {
 
 	#ifndef IL_NO_EXR

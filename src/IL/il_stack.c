@@ -318,12 +318,40 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number)
   return IL_TRUE;
 }
 
+ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
+{
+  if (Image == NULL) {
+    return NULL;
+  }
+
+  if (Number == 0) {
+    return Image;
+  }
+
+  ILimage * iTempImage = Image;
+  Image = Image->Mipmaps;
+  if (Image == NULL) {
+    return NULL;
+  }
+
+  ILuint Current;
+  for (Current = 1; Current < Number; Current++) {
+    Image = Image->Mipmaps;
+    if (Image == NULL) {
+      return NULL;
+    }
+  }
+
+  Image->io = iTempImage->io;
+  return Image;
+}
+
 
 //! Used for setting the current image if it is an animation.
 ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
 {
   ILuint Current;
-    ILimage *iTempImage;
+  ILimage *iTempImage;
     
   if (iCurImage == NULL) {
     ilSetError(IL_ILLEGAL_OPERATION);
@@ -355,6 +383,32 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
   ParentImage = IL_FALSE;
 
   return IL_TRUE;
+}
+
+//! Used for setting the current image if it is an animation.
+ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
+{
+  if (Image == NULL) {
+    return NULL;
+  }
+
+  if (Number == 0) {
+    return Image;
+  }
+
+  if (Image->Next == NULL) {
+    return NULL;
+  }
+
+  ILuint Current;
+  for (Current = 0; Current < Number; Current++) {
+    if (Image->Next == NULL) {
+      return NULL;
+    }
+    Image = Image->Next;
+  }
+
+  return Image;
 }
 
 

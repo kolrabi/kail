@@ -1,4 +1,6 @@
 #include <IL/devil_internal_exports.h>
+#include "IL/il_endian.h"
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -74,6 +76,24 @@ static int test_mixed_alloc() {
   return 0;
 }
 
+int test_endian() {
+  ILushort a = 0x1234;
+  ILuint   b = 0x12345678;
+  ILshort  c = 0x1234;
+  ILint    d = 0x12345678;
+
+  iSwapUShort(&a);
+  iSwapUInt(&b);
+  iSwapShort(&c);
+  iSwapInt(&d);
+
+  CHECK(a == 0x3412);
+  CHECK(b == 0x78563412);
+  CHECK(c == 0x3412);
+  CHECK(d == 0x78563412);
+  return 0;
+}
+
 int main(int argc, char **argv) {
   int result = 1;
 
@@ -87,6 +107,7 @@ int main(int argc, char **argv) {
   TEST(default_alloc)
   TEST(custom_alloc)
   TEST(mixed_alloc)
+  TEST(endian)
     fprintf(stderr, "unknown test %s\n", *argv);
 
   if (result) {

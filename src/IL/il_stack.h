@@ -31,4 +31,7 @@ ILboolean	iEnlargeStack(void);
 void		iFreeMem(void);
 ILimage *iGetBaseImage();
 
+ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number);
+ILimage *ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number);
+
 #endif//IMAGESTACK_H

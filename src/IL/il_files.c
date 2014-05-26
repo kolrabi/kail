@@ -159,7 +159,6 @@ void ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGe
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
 {
   if (iCurImage != NULL) {
-    memset(&iIoState, 0, sizeof(SIO));
     iIoState.openReadOnly   = aOpen;
     iIoState.close          = aClose;
     iIoState.eof            = aEof;
@@ -183,7 +182,6 @@ ILboolean ILAPIENTRY ilSetReadF(ILHANDLE File, fCloseProc aClose, fEofProc aEof,
     return IL_FALSE;
   }
 
-  memset(&iIoState, 0, sizeof(SIO));
   iIoState.close          = aClose;
   iIoState.eof            = aEof;
   iIoState.getchar        = aGetc;
@@ -204,15 +202,12 @@ ILboolean ILAPIENTRY ilSetReadF(ILHANDLE File, fCloseProc aClose, fEofProc aEof,
 void ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
   fTellProc Tell, fWriteProc Write)
 {
-  if (iCurImage != NULL) {
-    memset(&iIoState, 0, sizeof(SIO));
-    iIoState.openWrite      = Open;
-    iIoState.close          = Close;
-    iIoState.putchar        = Putc;
-    iIoState.write          = Write;
-    iIoState.seek           = Seek;
-    iIoState.tell           = Tell;
-  }
+  iIoState.openWrite      = Open;
+  iIoState.close          = Close;
+  iIoState.putchar        = Putc;
+  iIoState.write          = Write;
+  iIoState.seek           = Seek;
+  iIoState.tell           = Tell;
 }
 
 //! Allows you to override the default file-writing functions.
@@ -226,7 +221,6 @@ ILboolean ILAPIENTRY ilSetWriteF(ILHANDLE File, fCloseProc Close, fPutcProc Putc
     return IL_FALSE;
   }
 
-  memset(&iIoState, 0, sizeof(SIO));
   iIoState.close    = Close;
   iIoState.putchar  = Putc;
   iIoState.write    = Write;
@@ -257,7 +251,6 @@ void iSetInputFile(ILimage *image, ILHANDLE File)
 void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 {
   if (image != NULL) {
-    memset(&image->io, 0, sizeof(SIO));
     image->io.eof         = iEofLump;
     image->io.getchar     = iGetcLump;
     image->io.read        = iReadLump;
@@ -286,7 +279,6 @@ void iSetOutputFile(ILimage *image, ILHANDLE File)
 void iSetOutputFake(ILimage *image)
 {
   if (image != NULL) {
-    memset(&image->io, 0, sizeof(SIO));
     image->io.putchar = iSizePutc;
     image->io.seek = iSizeSeek;
     image->io.tell = iSizeTell;
@@ -462,6 +454,7 @@ void ILAPIENTRY iSetFuncs(SIO *io) {
   io->getchar       = iIoState.getchar;
   io->putchar       = iIoState.putchar;
   io->read          = iIoState.read;
+  io->write         = iIoState.write;
   io->seek          = iIoState.seek;
   io->tell          = iIoState.tell;
 

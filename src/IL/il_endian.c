@@ -14,7 +14,7 @@
 
 #include "il_endian.h"
 
-void EndianSwapData(void *_Image)
+void iEndianSwapData(ILimage *Image)
 {
 	ILuint		i;
 	ILubyte		*temp, *s, *d;
@@ -22,8 +22,6 @@ void EndianSwapData(void *_Image)
 	ILuint		*IntS, *IntD;
 	ILfloat		*FltS, *FltD;
 	ILdouble	*DblS, *DblD;
-
-	ILimage *Image = (ILimage*)_Image;
 
 	switch (Image->Type) {
 		case IL_BYTE:

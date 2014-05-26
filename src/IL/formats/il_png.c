@@ -387,7 +387,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 	}*/
 
 //	png_init_io(png_ptr, PngFile);
-	png_set_write_fn(png_ptr, NULL, png_write, flush_data);
+	png_set_write_fn(png_ptr, image, png_write, flush_data);
 
 	switch (image->Type)
 	{

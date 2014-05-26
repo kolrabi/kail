@@ -343,6 +343,6 @@ INLINE ILubyte SaveBigDouble(SIO* io, ILdouble d) {
 }
 #endif//NOINLINE
 
-void		EndianSwapData(void *_Image);
+void		iEndianSwapData(ILimage *_Image);
 
 #endif//ENDIAN_H
