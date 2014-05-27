@@ -44,6 +44,11 @@ SET                     ( SOURCES
                           formats/il_mng.c
                           formats/il_mp3.c
                           formats/il_pal.c
+                          formats/il_pal_jasc.c
+                          formats/il_pal_halo.c
+                          formats/il_pal_act.c
+                          formats/il_pal_col.c
+                          formats/il_pal_plt.c
                           formats/il_pcd.c
                           formats/il_pcx.c
                           formats/il_pic.c

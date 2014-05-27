@@ -303,13 +303,13 @@ static ILboolean iLoadPicInternal(ILimage* image)
 	} while (Chained);
 
 	if (Alpha) {  // Has an alpha channel
-		if (!ilTexImage(Header.Width, Header.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(image, Header.Width, Header.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
 			Read = IL_FALSE;
 			goto finish;  // Have to destroy Channels first.
 		}
 	}
 	else {  // No alpha channel
-		if (!ilTexImage(Header.Width, Header.Height, 1, 3, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
 			Read = IL_FALSE;
 			goto finish;  // Have to destroy Channels first.
 		}

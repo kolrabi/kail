@@ -106,12 +106,17 @@ ILboolean iFileExists(ILconst_string FileName)
 
 
 // Last time I tried, MSVC++'s fgets() was really really screwy
-ILbyte * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen)
+char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
 {
 	ILuint	counter = 0;
 	ILint	temp = '\0';
 
-	while ((temp = SIOgetc(io)) && temp != '\n' && temp != IL_EOF && counter < maxlen) {
+	if (buffer == NULL || io == NULL || MaxLen < 2) {
+		ilSetError(IL_INVALID_PARAM);
+		return NULL;
+	}
+
+	while ((temp = SIOgetc(io)) && temp != '\n' && temp != IL_EOF && counter < MaxLen) {
 		buffer[counter] = temp;
 		counter++;
 	}
@@ -120,7 +125,48 @@ ILbyte * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen)
 	if (temp == IL_EOF && counter == 0)  // Only return NULL if no data was "got".
 		return NULL;
 
-	return (ILbyte*)buffer;
+	return buffer;
+}
+
+
+// File Get Word
+//	MaxLen must be greater than 1, because the trailing NULL is always stored.
+char * ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen) {
+	ILint Temp;
+	ILuint i;
+
+	if (buffer == NULL || io == NULL || MaxLen < 2) {
+		ilSetError(IL_INVALID_PARAM);
+		return NULL;
+	}
+
+	for (i = 0; i < MaxLen - 1; i++) {
+		Temp = SIOgetc(io);
+		if (Temp == '\n' || Temp == '\0' || Temp == IL_EOF) {
+			break;			
+		}
+
+		if (Temp == ' ') {
+			while (Temp == ' ') {  // Just to get rid of any extra spaces
+				Temp = SIOgetc(io);
+			}
+			SIOseek(io, -1, IL_SEEK_CUR);  // Go back one
+			break;
+		}
+
+		if (!isprint(Temp)) {  // Skips any non-printing characters
+			while (!isprint(Temp)) {
+				Temp = SIOgetc(io);
+			}
+			SIOseek(io, -1, IL_SEEK_CUR);
+			break;
+		}
+
+		buffer[i] = Temp;
+	}
+
+	buffer[i] = '\0';
+	return buffer;
 }
 
 

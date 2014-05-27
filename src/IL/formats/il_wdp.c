@@ -394,7 +394,7 @@ ILboolean iLoadWdpInternal(/*ILconst_string FileName*/)
     //pDecoder->GetFrameCount(pDecoder, &cFrame);
 	//pDecoder->SelectFrame(pDecoder, 1);
 
-	if (!ilTexImage(pDecoder->uWidth, pDecoder->uHeight, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(iCurImage, pDecoder->uWidth, pDecoder->uHeight, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
 		goto Cleanup;
 	//ilTexImage(pDecoder->uWidth, pDecoder->uHeight, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, Data);
 

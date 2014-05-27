@@ -248,12 +248,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 					ILchar* palFN = (ILchar*) ialloc(sizeof(ILchar)*fnLen+2);
 					iStrCpy(palFN, FileName);
 					iStrCpy(&palFN[fnLen-3], IL_TEXT("pal"));
-					iCurImage->io.handle = iCurImage->io.openReadOnly(palFN);
-					if (iCurImage->io.handle != NULL) {
-						ilLoadHaloPal(palFN);
-						iCurImage->io.close(iCurImage->io.handle);
-						iCurImage->io.handle = NULL;
-					}
+					ilLoad(IL_HALO_PAL, palFN);
 					ifree(palFN);
 				}
 			}
@@ -290,16 +285,9 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
 
 ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type) {
 	// FIXME: call ilFixImage here instead of in loaders
-	switch (type)
-	{
-		case IL_TYPE_UNKNOWN:
-			return IL_FALSE;
-
-		#ifndef IL_NO_EXR
-		case IL_EXR:
-			return iLoadExrInternal();
-		#endif
-	}
+	 
+	if (type == IL_TYPE_UNKNOWN)
+		return IL_FALSE;
 
 	const ILformat *format = iGetFormat(type);
 	if (format) {
@@ -373,33 +361,17 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
 
 	if (type != IL_TYPE_UNKNOWN) {
 		return ilLoad(type, FileName);
-	} else {
+	} else if (!iRegisterLoad(FileName)) {
 		ilSetError(IL_INVALID_EXTENSION);
 		return IL_FALSE;
 	}
+	return IL_TRUE;
 }
 
 
 ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 {
 	ILboolean bRet = IL_FALSE;
-
-	switch(type) {
-
-	#ifndef IL_NO_EXR
-	case IL_EXR:
-		bRet = iSaveExrInternal(FileName);
-		break;
-	#endif
-
-	// Check if we just want to save the palette.
-	// @todo: must be ported to use iCurImage->io
-/*	case IL_JASC_PAL:
-		bRet = ilSavePal(FileName);
-		break;*/
-	default:
-		break;
-	}
 
 	const ILformat *format = iGetFormat(type);
 	if (format) {

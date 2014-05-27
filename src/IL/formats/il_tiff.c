@@ -185,7 +185,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 			if (!Image) {
 				int type = IL_UNSIGNED_BYTE;
 				if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-				if (!ilTexImage(w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
+				if (!ilTexImage_(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
 					TIFFClose(tif);
 					return IL_FALSE;
 				}

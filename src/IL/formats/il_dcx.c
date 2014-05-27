@@ -131,7 +131,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 			return IL_FALSE;
 
 		if (i == 0) {
-			ilTexImage(Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
+			ilTexImage_(Image, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
 			Prev = TargetImage;
 			Prev->Origin = IL_ORIGIN_UPPER_LEFT;
 			ilCloseImage(Image);
@@ -162,9 +162,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 	Image = ilNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
 	if (Image == NULL)
 		return NULL;
-	/*if (!ilTexImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 0, IL_UNSIGNED_BYTE, NULL)) {
-		return IL_FALSE;
-	}*/
+
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	ScanLine = (ILubyte*)ialloc(Header->Bps);
@@ -293,9 +291,6 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 	if (Image == NULL)
 		return NULL;
 
-	/*if (!ilTexImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, 1, 0, IL_UNSIGNED_BYTE, NULL)) {
-		return IL_FALSE;
-	}*/
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	switch (Header->NumPlanes)

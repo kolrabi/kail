@@ -151,7 +151,6 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	if (Error != IL_FILE_READ_ERROR)
 		ilSetError(Error);
 
-
 	// We're not supporting anything other than 8 bits/component yet.
 	if (jas_image_cmptprec(Jp2Image, 0) != 8)
 	{
@@ -164,50 +163,22 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	{
 		//@TODO: Can we do alpha data?  jas_image_cmpttype always returns 0 for this case.
 		case 1:  // Assuming this is luminance data.
-			if (image == NULL) {
-				ilTexImage(jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
-			else {
-				ifree(image->Data);  // @TODO: Not really the most efficient way to do this...
-				ilInitImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
+			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
+			TempImage = image;
 			break;
 
 		case 2:  // Assuming this is luminance-alpha data.
-			if (image == NULL) {
-				ilTexImage(jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
-			else {
-				ifree(image->Data);  // @TODO: Not really the most efficient way to do this...
-				ilInitImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
+			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
+			TempImage = image;
 			break;
 
 		case 3:
-			if (image == NULL) {
-				ilTexImage(jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
-			else {
-				ifree(image->Data);  // @TODO: Not really the most efficient way to do this...
-				ilInitImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
+			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+			TempImage = image;
 			break;
 		case 4:
-			if (image == NULL) {
-				ilTexImage(jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
-			else {
-				ifree(image->Data);  // @TODO: Not really the most efficient way to do this...
-				ilInitImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
-				TempImage = image;
-			}
+			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			TempImage = image;
 			break;
 		default:
 			jas_image_destroy(Jp2Image);
