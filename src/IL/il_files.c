@@ -31,9 +31,6 @@ ILuint    ILAPIENTRY iSizeTell    (ILHANDLE h);
 ILint     ILAPIENTRY iSizePutc    (ILubyte Char, ILHANDLE h);
 ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
-
-static SIO iIoState;
-
 // Next 7 functions are the default read functions
 
 ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
@@ -138,111 +135,88 @@ ILint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, I
   return (ILint)fwrite(Buffer, Size, Number, (FILE*)Handle);
 }
 
-
-void ILAPIENTRY ilResetRead() {
-  ilSetRead(iDefaultOpenR, iDefaultCloseR, iDefaultEof, iDefaultGetc, 
-        iDefaultRead, iDefaultSeek, iDefaultTell);
-  return;
+void ILAPIENTRY iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+  fReadProc aRead, fSeekProc aSeek, fTellProc aTell) {
+  Image->io.openReadOnly   = aOpen;
+  Image->io.close          = aClose;
+  Image->io.eof            = aEof;
+  Image->io.getchar        = aGetc;
+  Image->io.read           = aRead;
+  Image->io.seek           = aSeek;
+  Image->io.tell           = aTell;
 }
 
+//! Allows you to override the default file-reading functions.
+ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+  fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
+{
+  if (iCurImage == NULL) {
+    ilSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (!aEof || !aGetc || !aRead || !aSeek || !aTell) {
+    ilSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
+
+  iSetRead(iCurImage, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
+  return IL_TRUE;
+}
+
+void ILAPIENTRY iResetRead(ILimage *image) {
+  iSetRead(image, iDefaultOpenR, iDefaultCloseR, iDefaultEof, iDefaultGetc, 
+        iDefaultRead, iDefaultSeek, iDefaultTell);
+}
+
+void ILAPIENTRY ilResetRead() {
+  iResetRead(iCurImage);
+}
+
+void ILAPIENTRY iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+  fTellProc Tell, fWriteProc Write) {
+  Image->io.openWrite      = Open;
+  Image->io.close          = Close;
+  Image->io.putchar        = Putc;
+  Image->io.write          = Write;
+  Image->io.seek           = Seek;
+  Image->io.tell           = Tell;
+}
+
+//! Allows you to override the default file-writing functions.
+ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+  fTellProc Tell, fWriteProc Write)
+{
+  if (iCurImage == NULL) {
+    ilSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (!Putc || !Write || !Seek || !Tell) {
+    ilSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
+
+  iSetWrite(iCurImage, Open, Close, Putc, Seek, Tell, Write);
+  return IL_TRUE;
+}
+
+void ILAPIENTRY iResetWrite(ILimage *image) {
+  iSetWrite(image, iDefaultOpenW, iDefaultCloseW, iDefaultPutc,
+        iDefaultSeek, iDefaultTell, iDefaultWrite);
+}
 
 void ILAPIENTRY ilResetWrite()
 {
-  ilSetWrite(iDefaultOpenW, iDefaultCloseW, iDefaultPutc,
-        iDefaultSeek, iDefaultTell, iDefaultWrite);
-  return;
+  iResetWrite(iCurImage);
 }
-
-
-//! Allows you to override the default file-reading functions.
-void ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
-  fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
-{
-  if (iCurImage != NULL) {
-    iIoState.openReadOnly   = aOpen;
-    iIoState.close          = aClose;
-    iIoState.eof            = aEof;
-    iIoState.getchar        = aGetc;
-    iIoState.read           = aRead;
-    iIoState.seek           = aSeek;
-    iIoState.tell           = aTell;
-  }
-
-  return;
-}
-
-//! Allows you to override the default file-reading functions.
-ILboolean ILAPIENTRY ilSetReadF(ILHANDLE File, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
-  fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
-{
-  if ( File  == NULL || aEof  == NULL 
-    || aGetc == NULL || aSeek == NULL || aRead == NULL
-    || aTell == NULL ) {
-    ilSetError(IL_INVALID_VALUE);
-    return IL_FALSE;
-  }
-
-  iIoState.close          = aClose;
-  iIoState.eof            = aEof;
-  iIoState.getchar        = aGetc;
-  iIoState.read           = aRead;
-  iIoState.seek           = aSeek;
-  iIoState.tell           = aTell;
-  iIoState.handle         = File;
-  iIoState.ReadFileStart  = aTell(File);
-
-  if (iCurImage != NULL) {
-    iSetFuncs(&iCurImage->io);
-  }
-
-  return IL_TRUE;
-}
-
-//! Allows you to override the default file-writing functions.
-void ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
-  fTellProc Tell, fWriteProc Write)
-{
-  iIoState.openWrite      = Open;
-  iIoState.close          = Close;
-  iIoState.putchar        = Putc;
-  iIoState.write          = Write;
-  iIoState.seek           = Seek;
-  iIoState.tell           = Tell;
-}
-
-//! Allows you to override the default file-writing functions.
-ILboolean ILAPIENTRY ilSetWriteF(ILHANDLE File, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
-  fTellProc Tell, fWriteProc Write)
-{
-  if ( File   == NULL || Putc == NULL
-    || Seek  == NULL || Tell == NULL
-    || Write == NULL ) {
-    ilSetError(IL_INVALID_VALUE);
-    return IL_FALSE;
-  }
-
-  iIoState.close    = Close;
-  iIoState.putchar  = Putc;
-  iIoState.write    = Write;
-  iIoState.seek     = Seek;
-  iIoState.tell     = Tell;
-  iIoState.handle   = File;
-
-  if (iCurImage != NULL) {
-    iSetFuncs(&iCurImage->io);
-  }
-
-  return IL_TRUE;
-}
-
 
 // Tells DevIL that we're reading from a file, not a lump
 void iSetInputFile(ILimage *image, ILHANDLE File)
 {
   if (image != NULL) {
-    iSetFuncs(&image->io);
-    image->io.handle = File;
-    image->io.ReadFileStart = image->io.tell(image->io.handle);
+    image->io.handle          = File;
+    image->io.ReadFileStart   = image->io.tell(image->io.handle);
   }
 }
 
@@ -259,17 +233,18 @@ void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
     image->io.lump        = Lump;
     image->io.lumpPos     = 0;
     image->io.lumpSize    = Size;
+    image->io.WriteFileStart  = 
+    image->io.ReadFileStart   = 0;
     image->io.handle      = (ILHANDLE)&image->io;
   }
 }
 
 
 // Tells DevIL that we're writing to a file, not a lump
-void iSetOutputFile(ILimage *image, ILHANDLE File)
-{
+void iSetOutputFile(ILimage *image, ILHANDLE File) {
   if (image != NULL) {
-    iSetFuncs(&image->io);
     image->io.handle = File;
+    image->io.WriteFileStart  = image->io.tell(image->io.handle);
   }
 }
 
@@ -286,6 +261,7 @@ void iSetOutputFake(ILimage *image)
     image->io.handle = (ILHANDLE)&image->io;
     image->io.lumpSize = 0;
     image->io.lumpPos = 0;
+    image->io.WriteFileStart  = 0;
   }
 }
 
@@ -305,6 +281,7 @@ void iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
   image->io.lump = Lump;
   image->io.lumpPos = 0;
   image->io.lumpSize = Size;
+  image->io.WriteFileStart  = 0;
   image->io.handle = (ILHANDLE)&image->io;
 }
 
@@ -443,21 +420,4 @@ ILuint ILAPIENTRY iTellLump(ILHANDLE h)
 {
   SIO *io = (SIO*)h;
   return io->lumpPos;
-}
-
-
-void ILAPIENTRY iSetFuncs(SIO *io) {
-  io->openReadOnly  = iIoState.openReadOnly;
-  io->openWrite     = iIoState.openWrite;
-  io->close         = iIoState.close;
-  io->eof           = iIoState.eof;
-  io->getchar       = iIoState.getchar;
-  io->putchar       = iIoState.putchar;
-  io->read          = iIoState.read;
-  io->write         = iIoState.write;
-  io->seek          = iIoState.seek;
-  io->tell          = iIoState.tell;
-
-  io->handle        = iIoState.handle;
-  io->ReadFileStart = iIoState.ReadFileStart;
 }

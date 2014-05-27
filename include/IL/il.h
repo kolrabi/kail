@@ -630,9 +630,9 @@ ILAPI ILboolean ILAPIENTRY ilSetDuration(ILuint Duration);
 ILAPI void      ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param);
 ILAPI void      ILAPIENTRY ilSetMemory(mAlloc, mFree);
 ILAPI void      ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
-ILAPI void      ILAPIENTRY ilSetRead(fOpenProc, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
+ILAPI ILboolean ILAPIENTRY ilSetRead(fOpenProc, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
 ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, const char *String);
-ILAPI void      ILAPIENTRY ilSetWrite(fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
+ILAPI ILboolean ILAPIENTRY ilSetWrite(fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
 ILAPI void      ILAPIENTRY ilShutDown(void);
 ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format);
 ILAPI ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void *Data);
@@ -643,11 +643,6 @@ ILAPI ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILu
 ILAPI ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILAPI ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
-
-#ifdef IL_VERSION_1_8_3
-ILAPI ILboolean ILAPIENTRY ilSetReadF(ILHANDLE, fCloseProc, fEofProc, fGetcProc, fReadProc, fSeekProc, fTellProc);
-ILAPI ILboolean ILAPIENTRY ilSetWriteF(ILHANDLE, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
-#endif
 
 // For all those weirdos that spell "colour" without the 'u'.
 #define ilClearColor  ilClearColour

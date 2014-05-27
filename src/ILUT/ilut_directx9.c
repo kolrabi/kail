@@ -17,11 +17,12 @@
 
 #include <d3d9.h>
 
-//#include <d3dx9math.h>
-//#include <d3dx9tex.h>
-#pragma comment(lib, "d3d9.lib")
-#pragma comment(lib, "d3dx9.lib")
-
+#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
+	#if defined(_MSC_VER) || defined(__BORLANDC__)
+		#pragma comment(lib, "d3d9.lib")
+		#pragma comment(lib, "d3dx9.lib")
+	#endif
+#endif
 
 ILimage*	MakeD3D9Compliant(IDirect3DDevice9 *Device, D3DFORMAT *DestFormat);
 ILenum		GetD3D9Compat(ILenum Format);
@@ -346,6 +347,8 @@ ILenum D3DGetDXTCFormat(D3DFORMAT DXTCNum)
 			return IL_DXT3;
 		case D3DFMT_DXT5:
 			return IL_DXT5;
+		default:
+			return D3DFMT_UNKNOWN;
 	}
 
 	return D3DFMT_UNKNOWN;
@@ -556,7 +559,8 @@ ILimage *MakeD3D9Compliant(IDirect3DDevice9 *Device, D3DFORMAT *DestFormat)
 	ILuint nConversionType, ilutFormat;
 	ILboolean bForceIntegerFormat = ilutGetBoolean(ILUT_FORCE_INTEGER_FORMAT);
 
-	Device;
+	(void)Device;
+
 	ilutFormat = ilutCurImage->Format;
 	nConversionType = ilutCurImage->Type;
 
@@ -609,8 +613,9 @@ ILimage *MakeD3D9Compliant(IDirect3DDevice9 *Device, D3DFORMAT *DestFormat)
 	}
 
 	// perform alpha key on images if requested
-	color=ilutGetInteger(ILUT_D3D_ALPHA_KEY_COLOR);
-	if((color>=0) && (nConversionType == IL_UNSIGNED_BYTE))
+	color = ilutGetInteger(ILUT_D3D_ALPHA_KEY_COLOR);
+
+	if(nConversionType == IL_UNSIGNED_BYTE)
 	{
 		ILubyte *data;
 		ILubyte *maxdata;

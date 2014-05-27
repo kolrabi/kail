@@ -79,12 +79,16 @@ ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName)
 	if (FileName != NULL) {
 		// If we can open the file, determine file type from contents
 		// This is more reliable than the file name extension 
-		iSetFuncs(&iCurImage->io);
-		iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
 
-		if (iCurImage->io.handle != NULL) {
-			Type = ilDetermineTypeFuncs();
-			iCurImage->io.close(iCurImage->io.handle);
+		if (iCurImage->io.openReadOnly != NULL) {
+			iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
+
+			if (iCurImage->io.handle != NULL) {
+				Type = ilDetermineTypeFuncs();
+				if (iCurImage->io.close != NULL)
+					iCurImage->io.close(iCurImage->io.handle);
+				iCurImage->io.handle = NULL;
+			}
 		}
 
 		if (Type == IL_TYPE_UNKNOWN)
@@ -172,10 +176,14 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName)
 	if (FileName != NULL) {
 		// If we can open the file, determine file type from contents
 		// This is more reliable than the file name extension 
-		iSetFuncs(&iCurImage->io);
-		iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
-		if (iCurImage->io.handle != NULL) {
-			result = iIsValid(Type, &iCurImage->io);
+		if (iCurImage->io.openReadOnly != NULL) {
+			iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
+			if (iCurImage->io.handle != NULL) {
+				result = iIsValid(Type, &iCurImage->io);
+				if (iCurImage->io.close != NULL)
+					iCurImage->io.close(iCurImage->io.handle);
+				iCurImage->io.handle = NULL;
+			}
 		}
 	}
 
@@ -217,11 +225,17 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 		return IL_FALSE;
 	}
 
-	iSetFuncs(&iCurImage->io);
+	if (iCurImage->io.openReadOnly == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
 	iCurImage->io.handle = iCurImage->io.openReadOnly(FileName);
 	if (iCurImage->io.handle != NULL) {
 		ILboolean bRet = ilLoadFuncs(Type);
-		iCurImage->io.close(iCurImage->io.handle);
+		if (iCurImage->io.close != NULL)
+			iCurImage->io.close(iCurImage->io.handle);
+		iCurImage->io.handle = NULL;
 
 		if (Type == IL_CUT) {
 			// Attempt to load the palette
@@ -238,6 +252,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 					if (iCurImage->io.handle != NULL) {
 						ilLoadHaloPal(palFN);
 						iCurImage->io.close(iCurImage->io.handle);
+						iCurImage->io.handle = NULL;
 					}
 					ifree(palFN);
 				}
@@ -259,26 +274,22 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 	If IL_TYPE_UNKNOWN is specified, ilLoadF will try to determine the type of the file and load it.
 	\param File File stream to load from. The caller is responsible for closing the handle.
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
-ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File)
-{
+ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
 	if (File == NULL) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
-	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = File;
 	iCurImage->io.seek(iCurImage->io.handle, 0, IL_SEEK_SET);
 	if (Type == IL_TYPE_UNKNOWN)
 		Type = ilDetermineTypeFuncs();
 
-	ILboolean bRet = ilLoadFuncs2(iCurImage, Type);
-
-	return bRet;
+	return ilLoadFuncs2(iCurImage, Type);
 }
 
-ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
-{
+ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type) {
+	// FIXME: call ilFixImage here instead of in loaders
 	switch (type)
 	{
 		case IL_TYPE_UNKNOWN:
@@ -308,13 +319,11 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type)
 	If IL_TYPE_UNKNOWN is specified, ilLoadFuncs fails.
 	\param File File stream to load from.
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
-ILboolean ILAPIENTRY ilLoadFuncs(ILenum type)
-{
-	iSetFuncs(&iCurImage->io);
+ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
 	if (type == IL_TYPE_UNKNOWN)
 		type = ilDetermineTypeFuncs();
 
-	return ilLoadFuncs2(iCurImage, type); // FIXME: call ilFixImage here instead of in loaders
+	return ilLoadFuncs2(iCurImage, type);
 }
 
 //! Attempts to load an image from a memory buffer.  The file format is specified by the user.
@@ -327,16 +336,14 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type)
 	\param Lump The buffer where the file data is located
 	\param Size Size of the buffer
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
-ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
-{
-	iTrace("**** %04x %p, %u", Type, Lump, Size);
+ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
 	if (Lump == NULL || Size == 0) {
 		ilSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	iSetInputLump(iCurImage, Lump, Size);
-	return ilLoadFuncs2(iCurImage, Type);
+	return ilLoadFuncs2(iCurImage, Type); 
 }
 
 
@@ -351,9 +358,16 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size)
 	       the filename of the file to load.
 	\return Boolean value of failure or success.  Returns IL_FALSE if all three loading methods
 	       have been tried and failed.*/
-ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName)
-{
-	iSetFuncs(&iCurImage->io);
+ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
+	if (FileName == NULL || iStrLen(FileName) < 1) {
+		ilSetError(IL_INVALID_PARAM);
+		return IL_FALSE;
+	}
+
+	if (iCurImage->io.openReadOnly == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 
 	ILenum type = ilDetermineType(FileName);
 
@@ -426,8 +440,12 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 		return IL_FALSE;
 	}
 
+	if (iCurImage->io.openWrite == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
 	ILboolean	bRet = IL_FALSE;
-	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = iCurImage->io.openWrite(FileName);
 	if (iCurImage->io.handle != NULL) {
 		bRet = ilSaveFuncs2(iCurImage, type);
@@ -454,9 +472,13 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
 		return IL_FALSE;
 	}
 
+	if (iCurImage->io.openWrite == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
 	ILenum type = ilTypeFromExt(FileName);
 	ILboolean	bRet = IL_FALSE;
-	iSetFuncs(&iCurImage->io);
 	iCurImage->io.handle = iCurImage->io.openWrite(FileName);
 	if (iCurImage->io.handle != NULL) {
 		bRet = ilSaveFuncs2(iCurImage, type);

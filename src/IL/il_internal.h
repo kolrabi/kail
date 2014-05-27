@@ -160,6 +160,8 @@ ILenum					iGetHint(ILenum Target);
 ILint					iGetInt(ILenum Mode);
 void					ilRemoveRegistered(void);
 ILAPI void ILAPIENTRY	ilSetCurImage(ILimage *Image);
+ILAPI ILimage * ILAPIENTRY	ilGetCurImage();
+
 //
 // Rle compression
 //

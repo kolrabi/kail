@@ -26,6 +26,7 @@ typedef struct CUT_HEAD
 } CUT_HEAD;
 #include "pack_pop.h"
 
+#if 0
 struct HaloPalette
 {
 	ILubyte  FileId[2];          /* 00h   File Identifier - always "AH" */
@@ -41,7 +42,7 @@ struct HaloPalette
 	ILushort  MaxBlue;            /* 12h   Maximum Blue Color Value   */
 	ILubyte  PaletteId[20];      /* 14h   Identifier String "Dr. Halo" */
 };
-
+#endif
 
 ILboolean isValidCutHeader(const CUT_HEAD* header)
 {

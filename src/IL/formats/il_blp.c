@@ -84,7 +84,6 @@ iIsValidBLP2(SIO *io) {
 
 static ILboolean 
 iIsValidBLP(SIO *io) {
-	iTrace("---- %d %d", iIsValidBLP1(io), iIsValidBLP2(io));
  	return iIsValidBLP1(io) || iIsValidBLP2(io);
 }
 

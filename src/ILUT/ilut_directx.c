@@ -14,9 +14,13 @@
 #ifdef ILUT_USE_DIRECTX8
 
 #include <d3d8.h>
-//#include <d3dx8tex.h>
-//pragma comment(lib, "d3d8.lib")
-//pragma comment(lib, "d3dx8.lib")
+
+#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
+	#if defined(_MSC_VER) || defined(__BORLANDC__)
+		#pragma comment(lib, "d3d8.lib")
+		#pragma comment(lib, "d3dx8.lib")
+	#endif
+#endif
 
 ILimage*	MakeD3D8Compliant(IDirect3DDevice8 *Device, D3DFORMAT *DestFormat);
 ILenum		GetD3D8Compat(ILenum Format);

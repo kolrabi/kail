@@ -179,7 +179,7 @@ iLoadFitsInternal(ILimage* image) {
 	if (!iCheckFits(&Header))
 		return IL_FALSE;
 
-	if (!ilTexImage(Header.Width, Header.Height, Header.Depth, Header.NumChans, Header.Format, Header.Type, NULL))
+	if (!ilTexImage_(image, Header.Width, Header.Height, Header.Depth, Header.NumChans, Header.Format, Header.Type, NULL))
 		return IL_FALSE;
 
 	/*if (iCurImage->io.read(iCurImage->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData)

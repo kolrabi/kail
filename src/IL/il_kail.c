@@ -31,6 +31,9 @@ ILAPI ILboolean ILAPIENTRY ilInitImage(ILimage *Image, ILuint Width, ILuint Heig
 	Image->DxtcFormat  = IL_DXT_NO_COMP;
 	Image->DxtcData    = NULL;
 
+	iResetWrite(Image);
+	iResetRead(Image);
+
 	return ilTexImage_(Image, Width, Height, Depth, Bpp, Format, Type, Data);
 }
 

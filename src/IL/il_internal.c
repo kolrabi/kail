@@ -106,7 +106,7 @@ ILboolean iFileExists(ILconst_string FileName)
 
 
 // Last time I tried, MSVC++'s fgets() was really really screwy
-ILbyte *SIOgets(SIO *io, char *buffer, ILuint maxlen)
+ILbyte * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen)
 {
 	ILuint	counter = 0;
 	ILint	temp = '\0';

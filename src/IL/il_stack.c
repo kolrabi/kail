@@ -59,8 +59,6 @@ void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images)
       LastUsed++;
     }
   } while (++Index < Num);
-
-  return;
 }
 
 ILuint ILAPIENTRY ilGenImage()
@@ -570,7 +568,6 @@ ILAPI void ILAPIENTRY ilSetCurImage(ILimage *Image)
   return;
 }
 
-
 // Completely replaces the current image and the version in the image stack.
 ILAPI void ILAPIENTRY ilReplaceCurImage(ILimage *Image)
 {
@@ -636,10 +633,8 @@ void ILAPIENTRY ilInit()
   //ilSetMemory(NULL, NULL);  Now useless 3/4/2006 (due to modification in il_alloc.c)
   ilSetError(IL_NO_ERROR);
   ilDefaultStates();  // Set states to their defaults.
-  // Sets default file-reading callbacks.
-  ilResetRead();
-  ilResetWrite();
   iSetImage0();  // Beware!  Clears all existing textures!
+
   iBindImageTemp();  // Go ahead and create the temporary image.
 
   iInitFormats();
@@ -706,8 +701,6 @@ void iSetImage0()
     ImageStack[0] = ilNewImage(1, 1, 1, 1, 1);
   iCurImage = ImageStack[0];
   ilDefaultImage();
-
-  return;
 }
 
 
@@ -717,6 +710,8 @@ ILAPI void ILAPIENTRY iBindImageTemp()
     if (!iEnlargeStack())
       return;
 
+  ILimage *lastImage = iCurImage;
+
   if (LastUsed < 2)
     LastUsed = 2;
   CurName = 1;
@@ -724,6 +719,5 @@ ILAPI void ILAPIENTRY iBindImageTemp()
   if (!ImageStack[1])
     ImageStack[1] = ilNewImage(1, 1, 1, 1, 1);
   iCurImage = ImageStack[1];
-
-  return;
+  iCurImage->io = lastImage->io;
 }

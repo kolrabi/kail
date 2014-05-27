@@ -31,7 +31,8 @@
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
-	hModule;  lpReserved;
+	(void)hModule;  
+	(void)lpReserved;
 
 	// only initialize when attached to a new process. setup can cause errors in OpenIL
 	// when called on a per thread basis

@@ -216,8 +216,9 @@ static ILboolean iIsValidDicom(SIO* io)
 {
 	char Sig[4];
 
+	SIOseek(io, 128, IL_SEEK_CUR);
 	ILuint Read = SIOread(io, Sig, 1, 4);
-	SIOseek(io, -Read, IL_SEEK_CUR);
+	SIOseek(io, -Read - 128, IL_SEEK_CUR);
 	return Read == 4 && memcmp(Sig, "DICM", 4) == 0;
 }
 
