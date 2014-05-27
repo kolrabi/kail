@@ -63,7 +63,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 	memcpy(Image->Pal.Palette, ilDefaultDoomPal, IL_DOOMPAL_SIZE);
 
 	// 247 is always the transparent colour (usually cyan)
-	memset(Image->Data, 247, iCurImage->SizeOfData);
+	memset(Image->Data, 247, Image->SizeOfData);
 
 	ILushort column_loop;
 	for (column_loop = 0; column_loop < head.width; column_loop++) {
@@ -130,7 +130,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 			return IL_FALSE;
 		}
 
-		iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+		Image->Origin = IL_ORIGIN_UPPER_LEFT;
 		ifree(NewData);
 	}
 
@@ -182,7 +182,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 			NewData[i * 4 + 0] = Image->Pal.Palette[Image->Data[i] + 0];
 			NewData[i * 4 + 1] = Image->Pal.Palette[Image->Data[i] + 1];
 			NewData[i * 4 + 2] = Image->Pal.Palette[Image->Data[i] + 2];
-			NewData[i * 4 + 3] = iCurImage->Data[i] != 247 ? 255 : 0;
+			NewData[i * 4 + 3] = Image->Data[i] != 247 ? 255 : 0;
 		}
 
 		if (!ilTexImage_(Image, Image->Width, Image->Height, Image->Depth, 4, IL_RGBA, Image->Type, NewData)) {

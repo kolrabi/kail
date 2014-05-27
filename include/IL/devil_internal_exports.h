@@ -73,9 +73,9 @@ typedef struct SIO {
 	ILuint			lumpSize, ReadFileStart, WriteFileStart;
 } SIO;
 
-#define SIOopenRO(io,       f) (io)->openReadOnly((io)->handle)
-#define SIOopenWR(io,       f) (io)->openWrite   ((io)->handle)
-#define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle) }
+#define SIOopenRO(io,       f) ((io)->openReadOnly ? (io)->openReadOnly((io)->handle) : NULL)
+#define SIOopenWR(io,       f) ((io)->openWrite    ? (io)->openWrite   ((io)->handle) : NULL)
+#define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle); }
 #define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
 #define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
 #define SIOeof(   io         ) (io)->eof    ((io)->handle               )

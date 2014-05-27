@@ -513,7 +513,7 @@ static ILuint ReadCompressedChannel(SIO *io, const ILuint ChanLen, ILuint Size, 
 	*/
 
 	for (i = 0; i < Size; ) {
-		HeadByte = iCurImage->io.getchar(iCurImage->io.handle);
+		HeadByte = SIOgetc(io);
 
 		if (HeadByte >= 0) {  //  && HeadByte <= 127
 			if (i + HeadByte > Size)
@@ -805,7 +805,7 @@ ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboo
 	}
 	else {
 		for (i = 0; i < Head->Width * Head->Height; ) {
-			HeadByte = iCurImage->io.getchar(iCurImage->io.handle);
+			HeadByte = SIOgetc(io);
 
 			if (HeadByte >= 0) {  //  && HeadByte <= 127
 				if (SIOread(io, Buffer + i, HeadByte + 1, 1) != 1)
@@ -813,7 +813,7 @@ ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboo
 				i += HeadByte + 1;
 			}
 			if (HeadByte >= -127 && HeadByte <= -1) {
-				Run = iCurImage->io.getchar(iCurImage->io.handle);
+				Run = SIOgetc(io);
 				if (Run == IL_EOF)
 					return IL_FALSE;
 				memset(Buffer + i, Run, -HeadByte + 1);
@@ -850,7 +850,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	Type = image->Type;
 
 	// All of these comprise the actual signature.
-	iCurImage->io.write(Signature, 1, 4, iCurImage->io.handle);
+	SIOwrite(io, Signature, 1, 4);
 	SaveBigShort(io,1);
 	SaveBigInt(io,0);
 	SaveBigShort(io,0);
@@ -905,7 +905,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 		// Have to save the palette in a planar format.
 		for (c = 0; c < 3; c++) {
 			for (i = c; i < TempPal->PalSize; i += 3) {
-				iCurImage->io.putchar(TempPal->Palette[i], iCurImage->io.handle);
+				SIOputc(io, TempPal->Palette[i]);
 			}
 		}
 
@@ -935,7 +935,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	if (TempImage->Bpc == 1) {
 		for (c = 0; c < TempImage->Bpp; c++) {
 			for (i = c; i < TempImage->SizeOfPlane; i += TempImage->Bpp) {
-				iCurImage->io.putchar(TempData[i], iCurImage->io.handle);
+				SIOputc(io, TempData[i]);
 			}
 		}
 	}

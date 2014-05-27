@@ -285,7 +285,7 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 
 
 // Internal function used to save the Mng.
-ILboolean iSaveMngInternal()
+ILboolean iSaveMngInternal(/* ILimage * */)
 {
 	//mng_handle mng;
 

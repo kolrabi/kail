@@ -15,17 +15,22 @@
 //#ifndef IL_NO_DATA
 #include "il_manip.h"
 
-//seems to be unused
-#if 0
-
-ILboolean iLoadDataInternal(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
-
+static ILboolean iLoadDataInternal(ILimage *, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 
 //! Reads a raw data file
-ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp)
-{
+ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
 	ILHANDLE	RawFile;
 	ILboolean	bRaw = IL_FALSE;
+
+	if (iCurImage == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	if (iCurImage->io.openReadOnly == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 
 	// No need to check for raw data
 	/*if (!iCheckExtension(FileName, "raw")) {
@@ -52,9 +57,19 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
 	ILuint		FirstPos;
 	ILboolean	bRet;
 
-	iSetInputFile(File);
+	if (iCurImage == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	if (File == NULL) {
+		ilSetError(IL_INVALID_VALUE);
+		return IL_FALSE;
+	}
+
+	iSetInputFile(iCurImage, File);
 	FirstPos = iCurImage->io.tell(iCurImage->io.handle);
-	bRet = iLoadDataInternal(Width, Height, Depth, Bpp);
+	bRet = iLoadDataInternal(iCurImage, Width, Height, Depth, Bpp);
 	iCurImage->io.seek(iCurImage->io.handle, FirstPos, IL_SEEK_SET);
 
 	return bRet;
@@ -64,34 +79,36 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
 //! Reads from a raw data memory "lump"
 ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp)
 {
-	iSetInputLump(Lump, Size);
-	return iLoadDataInternal(Width, Height, Depth, Bpp);
+	iSetInputLump(iCurImage, Lump, Size);
+	return iLoadDataInternal(iCurImage, Width, Height, Depth, Bpp);
 }
 
 
 // Internal function to load a raw data image
-ILboolean iLoadDataInternal(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp)
+ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp)
 {
-	if (iCurImage == NULL || ((Bpp != 1) && (Bpp != 3) && (Bpp != 4))) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+	if ((Bpp != 1) && (Bpp != 3) && (Bpp != 4)) {
+		ilSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Width, Height, Depth, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
+	SIO *io = &Image->io;
+
+	if (!ilTexImage_(Image, Width, Height, Depth, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	// Tries to read the correct amount of data
-	if (iCurImage->io.read(iCurImage->io.handle, iCurImage->Data, Width * Height * Depth * Bpp, 1) != 1)
+	if (SIOread(io, Image->Data, Width * Height * Depth * Bpp, 1) != 1)
 		return IL_FALSE;
 
-	if (iCurImage->Bpp == 1)
-		iCurImage->Format = IL_LUMINANCE;
-	else if (iCurImage->Bpp == 3)
-		iCurImage->Format = IL_RGB;
+	if (Image->Bpp == 1)
+		Image->Format = IL_LUMINANCE;
+	else if (Image->Bpp == 3)
+		Image->Format = IL_RGB;
 	else  // 4
-		iCurImage->Format = IL_RGBA;
+		Image->Format = IL_RGBA;
 
 	return ilFixImage();
 }
@@ -107,18 +124,23 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName)
 		return IL_FALSE;
 	}
 
-	DataFile = iCurImage->io.openReadOnly(FileName);
+	if (iCurImage->io.openWrite == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	DataFile = iCurImage->io.openWrite(FileName);
 	if (DataFile == NULL) {
 		ilSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
-	iCurImage->io.write(iCurImage->Data, 1, iCurImage->SizeOfData, iCurImage->io.handle);
-	iCurImage->io.close(DataFile);
+	SIO *io = &iCurImage->io;
+
+	SIOwrite(io, iCurImage->Data, 1, iCurImage->SizeOfData);
+	SIOclose(io);
 
 	return IL_TRUE;
 }
-
-#endif
 
 //#endif//IL_NO_DATA

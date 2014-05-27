@@ -182,7 +182,7 @@ iLoadFitsInternal(ILimage* image) {
 	if (!ilTexImage_(image, Header.Width, Header.Height, Header.Depth, Header.NumChans, Header.Format, Header.Type, NULL))
 		return IL_FALSE;
 
-	/*if (iCurImage->io.read(iCurImage->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData)
+	/*if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData)
 		return IL_FALSE;*/
 
 	NumPix = Header.Width * Header.Height * Header.Depth;

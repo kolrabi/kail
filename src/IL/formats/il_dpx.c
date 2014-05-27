@@ -182,10 +182,10 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 		case 8:
 		case 16:
 		case 32:
-			if (!ilTexImage(ImageInfo.Width, ImageInfo.Height, 1, NumChans, Format, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, NumChans, Format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			image->Origin = IL_ORIGIN_UPPER_LEFT;
-			if (iCurImage->io.read(iCurImage->io.handle, image->Data, image->SizeOfData, 1) != 1)
+			if (SIOread(io, image->Data, image->SizeOfData, 1) != 1)
 				return IL_FALSE;
 			goto finish;
 	}
@@ -204,28 +204,28 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 				switch (Format)
 				{
 					case IL_LUMINANCE:
-						if (!ilTexImage(ImageInfo.Width, ImageInfo.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
+						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
-							iCurImage->io.read(iCurImage->io.handle, Data, 1, 2);
+							SIOread(io, Data, 1, 2);
 							Val = ((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6;  // Use the first 10 bits of the word-aligned data.
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
 						}
 						break;
 
 					case IL_RGB:
-						if (!ilTexImage(ImageInfo.Width, ImageInfo.Height, 1, 3, IL_RGB, IL_UNSIGNED_SHORT, NULL))
+						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 3, IL_RGB, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
-							iCurImage->io.read(iCurImage->io.handle, Data, 1, 4);
+							SIOread(io, Data, 1, 4);
 							Val = ((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6;  // Use the first 10 bits of the word-aligned data.
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
 							Val = (((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4)) << 6;  // Use the next 10 bits.
@@ -236,14 +236,14 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						break;
 
 					case IL_RGBA:  // Is this even a possibility?  There is a ton of wasted space here!
-						if (!ilTexImage(ImageInfo.Width, ImageInfo.Height, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL))
+						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
-							iCurImage->io.read(iCurImage->io.handle, Data, 1, 8);
+							SIOread(io, Data, 1, 8);
 							Val = (Data[0] << 2) + ((Data[1] & 0xC0) >> 6);  // Use the first 10 bits of the word-aligned data.
 							ShortData[i++] = (Val << 6) | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
 							Val = ((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4);  // Use the next 10 bits.

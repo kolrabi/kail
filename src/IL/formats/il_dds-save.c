@@ -789,7 +789,7 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 					for (x = 0; x < Image->Width; x += 4) {
 						GetAlphaBlock(AlphaBlock, Alpha, Image, x, y);
 						for (i = 0; i < 16; i += 2) {
-							iCurImage->io.putchar(iCurImage->io.handle, (ILubyte)(((AlphaBlock[i] >> 4) << 4) | (AlphaBlock[i+1] >> 4)));
+							SIOputc(io, (ILubyte)(((AlphaBlock[i] >> 4) << 4) | (AlphaBlock[i+1] >> 4)));
 						}
 
 						GetBlock(Block, Data, Image, x, y);
@@ -1266,7 +1266,6 @@ ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Heig
 	}
 	*DXTCSize = BuffSize;
 
-	// Restore backup of iCurImage.
 	TempImage->Data = NULL;
 	ilCloseImage(TempImage);
 

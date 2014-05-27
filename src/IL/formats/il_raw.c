@@ -56,7 +56,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 
 	if (Image->Bpp == 1)
 		Image->Format = IL_LUMINANCE;
-	else if (iCurImage->Bpp == 3)
+	else if (Image->Bpp == 3)
 		Image->Format = IL_RGB;
 	else  // 4
 		Image->Format = IL_RGBA;

@@ -1,0 +1,374 @@
+Taken from http://www.ith.kr/chair/ce/gformat/halo.txt
+
+FORMAT OF GRAPHICS FILES USED IN DR HALO AND THE HALO C LIBRARY
+
+I. HALO .pic files
+These files are produced either by the gwrite(filename) function
+in the C library or from the disk icon in Dr Halo. Normally the
+name has the extension .pic; this is the default in Dr Halo. Such
+a file can be retrieved either from the disk icon, or with
+gread(filename). When using Dr Halo, the program will look for a
+corresponding filename.pal, and load it; in C programs, pread
+(filename, description) must be called.
+
+Such files begin with a 10 byte header:
+bytes 0-1 'AH'
+      2-3 Integer version number of the HALO library. Currently
+for .pic files I write this is E2H 00H, presumably since E2H is
+226D, and the program is 2.26.
+      4-5 0 -- not used
+      6   2 -- indicates an image file
+      7   id -- device code. E. g., the IBM EGA is device code
+21D. These device codes are listed in Section 7 of the manual for
+the C library, from which all of the current information in the
+text you are now reading also comes.
+      8-9  0 -- not used.
+
+The rest of the header is of variable length, depending on the
+board (details in Section 11). For example, the IBM EGA has only
+two following bytes, an integer indicating the mode (0 = 320x200,
+4 colors; 1 = 640x200, 2 colors, etc.).
+
+The rest of the .pic file is written in integral 512 blocks
+(first block is less, because of the length of the header). Each
+record consists of one or more data fields where each data field
+begins with a one byte flag followed by one or more bytes of
+data. The format of the one-byte flag is:
+     1000 0000 if we are at the end of the record. These mark the
+end of data within a 512 byte block as data does not span blocks.
+     1nnn nnn -- indicates that the "data" is one byte long and
+it is to be duplicated nnn nnnn times.
+     0nnn nnnn -- indicates that "data" is nnn nnnn bytes long
+(obvious maximum, 127D) with no duplications.
+
+Most of the above is a straight quote from Section 11 of the
+graphics manual. The last two items (format of the flag) make it
+clear that the compression scheme is rather similar to that of
+MACPAINT.
+
+Note from JFR: I *do not* recommend trying to do any conversions to or
+from Halo .pic files. They are terribly sensitive to boards and modes
+thereof. Rather use the following:
+
+II. HALO .cut files
+These files are produced and retrieved from the scissors icon in
+Dr Halo, and, unlike .pic files, are not board-specific. There is
+no one function in the C library to produce them; rather a
+combination of functions must be used, as we shall see.
+
+The advantage of having files which are not board-specific is that one
+can read them with the proper aspect ratio by entering Dr Halo in the
+correct mode with the correct device driver. If a .gif file is 640 * 480, I
+use the EVA 480 driver; if it's 640 * 350, the EGA driver. This is not
+possible with .cut files, since they are created in connection with a
+specific board, and must be viewed with only the driver appropriate for
+that board. Presumably this is why most conversion programs now available
+deal only with .cut files.
+
+.Cut files have a 6 byte header:
+      0-1 width of the cut in pixels
+      2-3 height of the cut in pixels
+      4-5 0 -- not used
+
+All of the remainder consists of "height" records, each with the format:
+     0-1 length of the following record in bytes (note: bytes,
+not pixels).
+     2-n the actual image of each row in compressed form. All
+.cut files are really compressed movefrom() arrays, normalized to
+device-independent format (on which see below).
+
+     A. To read a .cut file one must open the file, read the
+header to get width and height information, establish a moveto
+array with a header in which array[0] = width, array[1] = 1, and
+array[2] = 0. Then for each line (or "height" record), read the
+integer count of the number of bytes in the following record,
+read that many bytes into integer array array1[], uncompress the
+data from array1[] into array2[] (still another integer array) using
+the function memexp(); "unnormalize" [a horrible word] array2[] into
+the moveto array, offsetting 6 bytes from the beginning of array2[]
+to account for the header), using the function pfnorm(). Finally,
+use the moveto() Halo C function to display the moveto array on the screen.
+
+     B. Writing a .cut file
+     The run-length encoding scheme is the same as that of the
+.pic files. One must therefore go through a variety of
+conversions, largely, of course, the reverse of the above.
+
+     1. Write out the .cut header (width, height, 0).
+     2. Get the each line of the image from the screen with
+movefrom() and put it into integer array buffer1. That buffer
+will have a 6-byte header with integers for width, height, and
+zero (not used).
+     3. Using ptnorm(), normalize the data by moving it from
+buffer1 (starting with byte 6, to account for the header) into
+another integer array, buffer2, for a given length. This length
+is board-dependent, and is determined by calling inqpflen().
+     4. Compress the data, using the above-mentioned run-length
+encoding scheme, using memcom(), from buffer2 into buffer3.
+     5. Write out the length of the following record in bytes,
+and the now normalized and compressed data (buffer3).
+
+     C. Halo C functions used:
+
+     memexp() is a Halo C function which expands a block of image
+data. It takes parameters identifying the address in
+segment:offset format for both the compressed image data (source)
+and the expanded image data (destination). It also takes the
+respective lengths in bytes of the compressed and expanded data.
+
+     memcom() does the reverse of memexp().
+
+     moveto() restores a portion of the screen from an integer
+array; it takes as parameters the x and y values of the upper
+left corner, and the mode of the restore -- overwrite, XOR, OR,
+AND, NAND.
+
+     movefrom() does the reverse of moveto().
+
+     pfnorm() converts the block of normalized image data (one
+pixel per byte) from array1 and putting it in array2, with a
+final parameter indicate the length in bytes of destination
+array. This final parameter is board-specific, and can be
+determined by using inqpflen(), which sets the value for the
+length.
+
+     ptnorm() does the reverse of pfnorm().
+
+     inqpflen() determines the length of the normalized array, dependent
+on the board being used. I find that it is unreliable for 640*480 boards,
+and so substitute inqplen(); see section IV.
+
+This also is a straight (pretty much) quote from the C manual.
+Obviously others have been able to do this without using Halo C
+functions, notably Rick Martin in his HALO2GIF, the OPTIKS
+program, and Inset, Inc.'s HIJAAK. Rick's Turbo C source is up in
+DL17 (HALO2G.C), and I strongly suggest reading it (see
+especially his fill_line_buffer() routine). Most of this array
+flipping is well over my head. I'm not even too clear on the
+difference between compressing and normalizing. I strongly
+suspect that the former is simply using a MACPAINT-type
+algorithm, whereas the latter "normalizes" the data to your
+board, which takes into account how many pixels will fit into a
+byte. Two for EGA's, and one for VGA's, I think, since it takes 4
+bits for account for 16 colors, but 8 to account for 256 colors.
+This must also be the reason for calling inqpflen(). If I'm correct
+pfnorm() must be the kind of byte-packing we do in .gif encoding and
+decoding.
+
+III. HALO .pal files
+As noted in Section I, these files set the color value of the
+color indices, both in Dr Halo and in Halo C programs. They can
+be written either from Dr Halo III (using the "rainbow" sub-icon
+of the disk icon) or from C, using pwrite(filename). The default
+extension in Dr Halo in .pal.
+
+.Pal files can be either board specific or generic; the former is
+a little faster, but the latter is safer.
+
+They have a 40 byte header:
+
+      0-1 "AH"
+      2-3 Halo version id, same as that listed above for .cut
+      4-5 File size minus header. I'm not really sure this is
+crucial.
+      6   10 -- indicates that this is a palette file
+      7   Palette file subtype: 0 = generic, 1 = board specific
+      8-9 Board id; again see .cut file. Obviously irrelevant if
+one has specified a generic subtype.
+      10-11 Graphics mode (once again see above for an EGA
+example)
+      12-13 Maximum color index in palette: e. g., 15 for EGA's,
+255 for VGA's, etc.
+      14-15 Maximum red value. Curiously enough this is not the
+same as the values in the file body. "3" means 100%; "2" means
+66%, etc. This is at least true for the EGA.
+      16-17 Maximum green, as above
+      18-19 Maximum blue, as above
+      20-39 ASCII palette ID. I'm pretty sure all .pals written
+from Dr Halo have here merely "Dr. Halo           ".
+
+     The actual palette data is triplets of R, G, B values up to
+the number of colors, all in integers. So if the RGB for index 0
+is black (which it almost always is), you would start with 00 00/
+00 00/ 00 00. As usual LSB-MSB. Bright white (usually index 16 on
+EGA's) is then FF 00/ FF 00/ FF 00, i. e., 100% RGB.
+
+     The creation of a .pal file from a .gif file is one way of
+converting from .gif to .pic. I use Media Cybernetic's GRAB (the
+one which comes with Dr Halo III; earlier versions were buggy) to
+create a .pic file from the .gif as displayed on the screen. I
+then use my READPAL (up in DL1 as READPL.ARC) to create a .pal
+file. Rename the .pic file (GRAB will produce a haloxxxx.pic) so
+that it has the same base name as the .pal, copy both to Dr Halo,
+and proceed.
+
+     So also Rick Martin reads Halo .cut files and their
+corresponding .pal files in his HALO2GIF.
+
+IV. Sample Halo C files
+
+I append here two Halo C routines, written by Karl Hessinger, which
+illustrate the above using Halo C functions.
+
+#define CUTMAX 3000
+cread(filename,xstart,ystart)  /* reads and displays a .cut file */
+  int xstart,ystart;
+  char filename[];
+{
+  int fn;       /* file number         */
+  static unsigned char buffer1[CUTMAX];
+  static unsigned char buffer2[CUTMAX];
+  static unsigned char buffer3[CUTMAX];
+  unsigned char *pos;
+  int len, len2, len3;
+  int w,h,x1,y,x2,overwrit=1,zero=0,*ptr;
+  int xsize,ysize,rng_clr;
+
+  /*  Determine x & y resolution  */
+
+  inqdrange(&xsize,&ysize); /* determines maximum X and Y values for */
+  xsize++;    /* the current graphics mode */
+  ysize++;
+  inqcrange(&rng_clr);  /* gets maximum color index for cur. gr. mode */
+
+  /*  Open the file for read  */
+
+  if ((fn=open(filename,O_RDONLY|O_BINARY)) < 0)
+    return(-1);
+
+  /*  Read header  */
+
+  if (read(fn,buffer1, 6) < 6) {
+    close(fn);
+    return(-1);
+  }
+
+  /*  Decode header  */
+
+  ptr = (int *)buffer1;
+  w = *ptr;
+  h = *(ptr+1);
+  if ( w > xsize )
+    w = xsize;
+  if ( h > ysize )
+    h = ysize;
+  inqplen(&len,&w); /* for 640 * 480 boards; otherwise inqpflen() */
+
+  /*  Read the cut file  */
+
+  *ptr = w;
+  *(ptr+1) = 1;
+  *(ptr+2) = 0;
+
+  x1 = xstart;
+  pos = buffer1 + 6;    /* past the header       */
+  for ( y=ystart ; y<(h+ystart) ; y++ ) {
+
+    /*  Read in a line  */
+
+    if (read(fn, &len2, 2) < 2 || read(fn,buffer2,len2) < len2) {
+      close(fn);
+      return(-1);
+    }
+
+    /*  Expand & normalize the line  */
+
+    if ( rng_clr > 255 ) {
+      len3 = len;
+      memexp(&zero,pos,&len3,&zero,buffer2,&len2);
+    }
+    else {
+      len3 = CUTMAX;
+      memexp(&zero, buffer3, &len3, &zero,buffer2, &len2);
+      pfnorm(pos,buffer3,&len);
+    }
+
+    /*  Display the line  */
+
+    moveto(&x1,&y,buffer1,&overwrit);
+  }
+  close(fn);
+
+  return(0);
+}
+
+cwrite(filename,xstart,ystart,xend,yend)  /* saves portion of screen as .cut file */
+  char filename[];
+  int xstart,ystart,xend,yend;
+{
+  int fn;       /* file number         */
+  static unsigned char buffer1[CUTMAX];
+  static unsigned char buffer2[CUTMAX];
+  static unsigned char buffer3[CUTMAX];
+  int len,len2,zero=0;
+  int w,y,*ptr;
+
+  /*  Open the file for read  */
+
+  if ((fn=open(filename,O_WRONLY|O_BINARY|O_CREAT,S_IWRITE|S_IREAD)) < 0)
+    return(-1);
+
+  /*  Write header  */
+
+  w = xend-xstart+1;
+  ptr = (int *)buffer1;
+  *ptr = w;
+  *(ptr+1) = yend-ystart+1;
+  *(ptr+2) = 0;
+  if (write(fn,buffer1, 6) < 6) {
+    close(fn);
+    return(-1);
+  }
+
+  /*  Write the cut file  */
+
+  for ( y=ystart ; y<=yend ; y++ ) {
+
+    /*  Retrieve a line  */
+
+    movefrom(&xstart,&y,&xend,&y,buffer1);
+
+    /*  Normalize the data  */
+
+    inqplen(&len,&w); /* for 640 * 480; otherwise use inqpflen() */
+    ptnorm(buffer2,&buffer1[6],&len);
+
+    /*  Compress the data  */
+
+    len = CUTMAX;
+    len2 = w;
+    memcom(&zero,buffer3,&len,&zero,buffer2,&len2);
+    len = CUTMAX - len;
+
+    /*  Write a line  */
+
+    if (write(fn,&len,2) < 2 || write(fn,buffer3,len) < len) {
+      close(fn);
+      return(-1);
+    }
+  }
+  close(fn);
+
+  return(0);
+}
+
+inqplen(d,s)  /* this is a rewrite of inqpflen for 640*480 boards */
+  int *d,*s;
+{
+  *d = (((*s + 15)>>4)<<3);
+  return(0);
+}
+
+Now obviously all that's necessary is to duplicate the Halo C functions!
+I've done a simple one in READPAL, and Rick Martin has several in his
+HALO2GIF. Unfortunately Media Cybernetics has a pretty stiff licensing
+procedure, so we can't just write 'em in Halo C and proceed.
+
+I have written a program which will indeed decode .gifs and write out
+Halo .cut and .pal files (including, by the way, those more than 480 high,
+which requires the use of Halo's virtual page mode). But I have used the Halo
+C functions, and the duplication mentioned above needs to be done to make
+such a program available to the general public.
+
+Jim Ross 70235,143
+

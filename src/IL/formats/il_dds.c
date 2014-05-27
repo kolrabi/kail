@@ -23,7 +23,9 @@
 #ifndef IL_NO_DDS
 #include "il_dds.h"
 
+static ILboolean	ReadData(ILimage *image);
 
+// FIXME: make them nonglobal
 // Global variables
 static DDSHEAD	Head;				// Image header
 static ILubyte	*CompData = NULL;	// Compressed data
@@ -33,7 +35,7 @@ static ILimage	*Image;
 static ILint	Width, Height, Depth;
 static ILboolean	Has16BitComponents;
 
-ILuint CubemapDirections[CUBEMAP_SIDES] = {
+static const ILuint CubemapDirections[CUBEMAP_SIDES] = {
 	DDS_CUBEMAP_POSITIVEX,
 	DDS_CUBEMAP_NEGATIVEX,
 	DDS_CUBEMAP_POSITIVEY,
@@ -227,7 +229,7 @@ ILboolean iLoadDdsCubemapInternal(ILimage* image, ILuint CompFormat)
 				ilActiveFace(i);
 			}
 
-			if (!ReadData())
+			if (!ReadData(image))
 				return IL_FALSE;
 
 			if (!AllocImage(image, CompFormat)) {
@@ -429,7 +431,7 @@ ILboolean iLoadDdsInternal(ILimage* image)
 	Depth = Head.Depth;
 	AdjustVolumeTexture(&Head, CompFormat);
 
-	if (!ReadData())
+	if (!ReadData(image))
 		return IL_FALSE;
 	if (!AllocImage(image, CompFormat)) {
 		if (CompData) {
@@ -526,11 +528,12 @@ void AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat)
 
 
 // Reads the compressed data
-ILboolean ReadData()
+static ILboolean ReadData(ILimage *image)
 {
 	ILuint	Bps;
 	ILint	y, z;
 	ILubyte	*Temp;
+	SIO * io = &image->io;
 
 	if (CompData) {
 		ifree(CompData);
@@ -545,8 +548,7 @@ ILboolean ReadData()
 			return IL_FALSE;
 		}
 
-		// FIXME: no iCurImage
-		if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, Head.LinearSize) != (ILuint)Head.LinearSize) {
+		if (SIOread(io, CompData, 1, Head.LinearSize) != (ILuint)Head.LinearSize) {
 			ifree(CompData);
 			CompData = NULL;
 			return IL_FALSE;
@@ -564,7 +566,7 @@ ILboolean ReadData()
 		Temp = CompData;
 		for (z = 0; z < Depth; z++) {
 			for (y = 0; y < Height; y++) {
-				if (iCurImage->io.read(iCurImage->io.handle, Temp, 1, Bps) != Bps) {
+				if (SIOread(io, Temp, 1, Bps) != Bps) {
 					ifree(CompData);
 					CompData = NULL;
 					return IL_FALSE;
@@ -586,45 +588,45 @@ ILboolean AllocImage(ILimage* image, ILuint CompFormat)
 	switch (CompFormat)
 	{
 		case PF_RGB:
-			if (!ilTexImage(Width, Height, Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 		case PF_ARGB:
-			if (!ilTexImage(Width, Height, Depth, 4, IL_RGBA, Has16BitComponents ? IL_UNSIGNED_SHORT : IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, 4, IL_RGBA, Has16BitComponents ? IL_UNSIGNED_SHORT : IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_LUMINANCE:
 			if (Head.RGBBitCount == 16 && Head.RBitMask == 0xFFFF) { //HACK
-				if (!ilTexImage(Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
+				if (!ilTexImage_(image, Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
 					return IL_FALSE;
 			}
 			else
-				if (!ilTexImage(Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+				if (!ilTexImage_(image, Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 					return IL_FALSE;
 			break;
 
 		case PF_LUMINANCE_ALPHA:
-			if (!ilTexImage(Width, Height, Depth, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_ATI1N:
 			//right now there's no OpenGL api to use the compressed 3dc data, so
 			//throw it away (I don't know how DirectX works, though)?
-			if (!ilTexImage(Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_3DC:
 			//right now there's no OpenGL api to use the compressed 3dc data, so
 			//throw it away (I don't know how DirectX works, though)?
-			if (!ilTexImage(Width, Height, Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_A16B16G16R16:
-			if (!ilTexImage(Width, Height, Depth, iCompFormatToChannelCount(CompFormat),
+			if (!ilTexImage_(image, Width, Height, Depth, iCompFormatToChannelCount(CompFormat),
 				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_UNSIGNED_SHORT, NULL))
 				return IL_FALSE;
 			break;
@@ -635,7 +637,7 @@ ILboolean AllocImage(ILimage* image, ILuint CompFormat)
 		case PF_R32F:
 		case PF_G32R32F:
 		case PF_A32B32G32R32F:
-			if (!ilTexImage(Width, Height, Depth, iCompFormatToChannelCount(CompFormat),
+			if (!ilTexImage_(image, Width, Height, Depth, iCompFormatToChannelCount(CompFormat),
 				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_FLOAT, NULL))
 				return IL_FALSE;
 			break;
@@ -646,7 +648,7 @@ ILboolean AllocImage(ILimage* image, ILuint CompFormat)
 				format = IL_RGB;
 			}
 
-			if (!ilTexImage(Width, Height, Depth, channels, format, IL_UNSIGNED_BYTE, NULL))
+			if (!ilTexImage_(image, Width, Height, Depth, channels, format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE && CompData) {
 				image->DxtcData = (ILubyte*)ialloc(Head.LinearSize);
@@ -845,7 +847,7 @@ ILboolean ReadMipmaps(ILuint CompFormat)
 			Head.LinearSize >>= 1;
 		}
 
-		if (!ReadData())
+		if (!ReadData(Image))
 			goto mip_fail;
 
 		if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE && isCompressed == IL_TRUE && CompData) {

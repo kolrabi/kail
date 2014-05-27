@@ -166,7 +166,6 @@ enum PixFormat
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
 void		AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat);
-ILboolean	ReadData();
 ILboolean	AllocImage(ILimage* image, ILuint CompFormat);
 ILboolean	DdsDecompress(ILuint CompFormat);
 ILboolean	ReadMipmaps(ILuint CompFormat);
@@ -209,7 +208,7 @@ void		CorrectEndDXT1(ILushort *ex0, ILushort *ex1, ILboolean HasAlpha);
 void		PreMult(ILushort *Data, ILubyte *Alpha);
 
 
-extern ILuint CubemapDirections[CUBEMAP_SIDES];
+// extern ILuint CubemapDirections[CUBEMAP_SIDES];
 
 
 #endif//DDS_H

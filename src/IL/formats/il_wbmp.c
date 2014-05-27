@@ -89,14 +89,14 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 
 	// Reads the bits
 	for (i = 0; i < Image->Height; i++) {
-		bread(&Image->Data[iCurImage->Width * i], 1, Image->Width, File);
+		bread(&Image->Data[Image->Width * i], 1, Image->Width, File);
 		//bseek(File, BitPadding, IL_SEEK_CUR);  //@TODO: This function does not work correctly.
 		bread(Padding, 1, BitPadding, File);  // Skip padding bits.
 	}
 	// Converts bit value of 1 to white and leaves 0 at 0 (2-colour images only).
-	for (i = 0; i < iCurImage->SizeOfData; i++) {
-		if (iCurImage->Data[i] == 1)
-			iCurImage->Data[i] = 0xFF;  // White
+	for (i = 0; i < Image->SizeOfData; i++) {
+		if (Image->Data[i] == 1)
+			Image->Data[i] = 0xFF;  // White
 	}
 
 	bclose(File);

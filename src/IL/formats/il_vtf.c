@@ -124,7 +124,7 @@ static ILboolean iCheckVtf(VTFHEAD *Header) {
 
 
 // Internal function used to load the VTF.
-static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
+static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	ILboolean	bVtf = IL_TRUE;
 	ILimage		*Image; //, *BaseImage;
 	ILenum		Format, Type;
@@ -134,12 +134,12 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 	VTFHEAD		Head;
 	ILuint    CurName = ilGetCurName(); // FIXME
 
-	if (iCurImage == NULL) {
+	if (BaseImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &iCurImage->io;
+	SIO *io = io;
 	
 	if (!iGetVtfHead(io, &Head))
 		return IL_FALSE;
@@ -269,15 +269,15 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(iCurImage, Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
+	if (!ilTexImage_(BaseImage, Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
 		return IL_FALSE;
 	// The origin should be in the upper left.
-	iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+	BaseImage->Origin = IL_ORIGIN_UPPER_LEFT;
 	// Create any mipmaps.
-	VtfInitFacesMipmaps(iCurImage, NumFaces, &Head);
+	VtfInitFacesMipmaps(BaseImage, NumFaces, &Head);
 
 	// Create our animation chain
-	/* BaseImage = */ Image = iCurImage;  // Top-level image
+	/* BaseImage = */ Image = BaseImage;  // Top-level image
 	for (Frame = 1; Frame < Head.Frames; Frame++) {
 		Image->Next = ilNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
 		if (Image->Next == NULL)
@@ -301,7 +301,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 				ilActiveImage(Frame);
 				ilActiveFace(Face);
 				ilActiveMipmap(Mipmap);
-				Image = iCurImage;
+				Image = BaseImage;
 
 				switch (Head.HighResImageFormat)
 				{
@@ -313,7 +313,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						CompData = (ILubyte*)ialloc(SizeOfData);  // Gives a 6:1 compression ratio (or 8:1 for DXT1 with alpha)
 						if (CompData == NULL)
 							return IL_FALSE;
-						iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData);
+						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
 						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
 							Image->DxtcSize = SizeOfData;
@@ -331,7 +331,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						CompData = (ILubyte*)ialloc(SizeOfData);  // Gives a 4:1 compression ratio
 						if (CompData == NULL)
 							return IL_FALSE;
-						iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData);
+						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
 						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
 							Image->DxtcSize = SizeOfData;
@@ -349,7 +349,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						CompData = (ILubyte*)ialloc(SizeOfData);  // Gives a 4:1 compression ratio
 						if (CompData == NULL)
 							return IL_FALSE;
-						iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData);
+						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
 						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
 							Image->DxtcSize = SizeOfData;
@@ -379,7 +379,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 					case IMAGE_FORMAT_RGB888_BLUESCREEN:
 					case IMAGE_FORMAT_BGR888_BLUESCREEN:
 						// Just copy the data over - no compression.
-						if (iCurImage->io.read(iCurImage->io.handle, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
+						if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
 							bVtf = IL_FALSE;
 						else
 							bVtf = IL_TRUE;
@@ -391,7 +391,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						Temp = CompData = (ILubyte*)ialloc(SizeOfData / 3 * 4);  // Not compressed data
 						if (CompData == NULL)
 							return IL_FALSE;
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData / 3 * 4) != SizeOfData / 3 * 4) {
+						if (SIOread(io, CompData, 1, SizeOfData / 3 * 4) != SizeOfData / 3 * 4) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -410,7 +410,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						CompData = (ILubyte*)ialloc(SizeOfData);  // Not compressed data
 						if (CompData == NULL)
 							return IL_FALSE;
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData) != SizeOfData) {
+						if (SIOread(io, CompData, 1, SizeOfData) != SizeOfData) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -421,7 +421,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 					//   internally, so we have to swap values.
 					case IMAGE_FORMAT_ARGB8888:
 					case IMAGE_FORMAT_ABGR8888:
-						if (iCurImage->io.read(iCurImage->io.handle, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData) {
+						if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -448,7 +448,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						Data16Bit = CompData = (ILubyte*)ialloc(SizeOfData);  // Not compressed data
 						if (CompData == NULL)
 							return IL_FALSE;
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData) != SizeOfData) {
+						if (SIOread(io, CompData, 1, SizeOfData) != SizeOfData) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -469,7 +469,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						Data16Bit = CompData = (ILubyte*)ialloc(SizeOfData);  // Not compressed data
 						if (CompData == NULL)
 							return IL_FALSE;
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData) != SizeOfData) {
+						if (SIOread(io, CompData, 1, SizeOfData) != SizeOfData) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -487,7 +487,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 					case IMAGE_FORMAT_BGRX5551:
 						SizeOfData = Image->Width * Image->Height * Image->Depth * 2;
 						Data16Bit = CompData = (ILubyte*)ialloc(SizeOfData);  // Not compressed data
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData) != SizeOfData) {
+						if (SIOread(io, CompData, 1, SizeOfData) != SizeOfData) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -505,7 +505,7 @@ static ILboolean iLoadVtfInternal(ILimage* iCurImage) {
 						Temp = CompData = (ILubyte*)ialloc(SizeOfData / 2);  // Not compressed data
 						if (CompData == NULL)
 							return IL_FALSE;
-						if (iCurImage->io.read(iCurImage->io.handle, CompData, 1, SizeOfData / 2) != SizeOfData / 2) {
+						if (SIOread(io, CompData, 1, SizeOfData / 2) != SizeOfData / 2) {
 							bVtf = IL_FALSE;
 							break;
 						}
@@ -619,27 +619,17 @@ ILboolean VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header)
 	return IL_TRUE;
 }
 
-
-
-/*ILboolean CheckDimensions()
-{
-	if ((ilNextPower2(iCurImage->Width) != iCurImage->Width) || (ilNextPower2(iCurImage->Height) != iCurImage->Height)) {
-		ilSetError(IL_BAD_DIMENSIONS);
-		return IL_FALSE;
-	}
-	return IL_TRUE;
-}*/
-
-
 // Internal function used to save the Vtf.
-static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
-	ILimage	*TempImage = iCurImage;
+static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
+	ILimage	*TempImage = BaseImage;
 	ILubyte	*TempData, *CompData;
 	ILuint	Format, i, CompSize;
 	ILenum	Compression;
 
 	// Find out if the user has specified to use DXT compression.
 	Compression = ilGetInteger(IL_VTF_COMP);
+
+	SIO *io = io;
 
 	//@TODO: Other formats
 	if (Compression == IL_DXT_NO_COMP) {
@@ -669,7 +659,7 @@ static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 			//case IL_COLOUR_INDEX:
 			default:
 				Format = IMAGE_FORMAT_BGRA8888;
-				TempImage = iConvertImage(iCurImage, IL_BGRA, IL_UNSIGNED_BYTE);
+				TempImage = iConvertImage(BaseImage, IL_BGRA, IL_UNSIGNED_BYTE);
 				if (TempImage == NULL)
 					return IL_FALSE;
 		}
@@ -679,7 +669,7 @@ static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 			Format = IMAGE_FORMAT_RGBA16161616;
 		}
 		else if (TempImage->Type != IL_UNSIGNED_BYTE) {  //@TODO: Any possibility for shorts, etc. to be used?
-			TempImage = iConvertImage(iCurImage, Format, IL_UNSIGNED_BYTE);
+			TempImage = iConvertImage(BaseImage, Format, IL_UNSIGNED_BYTE);
 			if (TempImage == NULL)
 				return IL_FALSE;
 		}
@@ -714,51 +704,51 @@ static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 
 	// @todo: use VTFHEAD structure for writing
 	// Write the file signature.
-	iCurImage->io.write("VTF", 1, 4, iCurImage->io.handle);
+	SIOwrite(io, "VTF", 1, 4);
 	// Write the file version - currently using 7.2 specs.
-	SaveLittleUInt(&iCurImage->io, 7);
-	SaveLittleUInt(&iCurImage->io, 2);
+	SaveLittleUInt(io, 7);
+	SaveLittleUInt(io, 2);
 	// Write the header size.
-	SaveLittleUInt(&iCurImage->io, 80);
+	SaveLittleUInt(io, 80);
 	// Now we write the width and height of the image.
-	SaveLittleUShort(&iCurImage->io, TempImage->Width);
-	SaveLittleUShort(&iCurImage->io, TempImage->Height);
+	SaveLittleUShort(io, TempImage->Width);
+	SaveLittleUShort(io, TempImage->Height);
 	//@TODO: This is supposed to be the flags used.  What should we use here?  Let users specify?
-	SaveLittleUInt(&iCurImage->io, 0);
+	SaveLittleUInt(io, 0);
 	// Number of frames in the animation. - @TODO: Change to use animations.
-	SaveLittleUShort(&iCurImage->io, 1);
+	SaveLittleUShort(io, 1);
 	// First frame in the animation
-	SaveLittleUShort(&iCurImage->io, 0);
+	SaveLittleUShort(io, 0);
 	// Padding
-	SaveLittleUInt(&iCurImage->io, 0);
+	SaveLittleUInt(io, 0);
 	// Reflectivity (3 floats) - @TODO: Use what values?  User specified?
-	SaveLittleFloat(&iCurImage->io, 0.0f);
-	SaveLittleFloat(&iCurImage->io, 0.0f);
-	SaveLittleFloat(&iCurImage->io, 0.0f);
+	SaveLittleFloat(io, 0.0f);
+	SaveLittleFloat(io, 0.0f);
+	SaveLittleFloat(io, 0.0f);
 	// Padding
-	SaveLittleUInt(&iCurImage->io, 0);
+	SaveLittleUInt(io, 0);
 	// Bumpmap scale
-	SaveLittleFloat(&iCurImage->io, 0.0f);
+	SaveLittleFloat(io, 0.0f);
 	// Image format
-	SaveLittleUInt(&iCurImage->io, Format);
+	SaveLittleUInt(io, Format);
 	// Mipmap count - @TODO: Use mipmaps
-	iCurImage->io.putchar(1, iCurImage->io.handle);
+	SIOputc(io, 1);
 	// Low resolution image format - @TODO: Create low resolution image.
-	SaveLittleUInt(&iCurImage->io, 0xFFFFFFFF);
+	SaveLittleUInt(io, 0xFFFFFFFF);
 	// Low resolution image width and height
-	iCurImage->io.putchar(0, iCurImage->io.handle);
-	iCurImage->io.putchar(0, iCurImage->io.handle);
+	SIOputc(io, 0);
+	SIOputc(io, 0);
 	// Depth of the image - @TODO: Support for volumetric images.
-	SaveLittleUShort(&iCurImage->io, 1);
+	SaveLittleUShort(io, 1);
 
 	// Write final padding for the header (out to 80 bytes).
 	for (i = 0; i < 15; i++) {
-		iCurImage->io.putchar(0, iCurImage->io.handle);
+		SIOputc(io, 0);
 	}
 
 	if (Compression == IL_DXT_NO_COMP) {
 		// We just write the image data directly.
-		if (iCurImage->io.write(TempImage->Data, TempImage->SizeOfData, 1, iCurImage->io.handle) != 1)
+		if (SIOwrite(io, TempImage->Data, TempImage->SizeOfData, 1) != 1)
 			return IL_FALSE;
 	}
 	else {  // Do DXT compression here and write.
@@ -786,7 +776,7 @@ static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 			return IL_FALSE;
 		}
 		// Finally write the data.
-		if (iCurImage->io.write(CompData, CompSize, 1, iCurImage->io.handle) != 1) {
+		if (SIOwrite(io, CompData, CompSize, 1) != 1) {
 			ifree(CompData);
 			if (TempData != TempImage->Data)
 				ifree(TempData);
@@ -796,7 +786,7 @@ static ILboolean iSaveVtfInternal(ILimage* iCurImage) {
 
 	if (TempData != TempImage->Data)
 		ifree(TempData);
-	if (TempImage != iCurImage)
+	if (TempImage != BaseImage)
 		ilCloseImage(TempImage);
 
 	return IL_TRUE;
