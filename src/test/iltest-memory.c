@@ -104,6 +104,8 @@ int main(int argc, char **argv) {
 
   fprintf(stderr, "%s\n", *argv);
 
+  ilInit();
+
   TEST(default_alloc)
   TEST(custom_alloc)
   TEST(mixed_alloc)
@@ -115,6 +117,8 @@ int main(int argc, char **argv) {
   } else {
     fprintf(stdout, "PASS\n");
   }
+
+  ilShutDown();
 
   return result;
 }

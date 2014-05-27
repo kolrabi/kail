@@ -12,11 +12,17 @@ ELSE                    ()
   SET                   ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
 ENDIF                   ()
 
-
 ADD_EXECUTABLE          ( ILtestMemory      iltest-memory.c )
 TARGET_LINK_LIBRARIES   ( ILtestMemory      ${ILLIB} )
+
+ADD_EXECUTABLE          ( ILtestFormatLoad  iltest-format-load.c )
+TARGET_LINK_LIBRARIES   ( ILtestFormatLoad  ${ILLIB} )
 
 ADD_TEST                ( MemoryDefault     ILtestMemory      default_alloc )
 ADD_TEST                ( MemoryCustom      ILtestMemory      custom_alloc  )
 ADD_TEST                ( MemoryMixed       ILtestMemory      mixed_alloc   )
 ADD_TEST                ( MemoryEndian      ILtestMemory      endian        )
+
+ADD_TEST                ( FormatLoadBLP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.blp 600 400 1 0 )
+ADD_TEST                ( FormatLoadBMP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.bmp 600 400 1 0 )
+ADD_TEST                ( FormatLoadCUT     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.cut 600 400 1 0 )
