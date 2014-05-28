@@ -75,7 +75,7 @@ typedef struct SIO {
 
 #define SIOopenRO(io,       f) ((io)->openReadOnly ? (io)->openReadOnly((io)->handle) : NULL)
 #define SIOopenWR(io,       f) ((io)->openWrite    ? (io)->openWrite   ((io)->handle) : NULL)
-#define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle); }
+#define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle); (io)->handle = NULL; }
 #define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
 #define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
 #define SIOeof(   io         ) (io)->eof    ((io)->handle               )
@@ -131,14 +131,19 @@ ILAPI void* 		ILAPIENTRY icalloc 	(const ILsizei Size, const ILsizei Num);
 #ifdef ALTIVEC_GCC
 ILAPI void* 		ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
 #endif
+
+/** Allocate an array of type @a T with @a n elements. */
 #define                    iaalloc(T, n) (T*)icalloc(sizeof(T), (n))
+
+/** Allocate one object of type @a T. */
 #define                    ioalloc(T)    iaalloc(T, 1)
 
 // Internal library functions in IL
-ILAPI ILimage* 	ILAPIENTRY ilGetCurImage(void);
+ILAPI ILimage*  ILAPIENTRY iGetImage(ILuint Image);
+ILAPI ILimage* 	ILAPIENTRY iGetCurImage(void);
 ILAPI void     	ILAPIENTRY ilSetCurImage(ILimage *Image);
 ILAPI void     	ILAPIENTRY ilSetError(ILenum Error);
-ILAPI void     	ILAPIENTRY ilSetPal(ILpal *Pal);
+ILAPI void     	ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal);
 
 //
 // Utility functions
@@ -154,16 +159,19 @@ ILAPI ILenum  ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
 ILAPI void    ILAPIENTRY ilReplaceCurImage(ILimage *Image);
 ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
+ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
+ILAPI char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
+
 //
 // Image functions
 //
 ILAPI void	    ILAPIENTRY iBindImageTemp  (void);
-ILAPI ILboolean ILAPIENTRY ilClearImage_   (ILimage *Image);
+ILAPI ILboolean ILAPIENTRY ilClearImage_   (ILimage *Image); // TODO: rename iClearImage
 ILAPI void      ILAPIENTRY ilCloseImage    (ILimage *Image);
 ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
-ILAPI ILpal*    ILAPIENTRY iCopyPal        (void);
+ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
 ILAPI ILboolean ILAPIENTRY ilCopyImageAttr (ILimage *Dest, ILimage *Src);
-ILAPI ILimage*  ILAPIENTRY ilCopyImage_    (ILimage *Src);
+ILAPI ILimage*  ILAPIENTRY ilCopyImage_    (ILimage *Src); // TODO: rename to iCloneImage
 ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
 ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
 ILAPI ILboolean ILAPIENTRY ilIsValidPal    (ILpal *Palette);
@@ -177,8 +185,9 @@ ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat,
 ILAPI ILimage*  ILAPIENTRY iConvertImage   (ILimage *Image, ILenum DestFormat, ILenum DestType);
 ILAPI ILpal*    ILAPIENTRY iConvertPal     (ILpal *Pal, ILenum DestFormat);
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
-ILAPI ILboolean	ILAPIENTRY iMirror();
+ILAPI ILboolean	ILAPIENTRY iMirrorImage  		(ILimage *Image);
 ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
+ILAPI ILboolean ILAPIENTRY iFlipImage(ILimage *Image);
 ILAPI void      ILAPIENTRY iGetIntegervImage(ILimage *Image, ILenum Mode, ILint *Param);
 ILAPI void      ILAPIENTRY iResetRead(ILimage *image);
 ILAPI void      ILAPIENTRY iResetWrite(ILimage *image);

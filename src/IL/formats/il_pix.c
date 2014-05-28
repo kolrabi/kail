@@ -103,7 +103,7 @@ static ILboolean iLoadPixInternal(ILimage* image) {
 
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsPIX[] = { 

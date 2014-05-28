@@ -86,21 +86,18 @@ typedef struct IL_STATES
 	// Format-specific strings
 	//
 
-	char*		ilTgaId;
-	char*		ilTgaAuthName;
-	char*		ilTgaAuthComment;
-	char*		ilPngAuthName;
-	char*		ilPngTitle;
-	char*		ilPngDescription;
-	char*		ilTifDescription;
-	char*		ilTifHostComputer;
-	char*		ilTifDocumentName;
-	char*		ilTifAuthName;
-	char*		ilCHeader;
-
-
-
-
+	ILchar*		ilTgaId;
+	ILchar*		ilTgaAuthName;
+	ILchar*		ilTgaAuthComment;
+	ILchar*		ilPngAuthName;
+	ILchar*		ilPngTitle;
+	ILchar*		ilPngDescription;
+	ILchar*		ilTifDescription;
+	ILchar*		ilTifHostComputer;
+	ILchar*		ilTifDocumentName;
+	ILchar*		ilTifAuthName;
+	ILchar*		ilCHeader;
+	
 } IL_STATES;
 
 IL_STATES ilStates[IL_ATTRIB_STACK_MAX];

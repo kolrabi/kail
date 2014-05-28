@@ -285,7 +285,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 		ifree(CompData);  // Free it if it was not saved.
 	} while (!SIOeof(io));  //@TODO: Is there any other condition that should end this?
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsROT[] = { 

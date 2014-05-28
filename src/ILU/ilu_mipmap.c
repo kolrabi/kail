@@ -44,17 +44,17 @@ ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Dep
 // Note: No longer changes all textures to powers of 2.
 ILboolean ILAPIENTRY iluBuildMipmaps()
 {
-	iluCurImage = ilGetCurImage();
-	if (iluCurImage == NULL) {
+	ILimage *  Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// Get rid of any existing mipmaps.
-	if (iluCurImage->Mipmaps) {
-		ilCloseImage(iluCurImage->Mipmaps);
-		iluCurImage->Mipmaps = NULL;
+	if (Image->Mipmaps) {
+		ilCloseImage(Image->Mipmaps);
+		Image->Mipmaps = NULL;
 	}
 
-	return iBuildMipmaps(iluCurImage, iluCurImage->Width >> 1, iluCurImage->Height >> 1, iluCurImage->Depth >> 1);
+	return iBuildMipmaps(Image, Image->Width >> 1, Image->Height >> 1, Image->Depth >> 1);
 }

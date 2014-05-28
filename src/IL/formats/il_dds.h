@@ -165,25 +165,15 @@ enum PixFormat
 
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
-void		AdjustVolumeTexture(DDSHEAD *Head, ILuint CompFormat);
-ILboolean	AllocImage(ILimage* image, ILuint CompFormat);
-ILboolean	DdsDecompress(ILuint CompFormat);
-ILboolean	ReadMipmaps(ILuint CompFormat);
 ILuint		DecodePixelFormat();
 void		DxtcReadColor(ILushort Data, Color8888* Out);
 void		DxtcReadColors(const ILubyte* Data, Color8888* Out);
-ILboolean	DecompressARGB(ILuint CompFormat);
-ILboolean	DecompressARGB16(ILuint CompFormat);
 ILboolean	DecompressDXT1(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT2(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT3(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT4(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT5(ILimage *lImage, ILubyte *lCompData);
-ILboolean	Decompress3Dc();
-ILboolean	DecompressAti1n();
-ILboolean	DecompressRXGB();
 ILboolean	iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
-ILboolean	DecompressFloat(ILuint lCompFormat);
 void		CorrectPreMult();
 void		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
 ILboolean	iSaveDdsInternal(ILimage *);

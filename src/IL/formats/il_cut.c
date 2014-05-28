@@ -165,7 +165,7 @@ iLoadCutInternal(ILimage* image) {
 		image->Pal.Palette[3*i+2] = i;
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsCUT[] = { 

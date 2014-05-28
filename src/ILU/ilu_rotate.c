@@ -20,41 +20,43 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 	ILimage	*Temp, *Temp1, *CurImage = NULL;
 	ILenum	PalType = 0;
 
-	iluCurImage = ilGetCurImage();
-	if (iluCurImage == NULL) {
+	ILimage *  Image = iGetCurImage();
+	ILimage *  BaseImage = Image;
+	if (Image == NULL) {
 		ilSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	if (iluCurImage->Format == IL_COLOUR_INDEX) {
-		PalType = iluCurImage->Pal.PalType;
-		CurImage = iluCurImage;
-		iluCurImage = iConvertImage(iluCurImage, ilGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
+	if (Image->Format == IL_COLOUR_INDEX) {
+		PalType = Image->Pal.PalType;
+		CurImage = Image;
+		Image = iConvertImage(Image, ilGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
 	}
 
-	Temp = iluRotate_(iluCurImage, Angle);
+	Temp = iluRotate_(Image, Angle);
 	if (Temp != NULL) {
 		if (PalType != 0) {
-			ilCloseImage(iluCurImage);
+			ilCloseImage(Image);
 			Temp1 = iConvertImage(Temp, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
 			ilCloseImage(Temp);
 			Temp = Temp1;
 			ilSetCurImage(CurImage);
 		}
-		ilTexImage(Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
+		// FIXME:
+		ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
 		if (PalType != 0) {
-			iluCurImage = ilGetCurImage();
-			iluCurImage->Pal.PalSize = Temp->Pal.PalSize;
-			iluCurImage->Pal.PalType = Temp->Pal.PalType;
-			iluCurImage->Pal.Palette = (ILubyte*)ialloc(Temp->Pal.PalSize);
-			if (iluCurImage->Pal.Palette == NULL) {
+			Image = BaseImage;
+			Image->Pal.PalSize = Temp->Pal.PalSize;
+			Image->Pal.PalType = Temp->Pal.PalType;
+			Image->Pal.Palette = (ILubyte*)ialloc(Temp->Pal.PalSize);
+			if (Image->Pal.Palette == NULL) {
 				ilCloseImage(Temp);
 				return IL_FALSE;
 			}
-			memcpy(iluCurImage->Pal.Palette, Temp->Pal.Palette, Temp->Pal.PalSize);
+			memcpy(Image->Pal.Palette, Temp->Pal.Palette, Temp->Pal.PalSize);
 		}
 
-		iluCurImage->Origin = Temp->Origin;
+		Image->Origin = Temp->Origin;
 		ilCloseImage(Temp);
 		return IL_TRUE;
 	}
@@ -68,12 +70,12 @@ ILboolean ILAPIENTRY iluRotate3D(ILfloat x, ILfloat y, ILfloat z, ILfloat Angle)
 
 // return IL_FALSE;
 
-	iluCurImage = ilGetCurImage();
-	Temp = iluRotate3D_(iluCurImage, x, y, z, Angle);
+	ILimage *  Image = iGetCurImage();
+	Temp = iluRotate3D_(Image, x, y, z, Angle);
 	if (Temp != NULL) {
-		ilTexImage(Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
-		iluCurImage->Origin = Temp->Origin;
-		ilSetPal(&Temp->Pal);
+		ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
+		Image->Origin = Temp->Origin;
+		iSetPal(Image, &Temp->Pal);
 		ilCloseImage(Temp);
 		return IL_TRUE;
 	}
@@ -131,12 +133,12 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 
 	ilClearImage_(Rotated);
 
-	ShortPtr = (ILushort*)iluCurImage->Data;
-	IntPtr = (ILuint*)iluCurImage->Data;
-	DblPtr = (ILdouble*)iluCurImage->Data;
+	ShortPtr = (ILushort*)Image->Data;
+	IntPtr = (ILuint*)Image->Data;
+	DblPtr = (ILdouble*)Image->Data;
 
 	//if (iluFilter == ILU_NEAREST) {
-	switch (iluCurImage->Bpc)
+	switch (Image->Bpc)
 	{
 		case 1:  // Byte-based (most images)
 			if (Angle == 90.0) {

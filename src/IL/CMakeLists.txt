@@ -43,7 +43,6 @@ SET                     ( SOURCES
                           formats/il_mdl.c
                           formats/il_mng.c
                           formats/il_mp3.c
-                          formats/il_pal.c
                           formats/il_pal_jasc.c
                           formats/il_pal_halo.c
                           formats/il_pal_act.c
@@ -85,12 +84,14 @@ SET                     ( SOURCES
                           il_kail.c
                           il_main.c
                           il_manip.c
+                          il_pal.c
                           il_profiles.c
                           il_register.c
                           il_size.c
                           il_skia.cc
                           il_stack.c
                           il_states.c
+                          il_string.c
                           il_utility.c
                         )
 

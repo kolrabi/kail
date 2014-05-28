@@ -529,7 +529,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	}
 
 	ilBindImage(CurName);  // Set to parent image first.
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

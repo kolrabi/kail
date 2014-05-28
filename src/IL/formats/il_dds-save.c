@@ -1272,7 +1272,8 @@ ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Heig
 	return Buffer;
 }
 
+// TODO: move to il_api.c
 ILuint ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
-	return iGetDXTCData(iCurImage, Buffer, BufferSize, DXTCFormat);
+	return iGetDXTCData(iGetCurImage(), Buffer, BufferSize, DXTCFormat);
 }
 

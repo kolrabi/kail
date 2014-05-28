@@ -205,7 +205,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

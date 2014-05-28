@@ -107,7 +107,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	memcpy(Image->Pal.Palette, ilDefaultQ2Pal, 768);
 
 	SIOseek(io, Header.Offsets[0], IL_SEEK_SET);
-	if (SIOread(io, iCurImage->Data, Header.Width * Header.Height, 1) != 1)
+	if (SIOread(io, Image->Data, Header.Width * Header.Height, 1) != 1)
 		goto cleanup_error;
 
 	for (i = 0; i < 3; i++) {
@@ -117,7 +117,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	}
 
 	// Fixes all images, even mipmaps.
-	return ilFixImage();
+	return IL_TRUE;
 
 cleanup_error:
 	for (i = 0; i < 3; i++) {

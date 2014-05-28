@@ -61,7 +61,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 	else  // 4
 		Image->Format = IL_RGBA;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 // Internal function used to load the raw data.

@@ -207,10 +207,10 @@ iInitFormats() {
     entry = entry->next;
   }
 
-  _ilLoadExt = (ILchar*)ialloc(loadExtLen);
+  _ilLoadExt = (ILchar*)ialloc(loadExtLen * sizeof(ILchar));
   imemclear(_ilLoadExt, loadExtLen);
 
-  _ilSaveExt = (ILchar*)ialloc(saveExtLen);
+  _ilSaveExt = (ILchar*)ialloc(saveExtLen * sizeof(ILchar));
   imemclear(_ilSaveExt, saveExtLen);
 
   entry = FormatHead;

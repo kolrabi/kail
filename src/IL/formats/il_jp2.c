@@ -216,7 +216,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 
 	jas_image_destroy(Jp2Image);
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

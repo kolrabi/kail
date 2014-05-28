@@ -104,7 +104,8 @@ ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Dep
 	\return Boolean value of failure or success*/
 ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data)
 {
-	return ilTexImage_(iCurImage, Width, Height, Depth, Bpp, Format, Type, Data);
+	ILimage *Image = iGetCurImage();
+	return ilTexImage_(Image, Width, Height, Depth, Bpp, Format, Type, Data);
 }
 
 
@@ -185,12 +186,13 @@ ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Heig
 */
 ILboolean ILAPIENTRY ilSetData(void *Data)
 {
-	if (iCurImage == NULL) {
+	ILimage *Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
-	return ilTexSubImage_(iCurImage, Data);
+	return ilTexSubImage_(Image, Data);
 }
 
 
@@ -220,12 +222,13 @@ ILAPI ILboolean ILAPIENTRY ilTexSubImage_(ILimage *Image, void *Data)
 	\return ILubyte pointer to image data.*/
 ILubyte* ILAPIENTRY ilGetData(void)
 {
-	if (iCurImage == NULL) {
+	ILimage *Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 	
-	return iCurImage->Data;
+	return Image->Data;
 }
 
 
@@ -237,12 +240,13 @@ ILubyte* ILAPIENTRY ilGetData(void)
 	\return ILubyte pointer to image palette data.*/
 ILubyte* ILAPIENTRY ilGetPalette(void)
 {
-	if (iCurImage == NULL) {
+	ILimage *Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 	
-	return iCurImage->Pal.Palette;
+	return Image->Pal.Palette;
 }
 
 
@@ -552,12 +556,13 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 //! Clears the current bound image to the values specified in ilClearColour
 ILboolean ILAPIENTRY ilClearImage()
 {
-	if (iCurImage == NULL) {
+	ILimage *Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
-	return ilClearImage_(iCurImage);
+	return ilClearImage_(Image);
 }
 
 
@@ -648,23 +653,7 @@ ILAPI ILboolean ILAPIENTRY ilClearImage_(ILimage *Image)
 	return IL_TRUE;
 }
 
-
-//! Overlays the image found in Src on top of the current bound image at the coords specified.
-ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord)
-{
-	ILuint	Width, Height, Depth;
-	ILuint	Dest;
-	
-	Dest = ilGetCurName();
-	ilBindImage(Source);
-	Width = iCurImage->Width;  Height = iCurImage->Height;  Depth = iCurImage->Depth;
-	ilBindImage(Dest);
-
-	return ilBlit(Source, XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
-}
-
-//@NEXT DestX,DestY,DestZ must be set to ILuint
-ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
+ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
@@ -678,49 +667,45 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
 	ILboolean	DoAlphaBlend = IL_FALSE;
 	ILubyte 	*SrcTemp;
 	ILfloat		ResultAlpha;
+
 	// Check if the destination image really exists
-	if (DestName == 0 || iCurImage == NULL) {
+	if (DestName == 0 || Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
-	Dest = iCurImage;
+	Dest = Image;
+
+	// check source image
+	Src = iGetImage(Source);
+	if (Source == 0 || Src == NULL) {
+		ilSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 	
 	// set the destination image to upper left origin
 	if (Dest->Origin == IL_ORIGIN_LOWER_LEFT) {  // Dest
 		DestFlipped = IL_TRUE;
-		ilFlipImage();
+		iFlipImage(Dest);
 	}
 	//determine alpha support
 	DoAlphaBlend = ilIsEnabled(IL_BLIT_BLEND);
 
-	//DestOrigin = Dest->Origin;
-	ilBindImage(Source);
-	
-	// Check if the source image really exists
-	if (iCurImage == NULL) {
-		ilSetError(IL_INVALID_PARAM);
-		return IL_FALSE;
-	}
-
-	Src = iCurImage;
-	
 	//@TODO test if coordinates are inside the images (hard limit for source)
 	
 	// set the source image to upper left origin
 	if (Src->Origin == IL_ORIGIN_LOWER_LEFT)
 	{
-		SrcTemp = iGetFlipped(iCurImage);
+		SrcTemp = iGetFlipped(Src);
 		if (SrcTemp == NULL)
 		{
-			ilBindImage(DestName);
 			if (DestFlipped)
-				ilFlipImage();
+				iFlipImage(Dest);
 			return IL_FALSE;
 		}
 	}
 	else
 	{
-		SrcTemp = iCurImage->Data;
+		SrcTemp = Src->Data;
 	}
 	
 	// convert source image to match the destination image type and format
@@ -817,16 +802,39 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
 		}
 	}
 	
-	if (SrcTemp != iCurImage->Data)
+	if (SrcTemp != Src->Data)
 		ifree(SrcTemp);
 	
-	ilBindImage(DestName);
 	if (DestFlipped)
-		ilFlipImage();
+		iFlipImage(Dest);
 	
 	ifree(Converted);
-	
 	return IL_TRUE;
+}
+
+
+//! Overlays the image found in Src on top of the current bound image at the coords specified.
+//! TODO: move to il_api.c
+ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord)
+{
+	ILuint	Width, Height, Depth;
+	ILimage *Image = iGetCurImage();
+	
+	Width = Image->Width;  
+	Height = Image->Height;  
+	Depth = Image->Depth;
+
+	return iBlit(Image, Source, XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
+}
+
+//@NEXT DestX,DestY,DestZ must be set to ILuint
+// TODO: il_api.c
+ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
+                                           ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
+                                           ILuint Width, ILuint Height, ILuint Depth)
+{
+	ILimage *Image = iGetCurImage();
+	return iBlit(Image, Source, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
 }
 
 
@@ -997,18 +1005,15 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
 //! Copies everything from Src to the current bound image.
 ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
 {
-	ILuint DestName = ilGetCurName();
-	ILimage *DestImage = iCurImage, *SrcImage;
+	ILimage *DestImage = iGetCurImage();
+	ILimage *SrcImage = iGetImage(Src);
 	
-	if (iCurImage == NULL || DestName == 0) {
+	if (SrcImage == NULL || SrcImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
-	ilBindImage(Src);
-	SrcImage = iCurImage;
-	ilBindImage(DestName);
-	ilTexImage(SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
+	ilTexImage_(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
 	ilCopyImageAttr(DestImage, SrcImage);
 	
 	return IL_TRUE;
@@ -1016,6 +1021,7 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
 
 
 // Creates a copy of Src and returns it.
+// TODO: rename to iCloneImage
 ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
 {
 	ILimage *Dest;
@@ -1042,9 +1048,10 @@ ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
 ILuint ILAPIENTRY ilCloneCurImage()
 {
 	ILuint Id;
-	ILimage *CurImage;
+	ILimage *SrcImage = iGetCurImage();
+	ILimage *DestImage;
 	
-	if (iCurImage == NULL) {
+	if (SrcImage == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
 		return 0;
 	}
@@ -1053,13 +1060,10 @@ ILuint ILAPIENTRY ilCloneCurImage()
 	if (Id == 0)
 		return 0;
 	
-	CurImage = iCurImage;
-	
-	ilBindImage(Id);
-	ilTexImage(CurImage->Width, CurImage->Height, CurImage->Depth, CurImage->Bpp, CurImage->Format, CurImage->Type, CurImage->Data);
-	ilCopyImageAttr(iCurImage, CurImage);
-	
-	iCurImage = CurImage;
+	DestImage = iGetImage(Id);
+
+	ilTexImage_(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
+	ilCopyImageAttr(DestImage, SrcImage);
 	
 	return Id;
 }

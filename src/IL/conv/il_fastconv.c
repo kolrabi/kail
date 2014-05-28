@@ -16,13 +16,13 @@
 #include "altivec_typeconversion.h"
 #endif
 
-ILboolean iFastConvert(ILenum DestFormat)
+ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 {
-	ILubyte		*BytePtr = iCurImage->Data;
-	ILushort	*ShortPtr = (ILushort*)iCurImage->Data;
-	ILuint		*IntPtr = (ILuint*)iCurImage->Data;
-	ILfloat		*FloatPtr = (ILfloat*)iCurImage->Data;
-	ILdouble	*DblPtr = (ILdouble*)iCurImage->Data;
+	ILubyte		*BytePtr = Image->Data;
+	ILushort	*ShortPtr = (ILushort*)Image->Data;
+	ILuint		*IntPtr = (ILuint*)Image->Data;
+	ILfloat		*FloatPtr = (ILfloat*)Image->Data;
+	ILdouble	*DblPtr = (ILdouble*)Image->Data;
 
 #ifndef ALTIVEC_GCC
 	ILuint		SizeOfData, i=0;
@@ -37,17 +37,17 @@ ILboolean iFastConvert(ILenum DestFormat)
 	{
 		case IL_RGB:
 		case IL_BGR:
-			if (iCurImage->Format != IL_RGB && iCurImage->Format != IL_BGR)
+			if (Image->Format != IL_RGB && Image->Format != IL_BGR)
 				return IL_FALSE;
 
-			switch (iCurImage->Type)
+			switch (Image->Type)
 			{
 				case IL_BYTE:
 				case IL_UNSIGNED_BYTE:
 				#ifdef ALTIVEC_GCC
-					abc2cba_byte(BytePtr,iCurImage->SizeOfData,BytePtr);
+					abc2cba_byte(BytePtr,Image->SizeOfData,BytePtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 3;
+					SizeOfData = Image->SizeOfData / 3;
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -74,9 +74,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 				case IL_SHORT:
 				case IL_UNSIGNED_SHORT:
 				#ifdef ALTIVEC_GCC
-					abc2cba_short(ShortPtr,iCurImage->SizeOfData,ShortPtr);
+					abc2cba_short(ShortPtr,Image->SizeOfData,ShortPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 6;  // 3*2
+					SizeOfData = Image->SizeOfData / 6;  // 3*2
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -103,9 +103,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 				case IL_INT:
 				case IL_UNSIGNED_INT:
 				#ifdef ALTIVEC_GCC
-					abc2cba_int(IntPtr,iCurImage->SizeOfData,IntPtr);
+					abc2cba_int(IntPtr,Image->SizeOfData,IntPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 12;  // 3*4
+					SizeOfData = Image->SizeOfData / 12;  // 3*4
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -131,9 +131,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 					
 				case IL_FLOAT:
 				#ifdef ALTIVEC_GCC
-					abc2cba_float(FloatPtr,iCurImage->SizeOfData,FloatPtr);
+					abc2cba_float(FloatPtr,Image->SizeOfData,FloatPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 12;  // 3*4
+					SizeOfData = Image->SizeOfData / 12;  // 3*4
 					for (i = 0; i < SizeOfData; i++) {
 						TempFloat = FloatPtr[0];
 						FloatPtr[0] = FloatPtr[2];
@@ -145,9 +145,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 
 				case IL_DOUBLE:
 				#ifdef ALTIVEC_GCC
-					abc2cba_double(DblPtr,iCurImage->SizeOfData,DblPtr);
+					abc2cba_double(DblPtr,Image->SizeOfData,DblPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 24;  // 3*8
+					SizeOfData = Image->SizeOfData / 24;  // 3*8
 					for (i = 0; i < SizeOfData; i++) {
 						TempDbl = DblPtr[0];
 						DblPtr[0] = DblPtr[2];
@@ -161,17 +161,17 @@ ILboolean iFastConvert(ILenum DestFormat)
 
 		case IL_RGBA:
 		case IL_BGRA:
-			if (iCurImage->Format != IL_RGBA && iCurImage->Format != IL_BGRA)
+			if (Image->Format != IL_RGBA && Image->Format != IL_BGRA)
 				return IL_FALSE;
 
-			switch (iCurImage->Type)
+			switch (Image->Type)
 			{
 				case IL_BYTE:
 				case IL_UNSIGNED_BYTE:
 				#ifdef ALTIVEC_GCC
-					abcd2cbad_byte(BytePtr,iCurImage->SizeOfData,BytePtr);
+					abcd2cbad_byte(BytePtr,Image->SizeOfData,BytePtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 4;
+					SizeOfData = Image->SizeOfData / 4;
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -199,9 +199,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 				case IL_SHORT:
 				case IL_UNSIGNED_SHORT:
 				#ifdef ALTIVEC_GCC
-					abcd2cbad_short(ShortPtr,iCurImage->SizeOfData,ShortPtr);
+					abcd2cbad_short(ShortPtr,Image->SizeOfData,ShortPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 8;  // 4*2
+					SizeOfData = Image->SizeOfData / 8;  // 4*2
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -228,9 +228,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 				case IL_INT:
 				case IL_UNSIGNED_INT:
 				#ifdef ALTIVEC_GCC
-					abcd2cbad_int(IntPtr,iCurImage->SizeOfData,IntPtr);
+					abcd2cbad_int(IntPtr,Image->SizeOfData,IntPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 16;  // 4*4
+					SizeOfData = Image->SizeOfData / 16;  // 4*4
 					#ifdef USE_WIN32_ASM
 						__asm
 						{
@@ -256,9 +256,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 
 				case IL_FLOAT:
 				#ifdef ALTIVEC_GCC
-					abcd2cbad_float(FloatPtr,iCurImage->SizeOfData,FloatPtr);
+					abcd2cbad_float(FloatPtr,Image->SizeOfData,FloatPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 16;  // 4*4
+					SizeOfData = Image->SizeOfData / 16;  // 4*4
 					for (i = 0; i < SizeOfData; i++) {
 						TempFloat = FloatPtr[0];
 						FloatPtr[0] = FloatPtr[2];
@@ -270,9 +270,9 @@ ILboolean iFastConvert(ILenum DestFormat)
 
 				case IL_DOUBLE:
 				#ifdef ALTIVEC_GCC
-					abcd2cbad_double(DblPtr,iCurImage->SizeOfData,DblPtr);
+					abcd2cbad_double(DblPtr,Image->SizeOfData,DblPtr);
 				#else
-					SizeOfData = iCurImage->SizeOfData / 32;  // 4*8
+					SizeOfData = Image->SizeOfData / 32;  // 4*8
 					for (i = 0; i < SizeOfData; i++) {
 						TempDbl = DblPtr[0];
 						DblPtr[0] = DblPtr[2];

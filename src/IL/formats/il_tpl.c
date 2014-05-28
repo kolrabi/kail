@@ -497,7 +497,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		}
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

@@ -329,7 +329,7 @@ finish:
 	if (Read == IL_FALSE)
 		return IL_FALSE;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsPIC[] = { 

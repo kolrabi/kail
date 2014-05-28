@@ -202,7 +202,8 @@ IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
 	ILuint	Size;
 	ILubyte	*Buffer;
 
-	Image = ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
+	Image = ilutCurImage;
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -293,7 +294,7 @@ IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Devi
 	D3DFORMAT		Format;
 	ILimage			*Image;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -378,7 +379,7 @@ ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image)
 	Width = Image->Width;
 	Height = Image->Height;
 
-	CurImage = ilGetCurImage();
+	CurImage = iGetCurImage();
 	MipImage = ilCopyImage_(CurImage);
 	ilSetCurImage(MipImage);
 	if (!iluBuildMipmaps()) {
@@ -441,17 +442,19 @@ ILAPI ILboolean ILAPIENTRY ilutD3D8LoadSurface(IDirect3DDevice8 *Device, IDirect
 	ILuint				y, x;
 	ILushort			dwColor;
 
+  ILimage *ilutCurImage = iGetCurImage();
+
 	IDirect3DSurface8_GetDesc(Surface, &d3dsd);
 
 	bHasAlpha = (d3dsd.Format == D3DFMT_A8R8G8B8 || d3dsd.Format == D3DFMT_A1R5G5B5);
 
 	if (bHasAlpha) {
-		if (!ilTexImage(d3dsd.Width, d3dsd.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(ilutCurImage, d3dsd.Width, d3dsd.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 	}
 	else {
-		if (!ilTexImage(d3dsd.Width, d3dsd.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(ilutCurImage, d3dsd.Width, d3dsd.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 	}

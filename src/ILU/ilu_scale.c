@@ -22,9 +22,9 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim)
 		return IL_FALSE;
 	}
 
-	iluCurImage = ilGetCurImage();
-	return iluScale((ILuint)(iluCurImage->Width * XDim), (ILuint)(iluCurImage->Height * YDim),
-					(ILuint)(iluCurImage->Depth * ZDim));
+	ILimage *  Image = iGetCurImage();
+	return iluScale((ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
+					(ILuint)(Image->Depth * ZDim));
 }
 
 
@@ -40,13 +40,13 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 	ILenum		PalType;
 	ILenum		Origin;
 
-	iluCurImage = ilGetCurImage();
-	if (iluCurImage == NULL) {
+	ILimage *  Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	if (iluCurImage->Width == Width && iluCurImage->Height == Height && iluCurImage->Depth == Depth)
+	if (Image->Width == Width && Image->Height == Height && Image->Depth == Depth)
 		return IL_TRUE;
 
 	// A parameter of 0 is not valid.  Let's just assume that the user wanted a value of 1 instead.
@@ -54,7 +54,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 	if (Height == 0) Height = 1;
 	if (Depth == 0)  Depth = 1;
 
-	if ((iluCurImage->Width<Width) || (iluCurImage->Height<Height)) // only do special scale if there is some zoom?
+	if ((Image->Width<Width) || (Image->Height<Height)) // only do special scale if there is some zoom?
 	{
 		switch (iluFilter)
 		{
@@ -65,43 +65,43 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 			case ILU_SCALE_LANCZOS3:
 			case ILU_SCALE_MITCHELL:
 
-				iluCurImage = ilGetCurImage();
-				if (iluCurImage == NULL) {
+				Image = iGetCurImage();
+				if (Image == NULL) {
 					ilSetError(ILU_ILLEGAL_OPERATION);
 					return IL_FALSE;
 				}
 
 				// Not supported yet.
-				if (iluCurImage->Type != IL_UNSIGNED_BYTE ||
-					iluCurImage->Format == IL_COLOUR_INDEX ||
-					iluCurImage->Depth > 1) {
+				if (Image->Type != IL_UNSIGNED_BYTE ||
+					Image->Format == IL_COLOUR_INDEX ||
+					Image->Depth > 1) {
 						ilSetError(ILU_ILLEGAL_OPERATION);
 						return IL_FALSE;
 				}
 
-				if (iluCurImage->Width > Width) // shrink width first
+				if (Image->Width > Width) // shrink width first
 				{
-					Origin = iluCurImage->Origin;
-					Temp = iluScale_(iluCurImage, Width, iluCurImage->Height, iluCurImage->Depth);
+					Origin = Image->Origin;
+					Temp = iluScale_(Image, Width, Image->Height, Image->Depth);
 					if (Temp != NULL) {
-						if (!ilTexImage(Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+						if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 							ilCloseImage(Temp);
 							return IL_FALSE;
 						}
-						iluCurImage->Origin = Origin;
+						Image->Origin = Origin;
 						ilCloseImage(Temp);
 					}
 				}
-				else if (iluCurImage->Height > Height) // shrink height first
+				else if (Image->Height > Height) // shrink height first
 				{
-					Origin = iluCurImage->Origin;
-					Temp = iluScale_(iluCurImage, iluCurImage->Width, Height, iluCurImage->Depth);
+					Origin = Image->Origin;
+					Temp = iluScale_(Image, Image->Width, Height, Image->Depth);
 					if (Temp != NULL) {
-						if (!ilTexImage(Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+						if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 							ilCloseImage(Temp);
 							return IL_FALSE;
 						}
-						iluCurImage->Origin = Origin;
+						Image->Origin = Origin;
 						ilCloseImage(Temp);
 					}
 				}
@@ -111,16 +111,16 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 	}
 
 
-	Origin = iluCurImage->Origin;
-	UsePal = (iluCurImage->Format == IL_COLOUR_INDEX);
-	PalType = iluCurImage->Pal.PalType;
-	Temp = iluScale_(iluCurImage, Width, Height, Depth);
+	Origin = Image->Origin;
+	UsePal = (Image->Format == IL_COLOUR_INDEX);
+	PalType = Image->Pal.PalType;
+	Temp = iluScale_(Image, Width, Height, Depth);
 	if (Temp != NULL) {
-		if (!ilTexImage(Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+		if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 			ilCloseImage(Temp);
 			return IL_FALSE;
 		}
-		iluCurImage->Origin = Origin;
+		Image->Origin = Origin;
 		ilCloseImage(Temp);
 		if (UsePal) {
 			if (!ilConvertImage(IL_COLOUR_INDEX, IL_UNSIGNED_BYTE))
@@ -139,12 +139,12 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
 	ILimage	*Scaled, *CurImage, *ToScale;
 	ILenum	Format; // , PalType;
 
-	CurImage = ilGetCurImage();
+	CurImage = iGetCurImage();
 	Format = Image->Format;
 	if (Format == IL_COLOUR_INDEX) {
 		ilSetCurImage(Image);
 		// PalType = Image->Pal.PalType;
-		ToScale = iConvertImage(iluCurImage, ilGetPalBaseType(Image->Pal.PalType), iluCurImage->Type);
+		ToScale = iConvertImage(Image, ilGetPalBaseType(Image->Pal.PalType), Image->Type);
 	}
 	else {
 		ToScale = Image;

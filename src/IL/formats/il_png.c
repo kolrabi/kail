@@ -87,7 +87,7 @@ ILboolean iLoadPngInternal(ILimage* image)
 
 	readpng_cleanup(&data);
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

@@ -17,23 +17,23 @@
 #include "ilu_internal.h"
 
 ILconst_string iluErrorStringsGerman[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] = {
-	IL_TEXT("Ungültiger Enumerator"),
-    IL_TEXT("Kein Speicher verfügbar"),
-	IL_TEXT("Das Format wird noch nicht unterstützt"),
+	IL_TEXT("Ung\u00fcltiger Enumerator"),
+  IL_TEXT("Kein Speicher verf\u00fcgbar"),
+	IL_TEXT("Das Format wird noch nicht unterst\u00fctzt"),
 	IL_TEXT("Interner Fehler"),
-	IL_TEXT("Ungültiger Wert"),
-    IL_TEXT("Unzulässige Operation"),
-	IL_TEXT("Unzulässiger Datei-Wert"),
-	IL_TEXT("Unzulässiger Datei-Header"),
-	IL_TEXT("Unzulässiger Parameter"),
-	IL_TEXT("Datei konnte nicht geöffnet werden"),
-	IL_TEXT("Ungültiger Erweiterung"),
+	IL_TEXT("Ung\u00fcltiger Wert"),
+  IL_TEXT("Unzul\u00e4ssige Operation"),
+	IL_TEXT("Unzul\u00e4ssiger Datei-Wert"),
+	IL_TEXT("Unzul\u00e4ssiger Datei-Header"),
+	IL_TEXT("Unzul\u00e4ssiger Parameter"),
+	IL_TEXT("Datei konnte nicht ge\u00f6ffnet werden"),
+	IL_TEXT("Ung\u00fcltiger Erweiterung"),
 	IL_TEXT("Die Datei existiert bereits"),
 	IL_TEXT("out format equivalent"),
-	IL_TEXT("Stack Überlauf"),
-    IL_TEXT("Stack Unterlauf"),
-	IL_TEXT("Ungültige Konvertierung"),
-	IL_TEXT("Unzulässige Abmessungen"),
+	IL_TEXT("Stack \u00dcberlauf"),
+  IL_TEXT("Stack Unterlauf"),
+	IL_TEXT("Ung\u00fcltige Konvertierung"),
+	IL_TEXT("Unzul\u00e4ssige Abmessungen"),
 	IL_TEXT("Fehler beim Lesen der Datei")
 };
 

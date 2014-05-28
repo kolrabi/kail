@@ -114,7 +114,7 @@ static ILboolean iLoadPcxInternal(ILimage* image) {
 	if (!bPcx)
 		return IL_FALSE;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

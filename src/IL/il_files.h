@@ -21,7 +21,8 @@
 #include <IL/il.h>
 
 // Declaration of default read/write functions, used internally e.g. for ilLoadImage
-__FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpen(ILconst_string FileName);
+__FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpenR(ILconst_string FileName);
+__FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpenW(ILconst_string FileName);
 __FILES_EXTERN void       ILAPIENTRY iDefaultClose(ILHANDLE Handle);
 __FILES_EXTERN ILint      ILAPIENTRY iDefaultGetc(ILHANDLE Handle);
 __FILES_EXTERN ILuint     ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number);

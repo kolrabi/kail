@@ -55,7 +55,8 @@ SDL_Surface *ILAPIENTRY ilutConvertToSDLSurface(unsigned int flags)
 	ILubyte		*Dest, *Data;
 	ILimage		*Image;
 
-	Image = ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
+	Image = ilutCurImage;
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -186,7 +187,7 @@ SDL_Surface* ILAPIENTRY ilutSDLSurfaceLoadImage(ILstring FileName)
 // Unfinished
 ILboolean ILAPIENTRY ilutSDLSurfaceFromBitmap(SDL_Surface *Bitmap)
 {
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -197,7 +198,7 @@ ILboolean ILAPIENTRY ilutSDLSurfaceFromBitmap(SDL_Surface *Bitmap)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	return IL_TRUE;

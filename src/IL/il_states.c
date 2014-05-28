@@ -138,25 +138,22 @@ ILconst_string ILAPIENTRY ilGetString(ILenum StringName)
 
 
 // Clips a string to a certain length and returns a new string.
-// FIXME: String is really made of ILchars. convert to chars
-char *iClipString(char *String, ILuint MaxLen)
+char *iClipString(ILconst_string String_, ILuint MaxLen)
 {
-  char  *Clipped;
   ILuint  Length;
 
-  if (String == NULL)
+#ifdef _UNICODE
+  char *Clipped = iMultiByteFromWide(String_);
+#else
+  char *Clipped = iCharStrDup(String_);
+#endif
+
+  if (Clipped == NULL)
     return NULL;
 
-  Length = iCharStrLen(String);  //ilStrLen(String);
-
-  Clipped = (char*)ialloc((MaxLen + 1) * sizeof(char) /*sizeof(ILchar)*/);  // Terminating NULL makes it +1.
-  if (Clipped == NULL) {
-    return NULL;
-  }
-
-  memcpy(Clipped, String, MaxLen * sizeof(char) /*sizeof(ILchar)*/);
-  Clipped[Length] = 0;
-
+  Length = iCharStrLen(Clipped);
+  if (Length >= MaxLen)
+    Clipped[MaxLen] = 0;
   return Clipped;
 }
 
@@ -335,16 +332,16 @@ ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode)
 //@TODO: This may get much more complex with mipmaps under faces, etc.
 ILuint iGetActiveNum(ILenum Type)
 {
-  ILimage *BaseImage;
   ILuint Num = 0;
+  ILimage *BaseImage = iGetImage(ilGetCurName());
+  ILimage *CurImage = iGetCurImage();
 
-  if (iCurImage == NULL) {
+  if (BaseImage == NULL || CurImage == NULL) {
     ilSetError(IL_ILLEGAL_OPERATION);
     return 0;
   }
 
-  BaseImage = iGetBaseImage();
-  if (BaseImage == iCurImage)
+  if (BaseImage == CurImage)
     return 0;
 
   switch (Type)
@@ -355,7 +352,7 @@ ILuint iGetActiveNum(ILenum Type)
         if (BaseImage == NULL)
           return 0;
         Num++;
-        if (BaseImage == iCurImage)
+        if (BaseImage == CurImage)
           return Num;
       } while ((BaseImage = BaseImage->Next));
       break;
@@ -365,7 +362,7 @@ ILuint iGetActiveNum(ILenum Type)
         if (BaseImage == NULL)
           return 0;
         Num++;
-        if (BaseImage == iCurImage)
+        if (BaseImage == CurImage)
           return Num;
       } while ((BaseImage = BaseImage->Mipmaps));
       break;
@@ -375,7 +372,7 @@ ILuint iGetActiveNum(ILenum Type)
         if (BaseImage == NULL)
           return 0;
         Num++;
-        if (BaseImage == iCurImage)
+        if (BaseImage == CurImage)
           return Num;
       } while ((BaseImage = BaseImage->Layers));
       break;
@@ -385,7 +382,7 @@ ILuint iGetActiveNum(ILenum Type)
         if (BaseImage == NULL)
           return 0;
         Num++;
-        if (BaseImage == iCurImage)
+        if (BaseImage == CurImage)
           return Num;
       } while ((BaseImage = BaseImage->Faces));
       break;
@@ -413,7 +410,7 @@ void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param)
       *Param = ilStates[ilCurrentPos].ilCompression;
       break;
     case IL_CUR_IMAGE:
-      if (iCurImage == NULL) {
+      if (iGetCurImage() == NULL) {
         ilSetError(IL_ILLEGAL_OPERATION);
         break;
       }
@@ -525,7 +522,7 @@ void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param)
       break;
 
     default:
-            iGetIntegervImage(iCurImage, Mode, Param);
+            iGetIntegervImage(iGetCurImage(), Mode, Param);
   }
 
   return;
@@ -831,20 +828,20 @@ void ILAPIENTRY ilPushAttrib(ILuint Bits)
     if (ilStates[ilCurrentPos].ilCHeader)
       ifree(ilStates[ilCurrentPos].ilCHeader);
 
-    ilStates[ilCurrentPos].ilTgaId = _strdup(ilStates[ilCurrentPos-1].ilTgaId);
-    ilStates[ilCurrentPos].ilTgaAuthName = _strdup(ilStates[ilCurrentPos-1].ilTgaAuthName);
-    ilStates[ilCurrentPos].ilTgaAuthComment = _strdup(ilStates[ilCurrentPos-1].ilTgaAuthComment);
-    ilStates[ilCurrentPos].ilPngAuthName = _strdup(ilStates[ilCurrentPos-1].ilPngAuthName);
-    ilStates[ilCurrentPos].ilPngTitle = _strdup(ilStates[ilCurrentPos-1].ilPngTitle);
-    ilStates[ilCurrentPos].ilPngDescription = _strdup(ilStates[ilCurrentPos-1].ilPngDescription);
+    ilStates[ilCurrentPos].ilTgaId = iStrDup(ilStates[ilCurrentPos-1].ilTgaId);
+    ilStates[ilCurrentPos].ilTgaAuthName = iStrDup(ilStates[ilCurrentPos-1].ilTgaAuthName);
+    ilStates[ilCurrentPos].ilTgaAuthComment = iStrDup(ilStates[ilCurrentPos-1].ilTgaAuthComment);
+    ilStates[ilCurrentPos].ilPngAuthName = iStrDup(ilStates[ilCurrentPos-1].ilPngAuthName);
+    ilStates[ilCurrentPos].ilPngTitle = iStrDup(ilStates[ilCurrentPos-1].ilPngTitle);
+    ilStates[ilCurrentPos].ilPngDescription = iStrDup(ilStates[ilCurrentPos-1].ilPngDescription);
 
     //2003-09-01: added tif strings
-    ilStates[ilCurrentPos].ilTifDescription = _strdup(ilStates[ilCurrentPos-1].ilTifDescription);
-    ilStates[ilCurrentPos].ilTifHostComputer = _strdup(ilStates[ilCurrentPos-1].ilTifHostComputer);
-    ilStates[ilCurrentPos].ilTifDocumentName = _strdup(ilStates[ilCurrentPos-1].ilTifDocumentName);
-    ilStates[ilCurrentPos].ilTifAuthName = _strdup(ilStates[ilCurrentPos-1].ilTifAuthName);
+    ilStates[ilCurrentPos].ilTifDescription = iStrDup(ilStates[ilCurrentPos-1].ilTifDescription);
+    ilStates[ilCurrentPos].ilTifHostComputer = iStrDup(ilStates[ilCurrentPos-1].ilTifHostComputer);
+    ilStates[ilCurrentPos].ilTifDocumentName = iStrDup(ilStates[ilCurrentPos-1].ilTifDocumentName);
+    ilStates[ilCurrentPos].ilTifAuthName = iStrDup(ilStates[ilCurrentPos-1].ilTifAuthName);
 
-    ilStates[ilCurrentPos].ilCHeader = _strdup(ilStates[ilCurrentPos-1].ilCHeader);
+    ilStates[ilCurrentPos].ilCHeader = iStrDup(ilStates[ilCurrentPos-1].ilCHeader);
   }
 
   return;
@@ -935,10 +932,22 @@ ILenum iGetHint(ILenum Target)
 }
 
 
-void ILAPIENTRY ilSetString(ILenum Mode, const char *String)
+void ILAPIENTRY ilSetString(ILenum Mode, const char *String_)
 {
-  if (String == NULL) {
+  if (String_ == NULL) {
     ilSetError(IL_INVALID_PARAM);
+    return;
+  }
+
+  ILchar *String;
+#ifdef _UNICODE
+  String = iWideFromMultiByte(String_);
+#else
+  String = iCharStrDup(String_);
+#endif
+
+  if (String == NULL) {
+    ilSetError(IL_INTERNAL_ERROR);
     return;
   }
 
@@ -947,60 +956,60 @@ void ILAPIENTRY ilSetString(ILenum Mode, const char *String)
     case IL_TGA_ID_STRING:
       if (ilStates[ilCurrentPos].ilTgaId)
         ifree(ilStates[ilCurrentPos].ilTgaId);
-      ilStates[ilCurrentPos].ilTgaId = _strdup(String);
+      ilStates[ilCurrentPos].ilTgaId = String;
       break;
     case IL_TGA_AUTHNAME_STRING:
       if (ilStates[ilCurrentPos].ilTgaAuthName)
         ifree(ilStates[ilCurrentPos].ilTgaAuthName);
-      ilStates[ilCurrentPos].ilTgaAuthName = _strdup(String);
+      ilStates[ilCurrentPos].ilTgaAuthName = String;
       break;
     case IL_TGA_AUTHCOMMENT_STRING:
       if (ilStates[ilCurrentPos].ilTgaAuthComment)
         ifree(ilStates[ilCurrentPos].ilTgaAuthComment);
-      ilStates[ilCurrentPos].ilTgaAuthComment = _strdup(String);
+      ilStates[ilCurrentPos].ilTgaAuthComment = String;
       break;
     case IL_PNG_AUTHNAME_STRING:
       if (ilStates[ilCurrentPos].ilPngAuthName)
         ifree(ilStates[ilCurrentPos].ilPngAuthName);
-      ilStates[ilCurrentPos].ilPngAuthName = _strdup(String);
+      ilStates[ilCurrentPos].ilPngAuthName = String;
       break;
     case IL_PNG_TITLE_STRING:
       if (ilStates[ilCurrentPos].ilPngTitle)
         ifree(ilStates[ilCurrentPos].ilPngTitle);
-      ilStates[ilCurrentPos].ilPngTitle = _strdup(String);
+      ilStates[ilCurrentPos].ilPngTitle = String;
       break;
     case IL_PNG_DESCRIPTION_STRING:
       if (ilStates[ilCurrentPos].ilPngDescription)
         ifree(ilStates[ilCurrentPos].ilPngDescription);
-      ilStates[ilCurrentPos].ilPngDescription = _strdup(String);
+      ilStates[ilCurrentPos].ilPngDescription = String;
       break;
 
     //2003-09-01: added tif strings
     case IL_TIF_DESCRIPTION_STRING:
       if (ilStates[ilCurrentPos].ilTifDescription)
         ifree(ilStates[ilCurrentPos].ilTifDescription);
-      ilStates[ilCurrentPos].ilTifDescription = _strdup(String);
+      ilStates[ilCurrentPos].ilTifDescription = String;
       break;
     case IL_TIF_HOSTCOMPUTER_STRING:
       if (ilStates[ilCurrentPos].ilTifHostComputer)
         ifree(ilStates[ilCurrentPos].ilTifHostComputer);
-      ilStates[ilCurrentPos].ilTifHostComputer = _strdup(String);
+      ilStates[ilCurrentPos].ilTifHostComputer = String;
       break;
     case IL_TIF_DOCUMENTNAME_STRING:
             if (ilStates[ilCurrentPos].ilTifDocumentName)
         ifree(ilStates[ilCurrentPos].ilTifDocumentName);
-      ilStates[ilCurrentPos].ilTifDocumentName = _strdup(String);
+      ilStates[ilCurrentPos].ilTifDocumentName = String;
       break;
     case IL_TIF_AUTHNAME_STRING:
       if (ilStates[ilCurrentPos].ilTifAuthName)
         ifree(ilStates[ilCurrentPos].ilTifAuthName);
-      ilStates[ilCurrentPos].ilTifAuthName = _strdup(String);
+      ilStates[ilCurrentPos].ilTifAuthName = String;
       break;
 
     case IL_CHEAD_HEADER_STRING:
       if (ilStates[ilCurrentPos].ilCHeader)
         ifree(ilStates[ilCurrentPos].ilCHeader);
-      ilStates[ilCurrentPos].ilCHeader = _strdup(String);
+      ilStates[ilCurrentPos].ilCHeader = String;
       break;
 
     default:
@@ -1013,6 +1022,7 @@ void ILAPIENTRY ilSetString(ILenum Mode, const char *String)
 
 void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param)
 {
+  ILimage *CurImage = iGetCurImage();
   switch (Mode)
   {
     // Integer values
@@ -1052,32 +1062,32 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param)
 
     // Image specific values
     case IL_IMAGE_DURATION:
-      if (iCurImage == NULL) {
+      if (CurImage == NULL) {
         ilSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      iCurImage->Duration = Param;
+      CurImage->Duration = Param;
       return;
     case IL_IMAGE_OFFX:
-      if (iCurImage == NULL) {
+      if (CurImage == NULL) {
         ilSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      iCurImage->OffX = Param;
+      CurImage->OffX = Param;
       return;
     case IL_IMAGE_OFFY:
-      if (iCurImage == NULL) {
+      if (CurImage == NULL) {
         ilSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      iCurImage->OffY = Param;
+      CurImage->OffY = Param;
       return;
     case IL_IMAGE_CUBEFLAGS:
-      if (iCurImage == NULL) {
+      if (CurImage == NULL) {
         ilSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      iCurImage->CubeFlags = Param;
+      CurImage->CubeFlags = Param;
       break;
  
     // Format specific values

@@ -61,7 +61,7 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 	if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData)
 		return IL_FALSE;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsFTX[] = { 

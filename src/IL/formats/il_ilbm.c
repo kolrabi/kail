@@ -460,7 +460,7 @@ done:
     return IL_FALSE;
   }
 
-  return ilFixImage();
+  return IL_TRUE;
 }
 
 ILconst_string iFormatExtsILBM[] = { 

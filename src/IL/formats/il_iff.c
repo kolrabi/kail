@@ -258,7 +258,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
 
     }
   }
-  return ilFixImage();
+  return IL_TRUE;
 }
 
 /*
