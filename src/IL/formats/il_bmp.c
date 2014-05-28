@@ -846,9 +846,6 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 			return IL_FALSE;
 	}
 
-	if (!ilFixImage())
-		return IL_FALSE;
-
 	return bBitmap;
 }
 

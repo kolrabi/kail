@@ -137,7 +137,7 @@ static ILboolean iLoadIwiInternal(ILimage *Image) {
 	if (!IwiReadImage(Image, &Header, NumMips))
 		return IL_FALSE;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 // Helper function to convert IWI formats to DevIL formats and Bpp.

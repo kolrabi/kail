@@ -424,13 +424,7 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 	num_alloced_colors=NumCols;
 	if(num_alloced_colors<256) { num_alloced_colors=256; }
 
-
-	NewImage = iCurImage;
-	iCurImage = Image;
-	TempImage = iConvertImage(iCurImage, IL_RGB, IL_UNSIGNED_BYTE);
-	iCurImage = NewImage;
-
-
+	TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
 
 	if (TempImage == NULL)
 		return NULL;

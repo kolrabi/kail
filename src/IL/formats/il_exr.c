@@ -248,7 +248,7 @@ ILboolean iLoadExrInternal()
 	}
 
 	// Converts the image to predefined type, format and/or origin if needed.
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

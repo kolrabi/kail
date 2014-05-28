@@ -168,9 +168,11 @@ typedef double                      ILclampd;
 #if _UNICODE
   #define ILchar                    wchar_t
   #define IL_TEXT(s)                L##s
+  #define IL_SFMT                   "%ls"
 #else
   #define ILchar                    char
   #define IL_TEXT(s)                s
+  #define IL_SFMT                   "%s"
 #endif //_UNICODE
 
 //if we use a define instead of a typedef,
@@ -537,7 +539,7 @@ typedef ILenum    (ILAPIENTRY *IL_SAVEPROC) (ILconst_string);
 
 // State
 ILAPI void      ILAPIENTRY ilBindImage(ILuint Image);
-ILAPI ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode);
+ILAPI ILboolean ILAPIENTRY IL_DEPRECATED(ilCompressFunc(ILenum Mode)); // value not used anywhere
 ILAPI ILboolean ILAPIENTRY ilDisable(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilEnable(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilFormatFunc(ILenum Mode);

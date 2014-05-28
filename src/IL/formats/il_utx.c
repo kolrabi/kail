@@ -508,7 +508,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 	ifree(ImportTable);
 	ifree(ExportTable);
 	ifree(Palettes);
-	return ilFixImage();
+	return IL_TRUE;
 
 error:
 

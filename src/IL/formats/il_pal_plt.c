@@ -22,9 +22,6 @@ static ILboolean iLoadPltPal(ILimage *Image);
 // Hasn't been tested
 //	@TODO: Test the thing!
 
-//! Loads a .col palette file
-// FIXME: restore / don't disturb image palette on failure
-
 //! Loads an .plt palette file.
 static ILboolean iLoadPltPal(ILimage *Image) {
 	if (Image == NULL) {
@@ -34,33 +31,36 @@ static ILboolean iLoadPltPal(ILimage *Image) {
 
 	SIO *io = &Image->io;
 
-	if (Image->Pal.Palette && Image->Pal.PalSize > 0 && Image->Pal.PalType != IL_PAL_NONE) {
+	ILpal NewPal;
+	imemclear(&NewPal, sizeof(NewPal));
+
+	NewPal.PalSize = GetLittleUInt(io);
+	if (NewPal.PalSize == 0) {
+		return IL_FALSE;
+	}
+
+	NewPal.PalType = IL_PAL_RGB24;
+	NewPal.Palette = (ILubyte*)ialloc(NewPal.PalSize);
+	if (!NewPal.Palette) {
+		return IL_FALSE;
+	}
+
+	if (SIOread(io, NewPal.Palette, NewPal.PalSize, 1) != 1) {
+		ifree(NewPal.Palette);
+		return IL_FALSE;
+	}
+
+	if ( Image->Pal.Palette 
+		&& Image->Pal.PalSize > 0 
+		&& Image->Pal.PalType != IL_PAL_NONE ) {
 		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
 	}
-
-	Image->Pal.PalSize = GetLittleUInt(&Image->io);
-	if (Image->Pal.PalSize == 0) {
-		return IL_FALSE;
-	}
-
-	Image->Pal.PalType = IL_PAL_RGB24;
-	Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
-	if (!Image->Pal.Palette) {
-		return IL_FALSE;
-	}
-
-	if (SIOread(io, Image->Pal.Palette, Image->Pal.PalSize, 1) != 1) {
-		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
-		return IL_FALSE;
-	}
-
+	Image->Pal = NewPal;
 	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsPLT_PAL[] = { 
-	"plt",
+	IL_TEXT("plt"),
   NULL 
 };
 

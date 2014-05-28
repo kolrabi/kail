@@ -123,7 +123,7 @@ static ILboolean iLoadPspInternal(ILimage *Image) {
 		return IL_FALSE;
 
 	Cleanup(&ctx);
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 static ILboolean ReadGenAttributes(PSP_CTX *ctx)

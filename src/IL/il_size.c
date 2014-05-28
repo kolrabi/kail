@@ -81,10 +81,11 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
 //  A return value of 0 is an error.
 ILAPI ILuint	ILAPIENTRY ilDetermineSize(ILenum Type)
 {
-	if (!iCurImage)
+	ILimage *Image = iGetCurImage();
+	if (!Image)
 		return 0;
 
-	iSetOutputFake(iCurImage);  // Sets iputc, iwrite, etc. to functions above.
+	iSetOutputFake(Image);  // Sets iputc, iwrite, etc. to functions above.
 	ilSaveFuncs(Type);
-	return iCurImage->io.lumpSize;
+	return Image->io.lumpSize;
 }

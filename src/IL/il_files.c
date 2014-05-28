@@ -42,9 +42,9 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
   #ifdef _WIN32
     return (ILHANDLE)_wfopen(FileName, L"rb");
   #else
-    size_t length = wcstombs(FileName, NULL, 0);
+    size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
-    length = wcstombs(FileName, tmp, length);
+    length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
     return (ILHANDLE)fopen(tmp, "rb");
   #endif
@@ -52,7 +52,7 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
 }
 
 
-void ILAPIENTRY iDefaultCloseR(ILHANDLE Handle) {
+void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
   fclose((FILE*)Handle);
   return;
 }
@@ -110,9 +110,9 @@ ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
   #ifdef _WIN32
     return (ILHANDLE)_wfopen(FileName, L"wb");
   #else
-    size_t length = wcstombs(FileName, NULL, 0);
+    size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
-    length = wcstombs(FileName, tmp, length);
+    length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
     return (ILHANDLE)fopen(tmp, "wb");
   #endif
@@ -150,7 +150,8 @@ void ILAPIENTRY iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEo
 ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
 {
-  if (iCurImage == NULL) {
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
     ilSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
@@ -160,17 +161,18 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
     return IL_FALSE;
   }
 
-  iSetRead(iCurImage, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
+  iSetRead(Image, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
   return IL_TRUE;
 }
 
 void ILAPIENTRY iResetRead(ILimage *image) {
-  iSetRead(image, iDefaultOpenR, iDefaultCloseR, iDefaultEof, iDefaultGetc, 
+  iSetRead(image, iDefaultOpenR, iDefaultClose, iDefaultEof, iDefaultGetc, 
         iDefaultRead, iDefaultSeek, iDefaultTell);
 }
 
 void ILAPIENTRY ilResetRead() {
-  iResetRead(iCurImage);
+  ILimage *Image = iGetCurImage();
+  iResetRead(Image);
 }
 
 void ILAPIENTRY iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
@@ -187,7 +189,9 @@ void ILAPIENTRY iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPut
 ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
   fTellProc Tell, fWriteProc Write)
 {
-  if (iCurImage == NULL) {
+  ILimage *Image = iGetCurImage();
+
+  if (Image == NULL) {
     ilSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
@@ -197,24 +201,33 @@ ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc
     return IL_FALSE;
   }
 
-  iSetWrite(iCurImage, Open, Close, Putc, Seek, Tell, Write);
+  iSetWrite(Image, Open, Close, Putc, Seek, Tell, Write);
   return IL_TRUE;
 }
 
 void ILAPIENTRY iResetWrite(ILimage *image) {
-  iSetWrite(image, iDefaultOpenW, iDefaultCloseW, iDefaultPutc,
+  iSetWrite(image, iDefaultOpenW, iDefaultClose, iDefaultPutc,
         iDefaultSeek, iDefaultTell, iDefaultWrite);
 }
 
 void ILAPIENTRY ilResetWrite()
 {
-  iResetWrite(iCurImage);
+  ILimage *Image = iGetCurImage();
+  iResetWrite(Image);
 }
 
 // Tells DevIL that we're reading from a file, not a lump
 void iSetInputFile(ILimage *image, ILHANDLE File)
 {
   if (image != NULL) {
+    if (image->io.handle != NULL) {
+      if (image->io.close == NULL) {
+        iTrace("**** Image already has an open file but no close function. Possible leak.");
+      } else {
+        SIOclose(&image->io);
+      }
+    }
+
     image->io.handle          = File;
     image->io.ReadFileStart   = image->io.tell(image->io.handle);
   }
@@ -225,6 +238,14 @@ void iSetInputFile(ILimage *image, ILHANDLE File)
 void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 {
   if (image != NULL) {
+    if (image->io.handle != NULL) {
+      if (image->io.close == NULL) {
+        iTrace("**** Image already has an open file but no close function. Possible leak.");
+      } else {
+        SIOclose(&image->io);
+      }
+    }
+
     image->io.eof         = iEofLump;
     image->io.getchar     = iGetcLump;
     image->io.read        = iReadLump;
@@ -243,6 +264,14 @@ void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 // Tells DevIL that we're writing to a file, not a lump
 void iSetOutputFile(ILimage *image, ILHANDLE File) {
   if (image != NULL) {
+    if (image->io.handle != NULL) {
+      if (image->io.close == NULL) {
+        iTrace("**** Image already has an open file but no close function. Possible leak.");
+      } else {
+        SIOclose(&image->io);
+      }
+    }
+
     image->io.handle = File;
     image->io.WriteFileStart  = image->io.tell(image->io.handle);
   }
@@ -254,6 +283,14 @@ void iSetOutputFile(ILimage *image, ILHANDLE File) {
 void iSetOutputFake(ILimage *image)
 {
   if (image != NULL) {
+    if (image->io.handle != NULL) {
+      if (image->io.close == NULL) {
+        iTrace("**** Image already has an open file but no close function. Possible leak.");
+      } else {
+        SIOclose(&image->io);
+      }
+    }
+
     image->io.putchar = iSizePutc;
     image->io.seek = iSizeSeek;
     image->io.tell = iSizeTell;
@@ -274,6 +311,14 @@ void iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
   if (Lump == NULL || image == NULL)
     return;
 
+  if (image->io.handle != NULL) {
+    if (image->io.close == NULL) {
+      iTrace("**** Image already has an open file but no close function. Possible leak.");
+    } else {
+      SIOclose(&image->io);
+    }
+  }
+
   image->io.putchar  = iPutcLump;
   image->io.seek = iSeekLump;
   image->io.tell = iTellLump;
@@ -287,9 +332,10 @@ void iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
 
 
 ILuint64 ILAPIENTRY ilGetLumpPos() {
-  if (!iCurImage || iCurImage->io.lump == NULL)
+  ILimage *Image = iGetCurImage();
+  if (!Image || Image->io.lump == NULL)
     return 0;
-  return iCurImage->io.lumpPos;
+  return Image->io.lumpPos;
 }
 
 //

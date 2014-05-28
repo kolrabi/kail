@@ -338,7 +338,7 @@ iLoadBlp1(ILimage *TargetImage) {
 	// Set the origin (always upper left).
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 // Internal function used to get the BLP header from the current file.
@@ -677,7 +677,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 		//default:
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsBLP[] = { 

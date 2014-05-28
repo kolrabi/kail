@@ -142,7 +142,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 		}
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

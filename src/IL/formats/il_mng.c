@@ -280,7 +280,7 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 	mng_read(mng);
 	mng_display(mng);
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 

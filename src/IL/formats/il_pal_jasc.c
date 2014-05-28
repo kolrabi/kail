@@ -21,6 +21,9 @@ static ILboolean iIsValidJascPal(SIO *io);
 static ILboolean iSaveJascPal(ILimage *Image);
 static ILboolean iLoadJascPal(ILimage *Image);
 
+#define BUFFLEN 256
+#define PALBPP	3
+
 static ILboolean iIsValidJascPal(SIO *io) {
 	ILuint 		First = SIOtell(io);
 	ILubyte   Head[9];
@@ -36,8 +39,6 @@ static ILboolean iLoadJascPal(ILimage *Image)
 {
 	ILuint NumColours, i, c;
 	char Buff[BUFFLEN];
-	ILboolean Error = IL_FALSE;
-	ILpal *Pal = &iCurImage->Pal;
 
 	if (Image == NULL) {
 		ilSetError(IL_ILLEGAL_OPERATION);
@@ -45,42 +46,57 @@ static ILboolean iLoadJascPal(ILimage *Image)
 	}
 
 	SIO *io = &Image->io;
+	ILpal NewPal;
+	imemclear(&NewPal, sizeof(NewPal));
 
-	if (Image->Pal.Palette && Image->Pal.PalSize > 0 && Image->Pal.PalType != IL_PAL_NONE) {
-		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
+	if ( !SIOgetw(io, Buff, BUFFLEN) 
+	  || iCharStrICmp(Buff, "JASC-PAL") ) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
 	}
 
-	SIOgetw(io, Buff, BUFFLEN);
-	if (stricmp(Buff, "JASC-PAL")) {
-		Error = IL_TRUE;
+	if ( !SIOgetw(io, Buff, BUFFLEN) 
+		|| iCharStrICmp(Buff, "0100") ) {
+		ilSetError(IL_INVALID_FILE_HEADER);
+		return IL_FALSE;
 	}
 
-	SIOgetw(io, Buff, BUFFLEN);
-	if (stricmp(Buff, "0100")) {
-		Error = IL_TRUE;
+	if (!SIOgetw(io, Buff, BUFFLEN)) {
+		ilSetError(IL_FILE_READ_ERROR);
+		return IL_FALSE;
 	}
 
-	SIOgetw(io, Buff, BUFFLEN);
-	NumColours = atoi((const char*)Buff);
-	if (NumColours == 0 || Error) {
+	NumColours = atoi(Buff);
+	if (NumColours == 0) {
 		ilSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 	
-	Pal->PalSize = NumColours * PALBPP;
-	Pal->PalType = IL_PAL_RGB24;
-	Pal->Palette = (ILubyte*)ialloc(NumColours * PALBPP);
-	if (Pal->Palette == NULL) {
+	NewPal.PalSize = NumColours * PALBPP;
+	NewPal.PalType = IL_PAL_RGB24;
+	NewPal.Palette = (ILubyte*)ialloc(NumColours * PALBPP);
+	if (NewPal.Palette == NULL) {
 		return IL_FALSE;
 	}
 
 	for (i = 0; i < NumColours; i++) {
 		for (c = 0; c < PALBPP; c++) {
-			SIOgetw(io, Buff, BUFFLEN);
-			Pal->Palette[i * PALBPP + c] = atoi((const char*)Buff);
+			if (!SIOgetw(io, Buff, BUFFLEN)) {
+				ilSetError(IL_FILE_READ_ERROR);
+				ifree(NewPal.Palette);
+				return IL_FALSE;
+			}
+
+			NewPal.Palette[i * PALBPP + c] = atoi(Buff);
 		}
 	}
+
+	if ( Image->Pal.Palette 
+		&& Image->Pal.PalSize > 0 
+		&& Image->Pal.PalType != IL_PAL_NONE) {
+		ifree(Image->Pal.Palette);
+	}
+	Image->Pal = NewPal;
 
 	return IL_TRUE;
 }
@@ -123,7 +139,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsJASC_PAL[] = { 
-	"pal",
+	IL_TEXT("pal"),
   NULL 
 };
 

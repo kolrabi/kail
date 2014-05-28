@@ -134,7 +134,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 		ifree(NewData);
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 
@@ -193,7 +193,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 		ifree(NewData);
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsDOOM[] = { 

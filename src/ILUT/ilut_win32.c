@@ -48,7 +48,7 @@ ILAPI HBITMAP ILAPIENTRY ilutConvertSliceToHBitmap(HDC hDC, ILuint slice)
 	BITMAPINFO	*info = (BITMAPINFO*)buff;
 	RGBQUAD		*pal = info->bmiColors;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -307,7 +307,7 @@ void ILAPIENTRY ilutFreePaddedData(ILubyte *Data)
 // DirectX/GDI insists that all scanlines end on a dword boundary. =(
 ILubyte* ILAPIENTRY ilutGetPaddedData()
 {
-	return iGetPaddedData(ilGetCurImage());
+	return iGetPaddedData(iGetCurImage());
 }
 
 
@@ -316,7 +316,7 @@ void ILAPIENTRY ilutGetBmpInfo(BITMAPINFO *Info)
 {
 	ILuint NewBps, Padding;
 
-	ilutCurImage = ilGetCurImage();
+	ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return;
@@ -365,7 +365,7 @@ ILboolean ILAPIENTRY ilutWinSaveImage(ILstring FileName, HBITMAP Bitmap)
 	ILuint		CurName;
 	ILboolean	Saved;
 	
-	CurName = ilGetCurName();
+	CurName = iGetCurName();
 
 	iBindImageTemp();
 
@@ -391,7 +391,7 @@ HPALETTE ILAPIENTRY ilutGetHPal()
 	ILuint		NumEntries, i;
 	ILenum		CurPalType;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -441,7 +441,7 @@ ILboolean ILAPIENTRY ilutSetHBitmap(HBITMAP Bitmap)
 	ILubyte		*Buffer1 = NULL, *Buffer2 = NULL;
 	ILuint		i, j, PadSize, Bps;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -482,11 +482,11 @@ ILboolean ILAPIENTRY ilutSetHBitmap(HBITMAP Bitmap)
 	}
 
 	if (Info[0].bmiHeader.biBitCount == 24) {
-		ilTexImage(Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
+		ilTexImage_(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
 			(ILubyte)(Info[0].bmiHeader.biBitCount >> 3), IL_BGR, IL_UNSIGNED_BYTE, Buffer2);
 	}
 	else if (Info[0].bmiHeader.biBitCount == 32) {
-		ilTexImage(Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
+		ilTexImage_(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
 			(ILubyte)(Info[0].bmiHeader.biBitCount >> 3), IL_BGRA, IL_UNSIGNED_BYTE, Buffer2);
 	}
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -507,7 +507,7 @@ ILboolean ILAPIENTRY ilutSetHPal(HPALETTE Pal)
 	ILuint			NumEntries, i;
 	ILubyte			*TempPal;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -555,7 +555,7 @@ ILboolean ILAPIENTRY ilutSetWinClipboard()
 	HDC		hDC;
 	ILimage	*TempImage, *CurImage;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -618,7 +618,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 	BITMAPINFOHEADER	*InfoHeader;
 	SIZE_T		Size;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -705,7 +705,7 @@ ILboolean ILAPIENTRY ilutWinPrint(ILuint XPos, ILuint YPos, ILuint Width, ILuint
 	HBITMAP		Bitmap, hReplaced;
 	HDC			hMemDC;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;

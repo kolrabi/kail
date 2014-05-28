@@ -431,7 +431,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_UNSIGNED_BYTE:
 						case IL_BYTE:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_byte(NewData,iCurImage->SizeOfData,NewData);
+							abcd2cbad_byte(NewData,Image->SizeOfData,NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								NewData[i] = ((ILubyte*)(Data))[i+2];
@@ -445,7 +445,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_SHORT:
 						case IL_HALF:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_short((ILushort*)Data,iCurImage->SizeOfData,(ILushort*)NewData);
+							abcd2cbad_short((ILushort*)Data,Image->SizeOfData,(ILushort*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILushort*)(NewData))[i] = ((ILushort*)(Data))[i+2];
@@ -458,7 +458,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_UNSIGNED_INT:
 						case IL_INT:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_int((ILuint*)Data,iCurImage->SizeOfData,(ILuint*)NewData);
+							abcd2cbad_int((ILuint*)Data,Image->SizeOfData,(ILuint*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILuint*)(NewData))[i] = ((ILuint*)(Data))[i+2];
@@ -470,7 +470,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 							break;
 						case IL_FLOAT:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_float(Data,iCurImage->SizeOfData,NewData);
+							abcd2cbad_float(Data,Image->SizeOfData,NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILfloat*)(NewData))[i] = ((ILfloat*)(Data))[i+2];
@@ -482,7 +482,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 							break;
 						case IL_DOUBLE:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_double((ILdouble*)Data,iCurImage->SizeOfData,(ILdouble*)NewData);
+							abcd2cbad_double((ILdouble*)Data,Image->SizeOfData,(ILdouble*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILdouble*)(NewData))[i] = ((ILdouble*)(Data))[i+2];
@@ -814,7 +814,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 							break;
 						case IL_DOUBLE:
 						#ifdef ALTIVEC_GCC
-							abc2cba_double((ILdouble*)Data,iCurImage->SizeOfData,(ILdouble*)NewData);
+							abc2cba_double((ILdouble*)Data,Image->SizeOfData,(ILdouble*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 3) {
 								((ILdouble*)(NewData))[i] = ((ILdouble*)(Data))[i+2];
@@ -1076,7 +1076,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_UNSIGNED_BYTE:
 						case IL_BYTE:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_byte(NewData,iCurImage->SizeOfData,NewData);
+							abcd2cbad_byte(NewData,Image->SizeOfData,NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								NewData[i] = ((ILubyte*)(Data))[i+2];
@@ -1090,7 +1090,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_SHORT:
 						case IL_HALF:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_short((ILushort*)Data,iCurImage->SizeOfData,(ILushort*)NewData);
+							abcd2cbad_short((ILushort*)Data,Image->SizeOfData,(ILushort*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILushort*)(NewData))[i] = ((ILushort*)(Data))[i+2];
@@ -1103,7 +1103,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						case IL_UNSIGNED_INT:
 						case IL_INT:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_int((ILuint*)NewData,iCurImage->SizeOfData,(ILuint*)NewData);
+							abcd2cbad_int((ILuint*)NewData,Image->SizeOfData,(ILuint*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILuint*)(NewData))[i] = ((ILuint*)(Data))[i+2];
@@ -1115,7 +1115,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 							break;
 						case IL_FLOAT:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_float(NewData,iCurImage->SizeOfData,NewData);
+							abcd2cbad_float(NewData,Image->SizeOfData,NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILfloat*)(NewData))[i] = ((ILfloat*)(Data))[i+2];
@@ -1127,7 +1127,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 							break;
 						case IL_DOUBLE:
 						#ifdef ALTIVEC_GCC
-							abcd2cbad_double((ILdouble*)Data,iCurImage->SizeOfData,(ILdouble*)NewData);
+							abcd2cbad_double((ILdouble*)Data,Image->SizeOfData,(ILdouble*)NewData);
 						#else
 							for (i = 0; i < NumPix; i += 4) {
 								((ILdouble*)(NewData))[i] = ((ILdouble*)(Data))[i+2];
@@ -1558,7 +1558,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				/*case IL_COLOUR_INDEX:
-					NewData = (ILubyte*)ialloc(iCurImage->SizeOfData);
+					NewData = (ILubyte*)ialloc(Image->SizeOfData);
 					NewImage->Pal.Palette = (ILubyte*)ialloc(768);
 					if (NewData == NULL || NewImage->Pal.Palette) {
 						ifree(NewImage);
@@ -1572,8 +1572,8 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						}
 					}
 					// Copy the data
-					for (i = 0; i < iCurImage->SizeOfData; i++) {
-						NewData[i] = iCurImage->Data[i];
+					for (i = 0; i < Image->SizeOfData; i++) {
+						NewData[i] = Image->Data[i];
 					}
 					break;*/
 
@@ -1769,7 +1769,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				/*case IL_COLOUR_INDEX:
-					NewData = (ILubyte*)ialloc(iCurImage->SizeOfData);
+					NewData = (ILubyte*)ialloc(Image->SizeOfData);
 					NewImage->Pal.Palette = (ILubyte*)ialloc(768);
 					if (NewData == NULL || NewImage->Pal.Palette) {
 						ifree(NewImage);
@@ -1783,8 +1783,8 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						}
 					}
 					// Copy the data
-					for (i = 0; i < iCurImage->SizeOfData; i++) {
-						NewData[i] = iCurImage->Data[i];
+					for (i = 0; i < Image->SizeOfData; i++) {
+						NewData[i] = Image->Data[i];
 					}
 					break;*/
 
@@ -1921,7 +1921,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 
 
 				/*case IL_COLOUR_INDEX:
-					NewData = (ILubyte*)ialloc(iCurImage->SizeOfData);
+					NewData = (ILubyte*)ialloc(Image->SizeOfData);
 					NewImage->Pal.Palette = (ILubyte*)ialloc(768);
 					if (NewData == NULL || NewImage->Pal.Palette) {
 						ifree(NewImage);
@@ -1935,8 +1935,8 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 						}
 					}
 					// Copy the data
-					for (i = 0; i < iCurImage->SizeOfData; i++) {
-						NewData[i] = iCurImage->Data[i];
+					for (i = 0; i < Image->SizeOfData; i++) {
+						NewData[i] = Image->Data[i];
 					}
 					break;*/
 

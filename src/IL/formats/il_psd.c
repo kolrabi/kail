@@ -132,7 +132,7 @@ static ILboolean iLoadPsdInternal(ILimage* image) {
 
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 static ILboolean ReadPsd(ILimage* image, PSDHEAD *Head) {

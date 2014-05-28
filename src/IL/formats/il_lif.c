@@ -98,7 +98,7 @@ static ILboolean iLoadLifInternal(ILimage *Image) {
 		Image->Data[i]++;
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsLIF[] = { 

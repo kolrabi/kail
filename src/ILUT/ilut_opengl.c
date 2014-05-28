@@ -182,7 +182,7 @@ GLuint ILAPIENTRY ilutGLBindTexImage()
 	GLuint	TexID = 0, Target = GL_TEXTURE_2D;
 	ILimage *Image;
 
-	Image = ilGetCurImage();
+	Image = iGetCurImage();
 	if (Image == NULL)
 		return 0;
 
@@ -255,7 +255,7 @@ ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image
 		return IL_FALSE;
 	}
 
-	OldImage = ilGetCurImage();
+	OldImage = iGetCurImage();
 
 	if (ilutGetBoolean(ILUT_GL_USE_S3TC) && ilGLCompressed2D != NULL) {
 		if (Image->DxtcData != NULL && Image->DxtcSize != 0) {
@@ -341,10 +341,11 @@ ILboolean ILAPIENTRY ilutGLTexImage(GLuint Level)
 {
 	ILimage *Temp;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
+	ilutCurImage = iGetCurImage();
 
 	if (!ilutGetBoolean(ILUT_GL_AUTODETECT_TEXTURE_TARGET))
-		return ilutGLTexImage_(Level, GL_TEXTURE_2D, ilGetCurImage());
+		return ilutGLTexImage_(Level, GL_TEXTURE_2D, iGetCurImage());
 	else {
 		// Autodetect texture target
 
@@ -358,7 +359,7 @@ ILboolean ILAPIENTRY ilutGLTexImage(GLuint Level)
 			return IL_TRUE; //@TODO: check for errors??
 		}
 		else  // 2D texture
-			return ilutGLTexImage_(Level, GL_TEXTURE_2D, ilGetCurImage());
+			return ilutGLTexImage_(Level, GL_TEXTURE_2D, iGetCurImage());
 	}
 }
 
@@ -390,8 +391,7 @@ GLuint ILAPIENTRY ilutGLBindMipmaps()
 ILboolean ILAPIENTRY ilutGLBuildMipmaps()
 {
 	ILimage	*Image;
-
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -422,7 +422,7 @@ ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILuint XOff, ILuint YOff)
 	ILimage	*Image;
 	ILint Width, Height;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -467,7 +467,7 @@ ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILuint XOff, ILuint YOff, ILui
 		return IL_FALSE;
 	}
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -723,7 +723,7 @@ ILboolean ILAPIENTRY ilutGLScreen()
 {
 	ILuint	ViewPort[4];
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -731,7 +731,7 @@ ILboolean ILAPIENTRY ilutGLScreen()
 
 	glGetIntegerv(GL_VIEWPORT, (GLint*)ViewPort);
 
-	if (!ilTexImage(ViewPort[2], ViewPort[3], 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(ilutCurImage, ViewPort[2], ViewPort[3], 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;  // Error already set.
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
 
@@ -803,6 +803,7 @@ ILboolean ILAPIENTRY ilutGLSetTex2D(GLuint TexID)
 {
 	ILubyte *Data;
 	ILuint Width, Height;
+  ILimage *ilutCurImage = iGetCurImage();
 
 	glBindTexture(GL_TEXTURE_2D, TexID);
 
@@ -816,10 +817,11 @@ ILboolean ILAPIENTRY ilutGLSetTex2D(GLuint TexID)
 
 	glGetTexImage(GL_TEXTURE_2D, 0, IL_BGRA, GL_UNSIGNED_BYTE, Data);
 
-	if (!ilTexImage(Width, Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
+	if (!ilTexImage_(ilutCurImage, Width, Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}
+
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
 
 	ifree(Data);
@@ -850,7 +852,8 @@ ILboolean ILAPIENTRY ilutGLSetTex3D(GLuint TexID)
 
 	glGetTexImage(ILGL_TEXTURE_3D, 0, IL_BGRA, GL_UNSIGNED_BYTE, Data);
 
-	if (!ilTexImage(Width, Height, Depth, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
+  ILimage *ilutCurImage = iGetCurImage();
+	if (!ilTexImage_(ilutCurImage, Width, Height, Depth, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}

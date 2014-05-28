@@ -13,14 +13,21 @@ static ILuint image;
 
 static int test_open_read(char **argv) {
   ilBindImage(image);
-  ILimage *ilimage = ilGetCurImage();
+  ILimage *ilimage = iGetCurImage();
 
   printf("!!! %p\n", ilimage);
 
   CHECK(ilimage != NULL);
   CHECK(ilimage->io.openReadOnly != NULL);
 
-  ilimage->io.handle = ilimage->io.openReadOnly(*argv);
+#ifdef _UNICODE
+  wchar_t file[1024];
+  mbstowcs(file, *argv, sizeof(file)/sizeof(wchar_t));
+#else
+  const char *file = *argv;
+#endif
+
+  ilimage->io.handle = ilimage->io.openReadOnly(file);
 
   CHECK(ilimage->io.handle != NULL);
 

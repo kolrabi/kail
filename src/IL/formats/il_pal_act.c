@@ -33,9 +33,6 @@ ILboolean iIsValidActPal(SIO *io) {
 // Hasn't been tested
 //	@TODO: Test the thing!
 
-//! Loads a .col palette file
-// FIXME: restore / don't disturb image palette on failure
-
 //! Loads an .act palette file.
 static ILboolean iLoadActPal(ILimage *Image) {
  	if (Image == NULL) {
@@ -44,27 +41,34 @@ static ILboolean iLoadActPal(ILimage *Image) {
 	}
 
 	SIO *io = &Image->io;
+	ILpal NewPal;
+	imemclear(&NewPal, sizeof(NewPal));
 
-	if (Image->Pal.Palette && Image->Pal.PalSize > 0 && Image->Pal.PalType != IL_PAL_NONE) {
+	NewPal.PalType = IL_PAL_RGB24;
+	NewPal.PalSize = 768;
+	NewPal.Palette = (ILubyte*)ialloc(768);
+	if (!NewPal.Palette) {
+		return IL_FALSE;
+	}
+
+	if (SIOread(io, NewPal.Palette, 1, 768) != 768) {
+		ifree(NewPal.Palette);
+		return IL_FALSE;
+	}
+
+	if ( Image->Pal.Palette 
+		&& Image->Pal.PalSize > 0 
+		&& Image->Pal.PalType != IL_PAL_NONE ) {
 		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
 	}
 
-	Image->Pal.PalType = IL_PAL_RGB24;
-	Image->Pal.PalSize = 768;
-	Image->Pal.Palette = (ILubyte*)ialloc(768);
-	if (!Image->Pal.Palette) {
-		return IL_FALSE;
-	}
+	Image->Pal = NewPal;
 
-	if (SIOread(io, Image->Pal.Palette, 1, 768) != 768) {
-		return IL_FALSE;
-	}
 	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsACT_PAL[] = { 
-	"act",
+	IL_TEXT("act"),
   NULL 
 };
 

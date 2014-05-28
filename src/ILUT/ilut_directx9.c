@@ -171,7 +171,7 @@ D3DCUBEMAP_FACES iToD3D9Cube(ILuint cube)
     int i;
     Texture=NULL;
     Image=NULL;
-    ilutCurImage = ilGetCurImage();
+    ILimage *ilutCurImage = iGetCurImage();
     if (ilutCurImage == NULL) {
     	ilSetError(ILUT_ILLEGAL_OPERATION);
         return NULL;
@@ -381,7 +381,8 @@ IDirect3DTexture9* ILAPIENTRY ilutD3D9Texture(IDirect3DDevice9 *Device)
 	ILuint	Size;
 	ILubyte	*Buffer;
 
-	Image = ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
+	Image = ilutCurImage;
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -520,7 +521,7 @@ IDirect3DVolumeTexture9* ILAPIENTRY ilutD3D9VolumeTexture(IDirect3DDevice9 *Devi
 	D3DFORMAT		Format;
 	ILimage			*Image;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
@@ -561,6 +562,7 @@ ILimage *MakeD3D9Compliant(IDirect3DDevice9 *Device, D3DFORMAT *DestFormat)
 
 	(void)Device;
 
+  ILimage *ilutCurImage = iGetCurImage();
 	ilutFormat = ilutCurImage->Format;
 	nConversionType = ilutCurImage->Type;
 
@@ -684,7 +686,8 @@ ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image)
 	if (NumMips == 1)
 		return IL_TRUE;
 		
-	CurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
+	CurImage = ilutCurImage;
 	MipImage = Image;
 	iGetIntegervImage(MipImage, IL_NUM_MIPMAPS, (ILint*) &srcMips);
 	if ( srcMips != NumMips-1) {
@@ -785,18 +788,19 @@ ILAPI ILboolean ILAPIENTRY ilutD3D9LoadSurface(IDirect3DDevice9 *Device, IDirect
 	ILubyte				*Image, *ImageAux, *Data;
 	ILuint				y, x;
 	ILushort			dwColor;
+  ILimage *ilutCurImage = iGetCurImage();
 
 	IDirect3DSurface9_GetDesc(Surface, &d3dsd);
 
 	bHasAlpha = (ILboolean)(d3dsd.Format == D3DFMT_A8R8G8B8 || d3dsd.Format == D3DFMT_A1R5G5B5);
 
 	if (bHasAlpha) {
-		if (!ilTexImage(d3dsd.Width, d3dsd.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(ilutCurImage, d3dsd.Width, d3dsd.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 	}
 	else {
-		if (!ilTexImage(d3dsd.Width, d3dsd.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL)) {
+		if (!ilTexImage_(ilutCurImage, d3dsd.Width, d3dsd.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 	}

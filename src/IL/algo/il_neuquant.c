@@ -414,10 +414,7 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
 
   ctx.netsizethink = NumCols;
 
-  NewImage  = iCurImage;
-  iCurImage = Image;
-  TempImage = iConvertImage(iCurImage, IL_BGR, IL_UNSIGNED_BYTE);
-  iCurImage = NewImage;
+  TempImage = iConvertImage(Image, IL_BGR, IL_UNSIGNED_BYTE);
   sample    = ilGetInteger(IL_NEU_QUANT_SAMPLE);
 
   if (TempImage == NULL)

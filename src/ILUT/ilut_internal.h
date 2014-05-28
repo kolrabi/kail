@@ -68,6 +68,6 @@ void	ilutDefaultStates(void);
 // globals
 //
 
-extern ILimage *ilutCurImage;
+// extern ILimage *ilutCurImage;
 
 #endif//INTERNAL_H

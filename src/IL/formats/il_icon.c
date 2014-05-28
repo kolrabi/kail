@@ -409,7 +409,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   ifree(IconImages);
   ifree(DirEntries);
 
-  return ilFixImage();
+  return IL_TRUE;
 
 file_read_error:
   if (IconImages) {

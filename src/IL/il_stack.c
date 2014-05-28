@@ -17,6 +17,8 @@
 #include "il_internal.h"
 #include "il_stack.h"
 
+static void iSetImage0();
+
 // Global variables for il_stack.c
 ILuint    StackSize = 0;
 ILuint    LastUsed = 0;
@@ -25,6 +27,7 @@ ILimage   **ImageStack = NULL;
 iFree   *FreeNames = NULL;
 ILboolean OnExit = IL_FALSE;
 ILboolean ParentImage = IL_TRUE;
+ILimage *iCurImage = NULL;
 
 //! Creates Num images and puts their index in Images - similar to glGenTextures().
 void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images)
@@ -66,6 +69,20 @@ ILuint ILAPIENTRY ilGenImage()
     ILuint i;
     ilGenImages(1,&i);
     return i;
+}
+
+ILimage * ILAPIENTRY iGetImage(ILuint Image)
+{
+  if (ImageStack == NULL || StackSize == 0) {
+    return NULL;
+  }
+
+  // If the user requests a high image name.
+  if (Image >= StackSize) {
+    return NULL;
+  }
+
+  return ImageStack[Image];
 }
 
 //! Makes Image the current active image - similar to glBindTexture().
@@ -555,7 +572,7 @@ ILAPI ILuint ILAPIENTRY ilGetCurName()
 
 
 // Returns the current image.
-ILAPI ILimage* ILAPIENTRY ilGetCurImage()
+ILAPI ILimage* ILAPIENTRY iGetCurImage()
 {
   return iCurImage;
 }
@@ -688,8 +705,7 @@ void ILAPIENTRY ilShutDown()
 
 
 // Initializes the image stack's first entry (default image) -- ONLY CALL ONCE!
-void iSetImage0()
-{
+static void iSetImage0() {
   if (ImageStack == NULL)
     if (!iEnlargeStack())
       return;

@@ -208,7 +208,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	}
 	ifree(scanline);
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 //

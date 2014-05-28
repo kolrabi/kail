@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <string.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,6 +29,8 @@ extern "C" {
 #include <IL/devil_internal_exports.h>
 #include "il_files.h"
 #include "il_endian.h"
+#include "il_string.h"
+#include "il_pal.h"
 
 // Windows-specific
 #ifdef _WIN32
@@ -51,33 +52,6 @@ extern "C" {
 	#include <windows.h>
 #endif//_WIN32
 
-#ifdef _UNICODE
-	#define IL_TEXT(s) L##s
-	#ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
-		#define iStrICmp wcscasecmp
-		#define _wfopen fopen
-	#else
-		#define iStrIcmp wcsicmp
-	#endif
-	#define iStrCmp wcscmp
-	#define iStrCpy wcscpy
-	#define iStrCat wcscat
-	#define iStrLen wcslen
-#else
-	#ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
-		#define stricmp strcasecmp
-	#endif
-
-	#define iStrIcmp stricmp
-
-	#define IL_TEXT(s) s
-	#define iStrCmp strcmp
-	#define iStrCpy strcpy
-	#define iStrCat strcat
-	#define iStrLen strlen
-#endif
-
-#define iCharStrLen strlen
 
 #ifdef IL_INLINE_ASM
 	#if (defined (_MSC_VER) && defined(_WIN32))  // MSVC++ only
@@ -95,10 +69,7 @@ extern "C" {
 	#endif
 #endif
 
-
-// Global struct for storing image data - defined in il_internal.cpp
-extern ILimage *iCurImage;
-
+#define BIT(n) (1<<n)
 #define BIT_0	0x00000001
 #define BIT_1	0x00000002
 #define BIT_2	0x00000004
@@ -133,11 +104,10 @@ extern ILimage *iCurImage;
 #define BIT_31	0x80000000
 #define NUL '\0'  // Easier to type and ?portable?
 
-// int iStrCmp(ILconst_string src1, ILconst_string src2);
-
 //
 // Some math functions
 //
+
 // A fast integer squareroot, completely accurate for x < 289.
 // Taken from http://atoms.org.uk/sqrt/
 // There is also a version that is accurate for all integers
@@ -147,46 +117,40 @@ int iSqrt(int x);
 //
 // Useful miscellaneous functions
 //
-ILboolean	iCheckExtension(ILconst_string Arg, ILconst_string Ext);
-ILbyte*		IL_DEPRECATED(iFgets(char *buffer, ILuint maxlen));
-ILboolean	iFileExists(ILconst_string FileName);
-ILstring	iGetExtension(ILconst_string FileName);
-ILstring	iStrDup(ILconst_string Str);
-ILuint		ilStrNCpy(ILconst_string Str);
-ILuint		ilCharStrLen(const char *Str);
-// Miscellaneous functions
+
+ILboolean			iFileExists(ILconst_string FileName);
 void					ilDefaultStates(void);
-ILenum					iGetHint(ILenum Target);
+ILenum				iGetHint(ILenum Target);
 ILint					iGetInt(ILenum Mode);
 void					ilRemoveRegistered(void);
-ILAPI void ILAPIENTRY	ilSetCurImage(ILimage *Image);
-ILAPI ILimage * ILAPIENTRY	ilGetCurImage();
 
 //
 // Rle compression
 //
+
 #define		IL_TGACOMP 0x01
 #define		IL_PCXCOMP 0x02
 #define		IL_SGICOMP 0x03
-#define     IL_BMPCOMP 0x04
+#define   IL_BMPCOMP 0x04
+
 ILboolean	ilRleCompressLine(ILubyte *ScanLine, ILuint Width, ILubyte Bpp, ILubyte *Dest, ILuint *DestWidth, ILenum CompressMode);
 ILuint		ilRleCompress(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte *Dest, ILenum CompressMode, ILuint *ScanTable);
-void		iSetImage0(void);
+
 // DXTC compression
-ILuint			ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
-ILAPI ILubyte*	ILAPIENTRY ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
-ILAPI ILubyte*	ILAPIENTRY ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
+
+ILuint											ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
+ILAPI ILubyte*	ILAPIENTRY 	ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
+ILAPI ILubyte*	ILAPIENTRY 	ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
 
 // Conversion functions
-ILboolean	ilAddAlpha(void);
-ILboolean	ilAddAlphaKey(ILimage *Image);
-ILboolean	iFastConvert(ILenum DestFormat);
-ILboolean	ilFixCur(void);
-ILboolean	ilFixImage(void);
-ILboolean	ilRemoveAlpha(void);
-ILboolean	ilSwapColours(void);
-// Palette functions
-ILboolean	iCopyPalette(ILpal *Dest, ILpal *Src);
+// ILboolean	ilAddAlpha(void);
+ILboolean	iAddAlpha(ILimage *Image);
+ILboolean	iRemoveAlpha(ILimage *Image);
+ILboolean	iAddAlphaKey(ILimage *Image);
+ILboolean	iFastConvert(ILimage *Image, ILenum DestFormat);
+ILboolean	iSwapColours(ILimage *Image);
+ILboolean iFixImages(ILimage *Image);
+
 // Miscellaneous functions
 char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 
@@ -258,11 +222,11 @@ extern FILE *iTraceOut;
 #define iAssert(x)
 #endif
 
+ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image);
+ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format);
+
 #ifdef __cplusplus
 }
 #endif
-
-ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image);
-ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format);
 
 #endif//INTERNAL_H

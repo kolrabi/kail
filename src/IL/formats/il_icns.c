@@ -127,7 +127,7 @@ static ILboolean iLoadIcnsInternal(ILimage* image) {
 		}
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 
 icns_error:
 	return IL_FALSE;

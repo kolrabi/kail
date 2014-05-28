@@ -123,7 +123,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 		SIOseek(io, Position, IL_SEEK_SET);
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsMDL[] = { 

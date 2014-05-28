@@ -27,8 +27,8 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance)
 	ILuint		*IntPtr;
 	ILubyte		*RegionMask;
 
-	iluCurImage = ilGetCurImage();
-	if (iluCurImage == NULL) {
+	ILimage *  Image = iGetCurImage();
+	if (Image == NULL) {
 		ilSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
@@ -37,28 +37,28 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance)
 
 	// @TODO:  Change this to work correctly without time()!
 	//srand(time(NULL));
-	NumPix = iluCurImage->SizeOfData / iluCurImage->Bpc;
+	NumPix = Image->SizeOfData / Image->Bpc;
 
-	switch (iluCurImage->Bpc)
+	switch (Image->Bpc)
 	{
 		case 1:
 			Factor = (ILubyte)(Tolerance * (UCHAR_MAX / 2));
 			if (Factor == 0)
 				return IL_TRUE;
 			Factor2 = Factor + Factor;
-			for (i = 0, j = 0; i < NumPix; i += iluCurImage->Bpp, j++) {
+			for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
 				if (RegionMask) {
 					if (!RegionMask[j])
 						continue;
 				}
 				Val = (ILint)((ILint)(rand() % Factor2) - Factor);
-				for (c = 0; c < iluCurImage->Bpp; c++) {
-					if ((ILint)iluCurImage->Data[i + c] + Val > UCHAR_MAX)
-						iluCurImage->Data[i + c] = UCHAR_MAX;
-					else if ((ILint)iluCurImage->Data[i + c] + Val < 0)
-						iluCurImage->Data[i + c] = 0;
+				for (c = 0; c < Image->Bpp; c++) {
+					if ((ILint)Image->Data[i + c] + Val > UCHAR_MAX)
+						Image->Data[i + c] = UCHAR_MAX;
+					else if ((ILint)Image->Data[i + c] + Val < 0)
+						Image->Data[i + c] = 0;
 					else
-						iluCurImage->Data[i + c] += Val;
+						Image->Data[i + c] += Val;
 				}
 			}
 			break;
@@ -67,14 +67,14 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance)
 			if (Factor == 0)
 				return IL_TRUE;
 			Factor2 = Factor + Factor;
-			ShortPtr = (ILushort*)iluCurImage->Data;
-			for (i = 0, j = 0; i < NumPix; i += iluCurImage->Bpp, j++) {
+			ShortPtr = (ILushort*)Image->Data;
+			for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
 				if (RegionMask) {
 					if (!RegionMask[j])
 						continue;
 				}
 				Val = (ILint)((ILint)(rand() % Factor2) - Factor);
-				for (c = 0; c < iluCurImage->Bpp; c++) {
+				for (c = 0; c < Image->Bpp; c++) {
 					if ((ILint)ShortPtr[i + c] + Val > USHRT_MAX)
 						ShortPtr[i + c] = USHRT_MAX;
 					else if ((ILint)ShortPtr[i + c] + Val < 0)
@@ -89,14 +89,14 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance)
 			if (Factor == 0)
 				return IL_TRUE;
 			Factor2 = Factor + Factor;
-			IntPtr = (ILuint*)iluCurImage->Data;
-			for (i = 0, j = 0; i < NumPix; i += iluCurImage->Bpp, j++) {
+			IntPtr = (ILuint*)Image->Data;
+			for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
 				if (RegionMask) {
 					if (!RegionMask[j])
 						continue;
 				}
 				Val = (ILint)((ILint)(rand() % Factor2) - Factor);
-				for (c = 0; c < iluCurImage->Bpp; c++) {
+				for (c = 0; c < Image->Bpp; c++) {
 					if (IntPtr[i + c] + Val > UINT_MAX)
 						IntPtr[i + c] = UINT_MAX;
 					else if ((ILint)IntPtr[i + c] + Val < 0)
@@ -200,23 +200,23 @@ ILboolean ILAPIENTRY iluNoisify()
 	ILuint x, y, c;
 	ILint Val;
 
-	iluCurImage = ilGetCurImage();
-	if (iluCurImage == NULL) {
+	Image = ilGetCurImage();
+	if (Image == NULL) {
 		ilSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	for (y = 0; y < iluCurImage->Height; y++) {
-		for (x = 0; x < iluCurImage->Width; x++) {
+	for (y = 0; y < Image->Height; y++) {
+		for (x = 0; x < Image->Width; x++) {
 			Val = (ILint)(PerlinNoise(x, y) * 50.0);
 
-			for (c = 0; c < iluCurImage->Bpp; c++) {
-				if ((ILint)iluCurImage->Data[y * iluCurImage->Bps + x * iluCurImage->Bpp + c] + Val > 255)
-					iluCurImage->Data[y * iluCurImage->Bps + x * iluCurImage->Bpp + c] = 255;
-				else if ((ILint)iluCurImage->Data[y * iluCurImage->Bps + x * iluCurImage->Bpp + c] + Val < 0)
-					iluCurImage->Data[y * iluCurImage->Bps + x * iluCurImage->Bpp + c] = 0;
+			for (c = 0; c < Image->Bpp; c++) {
+				if ((ILint)Image->Data[y * Image->Bps + x * Image->Bpp + c] + Val > 255)
+					Image->Data[y * Image->Bps + x * Image->Bpp + c] = 255;
+				else if ((ILint)Image->Data[y * Image->Bps + x * Image->Bpp + c] + Val < 0)
+					Image->Data[y * Image->Bps + x * Image->Bpp + c] = 0;
 				else
-					iluCurImage->Data[y * iluCurImage->Bps + x * iluCurImage->Bpp + c] += Val;
+					Image->Data[y * Image->Bps + x * Image->Bpp + c] += Val;
 			}
 		}
 	}

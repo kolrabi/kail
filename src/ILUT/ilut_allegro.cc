@@ -24,7 +24,7 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal)
 	ILimage *TempImage;
 	ILuint i = 0, j = 0;
 
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
@@ -101,7 +101,7 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName)
 // Unfinished
 ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap)
 {
-	ilutCurImage = ilGetCurImage();
+  ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
 		ilSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -112,7 +112,7 @@ ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!ilTexImage_(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;  // I have no idea.

@@ -611,7 +611,7 @@ static ILboolean iLoadSgiInternal(ILimage *Image)
 
 	if (!bSgi)
 		return IL_FALSE;
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsSGI[] = { 

@@ -756,7 +756,7 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 	Ctx.LocalPal.Palette = NULL;
 	Ctx.LocalPal.PalSize = 0;
 
-	return Loaded && ilFixImage();
+	return Loaded && IL_TRUE;
 }
 
 // Internal function to get the header and check it.

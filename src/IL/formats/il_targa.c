@@ -129,7 +129,7 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 			
 		case IMAGEDESC_TOPRIGHT:
 			image->Origin = IL_ORIGIN_UPPER_LEFT;
-			iMirror();
+			iMirrorImage(image);
 			break;
 			
 		case IMAGEDESC_BOTLEFT:
@@ -138,11 +138,11 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 			
 		case IMAGEDESC_BOTRIGHT:
 			image->Origin = IL_ORIGIN_LOWER_LEFT;
-			iMirror();
+			iMirrorImage(image);
 			break;
 	}
 	
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
@@ -481,7 +481,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			break;
 		case IL_RGB:
 		case IL_RGBA:
-			ilSwapColours();
+			iSwapColours(image);
 			if (Compress)
 				Type = 10;
 			else
@@ -650,7 +650,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 		ifree(TempData);
 	}
 	if (Format == IL_RGB || Format == IL_RGBA) {
-		ilSwapColours();
+		iSwapColours(image);
 	}
 	
 	if (TempPal != &image->Pal && TempPal != NULL) {

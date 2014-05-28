@@ -95,29 +95,34 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 		return IL_FALSE;
 	}
 
-	if (Image->Pal.Palette && Image->Pal.PalSize > 0 && Image->Pal.PalType != IL_PAL_NONE) {
-		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
-	}
-	Image->Pal.PalType = IL_PAL_RGB24;
-	Image->Pal.PalSize = Size;
-	Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
+	ILpal NewPal;
+	imemclear(&NewPal, sizeof(NewPal));
 
-	if (Image->Pal.Palette == NULL) {
+	NewPal.PalType = IL_PAL_RGB24;
+	NewPal.PalSize = Size;
+	NewPal.Palette = (ILubyte*)ialloc(NewPal.PalSize);
+
+	if (NewPal.Palette == NULL) {
 		return IL_FALSE;
 	}
 
-	for (i = 0; i < Image->Pal.PalSize; i++, TempPal++) {
-		Image->Pal.Palette[i] = (ILubyte)*TempPal;
+	for (i = 0; i < NewPal.PalSize; i++) {
+		NewPal.Palette[i] = (ILubyte)TempPal[i];
 	}
-	TempPal -= Image->Pal.PalSize;
 	ifree(TempPal);
+
+	if ( Image->Pal.Palette 
+		&& Image->Pal.PalSize > 0 
+		&& Image->Pal.PalType != IL_PAL_NONE) {
+		ifree(Image->Pal.Palette);
+	}
+	Image->Pal = NewPal;
 
 	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsHALO_PAL[] = { 
-	"pal",
+	IL_TEXT("pal"),
   NULL 
 };
 

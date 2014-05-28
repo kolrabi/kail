@@ -236,7 +236,7 @@ iLoadFitsInternal(ILimage* image) {
 			}			break;
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 
@@ -389,8 +389,8 @@ iIsValidFits(SIO *io) {
 }
 
 ILconst_string iFormatExtsFITS[] = { 
-	"fit",
-	"fits",
+	IL_TEXT("fit"),
+	IL_TEXT("fits"),
 	NULL 
 };
 

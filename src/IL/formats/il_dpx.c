@@ -287,7 +287,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 	}
 
 finish:
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 static ILboolean 
@@ -301,7 +301,7 @@ iIsValidDpx(SIO *io) {
 }
 
 ILconst_string iFormatExtsDPX[] = { 
-	"dpx",
+	IL_TEXT("dpx"),
 	NULL 
 };
 

@@ -519,7 +519,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 			break;
 	}
 
-	return ilFixImage();
+	return IL_TRUE;
 }
 
 ILconst_string iFormatExtsDICOM[] = { 

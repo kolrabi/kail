@@ -34,7 +34,6 @@ ILboolean iIsValidColPal(SIO *io) {
 //	@TODO: Test the thing!
 
 //! Loads a .col palette file
-// FIXME: restore / don't disturb image palette on failure
 static ILboolean iLoadColPal(ILimage *Image)
 {
 	ILuint		RealFileSize, FileSize;
@@ -46,11 +45,8 @@ static ILboolean iLoadColPal(ILimage *Image)
 	}
 
 	SIO *io = &Image->io;
-
-	if (Image->Pal.Palette && Image->Pal.PalSize > 0 && Image->Pal.PalType != IL_PAL_NONE) {
-		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
-	}
+	ILpal NewPal;
+	imemclear(&NewPal, sizeof(NewPal));
 
 	SIOseek(io, 0, IL_SEEK_END);
 	RealFileSize = SIOtell(io);
@@ -76,26 +72,33 @@ static ILboolean iLoadColPal(ILimage *Image)
 		}
 	}
 
-	Image->Pal.Palette = (ILubyte*)ialloc(768);
-	if (Image->Pal.Palette == NULL) {
+	NewPal.Palette = (ILubyte*)ialloc(768);
+	if (NewPal.Palette == NULL) {
 		return IL_FALSE;
 	}
 
-	if (SIOread(io, Image->Pal.Palette, 1, 768) != 768) {
+	if (SIOread(io, NewPal.Palette, 1, 768) != 768) {
+		ifree(NewPal.Palette);
+		return IL_FALSE;
+	}
+
+	NewPal.PalSize = 768;
+	NewPal.PalType = IL_PAL_RGB24;
+
+	if ( Image->Pal.Palette 
+		&& Image->Pal.PalSize > 0 
+		&& Image->Pal.PalType != IL_PAL_NONE ) {
 		ifree(Image->Pal.Palette);
-		Image->Pal.Palette = NULL;
-		return IL_FALSE;
 	}
 
-	Image->Pal.PalSize = 768;
-	Image->Pal.PalType = IL_PAL_RGB24;
+	Image->Pal = NewPal;
 
 	return IL_TRUE;
 }
 
 
 ILconst_string iFormatExtsCOL_PAL[] = { 
-	"col",
+	IL_TEXT("col"),
   NULL 
 };
 
