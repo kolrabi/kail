@@ -20,13 +20,15 @@
 // Returns a widened version of a string.
 // Make sure to free this after it is used.  Code help from
 //  https://buildsecurityin.us-cert.gov/daisy/bsi-rules/home/g1/769-BSI.html
-#if defined(_UNICODE)
-wchar_t *WideFromMultiByte(const char *Multi)
+wchar_t *iWideFromMultiByte(const char *Multi)
 {
-	ILint	Length;
+	ILsizei	Length;
 	wchar_t	*Temp;
 
-	Length = (ILint)mbstowcs(NULL, (const char*)Multi, 0) + 1; // note error return of -1 is possible
+	if (Multi == NULL)
+		return NULL;
+
+	Length = mbstowcs(NULL, Multi, 0) + 1; // note error return of -1 is possible
 	if (Length == 0) {
 		ilSetError(IL_INVALID_PARAM);
 		return NULL;
@@ -36,11 +38,33 @@ wchar_t *WideFromMultiByte(const char *Multi)
 		return NULL;
 	}
 	Temp = (wchar_t*)ialloc(Length * sizeof(wchar_t));
-	mbstowcs(Temp, (const char*)Multi, Length); 
+	mbstowcs(Temp, Multi, Length); 
 
 	return Temp;
 }
-#endif
+
+char *iMultiByteFromWide(const wchar_t *Wide)
+{
+	ILsizei	Length;
+	char	*	Temp;
+
+	if (Wide == NULL)
+		return NULL;
+
+	Length = wcstombs(NULL, Wide, 0) + 1; // note error return of -1 is possible
+	if (Length == 0) {
+		ilSetError(IL_INVALID_PARAM);
+		return NULL;
+	}
+	if (Length > ULONG_MAX) {
+		ilSetError(IL_INTERNAL_ERROR);
+		return NULL;
+	}
+	Temp = (char*)ialloc(Length);
+	wcstombs(Temp, Wide, Length); 
+
+	return Temp;
+}
 
 
 ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)

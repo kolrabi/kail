@@ -95,7 +95,7 @@ static ILboolean iLoadColPal(ILimage *Image)
 
 
 ILconst_string iFormatExtsCOL_PAL[] = { 
-	"col",
+	IL_TEXT("col"),
   NULL 
 };
 

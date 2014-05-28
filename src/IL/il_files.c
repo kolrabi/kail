@@ -42,9 +42,9 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
   #ifdef _WIN32
     return (ILHANDLE)_wfopen(FileName, L"rb");
   #else
-    size_t length = wcstombs(FileName, NULL, 0);
+    size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
-    length = wcstombs(FileName, tmp, length);
+    length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
     return (ILHANDLE)fopen(tmp, "rb");
   #endif
@@ -52,7 +52,7 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
 }
 
 
-void ILAPIENTRY iDefaultCloseR(ILHANDLE Handle) {
+void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
   fclose((FILE*)Handle);
   return;
 }
@@ -110,9 +110,9 @@ ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
   #ifdef _WIN32
     return (ILHANDLE)_wfopen(FileName, L"wb");
   #else
-    size_t length = wcstombs(FileName, NULL, 0);
+    size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
-    length = wcstombs(FileName, tmp, length);
+    length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
     return (ILHANDLE)fopen(tmp, "wb");
   #endif
@@ -165,7 +165,7 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
 }
 
 void ILAPIENTRY iResetRead(ILimage *image) {
-  iSetRead(image, iDefaultOpenR, iDefaultCloseR, iDefaultEof, iDefaultGetc, 
+  iSetRead(image, iDefaultOpenR, iDefaultClose, iDefaultEof, iDefaultGetc, 
         iDefaultRead, iDefaultSeek, iDefaultTell);
 }
 
@@ -202,7 +202,7 @@ ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc
 }
 
 void ILAPIENTRY iResetWrite(ILimage *image) {
-  iSetWrite(image, iDefaultOpenW, iDefaultCloseW, iDefaultPutc,
+  iSetWrite(image, iDefaultOpenW, iDefaultClose, iDefaultPutc,
         iDefaultSeek, iDefaultTell, iDefaultWrite);
 }
 

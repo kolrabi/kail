@@ -60,7 +60,7 @@ static ILboolean iLoadPltPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsPLT_PAL[] = { 
-	"plt",
+	IL_TEXT("plt"),
   NULL 
 };
 

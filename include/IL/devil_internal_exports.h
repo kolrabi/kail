@@ -154,6 +154,9 @@ ILAPI ILenum  ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
 ILAPI void    ILAPIENTRY ilReplaceCurImage(ILimage *Image);
 ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
+ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
+ILAPI char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
+
 //
 // Image functions
 //

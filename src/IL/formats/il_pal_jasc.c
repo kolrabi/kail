@@ -52,12 +52,12 @@ static ILboolean iLoadJascPal(ILimage *Image)
 	}
 
 	SIOgetw(io, Buff, BUFFLEN);
-	if (stricmp(Buff, "JASC-PAL")) {
+	if (iCharStrICmp(Buff, "JASC-PAL")) {
 		Error = IL_TRUE;
 	}
 
 	SIOgetw(io, Buff, BUFFLEN);
-	if (stricmp(Buff, "0100")) {
+	if (iCharStrICmp(Buff, "0100")) {
 		Error = IL_TRUE;
 	}
 
@@ -123,7 +123,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsJASC_PAL[] = { 
-	"pal",
+	IL_TEXT("pal"),
   NULL 
 };
 

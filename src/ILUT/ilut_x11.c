@@ -239,23 +239,40 @@ Pixmap ILAPIENTRY ilutXCreatePixmap( Display * dpy, Drawable draw )
 
 
 
-XImage * ILAPIENTRY ilutXLoadImage( Display * dpy, char * filename )
+XImage * ILAPIENTRY ilutXLoadImage( Display * dpy, char * filename_ )
 {
+#ifdef _UNICODE
+	ILchar *filename = iWideFromMultiByte(filename_);
+#else
+	ILchar *filename = iStrDup(filename_);
+#endif
 	iBindImageTemp();
 	if (!ilLoadImage(filename)) {
+		ifree(filename);
 		return NULL;
 	}
+
+	ifree(filename);
 	return ilutXCreateImage( dpy );
 }
 
 
 
-Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename )
+Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename_ )
 {
+#ifdef _UNICODE
+	ILchar *filename = iWideFromMultiByte(filename_);
+#else
+	ILchar *filename = iStrDup(filename_);
+#endif
+
 	iBindImageTemp();
 	if (!ilLoadImage(filename)) {
+		ifree(filename);
 		return None;
 	}
+
+	ifree(filename);
 	return ilutXCreatePixmap( dpy,draw );
 }
 
@@ -368,23 +385,40 @@ void ILAPIENTRY ilutXShmFreePixmap( Display * dpy, Pixmap pix, XShmSegmentInfo *
 
 
 
-XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename, XShmSegmentInfo * info )
+XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename_, XShmSegmentInfo * info )
 {
+#ifdef _UNICODE
+	ILchar *filename = iWideFromMultiByte(filename_);
+#else
+	ILchar *filename = iStrDup(filename_);
+#endif
+
 	iBindImageTemp();
 	if (!ilLoadImage(filename)) {
+		ifree(filename);
 		return NULL;
 	}
+
+	ifree(filename);
 	return ilutXShmCreateImage( dpy,info );
 }
 
 
 
-Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filename, XShmSegmentInfo * info )
+Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filename_, XShmSegmentInfo * info )
 {
+#ifdef _UNICODE
+	ILchar *filename = iWideFromMultiByte(filename_);
+#else
+	ILchar *filename = iStrDup(filename_);
+#endif
+
 	iBindImageTemp();
 	if (!ilLoadImage(filename)) {
+		ifree(filename);
 		return None;
 	}
+	ifree(filename);
 	return ilutXShmCreatePixmap( dpy,draw,info );
 }
 

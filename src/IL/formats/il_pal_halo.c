@@ -117,7 +117,7 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsHALO_PAL[] = { 
-	"pal",
+	IL_TEXT("pal"),
   NULL 
 };
 

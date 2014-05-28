@@ -168,9 +168,11 @@ typedef double                      ILclampd;
 #if _UNICODE
   #define ILchar                    wchar_t
   #define IL_TEXT(s)                L##s
+  #define IL_SFMT                   "%ls"
 #else
   #define ILchar                    char
   #define IL_TEXT(s)                s
+  #define IL_SFMT                   "%s"
 #endif //_UNICODE
 
 //if we use a define instead of a typedef,

@@ -31,6 +31,15 @@ ILstring iStrDup(ILconst_string Str) {
 	return copy;
 }
 
+char *iCharStrDup(const char *Str) {
+	char *copy;
+
+	copy = (char *)ialloc((iCharStrLen(Str) + 1) * sizeof(char));
+	if (copy == NULL)
+		return NULL;
+	iCharStrCpy(copy, Str);
+	return copy;
+}
 
 // Simple function to test if a filename has a given extension, disregarding case
 ILboolean iCheckExtension(ILconst_string Arg, ILconst_string Ext)
@@ -92,14 +101,10 @@ ILstring iGetExtension(ILconst_string FileName)
 // Checks if the file exists
 ILboolean iFileExists(ILconst_string FileName)
 {
-#if (!defined(_UNICODE) || !defined(_WIN32))
-	FILE *CheckFile = fopen(FileName, "rb");
-#else // Windows uses _wfopen instead.
-	FILE *CheckFile = _wfopen(FileName, L"rb");
-#endif//_UNICODE
-
-	if (CheckFile) {
-		fclose(CheckFile);
+	// TODO: use currently set io functions?
+	ILHANDLE Handle = iDefaultOpenR(FileName);
+	if (Handle) {
+		iDefaultClose(Handle);
 		return IL_TRUE;
 	}
 	return IL_FALSE;

@@ -64,11 +64,7 @@ extern "C" {
 	#define iStrCat wcscat
 	#define iStrLen wcslen
 #else
-	#ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
-		#define stricmp strcasecmp
-	#endif
-
-	#define iStrIcmp stricmp
+	#define iStrIcmp iCharStrICmp
 
 	#define IL_TEXT(s) s
 	#define iStrCmp strcmp
@@ -78,6 +74,13 @@ extern "C" {
 #endif
 
 #define iCharStrLen strlen
+#define iCharStrCpy strcpy
+#ifdef _WIN32
+	#define iCharStrICmp stricmp
+#else
+	#define iCharStrICmp strcasecmp
+#endif
+
 
 #ifdef IL_INLINE_ASM
 	#if (defined (_MSC_VER) && defined(_WIN32))  // MSVC++ only
@@ -152,6 +155,7 @@ ILbyte*		IL_DEPRECATED(iFgets(char *buffer, ILuint maxlen));
 ILboolean	iFileExists(ILconst_string FileName);
 ILstring	iGetExtension(ILconst_string FileName);
 ILstring	iStrDup(ILconst_string Str);
+char *    iCharStrDup(const char *Str);
 ILuint		ilStrNCpy(ILconst_string Str);
 ILuint		ilCharStrLen(const char *Str);
 // Miscellaneous functions

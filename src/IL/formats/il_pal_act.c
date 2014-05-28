@@ -64,7 +64,7 @@ static ILboolean iLoadActPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsACT_PAL[] = { 
-	"act",
+	IL_TEXT("act"),
   NULL 
 };
 

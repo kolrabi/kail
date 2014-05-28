@@ -301,7 +301,7 @@ iIsValidDpx(SIO *io) {
 }
 
 ILconst_string iFormatExtsDPX[] = { 
-	"dpx",
+	IL_TEXT("dpx"),
 	NULL 
 };
 
