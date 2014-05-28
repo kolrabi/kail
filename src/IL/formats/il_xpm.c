@@ -523,7 +523,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 		}
 	}
 	
-	if (!ilTexImage(Width, Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+	if (!ilTexImage_(Image, Width, Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
 #ifndef XPM_DONT_USE_HASHTABLE
 		XpmDestroyHashTable(HashTable);
 #else

@@ -165,7 +165,7 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
 	{
 		if (!*BaseCreated)  // Create base image
 		{
-			ilTexImage(Width, Width, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			ilTexImage_(image, Width, Width, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			image->Origin = IL_ORIGIN_UPPER_LEFT;
 			*Image = image;
 			*BaseCreated = IL_TRUE;

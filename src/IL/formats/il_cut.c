@@ -128,7 +128,7 @@ iLoadCutInternal(ILimage* image) {
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {  // always 1 bpp
+	if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {  // always 1 bpp
 		return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_LOWER_LEFT;

@@ -74,7 +74,7 @@ iInitFormats() {
   ADD_FORMAT(DPX);
 #endif
 #ifndef IL_NO_EXR
-  // TODO: ADD_FORMAT(EXR);
+  ADD_FORMAT(EXR);
 #endif
 #ifndef IL_NO_GIF
   ADD_FORMAT(GIF);
@@ -169,6 +169,13 @@ iInitFormats() {
 #ifndef IL_NO_XPM
   ADD_FORMAT(XPM);
 #endif
+
+  // FIXME: JASC_PAL and HALO_PAL use the same extension!
+  ADD_FORMAT(JASC_PAL);
+  ADD_FORMAT(HALO_PAL);
+  ADD_FORMAT(ACT_PAL);
+  ADD_FORMAT(COL_PAL);
+  ADD_FORMAT(PLT_PAL);
 
   // Some file types have a weak signature, so we test for these formats 
   // after checking for most other formats

@@ -19,34 +19,13 @@
 #define BUFFLEN	256
 #define PALBPP	3
 
-#include "pack_push.h"
-
-typedef struct HALOHEAD
-{
-	ILushort	Id;  // 'AH'
-	ILshort		Version;
-	ILshort		Size;
-	ILbyte		Filetype;
-	ILbyte		Subtype;
-	//ILshort	Brdid, Grmode;
-	ILint		Ignored;
-	ILushort	MaxIndex;  // Colors = maxindex + 1
-	ILushort	MaxRed;
-	ILushort	MaxGreen;
-	ILushort	MaxBlue;
-	/*ILbyte	Signature[8];
-	ILbyte		Filler[12];*/
-	ILbyte		Filler[20];  // Always 0 by PSP 4
-} HALOHEAD;
-
-#include "pack_pop.h"
-
+/*
 ILboolean	ilLoadJascPal(ILconst_string FileName);
 ILboolean	ilSaveJascPal(ILconst_string FileName);
-char		*iFgetw(ILubyte *Buff, ILint MaxLen, FILE *File);
 ILboolean	ilLoadHaloPal(ILconst_string FileName);
 ILboolean	ilLoadColPal(ILconst_string FileName);
 ILboolean	ilLoadActPal(ILconst_string FileName);
 ILboolean	ilLoadPltPal(ILconst_string FileName);
+*/
 
 #endif//IL_PAL_H

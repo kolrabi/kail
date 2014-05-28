@@ -260,11 +260,11 @@ static ILboolean iLoadSunInternal(ILimage* image) {
 
     case 8:
       if (Header.ColorMapType == IL_SUN_NO_MAP) {  // Greyscale image
-        if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
       else {  // Colour-mapped image
-        if (!ilTexImage(Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
         image->Pal.Palette = (ILubyte*)ialloc(Header.ColorMapLength);  // Allocate color map.
         if (image->Pal.Palette == NULL)

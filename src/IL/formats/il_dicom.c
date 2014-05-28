@@ -443,7 +443,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	if (!iCheckDicom(&Header))
 		return IL_FALSE;
 
-	if (!ilTexImage(Header.Width, Header.Height, Header.Depth, ilGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
+	if (!ilTexImage_(image, Header.Width, Header.Height, Header.Depth, ilGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
 		return IL_FALSE;
 	//@TODO: Find out if the origin is always in the upper left.
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
