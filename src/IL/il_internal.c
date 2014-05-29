@@ -13,6 +13,7 @@
 
 #include "il_internal.h"
 #include <stdlib.h>
+#include <ctype.h>
 
 // Global variable: stores the currently used image
 FILE *   iTraceOut = NULL;

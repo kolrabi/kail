@@ -19,14 +19,14 @@
 ILboolean ILAPIENTRY iEofLump     (ILHANDLE h);
 ILint     ILAPIENTRY iGetcLump    (ILHANDLE h);
 ILuint    ILAPIENTRY iReadLump    (ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number);
-ILint     ILAPIENTRY iSeekLump    (ILHANDLE h, ILint64 Offset, ILuint Mode);
+ILint     ILAPIENTRY iSeekLump    (ILHANDLE h, ILint Offset, ILuint Mode);
 ILuint    ILAPIENTRY iTellLump    (ILHANDLE h);
 ILint     ILAPIENTRY iPutcLump    (ILubyte Char, ILHANDLE h);
 ILint     ILAPIENTRY iWriteLump   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // "Fake" size functions, used to determine the size of write lumps
 // Definitions are in il_size.cpp
-ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint64 Offset, ILuint Mode);
+ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint Offset, ILuint Mode);
 ILuint    ILAPIENTRY iSizeTell    (ILHANDLE h);
 ILint     ILAPIENTRY iSizePutc    (ILubyte Char, ILHANDLE h);
 ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
@@ -35,7 +35,8 @@ ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Numbe
 
 ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
 #ifndef _UNICODE
-  return (ILHANDLE)fopen((char*)FileName, "rb");
+  ILHANDLE File = (ILHANDLE)fopen((char*)FileName, "rb");
+  return File;
 #else
   // Windows has a different function, _wfopen, to open UTF16 files,
   //  whereas Linux just uses fopen for its UTF8 files.
@@ -61,10 +62,11 @@ void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
 ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
   // Find out the filesize for checking for the end of file
   ILuint OrigPos = iDefaultTell(Handle);
-  iDefaultSeek(Handle, 0, IL_SEEK_END);
+  iDefaultSeek(Handle, 0, SEEK_END);
   
   ILuint FileSize = iDefaultTell(Handle);
-  iDefaultSeek(Handle, OrigPos, IL_SEEK_SET);
+  iDefaultSeek(Handle, OrigPos, SEEK_SET);
+  clearerr((FILE*)Handle);
 
   if (OrigPos >= FileSize)
     return IL_TRUE;
@@ -77,8 +79,9 @@ ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
   ILubyte Val;
 
   Val = 0;
-  if (iDefaultRead(Handle, &Val, 1, 1) != 1)
+  if (iDefaultRead(Handle, &Val, 1, 1) != 1) {
     return IL_EOF;
+  }
 
   return Val;
 }
@@ -86,18 +89,22 @@ ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
 
 // @todo: change this back to have the handle in the last argument, then
 // fread can be passed directly to ilSetRead, and iDefaultRead is not needed
-ILuint ILAPIENTRY iDefaultRead(ILHANDLE h, void *Buffer, ILuint Size, ILuint Number) {
-  return fread(Buffer, Size, Number, (FILE*) h);
+ILuint ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number) {
+  ILuint res = fread(Buffer, Size, Number, (FILE*) Handle);
+  return res;
 }
 
 
-ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint64 Offset, ILuint Mode) {
-  return fseek((FILE*)Handle, Offset, Mode);
+ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint Offset, ILuint Mode) {
+  ILuint res = fseek((FILE*)Handle, Offset, Mode);
+  clearerr((FILE*)Handle);
+  return res;
 }
 
 
 ILuint ILAPIENTRY iDefaultTell(ILHANDLE Handle) {
-  return ftell((FILE*)Handle);
+  ILuint res = ftell((FILE*)Handle);
+  return res;
 }
 
 
@@ -393,7 +400,7 @@ ILuint ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const I
 }
 
 // Returns 1 on error, 0 on success
-ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint64 Offset, ILuint Mode)
+ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint Offset, ILuint Mode)
 {
   SIO *io = (SIO*)h;
 

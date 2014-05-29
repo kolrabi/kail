@@ -19,12 +19,15 @@
 //
 
 #include <IL/il.h>
+#include <string.h>
 
 #ifdef DEBUG
 	#include <assert.h>
 #else
 	#define assert(x)
 #endif
+
+#include <wchar.h>
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -160,7 +163,7 @@ ILAPI void    ILAPIENTRY ilReplaceCurImage(ILimage *Image);
 ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
 ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
-ILAPI char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
+ILAPI char * 		ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
 
 //
 // Image functions
@@ -196,6 +199,39 @@ ILAPI void      ILAPIENTRY iResetWrite(ILimage *image);
 ILAPI ILimage* 	ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
 ILAPI ILimage* 	ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
 ILAPI ILimage* 	ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
+
+#ifdef _UNICODE
+  #ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
+    #define iStrICmp wcscasecmp
+    #define _wfopen fopen
+  #else
+    #define iStrIcmp wcsicmp
+  #endif
+  #define iStrCmp wcscmp
+  #define iStrCpy wcscpy
+  #define iStrCat wcscat
+  #define iStrLen wcslen
+#else
+  #define iStrIcmp iCharStrICmp
+
+  #define iStrCmp strcmp
+  #define iStrCpy strcpy
+  #define iStrCat strcat
+  #define iStrLen strlen
+#endif
+
+#define iCharStrLen strlen
+#define iCharStrCpy strcpy
+#ifdef _WIN32
+  #define iCharStrICmp stricmp
+#else
+  #define iCharStrICmp strcasecmp
+#endif
+
+ILAPI ILstring  ILAPIENTRY iStrDup(ILconst_string Str);
+ILAPI char *    ILAPIENTRY iCharStrDup(const char *Str);
+ILAPI ILstring  ILAPIENTRY iGetExtension(ILconst_string FileName);
+ILAPI ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext);
 
 #ifdef __cplusplus
 }

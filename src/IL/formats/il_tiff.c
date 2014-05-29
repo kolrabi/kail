@@ -817,14 +817,14 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	Format = TempImage->Format;
 	SwapColors = (Format == IL_BGR || Format == IL_BGRA);
 	if (SwapColors)
- 		ilSwapColours();
+ 		iSwapColours(TempImage);
 
 	for (ixLine = 0; ixLine < TempImage->Height; ++ixLine) {
 		if (TIFFWriteScanline(File, TempImage->Data + ixLine * TempImage->Bps, ixLine, 0) < 0) {
 			TIFFClose(File);
 			ilSetError(IL_LIB_TIFF_ERROR);
-			if (SwapColors)
-				ilSwapColours();
+			//if (SwapColors)
+			//	ilSwapColours();
 			if (TempImage->Data != OldData) {
 				ifree( TempImage->Data );
 				TempImage->Data = OldData;
@@ -835,8 +835,8 @@ ILboolean iSaveTiffInternal(ILimage* image)
 		}
 	}
 
-	if (SwapColors)
- 		ilSwapColours();
+	//if (SwapColors)
+ 		//ilSwapColours();
 
 	if (TempImage->Data != OldData) {
 		ifree(TempImage->Data);

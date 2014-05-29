@@ -38,8 +38,11 @@ void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILui
 // Internal function used to get the .bmp header from the current file.
 ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
 {
-	ILint64 read = io->read(io->handle, Header, 1, sizeof(BMPHEAD));
+	iTrace("---- @%u", SIOtell(io));
+	ILuint read = io->read(io->handle, Header, 1, sizeof(BMPHEAD));
+	iTrace("---- @%u", SIOtell(io));
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
+	iTrace("---- @%u", SIOtell(io));
 
 	// @todo: untested endian conversion - I don't have a machine+OS that uses big endian
 	Int  (&Header->bfSize);
@@ -56,6 +59,15 @@ ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
 	Int  (&Header->biYPelsPerMeter);
 	Int  (&Header->biClrUsed);
 	Int  (&Header->biClrImportant); 
+
+	iTrace("---- io->handle: %p read: %u %08x", io->handle, read, SIOtell(io));
+
+	for (ILuint i=0; i<sizeof(BMPHEAD); i++) {
+		ILuint read = io->read(io->handle, Header, 1, i);
+		iTrace("---- io->handle: %p read: %u %08x", io->handle, read, SIOtell(io));
+		io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
+	}
+
 
 	if (read == sizeof(BMPHEAD))
 		return IL_TRUE;
@@ -136,8 +148,15 @@ static ILboolean iIsValidBmp(SIO* io)
 {
 	char Sig[2];
 
+	iTrace("---- @%u", SIOtell(io));
 	ILuint Read = SIOread(io, Sig, 1, 2);
+	iTrace("---- @%u", SIOtell(io));
 	SIOseek(io, -Read, IL_SEEK_CUR);
+	iTrace("---- @%u", SIOtell(io));
+
+
+	iTrace("---- io->handle: %p read: %u %08x", io->handle, Read, SIOtell(io));
+	iTrace("---- %c%c", Sig[0], Sig[1]);
 	return Read == 2 && memcmp(Sig, "BM", 2) == 0;
 }
 

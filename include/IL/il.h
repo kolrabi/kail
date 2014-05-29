@@ -519,7 +519,7 @@ typedef ILboolean (ILAPIENTRY *fEofProc)    (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fGetcProc)   (ILHANDLE);
 typedef ILHANDLE  (ILAPIENTRY *fOpenProc)   (ILconst_string);
 typedef ILuint    (ILAPIENTRY *fReadProc)   (ILHANDLE, void*, ILuint, ILuint);
-typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint64, ILuint);
+typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint, ILuint);
 typedef ILuint    (ILAPIENTRY *fTellProc)   (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fPutcProc)   (ILubyte, ILHANDLE);
 typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME

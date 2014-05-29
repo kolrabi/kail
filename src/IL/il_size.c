@@ -13,7 +13,7 @@
 #include "il_internal.h"
 
 //! Fake seek function
-ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint64 Offset, ILuint Mode)
+ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint Offset, ILuint Mode)
 {
 	SIO *io = (SIO*)h;
 	switch (Mode)

@@ -26,7 +26,7 @@ __FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpenW(ILconst_string FileName);
 __FILES_EXTERN void       ILAPIENTRY iDefaultClose(ILHANDLE Handle);
 __FILES_EXTERN ILint      ILAPIENTRY iDefaultGetc(ILHANDLE Handle);
 __FILES_EXTERN ILuint     ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number);
-__FILES_EXTERN ILint      ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint64 Offset, ILuint Mode);
+__FILES_EXTERN ILint      ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint Offset, ILuint Mode);
 __FILES_EXTERN ILuint     ILAPIENTRY iDefaultTell(ILHANDLE Handle);
 __FILES_EXTERN ILint      ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle);
 __FILES_EXTERN ILint      ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle);

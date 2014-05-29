@@ -87,8 +87,8 @@ void iXConvertImage( XImage * img )
  	int sZ,dZ;
 	int plane;
 
-
 	ILimage * tmp;
+  ILimage *ilutCurImage = iGetCurImage();
 
 	switch ( img->byte_order )
 	{
