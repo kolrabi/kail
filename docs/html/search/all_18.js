@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['x',['x',['../d6/d07/struct_b_m_h_d.html#a8056f1981e13496dbb9b2ca184223b27',1,'BMHD::x()'],['../d7/df2/struct_i_l_upointf.html#a6fe338394a16135b8e04a1dfbebe91c5',1,'ILUpointf::x()'],['../de/de3/struct_i_l_upointi.html#a08e8db6d88cf765e04038598c571d2d1',1,'ILUpointi::x()']]],
+  ['x1',['x1',['../d3/d67/struct_p_s_p_r_e_c_t.html#a66a90885c014c3dc68c9f9dd1e9c6c38',1,'PSPRECT']]],
+  ['x2',['x2',['../d3/d67/struct_p_s_p_r_e_c_t.html#a78f3fc154228f9ee0311d37c443ffebb',1,'PSPRECT']]],
+  ['xaspect',['xAspect',['../d6/d07/struct_b_m_h_d.html#a37b98613fa29d5c405698a709d4940a7',1,'BMHD']]],
+  ['xcenter',['XCenter',['../df/d03/struct_d_p_x___i_m_a_g_e___o_r_i_e_n_t.html#a18b6a469b3bb628146f9070f95bfa85c',1,'DPX_IMAGE_ORIENT']]],
+  ['xhotspot',['xHotspot',['../d4/d1d/struct_o_s2___h_e_a_d.html#affcb3f103c1fe344216fec7da1b005b7',1,'OS2_HEAD']]],
+  ['xintersect',['xIntersect',['../d5/db4/struct_edge.html#adaae0c5a47d19f0451262eeefadec888',1,'Edge']]],
+  ['xmax',['Xmax',['../d9/d78/struct_d_c_x_h_e_a_d.html#a4feaeb37fe63b61d9d1fed07758f1bd2',1,'DCXHEAD::Xmax()'],['../de/d48/struct_p_c_x_h_e_a_d.html#a4feaeb37fe63b61d9d1fed07758f1bd2',1,'PCXHEAD::Xmax()']]],
+  ['xmin',['Xmin',['../d9/d78/struct_d_c_x_h_e_a_d.html#a4a673016345aa47441b07f2f981a67f7',1,'DCXHEAD::Xmin()'],['../de/d48/struct_p_c_x_h_e_a_d.html#a4a673016345aa47441b07f2f981a67f7',1,'PCXHEAD::Xmin()']]],
+  ['xoffset',['XOffset',['../df/d03/struct_d_p_x___i_m_a_g_e___o_r_i_e_n_t.html#a1c49671620e46019b31ce872c0211497',1,'DPX_IMAGE_ORIENT']]],
+  ['xorigsize',['XOrigSize',['../df/d03/struct_d_p_x___i_m_a_g_e___o_r_i_e_n_t.html#aa41a409b9a69b5a9a867a9bd14813592',1,'DPX_IMAGE_ORIENT']]],
+  ['xpixpermeter',['XPixPerMeter',['../dc/db3/struct_i_n_f_o_h_e_a_d.html#a00d081344c18ea474ecc457f9ef2fb3f',1,'INFOHEAD']]],
+  ['xpm_5fhash_5flen',['XPM_HASH_LEN',['../d7/d1d/il__xpm_8c.html#a1e6e504e1a242391f5cd413051fd6f0a',1,'il_xpm.c']]],
+  ['xpm_5fmax_5fchar_5fper_5fpixel',['XPM_MAX_CHAR_PER_PIXEL',['../d7/d1d/il__xpm_8c.html#a1a9efb764aaab8ff865c40e900f57330',1,'il_xpm.c']]],
+  ['xpmcreatehashtable',['XpmCreateHashTable',['../d7/d1d/il__xpm_8c.html#a382922b2e67de6a643e3afe6fa5e4485',1,'il_xpm.c']]],
+  ['xpmdestroyhashtable',['XpmDestroyHashTable',['../d7/d1d/il__xpm_8c.html#a8c0964a7c18649daf2d25903b90364a2',1,'il_xpm.c']]],
+  ['xpmgetcolour',['XpmGetColour',['../d7/d1d/il__xpm_8c.html#a60df073893bed24287e21c86647fd8cc',1,'il_xpm.c']]],
+  ['xpmgetentry',['XpmGetEntry',['../d7/d1d/il__xpm_8c.html#a3975dc8998632419d9fa7a3cda8b7f8d',1,'il_xpm.c']]],
+  ['xpmgetint',['XpmGetInt',['../d7/d1d/il__xpm_8c.html#aedb266e01b5a8179858ed8bc19486d91',1,'il_xpm.c']]],
+  ['xpmgets',['XpmGets',['../d7/d1d/il__xpm_8c.html#a438f94a0ed5dc6e24ce2696a9de65cbd',1,'il_xpm.c']]],
+  ['xpmhashentry',['XPMHASHENTRY',['../df/de5/struct_x_p_m_h_a_s_h_e_n_t_r_y.html',1,'XPMHASHENTRY'],['../d7/d1d/il__xpm_8c.html#adf288538291c0509d53fb2813f8ced8c',1,'XPMHASHENTRY():&#160;il_xpm.c']]],
+  ['xpminsertentry',['XpmInsertEntry',['../d7/d1d/il__xpm_8c.html#ac42ea68d22ae9bcda2dd26db5efc9c61',1,'il_xpm.c']]],
+  ['xpmpixel',['XpmPixel',['../d7/d1d/il__xpm_8c.html#a0122dcf9438a98ced0148ee1417530ce',1,'il_xpm.c']]],
+  ['xpmpredefcol',['XpmPredefCol',['../d7/d1d/il__xpm_8c.html#a3ad54a72060b825c0a469ca44ffd29f7',1,'il_xpm.c']]],
+  ['xsize',['XSize',['../df/d1e/structi_sgi_header.html#aa79ea76c669058712ff79876dd6f69b3',1,'iSgiHeader']]]
+];

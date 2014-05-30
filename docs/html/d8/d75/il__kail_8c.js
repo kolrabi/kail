@@ -1,0 +1,26 @@
+var il__kail_8c =
+[
+    [ "iBlit", "d8/d75/il__kail_8c.html#abb6d881241df450072c1b49cc3d253f3", null ],
+    [ "iCopySubImage", "d8/d75/il__kail_8c.html#ae3da1131304b453adcfca5a363d48a59", null ],
+    [ "iCopySubImages", "d8/d75/il__kail_8c.html#ab940464d4a92c9e103f5ced8ef1622ce", null ],
+    [ "ilBlit", "d8/d75/il__kail_8c.html#a5733e9e8126ebeea814e1b0f5bb9be44", null ],
+    [ "ilClearColour", "d8/d75/il__kail_8c.html#aca1dc7f7b8e61eb134060c9c8a8b72f2", null ],
+    [ "ilClearImage", "d8/d75/il__kail_8c.html#ae48d76d54f6f00fe54b304c29224653f", null ],
+    [ "ilClearImage_", "d8/d75/il__kail_8c.html#ad84f6056ea1add9c49776b33b07ffce6", null ],
+    [ "ilCloneCurImage", "d8/d75/il__kail_8c.html#ae0771d03e54685b692b1103a1b29f80c", null ],
+    [ "ilCopyImage", "d8/d75/il__kail_8c.html#af0f3ef5b949468a12a4b49e0fb2cb3cb", null ],
+    [ "ilCopyImage_", "d8/d75/il__kail_8c.html#acdc61520a0dbec909868fb13ba3d78a8", null ],
+    [ "ilCopyImageAttr", "d8/d75/il__kail_8c.html#a5e75115109e9ae1fa01fe1fc150f05d4", null ],
+    [ "ilGetClear", "d8/d75/il__kail_8c.html#a39cba432b26ef9a954392998da828094", null ],
+    [ "ilGetData", "d8/d75/il__kail_8c.html#a7935a3b79dcdc71ee0f682854939dcc9", null ],
+    [ "ilGetPalette", "d8/d75/il__kail_8c.html#affc60ac194afa1ed9d1bdc266adc5d29", null ],
+    [ "ilInitImage", "d8/d75/il__kail_8c.html#a1166b7189a4996482b1ea70dfb9eabd0", null ],
+    [ "ilNewImage", "d8/d75/il__kail_8c.html#ab024c2ced9e3969fdab3780f3628746d", null ],
+    [ "ilNewImageFull", "d8/d75/il__kail_8c.html#a46184dc38bdae9fe9ffaff1b67e8dd4c", null ],
+    [ "ilOverlayImage", "d8/d75/il__kail_8c.html#a2e07d47b40a202e9fdf26d49e8dcdd4c", null ],
+    [ "ilResizeImage", "d8/d75/il__kail_8c.html#a6e6aa151a3c0f6ec397ff4a670985e8b", null ],
+    [ "ilSetData", "d8/d75/il__kail_8c.html#a0f4d316f0aa3420fae6817cd8b8c6a7c", null ],
+    [ "ilTexImage", "d8/d75/il__kail_8c.html#a4a0b02cccd4ccb9c863235fbfdb646eb", null ],
+    [ "ilTexImage_", "d8/d75/il__kail_8c.html#a461ccdc9c1f94a9b2da2eb886b502bc4", null ],
+    [ "ilTexSubImage_", "d8/d75/il__kail_8c.html#a98bd39f61d9aa6ed6c7736ab5a59e5b0", null ]
+];

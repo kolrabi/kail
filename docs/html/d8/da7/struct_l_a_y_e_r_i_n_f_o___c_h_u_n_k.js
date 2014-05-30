@@ -1,0 +1,27 @@
+var struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k =
+[
+    [ "BlendingMode", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a07b73964d473bf0a6cbde2862b583a29", null ],
+    [ "BlendRange", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#af6d0d096851dccfab0eb8a6d9ec41aa2", null ],
+    [ "DestBlend1", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a97b2e8c5dda6331b75a2903c1ba432ce", null ],
+    [ "DestBlend2", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a4b35368578adfa2817bc722a9d9afd59", null ],
+    [ "DestBlend3", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a5410a9151d48c4d4370d3d6d8e5eabf6", null ],
+    [ "DestBlend4", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a476f4436c15081ecbe6931f48540d27d", null ],
+    [ "DestBlend5", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#acfffe8de4dc0ffe1928def745c857b21", null ],
+    [ "ImageRect", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a70807cdf201196db59b92bb788e0e176", null ],
+    [ "InvertMaskBlend", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a393e9cb8f4c5031b18bce62f16ccf07e", null ],
+    [ "LayerFlags", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a47c172428e8b14a50d9e56967ced6430", null ],
+    [ "LayerType", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#aa1153ac494e4bad903ecf3b5b1c1ad45", null ],
+    [ "LinkID", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#ae9ca4e3a6e99c1ca0cd5f7c0cb9946fc", null ],
+    [ "MaskDisabled", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a7c8234bb763bf185cc5f0b0fe010c247", null ],
+    [ "MaskLinked", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a2c27b6b1d5f54a93b2a39cb9a8574cfb", null ],
+    [ "MaskRect", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a234e2d53a8b1f5d709fcf653726c37d4", null ],
+    [ "Opacity", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#aa1bcd4aee97cbc5dc1292f193fdd9f16", null ],
+    [ "SavedImageRect", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a6ec35a4a3a5555d84c02517f556b6a75", null ],
+    [ "SavedMaskRect", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a5865c7564024365677b93d1c20dbfb8c", null ],
+    [ "SourceBlend1", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a1b602e860f1c7e975912e9325ee2f07e", null ],
+    [ "SourceBlend2", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a95fa6df90d7718803d4e801d57d8b3b5", null ],
+    [ "SourceBlend3", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a5520a1074c1a5a86609ee2f447bb5641", null ],
+    [ "SourceBlend4", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#af865b6aa3406d183e2452e7926886caa", null ],
+    [ "SourceBlend5", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a96c94953c36780f29e82779269b18a3d", null ],
+    [ "TransProtFlag", "d8/da7/struct_l_a_y_e_r_i_n_f_o___c_h_u_n_k.html#a4779a8da2eddb2f0f745ba4240007832", null ]
+];
