@@ -83,7 +83,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	Info.Type = 0;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -92,7 +92,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (SmallBuff[0] != 'P') {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -109,7 +109,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 		case '4':
 			Info.Type = IL_PBM_BINARY;
 			if (IsLump) {
-				ilSetError(IL_FORMAT_NOT_SUPPORTED);
+				iSetError(IL_FORMAT_NOT_SUPPORTED);
 				return IL_FALSE;
 			}
 			break;
@@ -120,7 +120,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 			Info.Type = IL_PPM_BINARY;
 			break;
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 	
@@ -129,7 +129,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 		return IL_FALSE;
 	Info.Width = atoi((const char*)SmallBuff);
 	if (Info.Width == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -137,7 +137,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 		return IL_FALSE;
 	Info.Height = atoi((const char*)SmallBuff);
 	if (Info.Height == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -147,7 +147,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 			return IL_FALSE;
 
 		if ((Info.MaxColour = atoi((const char*)SmallBuff)) == 0) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}
 	} else {
@@ -183,7 +183,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	}
 
 	if (!PmImage) {
-    ilSetError(IL_FILE_READ_ERROR);
+    iSetError(IL_FILE_READ_ERROR);
     return IL_FALSE;
 	}
 
@@ -231,7 +231,7 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 		LineInc = 0;
 
 		if (SIOgets(&Image->io, (char *)LineBuffer, MAX_BUFFER) == NULL) {
-			//ilSetError(IL_ILLEGAL_FILE_VALUE);
+			//iSetError(IL_ILLEGAL_FILE_VALUE);
 			//return NULL;
 			//return Image;
 			break;
@@ -271,7 +271,7 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 	if (DataInc < Size) {
 		//ilCloseImage(Image);
 		//ilSetCurImage(NULL);
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 
@@ -379,7 +379,7 @@ static ILboolean iGetWord(SIO *io, ILboolean final) {
 	}
 
 	if (Current == -1 || WordPos == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -397,7 +397,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 	ILubyte		*TempData;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -413,7 +413,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		Type = IL_PPM_ASCII;
 
 	/*if (!Type) {
-		ilSetError(IL_INVALID_EXTENSION);
+		iSetError(IL_INVALID_EXTENSION);
 		return IL_FALSE;
 	}*/
 
@@ -432,11 +432,11 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		MaxVal = USHRT_MAX;
 	}
 	else {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 	if (MaxVal > UCHAR_MAX && Type >= IL_PBM_BINARY) {  // binary cannot be higher than 255
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 
@@ -452,7 +452,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 			//ilprintf("P4\n");
 			//break;
 		case IL_PBM_BINARY:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 		case IL_PGM_ASCII:
 			Bpp = 1;
@@ -475,7 +475,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 			TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
 			break;
 		default:
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 	}
 
@@ -483,7 +483,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (Bpp != TempImage->Bpp) {
-		ilSetError(IL_INVALID_CONVERSION);
+		iSetError(IL_INVALID_CONVERSION);
 		return IL_FALSE;
 	}
 

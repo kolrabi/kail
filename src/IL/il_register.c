@@ -188,7 +188,7 @@ ILboolean iRegisterLoad(ILconst_string FileName)
 				return IL_TRUE;
 			}
 			else {
-				ilSetError(Error);
+				iSetError(Error);
 				return IL_FALSE;
 			}
 		}
@@ -215,7 +215,7 @@ ILboolean iRegisterSave(ILconst_string FileName)
 				return IL_TRUE;
 			}
 			else {
-				ilSetError(Error);
+				iSetError(Error);
 				return IL_FALSE;
 			}
 		}
@@ -240,7 +240,7 @@ void ILAPIENTRY ilRegisterOrigin(ILenum Origin)
 			Image->Origin = Origin;
 			break;
 		default:
-			ilSetError(IL_INVALID_ENUM);
+			iSetError(IL_INVALID_ENUM);
 	}
 	return;
 }
@@ -261,7 +261,7 @@ void ILAPIENTRY ilRegisterFormat(ILenum Format)
 			Image->Format = Format;
 			break;
 		default:
-			ilSetError(IL_INVALID_ENUM);
+			iSetError(IL_INVALID_ENUM);
 	}
 	return;
 }
@@ -270,10 +270,7 @@ void ILAPIENTRY ilRegisterFormat(ILenum Format)
 ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num)
 {
 	ILimage *Next, *Prev;
-
-	ilBindImage(ilGetCurName());  // Make sure the current image is actually bound.
-	ILimage *Image = iGetCurImage();
-	ilCloseImage(Image->Faces);  // Close any current mipmaps.
+	ILimage *Image = iGetBaseImage();
 
 	Image->Faces = NULL;
 	if (Num == 0)  // Just gets rid of all the mipmaps.
@@ -282,6 +279,7 @@ ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num)
 	Image->Faces = ilNewImage(1, 1, 1, 1, 1);
 	if (Image->Faces == NULL)
 		return IL_FALSE;
+
 	Next = Image->Faces;
 	Num--;
 
@@ -308,10 +306,7 @@ ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num)
 ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num)
 {
 	ILimage *Next, *Prev;
-
-	ilBindImage(ilGetCurName());  // Make sure the current image is actually bound.
-	ILimage *Image = iGetCurImage();
-	ilCloseImage(Image->Mipmaps);  // Close any current mipmaps.
+	ILimage *Image = iGetBaseImage();
 
 	Image->Mipmaps = NULL;
 	if (Num == 0)  // Just gets rid of all the mipmaps.
@@ -346,10 +341,7 @@ ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num)
 ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num)
 {
 	ILimage *Next, *Prev;
-
-	ilBindImage(ilGetCurName());  // Make sure the current image is actually bound.
-	ILimage *Image = iGetCurImage();
-	ilCloseImage(Image->Next);  // Close any current "next" images.
+	ILimage *Image = iGetBaseImage();
 
 	Image->Next = NULL;
 	if (Num == 0)  // Just gets rid of all the "next" images.
@@ -397,7 +389,7 @@ void ILAPIENTRY ilRegisterType(ILenum Type)
 			Image->Type = Type;
 			break;
 		default:
-			ilSetError(IL_INVALID_ENUM);
+			iSetError(IL_INVALID_ENUM);
 	}
 
 	return;
@@ -421,7 +413,7 @@ void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type)
 		memcpy(Image->Pal.Palette, Pal, Size);
 	}
 	else {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 	}
 	
 	return;
@@ -432,7 +424,7 @@ ILboolean ILAPIENTRY ilSetDuration(ILuint Duration)
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

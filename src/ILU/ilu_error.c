@@ -94,7 +94,7 @@ ILboolean ILAPIENTRY iluSetLanguage(ILenum Language)
 			break;
 
 		default:
-			ilSetError(IL_INVALID_ENUM);
+			iSetError(IL_INVALID_ENUM);
 			return IL_FALSE;
 	}
 

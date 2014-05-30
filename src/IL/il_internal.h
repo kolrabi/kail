@@ -123,7 +123,9 @@ void					ilDefaultStates(void);
 ILenum				iGetHint(ILenum Target);
 ILint					iGetInt(ILenum Mode);
 void					ilRemoveRegistered(void);
-
+ILenum 				iGetError(void);
+ILconst_string iGetILString(ILenum StringName);
+void 					iHint(ILenum Target, ILenum Mode);
 //
 // Rle compression
 //

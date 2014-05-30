@@ -21,17 +21,17 @@
 
 typedef struct iFree
 {
-	ILuint	Name;
-	void	*Next;
+  ILuint  Name;
+  void  *Next;
 } iFree;
 
 
 // Internal functions
-ILboolean	iEnlargeStack(void);
-void		iFreeMem(void);
-ILimage *iGetBaseImage();
-
-ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number);
-ILimage *ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number);
+ILboolean iEnlargeStack(void);
+void      iFreeMem(void);
+void      iBindImage(ILuint);
+void      iInitIL();
+void      iShutDownIL();
+ILboolean iIsImage(ILuint Image);
 
 #endif//IMAGESTACK_H

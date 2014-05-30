@@ -426,7 +426,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	ILboolean	Swizzle = IL_FALSE;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -436,7 +436,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	memset(&Header, 0, sizeof(DICOMHEAD));
 
 	if (!iGetDicomHead(io, &Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -451,7 +451,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	//   so we just test to make sure it is at least large enough.
 	//@TODO: Do this check before ilTexImage call.
 	if (Header.DataLen < image->SizeOfData) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

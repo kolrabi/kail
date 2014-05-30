@@ -81,21 +81,21 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 	ILenum		iOrigin;
 	
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
 	if (!iGetTgaHead(&image->io, &Header))
 		return IL_FALSE;
 	if (!iCheckTarga(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 	
 	switch (Header.ImageType)
 	{
 		case TGA_NO_DATA:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		case TGA_COLMAP_UNCOMP:
 		case TGA_COLMAP_COMP:
@@ -110,7 +110,7 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 			bTarga = iReadBwTga(image, &Header);
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
@@ -178,7 +178,7 @@ static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
 			break;
 		default:
 			// Should *never* reach here
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 	
@@ -251,7 +251,7 @@ static ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header) {
 			
 			// Remove?
 			//ilCloseImage(image);
-			//ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			//iSetError(IL_FORMAT_NOT_SUPPORTED);
 			//return IL_FALSE;
 			
 			/*image->Bpp = 4;
@@ -268,7 +268,7 @@ static ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header) {
 			image->Format = IL_BGRA;
 			break;
 		default:
-			ilSetError(IL_INVALID_VALUE);
+			iSetError(IL_INVALID_VALUE);
 			return IL_FALSE;
 	}
 	
@@ -442,7 +442,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	char		* TempData;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -495,7 +495,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			break;
 		default:
 			// Should convert the types here...
-			ilSetError(IL_INVALID_VALUE);
+			iSetError(IL_INVALID_VALUE);
 			ifree(ID);
 			ifree(AuthName);
 			ifree(AuthComment);
@@ -529,7 +529,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			PalEntSize = 24;
 			break;
 		default:
-			ilSetError(IL_INVALID_VALUE);
+			iSetError(IL_INVALID_VALUE);
 			ifree(ID);
 			ifree(AuthName);
 			ifree(AuthComment);

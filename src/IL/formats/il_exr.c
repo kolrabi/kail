@@ -49,13 +49,13 @@ ILboolean ilIsValidExr(ILconst_string FileName)
 	ILboolean	bExr = IL_FALSE;
 	
 	if (!iCheckExtension(FileName, IL_TEXT("exr"))) {
-		ilSetError(IL_INVALID_EXTENSION);
+		iSetError(IL_INVALID_EXTENSION);
 		return bExr;
 	}
 	
 	ExrFile = iopenr(FileName);
 	if (ExrFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return bExr;
 	}
 	
@@ -207,7 +207,7 @@ ILboolean iLoadExrInternal()
 	// If some of the pixels in the file cannot be read,
 	// print an error message, and return a partial image
 	// to the caller.
-		ilSetError(IL_LIB_EXR_ERROR);  // Could I use something a bit more descriptive based on e?
+		iSetError(IL_LIB_EXR_ERROR);  // Could I use something a bit more descriptive based on e?
 		e;  // Prevent the compiler from yelling at us about this being unused.
 		return IL_FALSE;
     }

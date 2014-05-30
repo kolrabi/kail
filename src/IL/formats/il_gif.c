@@ -701,7 +701,7 @@ GifLoad(
 ILboolean iLoadGifInternal(ILimage* TargetImage)
 {
 	if (TargetImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -714,18 +714,18 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 	GifSignature Sig;
 
 	if (Ctx.Target->io.read(Ctx.Target->io.handle, &Sig, 1, sizeof(Sig)) != sizeof(Sig)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if (!GifCheckHeader(&Sig)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	// get screen descriptor
 	if (Ctx.Target->io.read(Ctx.Target->io.handle, &Ctx.Screen, 1, sizeof(Ctx.Screen)) != sizeof(Ctx.Screen)) {
-		ilSetError(IL_FILE_READ_ERROR);
+		iSetError(IL_FILE_READ_ERROR);
 		return IL_FALSE;
 	}
 

@@ -79,7 +79,7 @@ static ILboolean iIsValidIff(SIO *io) {
 static ILboolean iLoadIffInternal(ILimage *Image)
 {
   if (Image == NULL){
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -94,7 +94,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
   // -- File should begin with a FOR4 chunk of type CIMG
   chunkInfo = iff_begin_read_chunk(io, &chunkStack);
   if (chunkInfo.chunkType != IFF_TAG_CIMG) {
-    ilSetError(IL_ILLEGAL_FILE_VALUE);
+    iSetError(IL_ILLEGAL_FILE_VALUE);
     return IL_FALSE;
   }
 
@@ -136,7 +136,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
       iff_end_read_chunk(io, &chunkStack);
     
       if( compress > 1 ) {
-        ilSetError(IL_ILLEGAL_FILE_VALUE);
+        iSetError(IL_ILLEGAL_FILE_VALUE);
         return  IL_FALSE;
       }
       break;
@@ -146,7 +146,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
   } /* END find TBHD while loop */
 
   if (!(flags & RGB_FLAG)) {
-    ilSetError(IL_ILLEGAL_FILE_VALUE);
+    iSetError(IL_ILLEGAL_FILE_VALUE);
     return  IL_FALSE;
   }
 
@@ -204,7 +204,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
 
       chunkInfo = iff_begin_read_chunk(io, &chunkStack);
       if ((chunkInfo.tag != IFF_TAG_RGBA) && (chunkInfo.tag != IFF_TAG_ZBUF)) {
-        ilSetError(IL_ILLEGAL_FILE_VALUE);
+        iSetError(IL_ILLEGAL_FILE_VALUE);
         return IL_FALSE;
       }
 
@@ -270,12 +270,12 @@ iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
   chunkStack->chunkDepth++;
   
   if (chunkStack->chunkDepth >= CHUNK_STACK_SIZE){
-    ilSetError(IL_STACK_OVERFLOW);
+    iSetError(IL_STACK_OVERFLOW);
     return chunkStack->chunkStack[0];
   }
 
   if (chunkStack->chunkDepth < 0) {
-    ilSetError(IL_STACK_UNDERFLOW);
+    iSetError(IL_STACK_UNDERFLOW);
     return chunkStack->chunkStack[0];
   }
 
@@ -376,7 +376,7 @@ char *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth,
 
   // Decompress only in RGBA.
   if (depth != 4) {
-    ilSetError(IL_ILLEGAL_FILE_VALUE);
+    iSetError(IL_ILLEGAL_FILE_VALUE);
     return NULL;
   }
 

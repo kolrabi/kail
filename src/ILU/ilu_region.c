@@ -29,7 +29,7 @@ void ILAPIENTRY iluRegionfv(ILpointf *Points, ILuint n)
 		return;
 	}
 	if (n < 3) {
-		ilSetError(ILU_INVALID_PARAM);
+		iSetError(ILU_INVALID_PARAM);
 		return;
 	}
 	ifree(RegionPointsi);
@@ -53,7 +53,7 @@ void ILAPIENTRY iluRegioniv(ILpointi *Points, ILuint n)
 		return;
 	}
 	if (n < 3) {
-		ilSetError(ILU_INVALID_PARAM);
+		iSetError(ILU_INVALID_PARAM);
 		return;
 	}
 	ifree(RegionPointsi);

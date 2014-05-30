@@ -149,7 +149,7 @@ static ILboolean iLoadMp3Internal(ILimage* image) {
 	ILuint	Type;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -173,7 +173,7 @@ static ILboolean iLoadMp3Internal(ILimage* image) {
 
 		// Either a picture was not found, or the MIME type was not recognized.
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 	}
 
 	return IL_FALSE;

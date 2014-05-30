@@ -50,13 +50,13 @@ ILAPI HBITMAP ILAPIENTRY ilutConvertSliceToHBitmap(HDC hDC, ILuint slice)
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
 	//check if the image has the wanted slice
 	if (slice < 0 || slice >= ilutCurImage->Depth) {
-		ilSetError(ILUT_INVALID_PARAM);
+		iSetError(ILUT_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -80,7 +80,7 @@ ILAPI HBITMAP ILAPIENTRY ilutConvertSliceToHBitmap(HDC hDC, ILuint slice)
 
 	hBitmap = CreateCompatibleBitmap(hDC, ilutCurImage->Width, ilutCurImage->Height);
 	if (hBitmap == NULL) {
-		ilSetError(IL_UNKNOWN_ERROR);
+		iSetError(IL_UNKNOWN_ERROR);
 		goto error;
 	}
 
@@ -176,7 +176,7 @@ ILAPI HBITMAP ILAPIENTRY ilutConvertSliceToHBitmap(HDC hDC, ILuint slice)
 					ilClosePal(palImg);
 				}
 				else {
-					//ilSetError(IL_INVALID_PARAM);
+					//iSetError(IL_INVALID_PARAM);
 					// Generate greyscale palette  <-- Why is this here?
 					for (i = 0; i < 256; i++)
 						pal[i].rgbRed = pal[i].rgbGreen = pal[i].rgbBlue = (ILubyte)i;
@@ -196,7 +196,7 @@ ILAPI HBITMAP ILAPIENTRY ilutConvertSliceToHBitmap(HDC hDC, ILuint slice)
 			break;
 
 		/*default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return hBitmap;*/
 	}
 
@@ -243,7 +243,7 @@ ILubyte* ILAPIENTRY iGetPaddedData(ILimage *Image)
 	ILubyte	*TempData = NULL;
 
 	if (Image == NULL) {
-		ilSetError(ILUT_INVALID_PARAM);
+		iSetError(ILUT_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -318,7 +318,7 @@ void ILAPIENTRY ilutGetBmpInfo(BITMAPINFO *Info)
 
 	ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return;
 	}
 
@@ -393,12 +393,12 @@ HPALETTE ILAPIENTRY ilutGetHPal()
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
 	if (!ilutCurImage->Pal.Palette || !ilutCurImage->Pal.PalSize || ilutCurImage->Pal.PalType == IL_PAL_NONE) {
-		//ilSetError(ILUT_ILLEGAL_OPERATION);
+		//iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -443,7 +443,7 @@ ILboolean ILAPIENTRY ilutSetHBitmap(HBITMAP Bitmap)
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -509,7 +509,7 @@ ILboolean ILAPIENTRY ilutSetHPal(HPALETTE Pal)
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -557,7 +557,7 @@ ILboolean ILAPIENTRY ilutSetWinClipboard()
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -579,7 +579,7 @@ ILboolean ILAPIENTRY ilutSetWinClipboard()
 		if (TempImage != ilutCurImage)
 			ilCloseImage(TempImage);
 		ilSetCurImage(CurImage);
-		ilSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
+		iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
 		ReleaseDC(hWnd, hDC); //added 20040604
 		if (TempImage != ilutCurImage)
 			ilCloseImage(TempImage);
@@ -620,7 +620,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -628,7 +628,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 		hWnd = GetForegroundWindow();
 
 		if (!OpenClipboard(hWnd)) {
-			ilSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
+			iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
 			return IL_FALSE;
 		}
 
@@ -673,7 +673,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 		hWnd = GetForegroundWindow();
 
 		if (!OpenClipboard(hWnd)) {
-			ilSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
+			iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
 			return IL_FALSE;
 		}
 
@@ -692,7 +692,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 	}*/
 	
 	//no data in clipboard
-	ilSetError(ILUT_ILLEGAL_OPERATION);
+	iSetError(ILUT_ILLEGAL_OPERATION);
 	return IL_FALSE;
 }
 
@@ -707,7 +707,7 @@ ILboolean ILAPIENTRY ilutWinPrint(ILuint XPos, ILuint YPos, ILuint Width, ILuint
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -780,7 +780,7 @@ ILboolean ILAPIENTRY ilutWinLoadUrl(ILstring Url)
 	Handle = InternetOpen(IL_TEXT("Developer's Image Library"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, 0);
 	if (Handle == NULL) {
 		ifree(Buffer);
-		ilSetError(ILUT_COULD_NOT_OPEN_FILE);
+		iSetError(ILUT_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -791,14 +791,14 @@ ILboolean ILAPIENTRY ilutWinLoadUrl(ILstring Url)
 		Handle = InternetOpen(IL_TEXT("Developer's Image Library"), INTERNET_OPEN_TYPE_DIRECT, NULL, NULL, INTERNET_FLAG_FROM_CACHE);
 		if (Handle == NULL) {
 			ifree(Buffer);
-			ilSetError(ILUT_COULD_NOT_OPEN_FILE);
+			iSetError(ILUT_COULD_NOT_OPEN_FILE);
 			return IL_FALSE;
 		}
 		UrlHandle = InternetOpenUrl(Handle, Url, NULL, 0, 0, Context);
 		if (UrlHandle == NULL) {
 			ifree(Buffer);
 			InternetCloseHandle(Handle);
-			ilSetError(ILUT_COULD_NOT_OPEN_FILE);
+			iSetError(ILUT_COULD_NOT_OPEN_FILE);
 			return IL_FALSE;
 		}
 	}
@@ -808,7 +808,7 @@ ILboolean ILAPIENTRY ilutWinLoadUrl(ILstring Url)
 			InternetCloseHandle(UrlHandle);
 			InternetCloseHandle(Handle);
 			ifree(Buffer);
-			ilSetError(ILUT_COULD_NOT_OPEN_FILE);
+			iSetError(ILUT_COULD_NOT_OPEN_FILE);
 			return IL_FALSE;
 		}
 

@@ -55,14 +55,14 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 	ILubyte	Padding[8];
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	SIO* io = &Image->io;
 	
 	if (SIOgetc(io) != 0 || SIOgetc(io) != 0) {  // The first two bytes have to be 0 (the "header")
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -70,7 +70,7 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 	Height = WbmpGetMultibyte(io);
 
 	if (Width == 0 || Height == 0) {  // Must have at least some height and width.
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -133,7 +133,7 @@ static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	ILubyte	*TempData;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

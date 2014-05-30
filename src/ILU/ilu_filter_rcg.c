@@ -448,7 +448,7 @@ ILuint iluScaleAdvanced(ILuint Width, ILuint Height, ILenum Filter)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -456,7 +456,7 @@ ILuint iluScaleAdvanced(ILuint Width, ILuint Height, ILenum Filter)
 	if (Image->Type != IL_UNSIGNED_BYTE ||
 		Image->Format == IL_COLOUR_INDEX ||
 		Image->Depth > 1) {
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 

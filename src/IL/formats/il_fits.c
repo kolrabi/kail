@@ -89,7 +89,7 @@ iGetFitsHead(SIO *io, FITSHEAD *Header) {
 			Header->Type = IL_DOUBLE;
 			break;
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 
@@ -115,7 +115,7 @@ iGetFitsHead(SIO *io, FITSHEAD *Header) {
 			break;
 
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 
@@ -150,7 +150,7 @@ iCheckFits(FITSHEAD *Header) {
 
 	// Possibility that one of these values is returned as <= 0 by atoi, which we cannot use.
 	if (Header->Width <= 0 || Header->Height <= 0 || Header->Depth <= 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -167,7 +167,7 @@ iLoadFitsInternal(ILimage* image) {
 	ILdouble	MaxD = 0.0f;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -257,7 +257,7 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 		if (Buffer[29] != 'T') {
 			// We cannot support FITS files that do not correspond to the standard.
 			Header->IsSimple = IL_FALSE;  //@TODO: Does this even need to be set?  Should exit loading anyway.
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return CARD_NOT_SIMPLE;
 		}
 		Header->IsSimple = IL_TRUE;
@@ -267,14 +267,14 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 	else if (!strncmp(Buffer, "BITPIX ", 7)) {
 		// The specs state that BITPIX has to come after SIMPLE.
 		if (Header->IsSimple != IL_TRUE) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 		if (GetCardInt(Buffer, &Header->BitsPixel) != IL_TRUE)
 			return CARD_READ_FAIL;
 //@TODO: Should I do this check from the calling function?  Does it really matter?
 		if (Header->BitsPixel == 0) {
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return CARD_READ_FAIL;
 		}
 		return CARD_BITPIX;
@@ -286,7 +286,7 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 			return CARD_READ_FAIL;
 //@TODO: Should I do this check from the calling function?  Does it really matter?
 		if (Header->NumAxes < 1 || Header->NumAxes > 3) {
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return CARD_READ_FAIL;
 		}
 		return CARD_NUMAXES;
@@ -294,7 +294,7 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 
 	else if (!strncmp(Buffer, "NAXIS1 ", 7)) {
 		if (Header->NumAxes == 0) {  // Has not been initialized, and it has to come first.
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 		// First one will always be the width.
@@ -305,12 +305,12 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 
 	else if (!strncmp(Buffer, "NAXIS2 ", 7)) {
 		if (Header->NumAxes == 0) {  // Has not been initialized, and it has to come first.
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 		// Cannot have a 2nd axis for 0 or 1.
 		if (Header->NumAxes == 0 || Header->NumAxes == 1) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 		
@@ -323,12 +323,12 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 
 	else if (!strncmp(Buffer, "NAXIS3 ", 7)) {
 		if (Header->NumAxes == 0) {  // Has not been initialized, and it has to come first.
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 		// Cannot have a 3rd axis for 0, 1 and 2.
 		if (Header->NumAxes < 3) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return CARD_READ_FAIL;
 		}
 

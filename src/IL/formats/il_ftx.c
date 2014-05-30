@@ -23,7 +23,7 @@ typedef struct {
 static ILboolean iLoadFtxInternal(ILimage *Image)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -31,7 +31,7 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 
 	FTX_HEAD Head;
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -50,7 +50,7 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 	//		return IL_FALSE;
 	//}
 	//else {  // Unknown format
-	//	ilSetError(IL_INVALID_FILE_HEADER);
+	//	iSetError(IL_INVALID_FILE_HEADER);
 	//	return IL_FALSE;
 	//}
 

@@ -41,7 +41,7 @@ static ILboolean iIsValidPxr(SIO *io) {
 // Internal function used to load the Pxr.
 static ILboolean iLoadPxrInternal(ILimage *Image) {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -65,7 +65,7 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
 			ilTexImage_(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			break;
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 

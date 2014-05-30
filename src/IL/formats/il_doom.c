@@ -32,7 +32,7 @@ typedef struct {
 static ILboolean iLoadDoomInternal(ILimage *Image)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -41,7 +41,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 	DOOM_HEAD head;
 
 	if (SIOread(io, &head, 1, sizeof(head)) != sizeof(head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -149,7 +149,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 	ILuint	i;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

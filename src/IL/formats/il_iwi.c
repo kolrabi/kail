@@ -104,7 +104,7 @@ static ILboolean iLoadIwiInternal(ILimage *Image) {
 	ILubyte		Bpp;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -115,7 +115,7 @@ static ILboolean iLoadIwiInternal(ILimage *Image) {
 		return IL_FALSE;
 
 	if (!iCheckIwi(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

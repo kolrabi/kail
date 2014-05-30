@@ -105,7 +105,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 	ILimage * Image = image;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -115,7 +115,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		return IL_FALSE;
 
 	if (!iCheckTpl(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -138,7 +138,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		if (Width == 0 || Height == 0) {
 			// If this is our first image, however, we error out.
 			if (Image == image) {
-				ilSetError(IL_ILLEGAL_FILE_VALUE);
+				iSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
 			// Break out of our for loop and run ilFixImage on the images.
@@ -152,7 +152,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		if (WrapS == TPL_REPEAT || WrapS == TPL_MIRROR) {
 			// By the specs, repeated and mirrored textures must have dimensions of power of 2.
 			if ((Width != ilNextPower2(Width)) || (Height != ilNextPower2(Height))) {
-				ilSetError(IL_ILLEGAL_FILE_VALUE);
+				iSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
 		}
@@ -200,7 +200,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 				break;
 
 			default:
-				ilSetError(IL_FORMAT_NOT_SUPPORTED);
+				iSetError(IL_FORMAT_NOT_SUPPORTED);
 				return IL_FALSE;
 		}
 
@@ -583,7 +583,7 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 			break;
 
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 

@@ -11,13 +11,13 @@ ILboolean iluCrop2D(ILuint XOff, ILuint YOff, ILuint Width, ILuint Height) {
 	ILenum	Origin;
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// Uh-oh, what about 0 dimensions?!
 	if (Width > Image->Width || Height > Image->Height) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -59,13 +59,13 @@ ILboolean iluCrop3D(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint 
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// Uh-oh, what about 0 dimensions?!
 	if (Width > Image->Width || Height > Image->Height || Depth > Image->Depth) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -117,13 +117,13 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// Uh-oh, what about 0 dimensions?!
 	if (Width < Image->Width || Height < Image->Height || Depth < Image->Depth) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -151,7 +151,7 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
 				AddY = (Height - Image->Height) >> 1;
 				break;
 			default:
-				ilSetError(ILU_INVALID_PARAM);
+				iSetError(ILU_INVALID_PARAM);
 				return IL_FALSE;
 		}
 	}
@@ -179,7 +179,7 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
 				AddY = (Height - Image->Height) >> 1;
 				break;
 			default:
-				ilSetError(ILU_INVALID_PARAM);
+				iSetError(ILU_INVALID_PARAM);
 				return IL_FALSE;
 		}
 	}
@@ -236,7 +236,7 @@ ILboolean ILAPIENTRY iluFlipImage() {
 	ILimage *image = iGetCurImage();
 	
 	if( image == NULL ) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -275,14 +275,14 @@ ILboolean ILAPIENTRY iluInvertAlpha() {
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->Format != IL_RGBA &&
 		Image->Format != IL_BGRA &&
 		Image->Format != IL_LUMINANCE_ALPHA) {
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
@@ -340,13 +340,13 @@ ILboolean ILAPIENTRY iluNegative()
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->Format == IL_COLOUR_INDEX) {
 		if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE) {
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 		}
 		Data = Image->Pal.Palette;
@@ -439,7 +439,7 @@ ILboolean ILAPIENTRY iluWave(ILfloat Angle)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -482,13 +482,13 @@ ILboolean ILAPIENTRY iluSwapColours() {
 	
 	ILimage *img = iGetCurImage();
 	if( img == NULL ) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (img->Bpp == 1) {
 		if (ilGetBppPal(img->Pal.PalType) == 0 || img->Format != IL_COLOUR_INDEX) {
-			ilSetError(ILU_ILLEGAL_OPERATION);  // Can be luminance.
+			iSetError(ILU_ILLEGAL_OPERATION);  // Can be luminance.
 			return IL_FALSE;
 		}
 		
@@ -506,7 +506,7 @@ ILboolean ILAPIENTRY iluSwapColours() {
 			case IL_PAL_BGRA32:
 				return ilConvertPal(IL_PAL_RGBA32);
 			default:
-				ilSetError(ILU_INTERNAL_ERROR);
+				iSetError(ILU_INTERNAL_ERROR);
 				return IL_FALSE;
 		}
 	}
@@ -522,7 +522,7 @@ ILboolean ILAPIENTRY iluSwapColours() {
 			return ilConvertImage(IL_RGBA, img->Type);
 	}
 
-	ilSetError(ILU_INTERNAL_ERROR);
+	iSetError(ILU_INTERNAL_ERROR);
 	return IL_FALSE;
 }
 
@@ -545,7 +545,7 @@ ILuint ILAPIENTRY iluColoursUsed()
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return 0;
 	}
 
@@ -640,46 +640,35 @@ alloc_error:
 
 ILboolean ILAPIENTRY iluCompareImage(ILuint Comp)
 {
-	ILimage		*Original;
-	ILuint		OrigName, i;
-	ILboolean	Same = IL_TRUE;
-
-	ILimage *  Image = iGetCurImage();
-	OrigName = ilGetCurName();
+	ILimage *	Image 		= iGetCurImage();
+	ILimage	*	Original 	= iGetImage(Comp);
 
 	// Same image, so return true.
-	if (ilGetCurName() == Comp)
+	if (Original == Image)
 		return IL_TRUE;
 
-	if (Image == NULL || ilIsImage(Comp) == IL_FALSE) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
-		return 0;
+	if (Image == NULL || Original == NULL) {
+		iSetError(ILU_ILLEGAL_OPERATION);
+		return IL_FALSE;
 	}
 
-	ilBindImage(Comp);
-    Original = iGetCurImage();
-
 	// @TODO:  Should we check palettes, too?
-	if (Original->Bpp != Image->Bpp       ||
-		Original->Depth != Image->Depth   ||
-		Original->Format != Image->Format ||
-		Original->Height != Image->Height ||
-		Original->Origin != Image->Origin ||
-		Original->Type != Image->Type ||
-		Original->Width != Image->Width) {
-			ilBindImage(OrigName);
+	if (Original->Bpp 		!= Image->Bpp    	||
+			Original->Depth 	!= Image->Depth  	||
+			Original->Format 	!= Image->Format 	||
+			Original->Height 	!= Image->Height 	||
+			Original->Origin 	!= Image->Origin 	||
+			Original->Type 		!= Image->Type 		||
+			Original->Width 	!= Image->Width) {
 			return IL_FALSE;
 	}
 
-	for (i = 0; i < Image->SizeOfData; i++) {
-		if (Original->Data[i] != Image->Data[i]) {
-			Same = IL_FALSE;
-			break;
-		}
+	// different amount of data
+	if (Image->SizeOfData != Original->SizeOfData) {
+		return IL_FALSE;
 	}
 
-	ilBindImage(OrigName);
-	return Same;
+	return !memcmp(Image->Data, Original->Data, Image->SizeOfData);
 }
 
 
@@ -692,7 +681,7 @@ ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, 
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return 0;
 	}
 
@@ -775,13 +764,13 @@ ILboolean ILAPIENTRY iluEqualize() {
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return 0;
 	}
 
 	// @TODO:  Change to work with other types!
 	if (Image->Bpc > 1) {
-		ilSetError(ILU_INTERNAL_ERROR);
+		iSetError(ILU_INTERNAL_ERROR);
 		return IL_FALSE;
 	}
 

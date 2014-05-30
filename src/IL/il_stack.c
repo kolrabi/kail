@@ -36,7 +36,7 @@ void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images)
   iFree *TempFree = FreeNames;
 
   if (Num < 1 || Images == NULL) {
-    ilSetError(IL_INVALID_VALUE);
+    iSetError(IL_INVALID_VALUE);
     return;
   }
 
@@ -85,8 +85,7 @@ ILimage * ILAPIENTRY iGetImage(ILuint Image)
   return ImageStack[Image];
 }
 
-//! Makes Image the current active image - similar to glBindTexture().
-void ILAPIENTRY ilBindImage(ILuint Image)
+void iBindImage(ILuint Image)
 {
   if (ImageStack == NULL || StackSize == 0) {
     if (!iEnlargeStack()) {
@@ -123,7 +122,7 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images)
   ILuint  Index = 0;
 
   if (Num < 1) {
-    //ilSetError(IL_INVALID_VALUE);
+    //iSetError(IL_INVALID_VALUE);
     return;
   }
   if (StackSize == 0)
@@ -164,7 +163,7 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images)
       FreeNames = Temp;
     }
     /*else {  // Shouldn't set an error...just continue onward.
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
     }*/
   } while (++Index < (ILuint)Num);
 }
@@ -175,19 +174,13 @@ void ILAPIENTRY ilDeleteImage(const ILuint Num) {
 }
 
 //! Checks if Image is a valid ilGenImages-generated image (like glIsTexture()).
-ILboolean ILAPIENTRY ilIsImage(ILuint Image)
+ILboolean iIsImage(ILuint Image)
 {
-  //iFree *Temp = FreeNames;
-
   if (ImageStack == NULL)
     return IL_FALSE;
+
   if (Image >= LastUsed || Image == 0)
     return IL_FALSE;
-
-  /*do {
-    if (Temp->Name == Image)
-      return IL_FALSE;
-  } while ((Temp = Temp->Next));*/
 
   if (ImageStack[Image] == NULL)  // Easier check.
     return IL_FALSE;
@@ -290,7 +283,7 @@ ILAPI void ILAPIENTRY ilClosePal(ILpal *Palette)
 }
 
 
-ILimage *iGetBaseImage()
+ILAPI ILimage * ILAPIENTRY iGetBaseImage()
 {
   return ImageStack[ilGetCurName()];
 }
@@ -300,7 +293,7 @@ ILimage *iGetBaseImage()
 ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number)
 {
   if (iCurImage == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -313,7 +306,7 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number)
   iCurImage = iCurImage->Mipmaps;
   if (iCurImage == NULL) {
     iCurImage = iTempImage;
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -322,7 +315,7 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number)
     iCurImage->Mipmaps->io = iCurImage->io;
     iCurImage = iCurImage->Mipmaps;
     if (iCurImage == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       iCurImage = iTempImage;
       return IL_FALSE;
     }
@@ -369,7 +362,7 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
   ILimage *iTempImage;
     
   if (iCurImage == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -381,7 +374,7 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
   iCurImage = iCurImage->Next;
   if (iCurImage == NULL) {
     iCurImage = iTempImage;
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -389,7 +382,7 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
   for (Current = 0; Current < Number; Current++) {
     iCurImage = iCurImage->Next;
     if (iCurImage == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       iCurImage = iTempImage;
       return IL_FALSE;
     }
@@ -434,7 +427,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
     ILimage *iTempImage;
 
   if (iCurImage == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -446,7 +439,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
   iCurImage = iCurImage->Faces;
   if (iCurImage == NULL) {
     iCurImage = iTempImage;
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -454,7 +447,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
   for (Current = 1; Current < Number; Current++) {
     iCurImage = iCurImage->Faces;
     if (iCurImage == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       iCurImage = iTempImage;
       return IL_FALSE;
     }
@@ -474,7 +467,7 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number)
     ILimage *iTempImage;
 
   if (iCurImage == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -486,7 +479,7 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number)
   iCurImage = iCurImage->Layers;
   if (iCurImage == NULL) {
     iCurImage = iTempImage;
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -494,7 +487,7 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number)
   for (Current = 1; Current < Number; Current++) {
     iCurImage = iCurImage->Layers;
     if (iCurImage == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       iCurImage = iTempImage;
       return IL_FALSE;
     }
@@ -512,7 +505,7 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num)
   ILuint  Count ;  // Create one before we go in the loop.
 
   if (iCurImage == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return 0;
   }
   if (Num == 0)  {
@@ -543,7 +536,7 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num)
       break;
 
     default:
-      ilSetError(IL_INVALID_ENUM);
+      iSetError(IL_INVALID_ENUM);
       return IL_FALSE;
   }
 
@@ -635,7 +628,7 @@ ILboolean iEnlargeStack()
 static ILboolean IsInit = IL_FALSE;
 
 // ONLY call at startup.
-void ILAPIENTRY ilInit()
+void iInitIL()
 {
   // if it is already initialized skip initialization
   if (IsInit == IL_TRUE ) 
@@ -648,7 +641,7 @@ void ILAPIENTRY ilInit()
   if (IL_TRACE_ENV && !iTraceOut) iTraceOut = stderr;
   
   //ilSetMemory(NULL, NULL);  Now useless 3/4/2006 (due to modification in il_alloc.c)
-  ilSetError(IL_NO_ERROR);
+  iSetError(IL_NO_ERROR);
   ilDefaultStates();  // Set states to their defaults.
   iSetImage0();  // Beware!  Clears all existing textures!
 
@@ -663,7 +656,7 @@ void ILAPIENTRY ilInit()
 
 // Frees any extra memory in the stack.
 //  - Called on exit
-void ILAPIENTRY ilShutDown()
+void iShutDownIL()
 {
   // if it is not initialized do not shutdown
   iFree* TempFree = (iFree*)FreeNames;
@@ -673,7 +666,7 @@ void ILAPIENTRY ilShutDown()
     return;
 
   if (!IsInit) {  // Prevent from being called when not initialized.
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return;
   }
 

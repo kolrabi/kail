@@ -99,7 +99,7 @@ static ILboolean iIsValidJpeg(SIO* io) {
 // Overrides libjpeg's stupid error/warning handlers. =P
 void ExitErrorHandle (struct jpeg_common_struct *JpegInfo) {
 	(void)JpegInfo;
-	ilSetError(IL_LIB_JPEG_ERROR);
+	iSetError(IL_LIB_JPEG_ERROR);
 	jpgErrorOccured = IL_TRUE;
 	return;
 }
@@ -211,7 +211,7 @@ devil_jpeg_read_init (SIO *io, j_decompress_ptr cinfo)
 
 static void iJpegErrorExit( j_common_ptr cinfo )
 {
-	ilSetError( IL_LIB_JPEG_ERROR );
+	iSetError( IL_LIB_JPEG_ERROR );
 	jpeg_destroy( cinfo );
 	longjmp( JpegJumpBuffer, 1 );
 }
@@ -224,7 +224,7 @@ ILboolean iLoadJpegInternal(ILimage* image)
 	ILboolean						result;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -336,7 +336,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 	ILenum		Type = 0;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -446,7 +446,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 ILboolean ilLoadJpeg(ILconst_string FileName)
 {
 	if (!iFileExists(FileName)) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 	return iLoadJpegInternal(FileName, NULL, 0);
@@ -466,19 +466,19 @@ ILboolean iLoadJpegInternal(ILstring FileName, void *Lump, ILuint Size)
     JPEG_CORE_PROPERTIES Image;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (ijlInit(&Image) != IJL_OK) {
-		ilSetError(IL_LIB_JPEG_ERROR);
+		iSetError(IL_LIB_JPEG_ERROR);
 		return IL_FALSE;
 	}
 
 	if (FileName != NULL) {
 		Image.JPGFile = FileName;
 		if (ijlRead(&Image, IJL_JFILE_READPARAMS) != IJL_OK) {
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
@@ -486,7 +486,7 @@ ILboolean iLoadJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		Image.JPGBytes = Lump;
 		Image.JPGSizeBytes = Size > 0 ? Size : UINT_MAX;
 		if (ijlRead(&Image, IJL_JBUFF_READPARAMS) != IJL_OK) {
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
@@ -522,7 +522,7 @@ ILboolean iLoadJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 			Image.DIBChannels = Image.JPGChannels;
 			break;*/
 			ijlFree(&Image);
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 	}
 
@@ -540,14 +540,14 @@ ILboolean iLoadJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 	if (FileName != NULL) {
 		if (ijlRead(&Image, IJL_JFILE_READWHOLEIMAGE) != IJL_OK) {
 			ijlFree(&Image);
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
 	else {
 		if (ijlRead(&Image, IJL_JBUFF_READWHOLEIMAGE) != IJL_OK) {
 			ijlFree(&Image);
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
@@ -562,7 +562,7 @@ ILboolean ilSaveJpeg(ILconst_string FileName)
 {
 	if (ilGetBoolean(IL_FILE_MODE) == IL_FALSE) {
 		if (iFileExists(FileName)) {
-			ilSetError(IL_FILE_ALREADY_EXISTS);
+			iSetError(IL_FILE_ALREADY_EXISTS);
 			return IL_FALSE;
 		}
 	}
@@ -589,11 +589,11 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 	imemclear(&Image, sizeof(JPEG_CORE_PROPERTIES));
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	if (FileName == NULL && Lump == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -603,7 +603,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		Quality = 99;
 
 	if (ijlInit(&Image) != IJL_OK) {
-		ilSetError(IL_LIB_JPEG_ERROR);
+		iSetError(IL_LIB_JPEG_ERROR);
 		return IL_FALSE;
 	}
 
@@ -669,7 +669,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		if (ijlWrite(&Image, IJL_JFILE_WRITEWHOLEIMAGE) != IJL_OK) {
 			if (TempImage != image)
 				ilCloseImage(TempImage);
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
@@ -679,7 +679,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		if (ijlWrite(&Image, IJL_JBUFF_WRITEWHOLEIMAGE) != IJL_OK) {
 			if (TempImage != image)
 				ilCloseImage(TempImage);
-			ilSetError(IL_LIB_JPEG_ERROR);
+			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
 	}
@@ -782,7 +782,7 @@ ILboolean ilSaveFromJpegStruct(ILimage* image, void *_JpegInfo)
 	j_compress_ptr JpegInfo = (j_compress_ptr)_JpegInfo;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

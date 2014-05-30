@@ -30,7 +30,7 @@ ILboolean ilRleCompressLine(ILubyte *p, ILuint n, ILubyte bpp,
 			MaxRun = BMP_MAX_RUN;
 			break;
 		default:
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return IL_FALSE;
 	}
 

@@ -63,14 +63,14 @@ static ILboolean iIsValidJp2(SIO* io) {
 //! This is separated so that it can be called for other file types, such as .icns.
 ILboolean iLoadJp2Internal(ILimage* Image) {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// initialize jasper once
 	if (!JasperInit) {
 		if (jas_init()) {
-			ilSetError(IL_LIB_JP2_ERROR);
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;
 		}
 		JasperInit = IL_TRUE;
@@ -82,7 +82,7 @@ ILboolean iLoadJp2Internal(ILimage* Image) {
 	jas_stream_t *Stream = iJp2ReadStream(io);
 	if (!Stream)
 	{
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -97,14 +97,14 @@ ILboolean iLoadJp2Internal(ILimage* Image) {
 //! This is separated so that it can be called for other file types, such as .icns.
 ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// initialize jasper once
 	if (!JasperInit) {
 		if (jas_init()) {
-			ilSetError(IL_LIB_JP2_ERROR);
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;
 		}
 		JasperInit = IL_TRUE;
@@ -114,7 +114,7 @@ ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
 	jas_stream_t *Stream = jas_stream_memopen((char*)Lump, Size);;
 	if (!Stream)
 	{
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -138,7 +138,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	Jp2Image = jas_image_decode(Stream, -1, 0);
 	if (!Jp2Image)
 	{
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		jas_stream_close(Stream);
 		return IL_FALSE;
 	}
@@ -149,13 +149,13 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	Error = ilGetError();
 	// Put the error back if it is not IL_FILE_READ_ERROR.
 	if (Error != IL_FILE_READ_ERROR)
-		ilSetError(Error);
+		iSetError(Error);
 
 	// We're not supporting anything other than 8 bits/component yet.
 	if (jas_image_cmptprec(Jp2Image, 0) != 8)
 	{
 		jas_image_destroy(Jp2Image);
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 
@@ -182,7 +182,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 			break;
 		default:
 			jas_image_destroy(Jp2Image);
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 	TempImage->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -194,7 +194,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 		origdata = jas_matrix_create(TempImage->Height, TempImage->Width);
 		if (!origdata)
 		{
-			ilSetError(IL_LIB_JP2_ERROR);
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;  // @TODO: Error
 		}
 		// Have to convert data into an intermediate matrix format.
@@ -534,7 +534,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 
 	if (!JasperInit) {
 		if (jas_init()) {
-			ilSetError(IL_LIB_JP2_ERROR);
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;
 		}
 		JasperInit = IL_TRUE;
@@ -598,7 +598,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 	//  This is done in the following switch statement.
 	Jp2Image = jas_image_create(NumChans, cmptparm, JAS_CLRSPC_UNKNOWN);
 	if (Jp2Image == NULL) {
-		ilSetError(IL_LIB_JP2_ERROR);
+		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
 	}
 
@@ -634,14 +634,14 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 	Mem = jas_stream_memopen((char*)TempImage->Data, TempImage->SizeOfData);
 	if (Mem == NULL) {
 		jas_image_destroy(Jp2Image);
-		ilSetError(IL_LIB_JP2_ERROR);
+		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
 	}
 	Stream = iJp2WriteStream();
 	if (Stream == NULL) {
 		jas_stream_close(Mem);
 		jas_image_destroy(Jp2Image);
-		ilSetError(IL_LIB_JP2_ERROR);
+		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
 	}
 
@@ -653,7 +653,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 		jas_stream_close(Mem);
 		jas_stream_close(Stream);
 		jas_image_destroy(Jp2Image);
-		ilSetError(IL_LIB_JP2_ERROR);
+		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
 	}
 	jas_stream_flush(Stream);  // Do any final writing.

@@ -93,7 +93,7 @@ ILboolean iCheckPsp(PSPHEAD *Header)
 // Internal function used to load the PSP.
 static ILboolean iLoadPspInternal(ILimage *Image) {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -109,7 +109,7 @@ static ILboolean iLoadPspInternal(ILimage *Image) {
 		return IL_FALSE;
 
 	if (!iCheckPsp(&ctx.Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -140,11 +140,11 @@ static ILboolean ReadGenAttributes(PSP_CTX *ctx)
 
 	if (AttHead.HeadID[0] != 0x7E || AttHead.HeadID[1] != 0x42 ||
 		AttHead.HeadID[2] != 0x4B || AttHead.HeadID[3] != 0x00) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 	if (AttHead.BlockID != PSP_IMAGE_BLOCK) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -162,13 +162,13 @@ static ILboolean ReadGenAttributes(PSP_CTX *ctx)
 
 	// @TODO:  Anything but 24 not supported yet...
 	if (ctx->AttChunk.BitDepth != 24 && ctx->AttChunk.BitDepth != 8) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	// @TODO;  Add support for compression...
 	if (ctx->AttChunk.Compression != PSP_COMP_NONE && ctx->AttChunk.Compression != PSP_COMP_RLE) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -402,11 +402,11 @@ static ILubyte *GetChannel(PSP_CTX *ctx)
 
 	if (Block.HeadID[0] != 0x7E || Block.HeadID[1] != 0x42 ||
 		Block.HeadID[2] != 0x4B || Block.HeadID[3] != 0x00) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return NULL;
 	}
 	if (Block.BlockID != PSP_CHANNEL_BLOCK) {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return NULL;
 	}
 
@@ -458,7 +458,7 @@ static ILubyte *GetChannel(PSP_CTX *ctx)
 		default:
 			ifree(CompData);
 			ifree(Data);
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return NULL;
 	}
 

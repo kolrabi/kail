@@ -162,7 +162,7 @@ void iXConvertImage( XImage * img )
 	 break;
 
 	 default:
-		ilSetError( ILUT_NOT_SUPPORTED );
+		iSetError( ILUT_NOT_SUPPORTED );
 	}
 
 	ilCloseImage( tmp );

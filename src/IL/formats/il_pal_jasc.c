@@ -41,7 +41,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 	char Buff[BUFFLEN];
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -51,24 +51,24 @@ static ILboolean iLoadJascPal(ILimage *Image)
 
 	if ( !SIOgetw(io, Buff, BUFFLEN) 
 	  || iCharStrICmp(Buff, "JASC-PAL") ) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if ( !SIOgetw(io, Buff, BUFFLEN) 
 		|| iCharStrICmp(Buff, "0100") ) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if (!SIOgetw(io, Buff, BUFFLEN)) {
-		ilSetError(IL_FILE_READ_ERROR);
+		iSetError(IL_FILE_READ_ERROR);
 		return IL_FALSE;
 	}
 
 	NumColours = atoi(Buff);
 	if (NumColours == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 	
@@ -82,7 +82,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 	for (i = 0; i < NumColours; i++) {
 		for (c = 0; c < PALBPP; c++) {
 			if (!SIOgetw(io, Buff, BUFFLEN)) {
-				ilSetError(IL_FILE_READ_ERROR);
+				iSetError(IL_FILE_READ_ERROR);
 				ifree(NewPal.Palette);
 				return IL_FALSE;
 			}
@@ -108,7 +108,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 	SIO *io = &Image->io;
 
 	if (NumCols == 0 || NumCols > 256) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

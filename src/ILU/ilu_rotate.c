@@ -23,7 +23,7 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 	ILimage *  Image = iGetCurImage();
 	ILimage *  BaseImage = Image;
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

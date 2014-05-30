@@ -26,7 +26,7 @@ typedef struct {
 static ILboolean iLoadRawInternal(ILimage *Image)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -68,7 +68,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 static ILboolean iSaveRawInternal(ILimage *Image)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

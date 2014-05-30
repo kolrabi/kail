@@ -46,7 +46,7 @@ ILboolean ILAPIENTRY iluBuildMipmaps()
 {
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

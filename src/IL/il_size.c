@@ -33,7 +33,7 @@ ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint Offset, ILuint Mode)
 			break;
 
 		default:
-			ilSetError(IL_INTERNAL_ERROR);  // Should never happen!
+			iSetError(IL_INTERNAL_ERROR);  // Should never happen!
 			return -1;  // Error code
 	}
 

@@ -30,11 +30,11 @@ wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi)
 
 	Length = mbstowcs(NULL, Multi, 0) + 1; // note error return of -1 is possible
 	if (Length == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 	if (Length > ULONG_MAX/sizeof(wchar_t)) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return NULL;
 	}
 	Temp = (wchar_t*)ialloc(Length * sizeof(wchar_t));
@@ -53,11 +53,11 @@ char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide)
 
 	Length = wcstombs(NULL, Wide, 0) + 1; // note error return of -1 is possible
 	if (Length == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 	if (Length > ULONG_MAX) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return NULL;
 	}
 	Temp = (char*)ialloc(Length);
@@ -73,7 +73,7 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
 	ILstring	Ext;
 
 	if (FileName == NULL || iStrLen(FileName) < 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_TYPE_UNKNOWN;
 	}
 
@@ -156,7 +156,7 @@ ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size)
 ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 {
 	if (io == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -173,7 +173,7 @@ ILboolean ILAPIENTRY iIsValid(ILenum Type, SIO* io)
 		return format->Validate && format->Validate(io);
 	}
 
-	ilSetError(IL_INVALID_ENUM);
+	iSetError(IL_INVALID_ENUM);
 	return IL_FALSE;
 }
 
@@ -230,7 +230,7 @@ ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size)
 ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 {
 	if (FileName == NULL || iStrLen(FileName) < 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -238,7 +238,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 
 	if ( Image == NULL
 		|| Image->io.openReadOnly == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -283,7 +283,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
 ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
 	if (File == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -306,7 +306,7 @@ ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type) {
 		return format->Load != NULL && format->Load(image) && iFixImages(image);
 	}
 
-	ilSetError(IL_INVALID_ENUM);
+	iSetError(IL_INVALID_ENUM);
 	return IL_FALSE;
 }
 
@@ -338,7 +338,7 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
 	\return Boolean value of failure or success.  Returns IL_FALSE if loading fails.*/
 ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
 	if (Lump == NULL || Size == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -361,13 +361,13 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
 	       have been tried and failed.*/
 ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
 	if (FileName == NULL || iStrLen(FileName) < 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	ILimage *Image = iGetCurImage();
 	if (Image->io.openReadOnly == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -376,7 +376,7 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
 	if (type != IL_TYPE_UNKNOWN) {
 		return ilLoad(type, FileName); // FIXME: ilLoad version that takes a ILimage *
 	} else if (!iRegisterLoad(FileName)) {
-		ilSetError(IL_INVALID_EXTENSION);
+		iSetError(IL_INVALID_EXTENSION);
 		return IL_FALSE;
 	}
 	return IL_TRUE;
@@ -392,7 +392,7 @@ ILboolean ILAPIENTRY ilSaveFuncs2(ILimage* image, ILenum type)
 		return format->Save != NULL && format->Save(image);
 	}
 
-	ilSetError(IL_INVALID_ENUM);
+	iSetError(IL_INVALID_ENUM);
 
 	// Try registered procedures
 	// @todo: must be ported to use Image->io
@@ -418,18 +418,18 @@ ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type)
 ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 {
 	if (FileName == NULL || iStrLen(FileName) < 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->io.openWrite == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -451,18 +451,18 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
 {
 	if (FileName == NULL || iStrLen(FileName) < 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->io.openWrite == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

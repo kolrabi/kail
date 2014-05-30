@@ -205,7 +205,7 @@ IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
   ILimage *ilutCurImage = iGetCurImage();
 	Image = ilutCurImage;
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -296,7 +296,7 @@ IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Devi
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -461,20 +461,20 @@ ILAPI ILboolean ILAPIENTRY ilutD3D8LoadSurface(IDirect3DDevice8 *Device, IDirect
 
 	hr = IDirect3DDevice8_CreateImageSurface(Device, d3dsd.Width, d3dsd.Height, d3dsd.Format, &SurfaceCopy);
 	if (FAILED(hr)) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	hr = IDirect3DDevice8_CopyRects(Device, Surface, NULL, 0, SurfaceCopy, NULL);
 	if (FAILED(hr)) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	hr = IDirect3DSurface8_LockRect(SurfaceCopy, &d3dLR, NULL, D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_NOSYSLOCK | D3DLOCK_READONLY);
 	if (FAILED(hr)) {
 		IDirect3DSurface8_Release(SurfaceCopy);
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

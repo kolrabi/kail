@@ -29,7 +29,7 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -202,7 +202,7 @@ ILboolean ILAPIENTRY iluNoisify()
 
 	Image = ilGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

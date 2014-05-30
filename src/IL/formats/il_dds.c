@@ -394,25 +394,25 @@ ILboolean iLoadDdsInternal(ILimage* image)
 	imemclear(&ctx, sizeof(ctx));
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	ctx.BaseImage = image;
 
 	if (!iGetDdsHead(&image->io, &ctx.Head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if (!iCheckDds(&ctx.Head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	BlockSize = DecodePixelFormat(&ctx, &CompFormat);
 	if (CompFormat == PF_UNKNOWN) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 	Check16BitComponents(&ctx);
@@ -1896,7 +1896,7 @@ void GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight)
 ILubyte* ILAPIENTRY ilGetDxtcData(ILimage* image)
 {
 	if (image == NULL) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return NULL;
 	}
 	return image->DxtcData;
@@ -1933,13 +1933,13 @@ ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image)
 	ILuint CompFormat;
 
 	if (image == NULL || image->DxtcData == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	if (!(image->DxtcFormat == IL_DXT1 || image->DxtcFormat == IL_DXT3
 		|| image->DxtcFormat == IL_DXT5)) {
-		ilSetError(IL_INVALID_PARAM); //TODO
+		iSetError(IL_INVALID_PARAM); //TODO
 		return IL_FALSE;
 	}
 
@@ -1988,27 +1988,18 @@ ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image)
 
 ILAPI ILboolean ILAPIENTRY iDxtcDataToImage(ILimage* image)
 {
-	ILint i, j;
-	ILuint ImgID = ilGetInteger(IL_CUR_IMAGE);
-	ILint ImgCount = ilGetInteger(IL_NUM_IMAGES);
-	ILint MipCount;
 	ILboolean ret = IL_TRUE;
 
-	for(i = 0; i <= ImgCount; ++i) {
-		ilBindImage(ImgID);
-		ilActiveImage(i);
-
-		MipCount = ilGetInteger(IL_NUM_MIPMAPS);
-		for(j = 0; j <= MipCount; ++j) {
-			ilBindImage(ImgID);
-			ilActiveImage(i);
-			ilActiveMipmap(j);
-
-			if (!iDxtcDataToSurface(image))
+	while (image) {
+		ILimage *mipMap = image->Mipmaps;
+		while(mipMap) {
+			if (!iDxtcDataToSurface(mipMap))
 				ret = IL_FALSE;
+			mipMap = mipMap->Mipmaps;
 		}
+
+		image = image->Next;
 	}
-    ilBindImage(ImgID);
 
 	return ret;
 }
@@ -2040,31 +2031,26 @@ ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format)
 	return IL_TRUE;
 }
 
-
-ILAPI ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format)
-{
-	ILint i, j;
-	ILuint ImgID = ilGetInteger(IL_CUR_IMAGE);
-	ILint ImgCount = ilGetInteger(IL_NUM_IMAGES);
-	ILint MipCount;
+ILboolean iImageToDxtcData(ILimage *image, ILenum Format) {
 	ILboolean ret = IL_TRUE;
 
-	for (i = 0; i <= ImgCount; ++i) {
-		ilBindImage(ImgID);
-		ilActiveImage(i);
-
-		MipCount = ilGetInteger(IL_NUM_MIPMAPS);
-		for(j = 0; j <= MipCount; ++j) {
-			ilBindImage(ImgID);
-			ilActiveImage(i);
-			ilActiveMipmap(j);
-
-			if (!ilSurfaceToDxtcData(Format))
+	while (image) {
+		ILimage *mipMap = image->Mipmaps;
+		while(mipMap) {
+			if (!iSurfaceToDxtcData(mipMap, Format))
 				ret = IL_FALSE;
+			mipMap = mipMap->Mipmaps;
 		}
+		image = image->Next;
 	}
 
 	return ret;
+}
+
+
+ILAPI ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format)
+{
+	return iImageToDxtcData(iGetCurImage(), Format);
 }
 
 
@@ -2081,7 +2067,7 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 	//The next few lines are copied from ilTexImage() and ilInitImage() -
 	//should be factored in more reusable functions...
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -2255,7 +2241,7 @@ void iFlipSurfaceDxtcData(ILimage* image)
 	void (*FlipBlocks)(ILubyte* data, ILuint count);
 
 	if (image == NULL || image->DxtcData == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return;
 	}
 
@@ -2284,7 +2270,7 @@ void iFlipSurfaceDxtcData(ILimage* image)
 			FlipBlocks = iFlip3dc;
 			break;
 		default:
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return;
 	}
 	
@@ -2405,7 +2391,7 @@ ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image)
 	void (*InvertAlpha)(ILubyte* data);
 
 	if (image == NULL || image->DxtcData == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -2428,7 +2414,7 @@ ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image)
 			//the color blocks as well...
 			//DXT1 is not supported because DXT1 alpha is
 			//seldom used and it's not easily invertable.
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return IL_FALSE;
 	}
 

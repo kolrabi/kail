@@ -27,7 +27,7 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal)
   ILimage *ilutCurImage = iGetCurImage();
 
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -59,7 +59,7 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal)
 
 		if (!ilConvertPal(IL_PAL_RGB24)) {
 			destroy_bitmap(Bitmap);
-			ilSetError(ILUT_ILLEGAL_OPERATION);
+			iSetError(ILUT_ILLEGAL_OPERATION);
 			return NULL;
 		}
 
@@ -103,12 +103,12 @@ ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap)
 {
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Bitmap == NULL || Bitmap->w == 0 || Bitmap->h == 0) {
-		ilSetError(ILUT_INVALID_PARAM);
+		iSetError(ILUT_INVALID_PARAM);
 		return IL_FALSE;
 	}
 

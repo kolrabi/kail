@@ -93,7 +93,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   ILubyte   PNGTest[3];
 
   if (image == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -107,12 +107,12 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   Short(&IconDir.Count);
 
   if (IconDir.Reserved != 0) {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     return IL_FALSE;
   }
 
   if (IconDir.Type != 1 && IconDir.Type != 2) {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     return IL_FALSE;
   }
 
@@ -158,7 +158,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     {
 #ifdef IL_NO_PNG
       iTrace("**** PNG icons not supported");
-      ilSetError(IL_FORMAT_NOT_SUPPORTED);  // Cannot handle these without libpng.
+      iSetError(IL_FORMAT_NOT_SUPPORTED);  // Cannot handle these without libpng.
       goto file_read_error;
 #else
       SIOseek(io, DirEntries[i].Offset, IL_SEEK_SET);
@@ -444,7 +444,7 @@ static void ico_png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 
 static void ico_png_error_func(png_structp png_ptr, png_const_charp message) {
   iTrace("**** PNG Error : %s", message);
-  ilSetError(IL_LIB_PNG_ERROR);
+  iSetError(IL_LIB_PNG_ERROR);
   longjmp(png_jmpbuf(png_ptr), 1);
 }
 
@@ -578,7 +578,7 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
       format = IL_RGBA;
       break;
     default:
-      ilSetError(IL_ILLEGAL_FILE_VALUE);
+      iSetError(IL_ILLEGAL_FILE_VALUE);
       png_destroy_read_struct(&data->ico_png_ptr, &data->ico_info_ptr, NULL);
       return IL_FALSE;
   }
@@ -602,7 +602,7 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
     png_bytep trans = NULL;
     int num_trans = -1;
     if (!png_get_PLTE(data->ico_png_ptr, data->ico_info_ptr, &palette, &num_palette)) {
-      ilSetError(IL_ILLEGAL_FILE_VALUE);
+      iSetError(IL_ILLEGAL_FILE_VALUE);
       png_destroy_read_struct(&data->ico_png_ptr, &data->ico_info_ptr, NULL);
       return IL_FALSE;
     }

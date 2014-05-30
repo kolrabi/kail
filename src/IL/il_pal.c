@@ -31,7 +31,7 @@ ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName)
 		return ilLoad(type, FileName);
 	}
 
-	ilSetError(IL_INVALID_EXTENSION);
+	iSetError(IL_INVALID_EXTENSION);
 	return IL_FALSE;
 }
 
@@ -45,7 +45,7 @@ ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName)
 		return ilSave(type, FileName);
 	}
 
-	ilSetError(IL_INVALID_EXTENSION);
+	iSetError(IL_INVALID_EXTENSION);
 	return IL_FALSE;
 }
 
@@ -76,7 +76,7 @@ ILAPI ILpal* ILAPIENTRY iCopyPal(ILimage *Image) {
 		|| Image->Pal.Palette == NULL 
 		|| Image->Pal.PalSize == 0 
 		|| Image->Pal.PalType == IL_PAL_NONE) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -102,7 +102,7 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
 
 	// Checks to see if the current image is valid and has a palette
 	if (Pal == NULL || Pal->PalSize == 0 || Pal->Palette == NULL || Pal->PalType == IL_PAL_NONE) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -208,7 +208,7 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
 					break;
 
 				default:
-					ilSetError(IL_INVALID_PARAM);
+					iSetError(IL_INVALID_PARAM);
 					return NULL;
 			}
 			break;
@@ -330,14 +330,14 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
 					break;
 
 				default:
-					ilSetError(IL_INVALID_PARAM);
+					iSetError(IL_INVALID_PARAM);
 					return NULL;
 			}
 			break;
 
 
 		default:
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return NULL;
 	}
 
@@ -358,7 +358,7 @@ ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat)
 		|| Image->Pal.Palette == NULL 
 		|| Image->Pal.PalSize == 0 
 		|| Image->Pal.PalType == IL_PAL_NONE) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -390,7 +390,7 @@ ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat)
 	ILimage *Image = iGetCurImage();
 
 	if ( Image == NULL ) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -446,7 +446,7 @@ ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName)
 	ILenum		Origin;
 
   if( CurImage == NULL || (CurImage->Format != IL_BYTE || CurImage->Format != IL_UNSIGNED_BYTE) ) {
-  	ilSetError(IL_ILLEGAL_OPERATION);
+  	iSetError(IL_ILLEGAL_OPERATION);
       return IL_FALSE;
   }
 
@@ -612,7 +612,7 @@ ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName)
 			break;
 
 		default:  // Should be no other!
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 	}
 

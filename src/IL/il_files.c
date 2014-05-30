@@ -159,12 +159,12 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
 {
   ILimage *Image = iGetCurImage();
   if (Image == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
   if (!aEof || !aGetc || !aRead || !aSeek || !aTell) {
-    ilSetError(IL_INVALID_VALUE);
+    iSetError(IL_INVALID_VALUE);
     return IL_FALSE;
   }
 
@@ -199,12 +199,12 @@ ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc
   ILimage *Image = iGetCurImage();
 
   if (Image == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
   if (!Putc || !Write || !Seek || !Tell) {
-    ilSetError(IL_INVALID_VALUE);
+    iSetError(IL_INVALID_VALUE);
     return IL_FALSE;
   }
 
@@ -365,7 +365,7 @@ ILint ILAPIENTRY iGetcLump(ILHANDLE h)
   if (io->lumpSize > 0) {
     if (io->lumpPos + 1 > io->lumpSize) {
       io->lumpPos--;
-      ilSetError(IL_FILE_READ_ERROR);
+      iSetError(IL_FILE_READ_ERROR);
       return IL_EOF;
     }
   }
@@ -385,7 +385,7 @@ ILuint ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const I
       if (io->lumpPos + i > io->lumpSize) {
         io->lumpPos += i;
         if (i != Number)
-          ilSetError(IL_FILE_READ_ERROR);
+          iSetError(IL_FILE_READ_ERROR);
         return i;
       }
     }
@@ -395,7 +395,7 @@ ILuint ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const I
   if (Size != 0)
     i /= Size;
   if (i != Number)
-    ilSetError(IL_FILE_READ_ERROR);
+    iSetError(IL_FILE_READ_ERROR);
   return i;
 }
 
@@ -454,7 +454,7 @@ ILint ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHA
   for (; i < SizeBytes; i++) {
     if (io->lumpSize > 0) {
       if (io->lumpPos + i >= io->lumpSize) {  // Should we use > instead?
-        ilSetError(IL_FILE_WRITE_ERROR);
+        iSetError(IL_FILE_WRITE_ERROR);
         io->lumpPos += i;
         return i;
       }

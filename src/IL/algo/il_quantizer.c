@@ -598,7 +598,7 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 	else { // If colors more than 256
 		// Begin Octree quantization
 		//Quant_Octree(Image->Width, Image->Height, Image->Bpp, buffer2, NewData, Palette, K);
-		ilSetError(IL_INTERNAL_ERROR);  // Can't get much more specific than this.
+		iSetError(IL_INTERNAL_ERROR);  // Can't get much more specific than this.
 		goto error_label;
 	}
 

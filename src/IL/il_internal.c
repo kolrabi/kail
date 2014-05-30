@@ -38,7 +38,7 @@ char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
 	ILint	temp = '\0';
 
 	if (buffer == NULL || io == NULL || MaxLen < 2) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -62,7 +62,7 @@ char * ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen) {
 	ILuint i;
 
 	if (buffer == NULL || io == NULL || MaxLen < 2) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 

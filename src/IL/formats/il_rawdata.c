@@ -22,18 +22,18 @@ ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint He
 	ILimage *Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->io.openReadOnly == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	ILHANDLE File = Image->io.openReadOnly(FileName);
 	if (File == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -56,12 +56,12 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
 	ILimage *Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (File == NULL) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -88,7 +88,7 @@ ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint H
 ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp)
 {
 	if ((Bpp != 1) && (Bpp != 3) && (Bpp != 4)) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -121,18 +121,18 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName)
 	ILimage *Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->io.openWrite == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	DataFile = Image->io.openWrite(FileName);
 	if (DataFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 

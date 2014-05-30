@@ -128,7 +128,7 @@ ILuint breadVal(ILuint NumBits, BITFILE *BitFile)
 
 	// Only returning up to 32 bits at one time
 	if (NumBits > 32) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return 0;
 	}
 

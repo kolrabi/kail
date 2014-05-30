@@ -40,7 +40,7 @@ static ILboolean iLoadColPal(ILimage *Image)
 	ILushort	Version;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -55,19 +55,19 @@ static ILboolean iLoadColPal(ILimage *Image)
 	if (RealFileSize > 768) {  // has a header
 		FileSize = GetLittleUInt(io);
 		if ((FileSize - 8) % 3 != 0) {  // check to make sure an even multiple of 3!
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 
 		Version = GetLittleUShort(io);
 		if (Version != 0xB123) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 
 		Version = GetLittleUShort(io);
 		if (Version != 0) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 	}

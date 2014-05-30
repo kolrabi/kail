@@ -65,7 +65,7 @@ static ILboolean iLoadLifInternal(ILimage *Image) {
 	ILuint		i;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

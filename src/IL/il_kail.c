@@ -115,13 +115,13 @@ ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Heig
 	ILenum Format, ILenum Type, void *Data)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	ILubyte BpcType = ilGetBpcType(Type);
 	if (BpcType == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -146,7 +146,7 @@ ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Heig
 
 	//@TODO: Also check against format?
 	/*if (Width == 0 || Height == 0 || Depth == 0 || Bpp == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 	return IL_FALSE;
 	}*/
 
@@ -188,7 +188,7 @@ ILboolean ILAPIENTRY ilSetData(void *Data)
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
@@ -200,7 +200,7 @@ ILboolean ILAPIENTRY ilSetData(void *Data)
 ILAPI ILboolean ILAPIENTRY ilTexSubImage_(ILimage *Image, void *Data)
 {
 	if (Image == NULL || Data == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 	if (!Image->Data) {
@@ -224,7 +224,7 @@ ILubyte* ILAPIENTRY ilGetData(void)
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 	
@@ -242,7 +242,7 @@ ILubyte* ILAPIENTRY ilGetPalette(void)
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 	
@@ -337,7 +337,7 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 					break;
 					
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return;
 			}
 				break;
@@ -388,7 +388,7 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 					break;
 					
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return;
 			}
 				break;
@@ -439,7 +439,7 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 					break;
 					
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return;
 			}
 				break;
@@ -489,7 +489,7 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 					break;
 					
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return;
 			}
 				break;
@@ -539,13 +539,13 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 					break;
 					
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return;
 			}
 				break;
 			
 		default:
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return;
 	}
 	
@@ -558,7 +558,7 @@ ILboolean ILAPIENTRY ilClearImage()
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
@@ -670,7 +670,7 @@ ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint De
 
 	// Check if the destination image really exists
 	if (DestName == 0 || Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	Dest = Image;
@@ -678,7 +678,7 @@ ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint De
 	// check source image
 	Src = iGetImage(Source);
 	if (Source == 0 || Src == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
@@ -917,7 +917,7 @@ ILboolean iCopySubImages(ILimage *Dest, ILimage *Src)
 ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
 {
 	if (Dest == NULL || Src == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 	
@@ -1009,7 +1009,7 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
 	ILimage *SrcImage = iGetImage(Src);
 	
 	if (SrcImage == NULL || SrcImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	
@@ -1027,7 +1027,7 @@ ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
 	ILimage *Dest;
 	
 	if (Src == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 	
@@ -1045,6 +1045,7 @@ ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
 }
 
 
+// TODO: iDuplicateImage(ILuint)
 ILuint ILAPIENTRY ilCloneCurImage()
 {
 	ILuint Id;
@@ -1052,7 +1053,7 @@ ILuint ILAPIENTRY ilCloneCurImage()
 	ILimage *DestImage;
 	
 	if (SrcImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return 0;
 	}
 	
@@ -1074,7 +1075,7 @@ ILAPI ILboolean ILAPIENTRY ilResizeImage(ILimage *Image, ILuint Width, ILuint He
 	ILuint Depth, ILubyte Bpp, ILubyte Bpc)
 {
 	if (Image == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 	

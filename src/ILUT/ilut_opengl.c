@@ -251,7 +251,7 @@ ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image
 	ILubyte	*Buffer;
 
 	if (Image == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -393,7 +393,7 @@ ILboolean ILAPIENTRY ilutGLBuildMipmaps()
 	ILimage	*Image;
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -424,7 +424,7 @@ ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILuint XOff, ILuint YOff)
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -438,7 +438,7 @@ ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILuint XOff, ILuint YOff)
 	glGetTexLevelParameteriv(GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, (GLint*)&Height);
 
 	if (Image->Width + XOff > (ILuint)Width || Image->Height + YOff > (ILuint)Height) {
-		ilSetError(ILUT_BAD_DIMENSIONS);
+		iSetError(ILUT_BAD_DIMENSIONS);
 		return IL_FALSE;
 	}
 
@@ -463,13 +463,13 @@ ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILuint XOff, ILuint YOff, ILui
 	ILint Width, Height, Depth;
 
 	if (ilGLTexSubImage3D == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);  // Set a different error?
+		iSetError(ILUT_ILLEGAL_OPERATION);  // Set a different error?
 		return IL_FALSE;
 	}
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -485,7 +485,7 @@ ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILuint XOff, ILuint YOff, ILui
 
 	if (Image->Width + XOff > (ILuint)Width || Image->Height + YOff > (ILuint)Height
 		|| Image->Depth + ZOff > (ILuint)Depth) {
-		ilSetError(ILUT_BAD_DIMENSIONS);
+		iSetError(ILUT_BAD_DIMENSIONS);
 		return IL_FALSE;
 	}
 
@@ -725,7 +725,7 @@ ILboolean ILAPIENTRY ilutGLScreen()
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -773,7 +773,7 @@ ILboolean ILAPIENTRY ilutGLScreenie()
 	}
 
 	if (i == 127) {
-		ilSetError(ILUT_COULD_NOT_OPEN_FILE);
+		iSetError(ILUT_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -835,7 +835,7 @@ ILboolean ILAPIENTRY ilutGLSetTex3D(GLuint TexID)
 	ILuint Width, Height, Depth;
 
 	if (ilGLTexImage3D == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);  // Set a different error?
+		iSetError(ILUT_ILLEGAL_OPERATION);  // Set a different error?
 		return IL_FALSE;
 	}
 

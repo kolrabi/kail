@@ -29,7 +29,7 @@ ILstring ILAPIENTRY iluGetString(ILenum StringName)
 		case ILU_VERSION_NUM:
 			return (ILstring)_iluVersion;
 		default:
-			ilSetError(ILU_INVALID_PARAM);
+			iSetError(ILU_INVALID_PARAM);
 			break;
 	}
 	return NULL;
@@ -49,7 +49,7 @@ void ILAPIENTRY iluGetIntegerv(ILenum Mode, ILint *Param)
 			break;
 
 		default:
-			ilSetError(ILU_INVALID_ENUM);
+			iSetError(ILU_INVALID_ENUM);
 	}
 	return;
 }
@@ -86,7 +86,7 @@ void ILAPIENTRY iluImageParameter(ILenum PName, ILenum Param)
 					iluFilter = Param;
 					break;
 				default:
-					ilSetError(ILU_INVALID_ENUM);
+					iSetError(ILU_INVALID_ENUM);
 					return;
 			}
 			break;
@@ -102,13 +102,13 @@ void ILAPIENTRY iluImageParameter(ILenum PName, ILenum Param)
 					iluPlacement = Param;
 					break;
 				default:
-					ilSetError(ILU_INVALID_ENUM);
+					iSetError(ILU_INVALID_ENUM);
 					return;
 			}
 			break;
 
 		default:
-			ilSetError(ILU_INVALID_ENUM);
+			iSetError(ILU_INVALID_ENUM);
 			return;
 	}
 	return;

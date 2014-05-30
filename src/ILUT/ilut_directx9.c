@@ -173,7 +173,7 @@ D3DCUBEMAP_FACES iToD3D9Cube(ILuint cube)
     Image=NULL;
     ILimage *ilutCurImage = iGetCurImage();
     if (ilutCurImage == NULL) {
-    	ilSetError(ILUT_ILLEGAL_OPERATION);
+    	iSetError(ILUT_ILLEGAL_OPERATION);
         return NULL;
     }
 
@@ -384,7 +384,7 @@ IDirect3DTexture9* ILAPIENTRY ilutD3D9Texture(IDirect3DDevice9 *Device)
   ILimage *ilutCurImage = iGetCurImage();
 	Image = ilutCurImage;
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -523,7 +523,7 @@ IDirect3DVolumeTexture9* ILAPIENTRY ilutD3D9VolumeTexture(IDirect3DDevice9 *Devi
 
   ILimage *ilutCurImage = iGetCurImage();
 	if (ilutCurImage == NULL) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -689,7 +689,7 @@ ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image)
   ILimage *ilutCurImage = iGetCurImage();
 	CurImage = ilutCurImage;
 	MipImage = Image;
-	iGetIntegervImage(MipImage, IL_NUM_MIPMAPS, (ILint*) &srcMips);
+	srcMips = iGetIntegerImage(MipImage, IL_NUM_MIPMAPS);
 	if ( srcMips != NumMips-1) {
 		MipImage = ilCopyImage_(Image);
 		ilSetCurImage(MipImage);
@@ -807,20 +807,20 @@ ILAPI ILboolean ILAPIENTRY ilutD3D9LoadSurface(IDirect3DDevice9 *Device, IDirect
 
 	hr = IDirect3DDevice9_CreateOffscreenPlainSurface(Device, d3dsd.Width, d3dsd.Height, d3dsd.Format, D3DPOOL_SCRATCH, &SurfaceCopy, NULL);
 	if (FAILED(hr)) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	hr = IDirect3DDevice9_StretchRect(Device, Surface, NULL, SurfaceCopy, NULL, D3DTEXF_NONE);
 	if (FAILED(hr)) {
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	hr = IDirect3DSurface9_LockRect(SurfaceCopy, &d3dLR, NULL, D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_NOSYSLOCK | D3DLOCK_READONLY);
 	if (FAILED(hr)) {
 		IDirect3DSurface9_Release(SurfaceCopy);
-		ilSetError(ILUT_ILLEGAL_OPERATION);
+		iSetError(ILUT_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

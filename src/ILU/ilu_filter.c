@@ -19,7 +19,7 @@ ILboolean ILAPIENTRY iluPixelize(ILuint PixSize)
 	ILimage *  Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -193,7 +193,7 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
 	ILdouble	Num;
 	
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -419,7 +419,7 @@ ILboolean ILAPIENTRY iluEdgeDetectP()
 	ILimage *  Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -478,7 +478,7 @@ ILboolean ILAPIENTRY iluEdgeDetectS()
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -536,7 +536,7 @@ ILboolean ILAPIENTRY iluBlurAvg(ILuint Iter)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -576,7 +576,7 @@ ILboolean ILAPIENTRY iluBlurGaussian(ILuint Iter)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -615,7 +615,7 @@ ILboolean ILAPIENTRY iluEmboss()
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -650,7 +650,7 @@ ILboolean ILAPIENTRY iluEmboss()
 
 	Image = ilGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -683,7 +683,7 @@ ILboolean ILAPIENTRY iluEdgeDetectE()
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -718,12 +718,12 @@ ILboolean ILAPIENTRY iluScaleAlpha(ILfloat scale)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if( (Image->Format != IL_COLOUR_INDEX) && (Image->Type != IL_BYTE) ) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -753,13 +753,13 @@ ILboolean ILAPIENTRY iluScaleAlpha(ILfloat scale)
 					break;
 
 				default:
-					ilSetError(ILU_ILLEGAL_OPERATION);
+					iSetError(ILU_ILLEGAL_OPERATION);
 					return IL_FALSE;
 			}
 			break;
 
 		default:
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
@@ -781,12 +781,12 @@ ILboolean ILAPIENTRY iluScaleColours(ILfloat r, ILfloat g, ILfloat b) {
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if( (Image->Format != IL_COLOUR_INDEX) && (Image->Type != IL_BYTE) ) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -912,13 +912,13 @@ ILboolean ILAPIENTRY iluScaleColours(ILfloat r, ILfloat g, ILfloat b) {
 
 
 				default:
-					ilSetError(ILU_ILLEGAL_OPERATION);
+					iSetError(ILU_ILLEGAL_OPERATION);
 					return IL_FALSE;
 			}
 			break;
 
 		default:
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
@@ -941,7 +941,7 @@ ILboolean ILAPIENTRY iluGammaCorrect(ILfloat Gamma)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -1032,7 +1032,7 @@ void iApplyMatrix(ILimage *Image, ILfloat Mat[4][4])
 			break;
 
 		default:
-			ilSetError(ILU_ILLEGAL_OPERATION);
+			iSetError(ILU_ILLEGAL_OPERATION);
 			return;
 	}
 
@@ -1094,7 +1094,7 @@ ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Satu
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -1114,7 +1114,7 @@ ILboolean ILAPIENTRY iluAlienify(void)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	Data = Image->Data;
@@ -1148,7 +1148,7 @@ ILboolean ILAPIENTRY iluAlienify(void)
 		break;
 
 		default:
-			//ilSetError(ILU_ILLEGAL_OPERATION);
+			//iSetError(ILU_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
@@ -1198,7 +1198,7 @@ void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
 
 	Image = ilGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -1227,7 +1227,7 @@ ILboolean ILAPIENTRY iluContrast(ILfloat Contrast)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -1257,7 +1257,7 @@ ILboolean ILAPIENTRY iluSharpen(ILfloat Factor, ILuint Iter)
 	
 	CurImage = iGetCurImage();
 	if (CurImage == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -1289,7 +1289,7 @@ ILAPI ILboolean ILAPIENTRY iluConvolution(ILint *matrix, ILint scale, ILint bias
 	ILimage		*Image = iGetCurImage();
 	
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	

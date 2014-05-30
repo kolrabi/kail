@@ -35,7 +35,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
 	if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || Image->Bpp != 1) {
 		ilCloseImage(NewImage);
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -185,7 +185,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
 	if (ilGetBppFormat(NewImage->Format) == 0) {
 		ilCloseImage(NewImage);
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
@@ -226,7 +226,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
 		default:
 			ilCloseImage(NewImage);
-			ilSetError(IL_INVALID_CONVERSION);
+			iSetError(IL_INVALID_CONVERSION);
 			return NULL;
 	}
 
@@ -276,13 +276,13 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
 
 	// CurImage = Image;
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	// We don't support 16-bit color indices (or higher).
 	if (DestFormat == IL_COLOUR_INDEX && DestType >= IL_SHORT) {
-		ilSetError(IL_INVALID_CONVERSION);
+		iSetError(IL_INVALID_CONVERSION);
 		return NULL;
 	}
 
@@ -326,7 +326,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
 		}
 
 		if (ilGetBppFormat(DestFormat) == 0) {
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			ifree(NewImage);
 			return NULL;
 		}
@@ -432,7 +432,7 @@ ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -449,14 +449,14 @@ ILboolean iSwapColours(ILimage *Image)
 	ILdouble	*DoublePtr, DoubleTemp;
 
 	if ((Image->Bpp != 1 && Image->Bpp != 3 && Image->Bpp != 4)) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
 	// Just check before we change the format.
 	if (Image->Format == IL_COLOUR_INDEX) {
 		if (PalBpp == 0 || Image->Format != IL_COLOUR_INDEX) {
-			ilSetError(IL_ILLEGAL_OPERATION);
+			iSetError(IL_ILLEGAL_OPERATION);
 			return IL_FALSE;
 		}
 	}
@@ -501,12 +501,12 @@ ILboolean iSwapColours(ILimage *Image)
 					Image->Pal.PalType = IL_PAL_RGBA32;
 					break;
 				default:
-					ilSetError(IL_ILLEGAL_OPERATION);
+					iSetError(IL_ILLEGAL_OPERATION);
 					return IL_FALSE;
 			}
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_OPERATION);
+			iSetError(IL_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
@@ -563,7 +563,7 @@ ILboolean ilSwapColours()
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	return iSwapColours(Image);
@@ -576,12 +576,12 @@ ILboolean iAddAlpha(ILimage *Image)
 	ILuint		i = 0, j = 0, Size;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->Bpp != 3) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -645,7 +645,7 @@ ILboolean iAddAlpha(ILimage *Image)
 
 		default:
 			ifree(NewData);
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 	}
 
@@ -676,7 +676,7 @@ ILboolean ilAddAlpha()
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	return iAddAlpha(Image);
@@ -705,13 +705,13 @@ ILboolean iAddAlphaKey(ILimage *Image)
 	ILboolean	Same;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (Image->Format != IL_COLOUR_INDEX) {
 		if (Image->Bpp != 3) {
-			ilSetError(IL_INVALID_VALUE);
+			iSetError(IL_INVALID_VALUE);
 			return IL_FALSE;
 		}
 
@@ -832,7 +832,7 @@ ILboolean iAddAlphaKey(ILimage *Image)
 
 			default:
 				ifree(NewData);
-				ilSetError(IL_INTERNAL_ERROR);
+				iSetError(IL_INTERNAL_ERROR);
 				return IL_FALSE;
 		}
 
@@ -856,18 +856,18 @@ ILboolean iAddAlphaKey(ILimage *Image)
 	}
 	else {  // IL_COLOUR_INDEX
 		if (Image->Bpp != 1) {
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 		}
 
 		Size = ilGetInteger(IL_PALETTE_NUM_COLS);
 		if (Size == 0) {
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 		}
 
 		if ((ILuint)(KeyAlpha * UCHAR_MAX) > Size) {
-			ilSetError(IL_INVALID_VALUE);
+			iSetError(IL_INVALID_VALUE);
 			return IL_FALSE;
 		}
 
@@ -886,7 +886,7 @@ ILboolean iAddAlphaKey(ILimage *Image)
 					return IL_FALSE;
 				break;
 			default:
-				ilSetError(IL_INTERNAL_ERROR);
+				iSetError(IL_INTERNAL_ERROR);
 				return IL_FALSE;
 		}
 
@@ -911,12 +911,12 @@ ILboolean iRemoveAlpha(ILimage *Image)
 	ILuint i = 0, j = 0, Size;
 
 	if (Image == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
 	if (Image->Bpp != 4) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -975,7 +975,7 @@ ILboolean iRemoveAlpha(ILimage *Image)
 
 		default:
 			ifree(NewData);
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 	}
 
@@ -1007,7 +1007,7 @@ ILboolean ilRemoveAlpha()
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	return iRemoveAlpha(Image);
@@ -1045,6 +1045,7 @@ ILboolean iFixImage(ILimage *Image)
 			}
 		}
 	}
+	
 	return IL_TRUE;
 }
 

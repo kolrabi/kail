@@ -76,14 +76,14 @@ static ILboolean iLoadPixInternal(ILimage* image) {
 	ILubyte	ByteHead, Colour[3];
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (!iGetPixHead(&image->io, &Header))
 		return IL_FALSE;
 	if (!iCheckPix(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

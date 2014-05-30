@@ -361,23 +361,23 @@ typedef double                      ILclampd;
 #define IL_TYPE_MODE            0x0613
 
 // File definitions
-#define IL_FILE_OVERWRITE       0x0620
+#define IL_FILE_OVERWRITE       0x0602 // deprectated: value not used anywhere, use IL_FILE_MODE instead
 #define IL_FILE_MODE            0x0621
 
 // Palette definitions
 #define IL_CONV_PAL             0x0630
 
 // Load fail definitions
-#define IL_DEFAULT_ON_FAIL      0x0632
+#define IL_DEFAULT_ON_FAIL      0x0632 // FIXME: value not used anywhere
 
 // Key colour and alpha definitions
-#define IL_USE_KEY_COLOUR       0x0635
-#define IL_USE_KEY_COLOR        0x0635
-#define IL_BLIT_BLEND           0x0636
+#define IL_USE_KEY_COLOUR       0x0635 // FIXME: value not used anywhere
+#define IL_USE_KEY_COLOR        0x0635 // FIXME: value not used anywhere
+#define IL_BLIT_BLEND           0x0636 // FIXME: value not used anywhere
 
 // Interlace definitions
-#define IL_SAVE_INTERLACED      0x0639
-#define IL_INTERLACE_MODE       0x063A
+#define IL_SAVE_INTERLACED      0x0639 // FIXME: value not used anywhere
+#define IL_INTERLACE_MODE       0x063A // FIXME: value not used anywhere
 
 // Quantization definitions
 #define IL_QUANTIZATION_MODE    0x0640
@@ -433,7 +433,7 @@ typedef double                      ILclampd;
 #define IL_CHEAD_HEADER_STRING     0x0722
 #define IL_PCD_PICNUM              0x0723
 #define IL_PNG_ALPHA_INDEX         0x0724 //XIX : ILint : the color in the palette at this index value (0-255) is considered transparent, -1 for no trasparent color
-#define IL_JPG_PROGRESSIVE         0x0725
+#define IL_JPG_PROGRESSIVE         0x0725 // FIXME: value not used anywhere
 #define IL_VTF_COMP                0x0726
 
 // DXTC definitions
@@ -664,6 +664,12 @@ ILAPI ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILu
 ILAPI ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILAPI ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
+
+
+#ifdef IL_VERSION_1_8_3
+ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
+#endif 
+
 
 // For all those weirdos that spell "colour" without the 'u'.
 #define ilClearColor  ilClearColour

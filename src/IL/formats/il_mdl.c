@@ -34,7 +34,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 	ILimage *	BaseImage 	= NULL;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -42,7 +42,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 	MDL_HEAD Head;
 
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -54,7 +54,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 	TEX_INFO TexInfo;
 
 	if (SIOread(io, &TexInfo, 1, sizeof(TexInfo)) != sizeof(TexInfo)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -63,7 +63,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 	UInt(&TexInfo.TexDataOff);
 
 	if (TexInfo.NumTex == 0 || TexInfo.TexOff == 0 || TexInfo.TexDataOff == 0) {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 
@@ -84,7 +84,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 		ILuint Position = SIOtell(io);
 
 		if (TexHead.Offset == 0) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 
@@ -115,10 +115,6 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 
 		if (SIOread(io, Image->Pal.Palette, 1, 768) != 768)
 			return IL_FALSE;
-
-		if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
-			ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
-		}
 
 		SIOseek(io, Position, IL_SEEK_SET);
 	}

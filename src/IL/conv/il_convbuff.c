@@ -43,7 +43,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 	ILimage		*PalImage = NULL, *TempImage = NULL;
 
 	if (SizeOfData == 0 || Buffer == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -413,7 +413,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -749,7 +749,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1058,7 +1058,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1394,7 +1394,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1578,7 +1578,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;*/
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1789,7 +1789,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;*/
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1941,7 +1941,7 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 					break;*/
 
 				default:
-					ilSetError(IL_INVALID_CONVERSION);
+					iSetError(IL_INVALID_CONVERSION);
 					if (Data != Buffer)
 						ifree(Data);
 					return NULL;
@@ -1974,7 +1974,7 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 	BpcDest = ilGetBpcType(DestType);
 
 	if (BpcSrc == 0 || BpcDest == 0) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return IL_FALSE;
 	}
 

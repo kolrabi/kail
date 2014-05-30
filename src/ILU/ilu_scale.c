@@ -18,7 +18,7 @@
 ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim)
 {
 	if (XDim <= 0.0f || YDim <= 0.0f || ZDim <= 0.0f) {
-		ilSetError(ILU_INVALID_PARAM);
+		iSetError(ILU_INVALID_PARAM);
 		return IL_FALSE;
 	}
 
@@ -42,7 +42,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -67,7 +67,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 
 				Image = iGetCurImage();
 				if (Image == NULL) {
-					ilSetError(ILU_ILLEGAL_OPERATION);
+					iSetError(ILU_ILLEGAL_OPERATION);
 					return IL_FALSE;
 				}
 
@@ -75,7 +75,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 				if (Image->Type != IL_UNSIGNED_BYTE ||
 					Image->Format == IL_COLOUR_INDEX ||
 					Image->Depth > 1) {
-						ilSetError(ILU_ILLEGAL_OPERATION);
+						iSetError(ILU_ILLEGAL_OPERATION);
 						return IL_FALSE;
 				}
 
@@ -197,7 +197,7 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width)
 	ILuint		*IntPtr, *SIntPtr;
 
 	if (Image == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

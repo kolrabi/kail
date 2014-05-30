@@ -41,7 +41,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	ILuint	i, NewW, NewH;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	CurImage = Image;

@@ -74,6 +74,7 @@ SET                     ( SOURCES
                           formats/il_xpm.c
 
                           il_alloc.c
+                          il_api.c
                           il_bits.c
                           il_endian.c
                           il_error.c 

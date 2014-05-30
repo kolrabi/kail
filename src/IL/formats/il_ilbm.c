@@ -82,14 +82,14 @@ static ILboolean iIsValidIlbm(SIO *io)
 static ILboolean iLoadIlbmInternal(ILimage *Image)
 {
   if (Image == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       return IL_FALSE;
   }
 
   SIO *io = &Image->io;
 
   if (!iIsValidIlbm(io)) {
-      ilSetError(IL_INVALID_VALUE);
+      iSetError(IL_INVALID_VALUE);
       return IL_FALSE;
   }
 
@@ -129,7 +129,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
   /* As size is not used here, no need to swap it */
 
   if ( memcmp( id, "FORM", 4 ) != 0 ) {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     error = "not a IFF file";
     goto done;
   }
@@ -143,7 +143,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
   if ( !memcmp( id, "PBM ", 4 ) ) {
     isPBM = IL_TRUE;
   } else if ( memcmp( id, "ILBM", 4 ) )  {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     error = "not a IFF picture";
     goto done;
   }
@@ -234,7 +234,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
 
   MiniBuf = (ILubyte *)malloc( bytesperline * nbplanes );
   if ( !MiniBuf ) {
-    ilSetError( IL_OUT_OF_MEMORY );
+    iSetError( IL_OUT_OF_MEMORY );
     error = "no enough memory for temporary buffer";
     goto done;
   }
@@ -323,7 +323,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
               || !SIOread( io, &color, 1, 1 ) ) {
 
               if( count>remainingbytes)
-                ilSetError(IL_ILLEGAL_FILE_VALUE );
+                iSetError(IL_ILLEGAL_FILE_VALUE );
               
               error = "error reading BODY chunk";
               goto done;
@@ -337,7 +337,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
             || !SIOread( io, ptr, count, 1 ) ) {
 
             if( count>remainingbytes)
-              ilSetError(IL_ILLEGAL_FILE_VALUE );
+              iSetError(IL_ILLEGAL_FILE_VALUE );
 
             error = "error reading BODY chunk";
             goto done;

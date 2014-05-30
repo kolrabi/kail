@@ -84,7 +84,7 @@ static ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noC
 			if (count == 128) {  // Long run
 				count = GetBigUShort(io);
 				if (io->eof(io->handle)) {
-					ilSetError(IL_FILE_READ_ERROR);
+					iSetError(IL_FILE_READ_ERROR);
 					return IL_FALSE;
 				}
 			}
@@ -94,13 +94,13 @@ static ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noC
 			// We've run past...
 			if ((i + count) > width) {
 				//fprintf(stderr, "ERROR: FF_PIC_load(): Overrun scanline (Repeat) [%d + %d > %d] (NC=%d)\n", i, count, width, noCol);
-				ilSetError(IL_ILLEGAL_FILE_VALUE);
+				iSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
 
 			for (j = 0; j < noCol; j++)
 				if (io->read(io->handle, &col[j], 1, 1) != 1) {
-					ilSetError(IL_FILE_READ_ERROR);
+					iSetError(IL_FILE_READ_ERROR);
 					return IL_FALSE;
 				}
 
@@ -112,14 +112,14 @@ static ILboolean channelReadMixed(SIO* io, ILubyte *scan, ILint width, ILint noC
 			count++;
 			if ((i + count) > width) {
 				//fprintf(stderr, "ERROR: FF_PIC_load(): Overrun scanline (Raw) [%d + %d > %d] (NC=%d)\n", i, count, width, noCol);
-				ilSetError(IL_ILLEGAL_FILE_VALUE);
+				iSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
 			
 			for (k = count; k > 0; k--, scan += bytes) {
 				for (j = 0; j < noCol; j++)
 					if (io->read(io->handle, &scan[off[j]], 1, 1) != 1) {
-						ilSetError(IL_FILE_READ_ERROR);
+						iSetError(IL_FILE_READ_ERROR);
 						return IL_FALSE;
 					}
 			}
@@ -235,7 +235,7 @@ static ILboolean readScanlines(SIO* io, ILuint *image, ILint width, ILint height
 		scan = image + i * width;
 
 		if (!readScanline(io, (ILubyte *)scan, width, channel, alpha ? 4 : 3)) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 		}
 	}
@@ -254,14 +254,14 @@ static ILboolean iLoadPicInternal(ILimage* image)
 	ILboolean	Read;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	if (!iGetPicHead(&image->io, &Header))
 		return IL_FALSE;
 	if (!iCheckPic(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

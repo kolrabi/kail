@@ -135,7 +135,7 @@ iCheckBlp1(const BLP1HEAD *Header) {
 static ILubyte *
 ReadJpegHeader(SIO *io, ILuint *size) {
 	if (!SIOread(io, size, sizeof(*size), 1)) {
-		ilSetError(IL_FILE_READ_ERROR);
+		iSetError(IL_FILE_READ_ERROR);
 		return IL_FALSE;
 	}
 	UInt(size);
@@ -171,7 +171,7 @@ iLoadBlp1(ILimage *TargetImage) {
 		return IL_FALSE;
 
 	if (!iCheckBlp1(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -405,7 +405,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 	SIO *     io = &TargetImage->io;
 
 	if (TargetImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -414,7 +414,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 	}
 
 	if (!iCheckBlp2(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -470,7 +470,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 
 						// These two should be the same (tells us how much data is in the file for this mipmap level).
 						if (Header.MipLengths[Mip] != Image->SizeOfData) {
-							ilSetError(IL_INVALID_FILE_HEADER);
+							iSetError(IL_INVALID_FILE_HEADER);
 							return IL_FALSE;
 						}
 						// Finally read in the image data.
@@ -521,7 +521,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 							AlphaSize = 1;  // Should never be 0.
 						// These two should be the same (tells us how much data is in the file for this mipmap level).
 						if (Header.MipLengths[Mip] != Image->SizeOfData / 4 + AlphaSize) {
-							ilSetError(IL_INVALID_FILE_HEADER);
+							iSetError(IL_INVALID_FILE_HEADER);
 							return IL_FALSE;
 						}
 
@@ -567,7 +567,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 
 					default:
 						//@TODO: Accept any other alpha values?
-						ilSetError(IL_INVALID_FILE_HEADER);
+						iSetError(IL_INVALID_FILE_HEADER);
 						return IL_FALSE;
 				}
 			}
@@ -628,7 +628,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 						//  DecompressDXT1 does not crash.
 						CompSize = ((Image->Width + 3) / 4) * ((Image->Height + 3) / 4) * 8;
 						if (CompSize != Header.MipLengths[Mip]) {
-							ilSetError(IL_INVALID_FILE_HEADER);
+							iSetError(IL_INVALID_FILE_HEADER);
 							ifree(CompData);
 							return IL_FALSE;
 						}
@@ -644,7 +644,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
 						CompSize = ((Image->Width + 3) / 4) * ((Image->Height + 3) / 4) * 16;
 						if (CompSize != Header.MipLengths[Mip]) {
 							ifree(CompData);
-							ilSetError(IL_INVALID_FILE_HEADER);
+							iSetError(IL_INVALID_FILE_HEADER);
 							return IL_FALSE;
 						}
 						switch (Header.AlphaType)

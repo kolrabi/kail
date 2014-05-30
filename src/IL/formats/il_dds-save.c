@@ -18,6 +18,7 @@
 #include "il_manip.h"
 #include "il_internal.h"
 #include "il_stack.h"
+#include "il_states.h"
 
 #include <limits.h>
 
@@ -31,12 +32,12 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
 	if (image == NULL)
 		return 0;
 
-	iGetIntegervImage(image, IL_NUM_IMAGES, (ILint*) &srcImagesCount);
+	srcImagesCount = iGetIntegerImage(image, IL_NUM_IMAGES);
 	if (srcImagesCount != 5) //write only complete cubemaps (TODO?)
 		return 0;
 
 	img = image;
-	iGetIntegervImage(image, IL_NUM_MIPMAPS, (ILint*) &srcMipmapCount);
+	srcMipmapCount = iGetIntegerImage(image, IL_NUM_MIPMAPS);
 	mipmapCount = srcMipmapCount;
 
 	for (i = 0; i < 6; ++i) {
@@ -61,7 +62,7 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
 				indices[i] = 5;
 				break;
 		}
-        iGetIntegervImage(img, IL_NUM_MIPMAPS, (ILint*) &srcMipmapCount);
+    srcMipmapCount = iGetIntegerImage(img, IL_NUM_MIPMAPS);
 		if (srcMipmapCount != mipmapCount)
 			return 0; //equal # of mipmaps required
 
@@ -98,23 +99,21 @@ ILboolean iSaveDdsInternal(ILimage *Image)
 	WriteHeader(Image, DXTCFormat, CubeFlags);
 
 	if (CubeFlags != 0) {
-		iGetIntegervImage(Image, IL_NUM_FACES, &numFaces); // Should always be 5 for now
+		numFaces = iGetIntegerImage(Image, IL_NUM_FACES); // Should always be 5 for now
 	}	else {
 		numFaces = 0;
 	}
 
-	iGetIntegervImage(Image, IL_NUM_MIPMAPS, &numMipMaps); //this assumes all faces have same # of mipmaps
+	numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS); //this assumes all faces have same # of mipmaps
 
 	ILimage *SubImage;
 	for (i = 0; i <= numFaces; ++i) {
 		for (counter = 0; counter <= numMipMaps; counter++) {
 			SubImage = iGetSubImage(Image, CubeTable[i]);
-			iTrace("---- %p", SubImage);
 			SubImage = iGetMipmap(SubImage, counter);
-			iTrace("---- %p", SubImage);
 
 			if (!SubImage) {
-				ilSetError(IL_INTERNAL_ERROR);
+				iSetError(IL_INTERNAL_ERROR);
 				return IL_FALSE;
 			}
 
@@ -190,7 +189,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 			break;
 		default:
 			// Error!
-			ilSetError(IL_INTERNAL_ERROR);  // Should never happen, though.
+			iSetError(IL_INTERNAL_ERROR);  // Should never happen, though.
 			return IL_FALSE;
 	}
 
@@ -230,7 +229,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 		SaveLittleUInt(io,0);						// Depth
 
 	ILint numMipMaps;
-	iGetIntegervImage(Image, IL_NUM_MIPMAPS, &numMipMaps);
+	numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
 	SaveLittleUInt(io, numMipMaps + 1);  // MipMapCount
 	SaveLittleUInt(io,0);			// AlphaBitDepth
 
@@ -289,7 +288,7 @@ ILuint ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, 
 			case IL_RXGB:
 				return BlockNum * 16;
 			default:
-				ilSetError(IL_FORMAT_NOT_SUPPORTED);
+				iSetError(IL_FORMAT_NOT_SUPPORTED);
 				return 0;
 		}
 	}
@@ -1215,7 +1214,7 @@ ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Heig
 
 	if ((DXTCFormat != IL_DXT1 && DXTCFormat != IL_DXT1A && DXTCFormat != IL_DXT3 && DXTCFormat != IL_DXT5)
 		|| Data == NULL || Width == 0 || Height == 0 || Depth == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 

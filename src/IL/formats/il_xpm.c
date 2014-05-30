@@ -463,7 +463,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 #endif
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -471,7 +471,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 
 	Size = XpmGetsInternal(io, Buffer, BUFFER_SIZE);
 	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */"))) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -488,7 +488,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 
 #ifdef XPM_DONT_USE_HASHTABLE
 	if (CharsPerPixel != 1) {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 #endif
@@ -496,7 +496,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 	if (CharsPerPixel > XPM_MAX_CHAR_PER_PIXEL
 		|| Width*CharsPerPixel > BUFFER_SIZE) 
 	{
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 

@@ -128,14 +128,12 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	ILboolean	bVtf = IL_TRUE;
 	ILimage		*Image; //, *BaseImage;
 	ILenum		Format, Type;
-	ILint		Frame, Face, Mipmap;
 	ILuint		SizeOfData, Channels, k;
 	ILubyte		*CompData = NULL, SwapVal, *Data16Bit, *Temp, NumFaces;
 	VTFHEAD		Head;
-	ILuint    CurName = ilGetCurName(); // FIXME
 
 	if (BaseImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -145,7 +143,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 		return IL_FALSE;
 
 	if (!iCheckVtf(&Head)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -265,7 +263,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 			break;
 
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 
@@ -277,8 +275,9 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	VtfInitFacesMipmaps(BaseImage, NumFaces, &Head);
 
 	// Create our animation chain
-	/* BaseImage = */ Image = BaseImage;  // Top-level image
-	for (Frame = 1; Frame < Head.Frames; Frame++) {
+	Image = BaseImage;  // Top-level image
+	ILuint i;
+	for (i = 1; i < Head.Frames; i++) {
 		Image->Next = ilNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
 		if (Image->Next == NULL)
 			return IL_FALSE;
@@ -291,18 +290,13 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	}
 
 	// We want to put the smallest mipmap at the end, but it is first in the file, so we count backwards.
-	for (Mipmap = Head.MipmapCount - 1; Mipmap >= 0; Mipmap--) {
-		// Frames are in the normal order.
-		for (Frame = 0; Frame < Head.Frames; Frame++) {
-			// @TODO: Cubemap faces are always in the same order?
-			for (Face = 0; Face < NumFaces; Face++) {
-				//@TODO: Would probably be quicker to do the linked list traversal manually here.
-				ilBindImage(CurName);
-				ilActiveImage(Frame);
-				ilActiveFace(Face);
-				ilActiveMipmap(Mipmap);
-				Image = BaseImage;
-
+	ILimage *Frame = BaseImage;
+	while (Frame) {
+		ILimage *face = Image->Faces;
+		while (face) {
+			ILimage *mipMap = face->Mipmaps;
+			while (mipMap) {
+				Image = mipMap;
 				switch (Head.HighResImageFormat)
 				{
 					// DXT1 compression
@@ -524,11 +518,14 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 				CompData = NULL;
 				if (bVtf == IL_FALSE)  //@TODO: Do we need to do any cleanup here?
 					return IL_FALSE;
+
+				mipMap = mipMap->Mipmaps;
 			}
+			face = face->Faces;
 		}
+		Frame = Frame->Next;
 	}
 
-	ilBindImage(CurName);  // Set to parent image first.
 	return IL_TRUE;
 }
 
@@ -687,7 +684,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 				Format = IMAGE_FORMAT_DXT5;
 				break;
 			default:  // Should never reach this point.
-				ilSetError(IL_INTERNAL_ERROR);
+				iSetError(IL_INTERNAL_ERROR);
 				Format = IMAGE_FORMAT_DXT5;
 		}
 	}
@@ -755,7 +752,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 		// We have to find out how much we are writing first.
 		CompSize = ilGetDXTCData(NULL, 0, Compression);
 		if (CompSize == 0) {
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			if (TempData != TempImage->Data)
 				ifree(TempData);
 			return IL_FALSE;
@@ -770,7 +767,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 		// DXT compress the data.
 		CompSize = ilGetDXTCData(CompData, CompSize, Compression);
 		if (CompSize == 0) {
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			if (TempData != TempImage->Data)
 				ifree(TempData);
 			return IL_FALSE;

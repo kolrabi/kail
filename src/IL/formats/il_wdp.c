@@ -43,7 +43,7 @@ ILboolean ilLoadWdp(ILconst_string FileName)
 	
 	WdpFile = iopenr(FileName);
 	if (WdpFile == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return bWdp;
 	}
 

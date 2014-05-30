@@ -621,7 +621,7 @@ ILboolean ilReadUncompBmp(ILimage* image, BMPHEAD * header)
 {
 	// A height of 0 is illegal
 	if (header->biHeight == 0) {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		if (image->Pal.Palette)
 			ifree(image->Pal.Palette);
 		return IL_FALSE;
@@ -642,7 +642,7 @@ ILboolean ilReadUncompBmp(ILimage* image, BMPHEAD * header)
 		case 32:
 			return ilReadUncompBmp32(image, header);
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 }
@@ -737,7 +737,7 @@ ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
 
 	// A height of 0 is illegal
 	if (Header->biHeight == 0) {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 
@@ -824,7 +824,7 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 	ILboolean	bBitmap;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -832,7 +832,7 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 	if (!iCheckBmp(&Header)) {
 		iGetOS2Head(&image->io, &Os2Head);
 		if (!iCheckOS2(&Os2Head)) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}
 		else {
@@ -842,7 +842,7 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 
 	// Don't know what to do if it has more than one plane...
 	if (Header.biPlanes != 1) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -861,7 +861,7 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 			break;
 
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 
@@ -880,7 +880,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
 	ILubyte	*TempData;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

@@ -101,7 +101,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 	w = h = d = linesize = tilewidth = tilelength = 0;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -112,7 +112,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 
 	tif = iTIFFOpen(io, "r");
 	if (tif == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -240,7 +240,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 						linesread = rowsperstrip;
 
 					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-						ilSetError(IL_LIB_TIFF_ERROR);
+						iSetError(IL_LIB_TIFF_ERROR);
 						ifree(strip);
 						TIFFClose(tif);
 						return IL_FALSE;
@@ -278,7 +278,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 						linesread = rowsperstrip;
 
 					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-						ilSetError(IL_LIB_TIFF_ERROR);
+						iSetError(IL_LIB_TIFF_ERROR);
 						ifree(strip);
 						TIFFClose(tif);
 						return IL_FALSE;
@@ -362,7 +362,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 					linesread = rowsperstrip;
 
 				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-					ilSetError(IL_LIB_TIFF_ERROR);
+					iSetError(IL_LIB_TIFF_ERROR);
 					ifree(strip);
 					TIFFClose(tif);
 					return IL_FALSE;
@@ -428,7 +428,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 			//2003-09-04: keep flag 1 for official version for now
 			if (!TIFFReadRGBAImage(tif, Image->Width, Image->Height, (uint32*)Image->Data, 0)) {
 				TIFFClose(tif);
-				ilSetError(IL_LIB_TIFF_ERROR);
+				iSetError(IL_LIB_TIFF_ERROR);
 				return IL_FALSE;
 			}
 			Image->Origin = IL_ORIGIN_LOWER_LEFT;  // eiu...dunno if this is right
@@ -709,7 +709,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	ILubyte *OldData;
 
 	if(image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -744,7 +744,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	// Control writing functions ourself.
 	File = iTIFFOpen(&image->io, "w");
 	if (File == NULL) {
-		ilSetError(IL_COULD_NOT_OPEN_FILE);
+		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
@@ -822,7 +822,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	for (ixLine = 0; ixLine < TempImage->Height; ++ixLine) {
 		if (TIFFWriteScanline(File, TempImage->Data + ixLine * TempImage->Bps, ixLine, 0) < 0) {
 			TIFFClose(File);
-			ilSetError(IL_LIB_TIFF_ERROR);
+			iSetError(IL_LIB_TIFF_ERROR);
 			//if (SwapColors)
 			//	ilSwapColours();
 			if (TempImage->Data != OldData) {

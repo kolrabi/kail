@@ -95,7 +95,7 @@ static ILboolean iLoadPcxInternal(ILimage* image) {
 	ILboolean bPcx = IL_FALSE;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return bPcx;
 	}
 
@@ -105,7 +105,7 @@ static ILboolean iLoadPcxInternal(ILimage* image) {
 		return IL_FALSE;
 
 	if (!iCheckPcx(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -134,7 +134,7 @@ static ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header) {
 	ILuint	c, i, x, y;
 
 	if (Header->Bpp < 8) {
-		/*ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		/*iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;*/
 		return iUncompressSmall(image, Header);
 	}
@@ -169,7 +169,7 @@ static ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header) {
 			break;
 
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
@@ -246,7 +246,7 @@ file_read_error:
 	ifree(ScanLine);
 
 	//added 2003-09-01
-	ilSetError(IL_FILE_READ_ERROR);
+	iSetError(IL_FILE_READ_ERROR);
 	return IL_FALSE;
 }
 
@@ -272,7 +272,7 @@ static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header)
 			image->Format = IL_COLOUR_INDEX;
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
@@ -382,7 +382,7 @@ static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header)
 		ifree(ScanLine);
 	}
 	else {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 
@@ -472,7 +472,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 	ILubyte	*TempData;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

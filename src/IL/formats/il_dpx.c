@@ -136,7 +136,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 	ILboolean bigEndian = IL_FALSE;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -172,7 +172,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 			NumChans = 4;
 			break;
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 
@@ -198,7 +198,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 			case 10:
 				//@TODO: Support other formats!
 				/*if (Format != IL_RGB) {
-					ilSetError(IL_FORMAT_NOT_SUPPORTED);
+					iSetError(IL_FORMAT_NOT_SUPPORTED);
 					return IL_FALSE;
 				}*/
 				switch (Format)
@@ -260,7 +260,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 			//case 1:
 			//case 12:
 			default:
-				ilSetError(IL_FORMAT_NOT_SUPPORTED);
+				iSetError(IL_FORMAT_NOT_SUPPORTED);
 				return IL_FALSE;
 		}
 	}
@@ -278,11 +278,11 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 		}
 		bclose(File);*/
 
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 	else {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;  //@TODO: Take care of this in an iCheckDpx* function.
 	}
 

@@ -145,7 +145,8 @@ ILAPI void* 		ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
 ILAPI ILimage*  ILAPIENTRY iGetImage(ILuint Image);
 ILAPI ILimage* 	ILAPIENTRY iGetCurImage(void);
 ILAPI void     	ILAPIENTRY ilSetCurImage(ILimage *Image);
-ILAPI void     	ILAPIENTRY ilSetError(ILenum Error);
+ILAPI ILimage * ILAPIENTRY iGetBaseImage(void);
+ILAPI void     	ILAPIENTRY iSetError(ILenum Error);
 ILAPI void     	ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal);
 
 //
@@ -168,32 +169,35 @@ ILAPI char * 		ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
 //
 // Image functions
 //
-ILAPI void	    ILAPIENTRY iBindImageTemp  (void);
+
+ILAPI ILboolean ILAPIENTRY iMirrorImage     (ILimage *Image);
+ILAPI ILboolean ILAPIENTRY iFlipImage(ILimage *Image);
 ILAPI ILboolean ILAPIENTRY ilClearImage_   (ILimage *Image); // TODO: rename iClearImage
-ILAPI void      ILAPIENTRY ilCloseImage    (ILimage *Image);
-ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
-ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
 ILAPI ILboolean ILAPIENTRY ilCopyImageAttr (ILimage *Dest, ILimage *Src);
-ILAPI ILimage*  ILAPIENTRY ilCopyImage_    (ILimage *Src); // TODO: rename to iCloneImage
-ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
-ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
-ILAPI ILboolean ILAPIENTRY ilIsValidPal    (ILpal *Palette);
-ILAPI ILimage*  ILAPIENTRY ilNewImage      (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
-ILAPI ILimage*  ILAPIENTRY ilNewImageFull  (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILboolean ILAPIENTRY ilInitImage     (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
+ILAPI ILboolean ILAPIENTRY ilIsValidPal    (ILpal *Palette);
 ILAPI ILboolean ILAPIENTRY ilResizeImage   (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
 ILAPI ILboolean ILAPIENTRY ilTexImage_     (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILboolean ILAPIENTRY ilTexSubImage_  (ILimage *Image, void *Data);
-ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
+ILAPI ILimage * ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number);
+ILAPI ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number);
 ILAPI ILimage*  ILAPIENTRY iConvertImage   (ILimage *Image, ILenum DestFormat, ILenum DestType);
+ILAPI ILimage*  ILAPIENTRY ilCopyImage_    (ILimage *Src); // TODO: rename to iCloneImage
+ILAPI ILimage*  ILAPIENTRY ilNewImage      (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
+ILAPI ILimage*  ILAPIENTRY ilNewImageFull  (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
+ILAPI ILint     ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode);
 ILAPI ILpal*    ILAPIENTRY iConvertPal     (ILpal *Pal, ILenum DestFormat);
+ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
-ILAPI ILboolean	ILAPIENTRY iMirrorImage  		(ILimage *Image);
+ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
+ILAPI void      ILAPIENTRY iBindImageTemp  (void);
 ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
-ILAPI ILboolean ILAPIENTRY iFlipImage(ILimage *Image);
-ILAPI void      ILAPIENTRY iGetIntegervImage(ILimage *Image, ILenum Mode, ILint *Param);
+ILAPI void      ILAPIENTRY ilCloseImage    (ILimage *Image);
+ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
+ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
 ILAPI void      ILAPIENTRY iResetRead(ILimage *image);
 ILAPI void      ILAPIENTRY iResetWrite(ILimage *image);
+ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
 
 // Internal library functions in ILU
 ILAPI ILimage* 	ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);

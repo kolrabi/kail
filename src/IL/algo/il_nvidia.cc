@@ -86,13 +86,13 @@ struct ilOutputHandlerMem : public nvtt::OutputHandler
 ILAPI ILubyte* ILAPIENTRY ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
 	if (Data == NULL) {  // We cannot operate on a null pointer.
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 
 	// The nVidia Texture Tools library does not support volume textures yet.
 	if (Depth != 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -125,7 +125,7 @@ ILAPI ILubyte* ILAPIENTRY ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuin
 			compressionOptions.setFormat(Format_DXT5);
 			break;
 		default:  // Does not support DXT2 or DXT4.
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			break;
 	}
 
@@ -176,7 +176,7 @@ ILuint ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuin
 
 	// The nVidia Texture Tools library does not support volume textures yet.
 	if (Depth != 1) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return 0;
 	}
 
@@ -206,7 +206,7 @@ ILuint ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuin
 			compressionOptions.setFormat(Format_DXT5);
 			break;
 		default:  // Does not support DXT2 or DXT4.
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			break;
 	}
 

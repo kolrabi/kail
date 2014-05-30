@@ -64,7 +64,7 @@ ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile)
 #endif//_UNICODE
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -90,7 +90,7 @@ ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile)
 					Format = TYPE_BGRA_8;
 					break;
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return IL_FALSE;
 			}
 			break;
@@ -115,7 +115,7 @@ ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile)
 					Format = TYPE_BGRA_16;
 					break;
 				default:
-					ilSetError(IL_INTERNAL_ERROR);
+					iSetError(IL_INTERNAL_ERROR);
 					return IL_FALSE;
 			}
 			break;
@@ -125,14 +125,14 @@ ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile)
 		case IL_UNSIGNED_INT:
 		case IL_FLOAT:
 		case IL_DOUBLE:
-			ilSetError(IL_ILLEGAL_OPERATION);
+			iSetError(IL_ILLEGAL_OPERATION);
 			return IL_FALSE;
 	}
 
 
 	if (InProfile == NULL) {
 		if (!Image->Profile || !Image->ProfileSize) {
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return IL_FALSE;
 		}
 		hInProfile = Image->Profile;

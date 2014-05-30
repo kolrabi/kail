@@ -116,14 +116,14 @@ static ILboolean iLoadPsdInternal(ILimage* image) {
 	PSDHEAD	Header;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	SIO *io = &image->io;
 
 	if (!iGetPsdHead(io, &Header) || !iCheckPsd(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -147,7 +147,7 @@ static ILboolean ReadPsd(ILimage* image, PSDHEAD *Head) {
 			return ReadCMYK(image, Head);
 	}
 
-	ilSetError(IL_FORMAT_NOT_SUPPORTED);
+	iSetError(IL_FORMAT_NOT_SUPPORTED);
 	return IL_FALSE;
 }
 
@@ -186,7 +186,7 @@ static ILboolean ReadGrey(ILimage* image, PSDHEAD *Head) {
 			Type = IL_UNSIGNED_SHORT;
 			break;
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 
@@ -217,7 +217,7 @@ static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 
 	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
 	if (ColorMode % 3 != 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -248,7 +248,7 @@ static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 		goto cleanup_error;
 
 	if (Head->Channels != 1 || Head->Depth != 8) {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		goto cleanup_error;
 	}
 
@@ -325,7 +325,7 @@ static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 		// has a real alpha channel, there will be 5 channels (or more).
 		Format = IL_RGBA;
 	}	else {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 
@@ -337,7 +337,7 @@ static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 			Type = IL_UNSIGNED_SHORT;
 			break;
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 
@@ -398,7 +398,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 			Head->Channels = 4;
 			break;
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 	switch (Head->Depth)
@@ -410,7 +410,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 			Type = IL_UNSIGNED_SHORT;
 			break;
 		default:
-			ilSetError(IL_FORMAT_NOT_SUPPORTED);
+			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
 	}
 
@@ -581,7 +581,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 	// @TODO: Add support for this in, though I have yet to run across a .psd
 	//	file that uses this.
 	if (Compressed && image->Type == IL_UNSIGNED_SHORT) {
-		ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
 
@@ -710,7 +710,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 file_corrupt:
 	ifree(ChanLen);
 	ifree(Channel);
-	ilSetError(IL_ILLEGAL_FILE_VALUE);
+	iSetError(IL_ILLEGAL_FILE_VALUE);
 	return IL_FALSE;
 
 file_read_error:
@@ -727,7 +727,7 @@ ILboolean ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources
 	ILuint		Size;
 
 	if (Resources == NULL) {
-		ilSetError(IL_INTERNAL_ERROR);
+		iSetError(IL_INTERNAL_ERROR);
 		return IL_FALSE;
 	}
 
@@ -758,7 +758,7 @@ ILboolean ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources
 		{
 			case 0x040F:  // ICC Profile
 				if (Size > ResourceSize) {  // Check to make sure we are not going past the end of Resources.
-					ilSetError(IL_ILLEGAL_FILE_VALUE);
+					iSetError(IL_ILLEGAL_FILE_VALUE);
 					return IL_FALSE;
 				}
 				image->Profile = (ILubyte*)ialloc(Size);
@@ -840,7 +840,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	ILenum		Format, Type;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -890,7 +890,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 			SaveBigShort(io,3);
 			break;
 		default:
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
 	}
 

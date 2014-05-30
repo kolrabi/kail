@@ -70,7 +70,7 @@ void *vec_malloc(const ILsizei size) {
 void* ILAPIENTRY ialloc(const ILsizei Size) {
 	void **Ptr = (void**)ialloc_ptr(Size + sizeof(void*));
 	if (Ptr == NULL) {
-		ilSetError(IL_OUT_OF_MEMORY);
+		iSetError(IL_OUT_OF_MEMORY);
 		return NULL;
 	}
 
@@ -128,7 +128,7 @@ void ILAPIENTRY ilResetMemory()  // Deprecated
 	ifree_ptr  = DefaultFreeFunc;
 }
 
-void ILAPIENTRY ilSetMemory(mAlloc AllocFunc, mFree FreeFunc)
+void iSetMemory(mAlloc AllocFunc, mFree FreeFunc)
 {
 	ialloc_ptr 	= AllocFunc == NULL ? DefaultAllocFunc : AllocFunc;
 	ifree_ptr 	= FreeFunc  == NULL ? DefaultFreeFunc  : FreeFunc;

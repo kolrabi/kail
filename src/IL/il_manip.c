@@ -61,7 +61,7 @@ static ILubyte* iFlipNewBuffer(ILubyte *buff, ILuint depth, ILuint line_size, IL
 ILboolean ILAPIENTRY iFlipImage(ILimage *Image)
 {
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -77,7 +77,7 @@ ILboolean ILAPIENTRY iFlipImage(ILimage *Image)
 ILubyte* ILAPIENTRY iGetFlipped(ILimage *img)
 {
 	if (img == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 	return iFlipNewBuffer(img->Data,img->Depth,img->Bps,img->Height);
@@ -95,7 +95,7 @@ ILboolean ILAPIENTRY iMirrorImage(ILimage *Image) {
 	ILdouble	*DblPtr, *TempDbl;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -317,7 +317,7 @@ ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wid
 	ILuint	SrcSize, DestSize;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return 0;
 	}
 	DestSize = Width * Height * Depth * ilGetBppFormat(Format) * ilGetBpcType(Type);
@@ -325,7 +325,7 @@ ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wid
 		return DestSize;
 	}
 	if (Data == NULL || Format == IL_COLOUR_INDEX) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return 0;
 	}
 	SrcSize = Width * Height * Depth * Image->Bpp * Image->Bpc;
@@ -556,7 +556,7 @@ void ILAPIENTRY iSetPixels(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, I
 	void *Converted;
 
 	if (Data == NULL) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return;
 	}
 
@@ -592,7 +592,7 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
 {
 	ILimage *Image = iGetCurImage();
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return;
 	}
 
@@ -618,7 +618,7 @@ ILboolean ILAPIENTRY ilDefaultImage()
 	ILint v, w, x, y;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -676,13 +676,13 @@ ILubyte* ILAPIENTRY ilGetAlpha(ILenum Type)
 	ILimage *Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return NULL;
 	}
 
 	Bpc = ilGetBpcType(Type);
 	if (Bpc == 0) {
-		ilSetError(IL_INVALID_PARAM);
+		iSetError(IL_INVALID_PARAM);
 		return NULL;
 	}
 
@@ -770,7 +770,7 @@ ILboolean ILAPIENTRY ilSetAlpha(ILdouble AlphaValue)
 	ILimage *Image = iGetCurImage();
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -864,7 +864,7 @@ void ILAPIENTRY ilModAlpha(ILdouble AlphaValue)
 
   
   if (Image == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       return;
   }
   
@@ -936,7 +936,7 @@ ILboolean ILAPIENTRY ilClampNTSC(void)
 	ILimage *Image = iGetCurImage();
 
   if (Image == NULL) {
-      ilSetError(IL_ILLEGAL_OPERATION);
+      iSetError(IL_ILLEGAL_OPERATION);
       return IL_FALSE;
   }
 

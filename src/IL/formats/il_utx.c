@@ -116,7 +116,7 @@ static ILboolean GetUtxNameTable(SIO *io, UTXENTRYNAME *NameEntries, UTXHEADER *
 
 	// Did not read all of the entries (most likely GetUtxName failed).
 	if (NumRead < Header->NameCount) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -274,7 +274,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 	ILubyte		*CompData = NULL;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

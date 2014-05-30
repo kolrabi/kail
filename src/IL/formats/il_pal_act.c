@@ -36,7 +36,7 @@ ILboolean iIsValidActPal(SIO *io) {
 //! Loads an .act palette file.
 static ILboolean iLoadActPal(ILimage *Image) {
  	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

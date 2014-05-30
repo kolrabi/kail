@@ -77,7 +77,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	ILimage * BaseImage = Image;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -98,12 +98,12 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	if ( memcmp(&Head.FormHead.FORM, "FORM", 4) 
 		|| Head.FormHead.FormLength != 0x14 
 		|| memcmp(&Head.FormHead.FormName, "HEAD", 4)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
 	if (Head.Width == 0 || Head.Height == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -132,7 +132,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 			break;
 
 		default:
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
 
@@ -143,7 +143,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	//@TODO: Not sure if the FormLen has to be anything specific here.
 	if ( !iGetFormHeader(io, &Form)
 		|| memcmp(&Form.FormName, "MIPS", 4)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -152,7 +152,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 		if ( !iGetFormHeader(io, &Form)
 		  || memcmp(&Form.FormName, "MLVL", 4)) {
 			if (!BaseImage) {
-				ilSetError(IL_INVALID_FILE_HEADER);
+				iSetError(IL_INVALID_FILE_HEADER);
 				return IL_FALSE;
 			}
 			break;
@@ -166,7 +166,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 
 		// Lower level mipmaps cannot be larger than the main image.
 		if (MipWidth > Head.Width || MipHeight > Head.Height || MipSize > CompSize) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}
 
@@ -190,7 +190,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				// Allocates the size of the compressed data.
 				CompSize = ((MipWidth + 3) / 4) * ((MipHeight + 3) / 4) * 8;
 				if (CompSize != MipSize) {
-					ilSetError(IL_INVALID_FILE_HEADER);
+					iSetError(IL_INVALID_FILE_HEADER);
 					return IL_FALSE;
 				}
 
@@ -222,7 +222,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				// Allocates the size of the compressed data.
 				CompSize = ((MipWidth + 3) / 4) * ((MipHeight + 3) / 4) * 16;
 				if (CompSize != MipSize) {
-					ilSetError(IL_INVALID_FILE_HEADER);
+					iSetError(IL_INVALID_FILE_HEADER);
 					return IL_FALSE;
 				}
 
@@ -254,7 +254,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				// Allocates the size of the compressed data.
 				CompSize = ((MipWidth + 3) / 4) * ((MipHeight + 3) / 4) * 16;
 				if (CompSize != MipSize) {
-					ilSetError(IL_INVALID_FILE_HEADER);
+					iSetError(IL_INVALID_FILE_HEADER);
 					return IL_FALSE;
 				}
 				CompData = ialloc(CompSize);

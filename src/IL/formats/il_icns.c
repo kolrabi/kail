@@ -13,7 +13,7 @@
 //
 //-----------------------------------------------------------------------------
 
-//@TODO: Put ilSetError calls in when errors occur.
+//@TODO: Put iSetError calls in when errors occur.
 //@TODO: Should we clear the alpha channel just in case there isn't one in the file?
 //@TODO: Checks on iread
 
@@ -54,7 +54,7 @@ static ILboolean iLoadIcnsInternal(ILimage* image) {
 
 	if (image == NULL)
 	{
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -202,11 +202,11 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
 		if (ilLoadJp2LInternal(TempImage, Data, Entry->Size - 8) == IL_FALSE)
 		{
 			ifree(Data);
-			ilSetError(IL_LIB_JP2_ERROR);
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_TRUE;
 		}
 #else  // Cannot handle this size.
-		ilSetError(IL_LIB_JP2_ERROR);  //@TODO: Handle this better...just skip the data.
+		iSetError(IL_LIB_JP2_ERROR);  //@TODO: Handle this better...just skip the data.
 		return IL_FALSE;
 #endif//IL_NO_JP2
 	}

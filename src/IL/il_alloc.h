@@ -11,4 +11,6 @@
 __ALLOC_EXTERN mAlloc ialloc_ptr;
 __ALLOC_EXTERN mFree  ifree_ptr;
 
+void iSetMemory(mAlloc AllocFunc, mFree FreeFunc);
+
 #endif//ALLOC_H

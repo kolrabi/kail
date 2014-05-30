@@ -72,11 +72,11 @@ ILboolean iLoadPngInternal(ILimage* image)
 	data.info_ptr = NULL;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 	if (!iIsValidPng(&image->io)) {
-		ilSetError(IL_INVALID_VALUE);
+		iSetError(IL_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -101,7 +101,7 @@ static void png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 
 static void png_error_func(png_structp png_ptr, png_const_charp message)
 {
-	ilSetError(IL_LIB_PNG_ERROR);
+	iSetError(IL_LIB_PNG_ERROR);
 	iTrace("**** PNG Error : %s", message);
 	/*
 	  changed 20040224
@@ -242,7 +242,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 			format = IL_RGBA;
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			png_destroy_read_struct(&data->png_ptr, &data->info_ptr, NULL);
 			return IL_FALSE;
 	}
@@ -259,7 +259,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 		png_bytep trans = NULL;
 		int  num_trans = -1;
 		if (!png_get_PLTE(data->png_ptr, data->info_ptr, &palette, &num_palette)) {
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			png_destroy_read_struct(&data->png_ptr, &data->info_ptr, NULL);
 			return IL_FALSE;
 		}
@@ -354,7 +354,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 	ILint		trans;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -366,14 +366,14 @@ ILboolean iSavePngInternal(ILimage* image) {
 	*/
 	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, png_error_func, png_warn_func);
 	if (png_ptr == NULL) {
-		ilSetError(IL_LIB_PNG_ERROR);
+		iSetError(IL_LIB_PNG_ERROR);
 		return IL_FALSE;
 	}
 
 	// Allocate/initialize the image information data.	REQUIRED
 	info_ptr = png_create_info_struct(png_ptr);
 	if (info_ptr == NULL) {
-		ilSetError(IL_LIB_PNG_ERROR);
+		iSetError(IL_LIB_PNG_ERROR);
 		goto error_label;
 	}
 
@@ -382,7 +382,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 	if (setjmp(png_jmpbuf(png_ptr))) {
 		// If we get here, we had a problem reading the file
 		png_destroy_write_struct(&png_ptr, &info_ptr);
-		ilSetError(IL_LIB_PNG_ERROR);
+		iSetError(IL_LIB_PNG_ERROR);
 		return IL_FALSE;
 	}*/
 
@@ -411,7 +411,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 			BitDepth = 16;
 			break;
 		default:
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			goto error_label;
 	}
 
@@ -435,7 +435,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 			PngType = PNG_COLOR_TYPE_RGB_ALPHA;
 			break;
 		default:
-			ilSetError(IL_INTERNAL_ERROR);
+			iSetError(IL_INTERNAL_ERROR);
 			goto error_label;
 	}
 

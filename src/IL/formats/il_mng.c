@@ -140,7 +140,7 @@ mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size
 	*byteswritten = SIOwrite(&Image->io, buffer, 1, (ILuint)size);
 
 	if (*byteswritten < size) {
-		ilSetError(IL_FILE_WRITE_ERROR);
+		iSetError(IL_FILE_WRITE_ERROR);
 		return MNG_FALSE;
 	}
 
@@ -251,13 +251,13 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 	mng_handle mng;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
 	mng = mng_initialize(MNG_NULL, mymngalloc, mymngfree, MNG_NULL);
 	if (mng == MNG_NULL) {
-		ilSetError(IL_LIB_MNG_ERROR);
+		iSetError(IL_LIB_MNG_ERROR);
 		return IL_FALSE;
 	}
 
@@ -290,17 +290,17 @@ ILboolean iSaveMngInternal(/* ILimage * */)
 	//mng_handle mng;
 
 	// Not working yet, so just error out.
-	ilSetError(IL_INVALID_EXTENSION);
+	iSetError(IL_INVALID_EXTENSION);
 	return IL_FALSE;
 
 	//if (iCurImage == NULL) {
-	//	ilSetError(IL_ILLEGAL_OPERATION);
+	//	iSetError(IL_ILLEGAL_OPERATION);
 	//	return IL_FALSE;
 	//}
 
 	//mng = mng_initialize(MNG_NULL, mymngalloc, mymngfree, MNG_NULL);
 	//if (mng == MNG_NULL) {
-	//	ilSetError(IL_LIB_MNG_ERROR);
+	//	iSetError(IL_LIB_MNG_ERROR);
 	//	return IL_FALSE;
 	//}
 

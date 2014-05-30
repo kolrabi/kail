@@ -62,7 +62,7 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 	ILuint		i, Size;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -80,7 +80,7 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 
 	if ( HaloHead.Id[0] != 'A' || HaloHead.Id[1] != 'H' 
 		|| HaloHead.Version != 0xe3 ) {
-		ilSetError(IL_ILLEGAL_FILE_VALUE);
+		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
 	}
 

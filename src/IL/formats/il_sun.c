@@ -197,19 +197,19 @@ static ILboolean iLoadSunInternal(ILimage* image) {
   ILuint outputOffset;
 
   if (image == NULL) {
-    ilSetError(IL_ILLEGAL_OPERATION);
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
   SIO *io = &image->io;
 
   if (iGetSunHead(io, &Header) < sizeof(Header)) {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     return IL_FALSE;
   }
 
   if (!iCheckSun(&Header)) {
-    ilSetError(IL_INVALID_FILE_HEADER);
+    iSetError(IL_INVALID_FILE_HEADER);
     return IL_FALSE;
   }
 
@@ -225,7 +225,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
       if (Header.ColorMapLength != 0) {
         // Data should be an index into the color map, but the color map should only be RGB (6 bytes, 2 entries).
         if (Header.ColorMapLength != 6) {
-          ilSetError(IL_INVALID_FILE_HEADER);
+          iSetError(IL_INVALID_FILE_HEADER);
           return IL_FALSE;
         }
       }
@@ -240,7 +240,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
       }
       else {
         if (SIOread(io, image->Pal.Palette, 1, 6) != 6) { // Read in the color map.
-          ilSetError(IL_INVALID_FILE_HEADER);
+          iSetError(IL_INVALID_FILE_HEADER);
           return IL_FALSE;
         }
       }
@@ -272,7 +272,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
 
         ILubyte* sunPalette = (ILubyte*) ialloc(Header.ColorMapLength);
         if (SIOread(io, sunPalette, 1, Header.ColorMapLength) != Header.ColorMapLength) {  // Read color map.
-          ilSetError(IL_FILE_READ_ERROR);
+          iSetError(IL_FILE_READ_ERROR);
           return IL_FALSE;
         }
         int colCount = Header.ColorMapLength / 3;

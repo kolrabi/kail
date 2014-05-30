@@ -35,7 +35,7 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info)
 {
 	ILimage *  Image = iGetCurImage();
 	if (Image == NULL || Info == NULL) {
-		ilSetError(ILU_ILLEGAL_OPERATION);
+		iSetError(ILU_ILLEGAL_OPERATION);
 		return;
 	}
 
@@ -52,12 +52,9 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info)
 	Info->Palette			= Image->Pal.Palette;
 	Info->PalType			= Image->Pal.PalType;
 	Info->PalSize			= Image->Pal.PalSize;
-	iGetIntegervImage(Image, IL_NUM_IMAGES,             
-	                        (ILint*)&Info->NumNext);
-	iGetIntegervImage(Image, IL_NUM_MIPMAPS, 
-	                        (ILint*)&Info->NumMips);
-	iGetIntegervImage(Image, IL_NUM_LAYERS, 
-	                        (ILint*)&Info->NumLayers);
+	Info->NumNext     = iGetIntegerImage(Image, IL_NUM_IMAGES);
+	Info->NumMips     = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
+	Info->NumLayers   = iGetIntegerImage(Image, IL_NUM_LAYERS);
 	
 	return;
 }

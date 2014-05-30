@@ -140,7 +140,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	ILuint i, j, e, r, g, b;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -166,7 +166,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	SIOseek(io, headerEnd+1, IL_SEEK_SET);
 
 	if (width == 0 || height == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
@@ -395,7 +395,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	ILboolean	bRet;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 

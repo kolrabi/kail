@@ -139,7 +139,7 @@ static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 			SIOseek(io, RleOff, IL_SEEK_SET);
 			ILint Scan = iGetScanLine(io, (TempData[ixPlane]) + (ixHeight * Head->XSize * Head->Bpc),	Head, RleLen);
 			if (Scan != Head->XSize * Head->Bpc) {
-					ilSetError(IL_ILLEGAL_FILE_VALUE);
+					iSetError(IL_ILLEGAL_FILE_VALUE);
 					goto cleanup_error;
 			}
 		}
@@ -325,7 +325,7 @@ static ILboolean iNewSgi(ILimage *Image, iSgiHeader *Head)
 			Image->Format = IL_RGBA;
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
@@ -344,7 +344,7 @@ static ILboolean iNewSgi(ILimage *Image, iSgiHeader *Head)
 				Image->Type = IL_UNSIGNED_SHORT;
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			return IL_FALSE;
 	}
 
@@ -381,7 +381,7 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 	ILubyte		*TempData;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -583,7 +583,7 @@ static ILboolean iLoadSgiInternal(ILimage *Image)
 	ILboolean		bSgi;
 
 	if (Image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -591,7 +591,7 @@ static ILboolean iLoadSgiInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (!iCheckSgi(&Header)) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

@@ -63,7 +63,7 @@ ILboolean isValidCutHeader(const CUT_HEAD* header)
 static ILboolean 
 iIsValidCut(SIO* io) {
 	if (io == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -114,7 +114,7 @@ ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y
 static ILboolean 
 iLoadCutInternal(ILimage* image) {
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -124,7 +124,7 @@ iLoadCutInternal(ILimage* image) {
 	if ( SIOread(io, &Header, 1, sizeof(Header)) != sizeof(Header) 
 	  || Header.Width == 0 
 	  || Header.Height == 0) {
-		ilSetError(IL_INVALID_FILE_HEADER);
+		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 

@@ -59,7 +59,7 @@ ILstring ILAPIENTRY ilutGetString(ILenum StringName)
 		case ILUT_VERSION_NUM:
 			return (ILstring)_ilutVersion;
 		default:
-			ilSetError(ILUT_INVALID_PARAM);
+			iSetError(ILUT_INVALID_PARAM);
 			break;
 	}
 	return NULL;
@@ -108,7 +108,7 @@ ILboolean ilutAble(ILenum Mode, ILboolean Flag)
 
 
 		default:
-			ilSetError(ILUT_INVALID_ENUM);
+			iSetError(ILUT_INVALID_ENUM);
 			return IL_FALSE;
 	}
 
@@ -140,7 +140,7 @@ ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode)
 
 
 		default:
-			ilSetError(ILUT_INVALID_ENUM);
+			iSetError(ILUT_INVALID_ENUM);
 	}
 
 	return IL_FALSE;
@@ -182,7 +182,7 @@ void ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param)
 			break;
 
 		default:
-			ilSetError(ILUT_INVALID_ENUM);
+			iSetError(ILUT_INVALID_ENUM);
 	}
 	return;
 }
@@ -247,7 +247,7 @@ void ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param)
 			break;
 
 		default:
-			ilSetError(ILUT_INVALID_ENUM);
+			iSetError(ILUT_INVALID_ENUM);
 	}
 	return;
 }
@@ -332,10 +332,10 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param)
 //#endif//ILUT_USE_DIRECTX8
 
 		default:
-			ilSetError(ILUT_INVALID_ENUM);
+			iSetError(ILUT_INVALID_ENUM);
 	}
 
-	ilSetError(IL_INVALID_PARAM);  // Parameter not in valid bounds.
+	iSetError(IL_INVALID_PARAM);  // Parameter not in valid bounds.
 	return;
 }
 
@@ -346,7 +346,7 @@ void ILAPIENTRY ilutPushAttrib(ILuint Bits)
 
 	if (ilutCurrentPos >= ILUT_ATTRIB_STACK_MAX - 1) {
 		ilutCurrentPos = ILUT_ATTRIB_STACK_MAX - 1;
-		ilSetError(ILUT_STACK_OVERFLOW);
+		iSetError(ILUT_STACK_OVERFLOW);
 		return;
 	}
 
@@ -371,7 +371,7 @@ void ILAPIENTRY ilutPopAttrib()
 {
 	if (ilutCurrentPos <= 0) {
 		ilutCurrentPos = 0;
-		ilSetError(ILUT_STACK_UNDERFLOW);
+		iSetError(ILUT_STACK_UNDERFLOW);
 		return;
 	}
 
@@ -385,7 +385,7 @@ void ILAPIENTRY ilutPopAttrib()
 ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer)
 {
 	if (Renderer > ILUT_WIN32) {
-		ilSetError(ILUT_INVALID_VALUE);
+		iSetError(ILUT_INVALID_VALUE);
 		return IL_FALSE;
 	}
 
@@ -417,7 +417,7 @@ ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer)
         #endif
 
 		default:
-			ilSetError(ILUT_NOT_SUPPORTED);
+			iSetError(ILUT_NOT_SUPPORTED);
 	}
 
 	return IL_FALSE;

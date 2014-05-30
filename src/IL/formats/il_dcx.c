@@ -100,7 +100,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 	ILimage *Image = TargetImage;
 
 	if (TargetImage == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -122,7 +122,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 		SIOseek(io, Entries[i], IL_SEEK_SET);
 		iGetDcxHead(io, &Header);
 		/*if (!iCheckDcx(&Header)) {
-			ilSetError(IL_INVALID_FILE_HEADER);
+			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}*/
 
@@ -154,7 +154,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 	ILimage		*Image = NULL;
 
 	if (Header->Bpp < 8) {
-		/*ilSetError(IL_FORMAT_NOT_SUPPORTED);
+		/*iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;*/
 		return iUncompressDcxSmall(io, Header);
 	}
@@ -194,7 +194,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 			break;
 
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			goto dcx_error;
 	}
 
@@ -302,7 +302,7 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 			Image->Format = IL_COLOUR_INDEX;
 			break;
 		default:
-			ilSetError(IL_ILLEGAL_FILE_VALUE);
+			iSetError(IL_ILLEGAL_FILE_VALUE);
 			ilCloseImage(Image);
 			return NULL;
 	}

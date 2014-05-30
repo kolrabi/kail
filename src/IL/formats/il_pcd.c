@@ -24,7 +24,7 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 	ILubyte	*Y1=NULL, *Y2=NULL, *CbCr=NULL, r = 0, g = 0, b = 0;
 
 	if (image == NULL) {
-		ilSetError(IL_ILLEGAL_OPERATION);
+		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
@@ -54,7 +54,7 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 			Height = 512;
 			break;
 		default:
-			ilSetError(IL_INVALID_PARAM);
+			iSetError(IL_INVALID_PARAM);
 			return IL_FALSE;
 	}
 
