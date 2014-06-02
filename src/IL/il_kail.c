@@ -137,7 +137,6 @@ ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Heig
   ilCloseImage(Image->Faces);
   ilCloseImage(Image->Layers);
 
-  if (Image->AnimList) ifree(Image->AnimList);
   if (Image->Profile)  ifree(Image->Profile);
   if (Image->DxtcData) ifree(Image->DxtcData);
   if (Image->Data)   ifree(Image->Data);
@@ -953,13 +952,6 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
     Dest->DxtcSize = 0;
   }
   
-  if (Src->AnimList && Src->AnimSize) {
-    Dest->AnimList = (ILuint*)ialloc(Src->AnimSize * sizeof(ILuint));
-    if (Dest->AnimList == NULL) {
-      return IL_FALSE;
-    }
-    memcpy(Dest->AnimList, Src->AnimList, Src->AnimSize * sizeof(ILuint));
-  }
   if (Src->Profile) {
     Dest->Profile = (ILubyte*)ialloc(Src->ProfileSize);
     if (Dest->Profile == NULL) {
@@ -994,7 +986,6 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
   Dest->Origin = Src->Origin;
   Dest->Duration = Src->Duration;
   Dest->CubeFlags = Src->CubeFlags;
-  Dest->AnimSize = Src->AnimSize;
   Dest->OffX = Src->OffX;
   Dest->OffY = Src->OffY;
   

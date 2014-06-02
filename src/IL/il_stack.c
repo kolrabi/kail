@@ -225,11 +225,6 @@ ILAPI void ILAPIENTRY ilCloseImage(ILimage *Image)
     Image->Layers = NULL;
   }
 
-  if (Image->AnimList != NULL && Image->AnimSize != 0) {
-    ifree(Image->AnimList);
-    Image->AnimList = NULL;
-  }
-
   if (Image->Profile != NULL && Image->ProfileSize != 0) {
     ifree(Image->Profile);
     Image->Profile = NULL;

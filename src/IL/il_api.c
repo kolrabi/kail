@@ -25,6 +25,20 @@
 #include "il_alloc.h"
 #include "il_manip.h" 
 
+/**
+ * Adds an opaque alpha channel to the currently bound image. 
+ * If IL_USE_KEY_COLOUR is enabled, the colour set with ilKeyColour will 
+ * be transparent.
+ */
+ILboolean ILAPIENTRY ilAddAlpha() {
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+  return iAddAlpha(Image);
+}
+
 /** 
  * Makes Image the current active image - similar to glBindTexture().
  *
@@ -90,9 +104,18 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
  *       sub image of the given type and the rest were added as frames in the 
  *       animation chain. I believe this was a bug and fixed it. However if your 
  *       program relied on that behaviour, it might be broken now. Be aware of that.
+ * @ingroup image_manip
  */
 ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num) {
   return iCreateSubImage(iGetCurImage(), Type, Num);
+}
+
+/**
+ * Creates an ugly 64x64 black and yellow checkerboard image.
+ * @ingroup image_manip 
+ */
+ILboolean ILAPIENTRY ilDefaultImage() {
+  return iDefaultImage(iGetCurImage());
 }
 
 /**
@@ -361,6 +384,15 @@ ILboolean ILAPIENTRY ilIsEnabled(ILenum Mode) {
 ILboolean ILAPIENTRY ilIsImage(ILuint Image) {
   return iIsImage(Image);
 }
+
+/**
+ * Set the current color key.
+ * @ingroup state
+ */
+void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  iKeyColour(Red, Green, Blue, Alpha);
+}
+
 
 /**
  * Sets a parameter value for a @a Mode

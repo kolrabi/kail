@@ -46,6 +46,10 @@ void ilDefaultStates()
   ilStates[ilCurrentPos].ilAutoConvPal = IL_FALSE;
   ilStates[ilCurrentPos].ilDefaultOnFail = IL_FALSE;
   ilStates[ilCurrentPos].ilUseKeyColour = IL_FALSE;
+  ilStates[ilCurrentPos].ilKeyColourRed = 0;
+  ilStates[ilCurrentPos].ilKeyColourGreen = 0;
+  ilStates[ilCurrentPos].ilKeyColourBlue = 0;
+  ilStates[ilCurrentPos].ilKeyColourAlpha = 0; 
   ilStates[ilCurrentPos].ilBlitBlend = IL_TRUE;
   ilStates[ilCurrentPos].ilCompression = IL_COMPRESS_ZLIB;
   ilStates[ilCurrentPos].ilInterlace = IL_FALSE;
@@ -700,6 +704,8 @@ void ILAPIENTRY ilPushAttrib(ILuint Bits)
 
   ilDefaultStates();
 
+  // FIXME: colour key data
+
   if (Bits & IL_ORIGIN_BIT) {
     ilStates[ilCurrentPos].ilOriginMode = ilStates[ilCurrentPos-1].ilOriginMode;
     ilStates[ilCurrentPos].ilOriginSet  = ilStates[ilCurrentPos-1].ilOriginSet;
@@ -1123,4 +1129,11 @@ ILint iGetInt(ILenum Mode)
     iSetError(err); //restore error
 
   return r;
+}
+
+void iKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  ilStates[ilCurrentPos].ilKeyColourRed = Red;
+  ilStates[ilCurrentPos].ilKeyColourGreen = Green;
+  ilStates[ilCurrentPos].ilKeyColourBlue = Blue;
+  ilStates[ilCurrentPos].ilKeyColourAlpha = Alpha; 
 }

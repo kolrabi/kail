@@ -603,14 +603,13 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
 //	This could very well easily be changed to a 128x128 image instead...needed?
 
 //! Creates an ugly 64x64 black and yellow checkerboard image.
-ILboolean ILAPIENTRY ilDefaultImage()
+ILboolean iDefaultImage(ILimage *Image)
 {
 	ILubyte *TempData;
 	ILubyte Yellow[3] = { 18, 246, 243 };
 	ILubyte Black[3]  = { 0, 0, 0 };
 	ILubyte *ColorPtr = Yellow;  // The start color
 	ILboolean Color = IL_TRUE;
-	ILimage *Image = iGetCurImage();
 
 	// Loop Variables
 	ILint v, w, x, y;

@@ -565,7 +565,6 @@ ILAPI ILuint    ILAPIENTRY ilCloneCurImage(void);
 ILAPI ILboolean ILAPIENTRY ilCopyImage(ILuint Src);
 ILAPI ILuint    ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 ILAPI ILuint    ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num);
-ILAPI ILboolean ILAPIENTRY ilDefaultImage(void);
 ILAPI void      ILAPIENTRY ilDeleteImage(const ILuint Num);
 ILAPI void      ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images);
 ILAPI void      ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images);
@@ -588,6 +587,7 @@ ILAPI void      ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf 
 ILAPI ILboolean ILAPIENTRY ilClearImage(void);
 ILAPI ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType);
 ILAPI ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat);
+ILAPI ILboolean ILAPIENTRY ilDefaultImage(void);
 ILAPI void      ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI void      ILAPIENTRY ilModAlpha(ILdouble AlphaValue);
 ILAPI ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode);
@@ -667,6 +667,7 @@ ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 
 
 #ifdef IL_VERSION_1_8_3
+ILAPI ILboolean ILAPIENTRY ilAddAlpha();
 ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 #endif 
 

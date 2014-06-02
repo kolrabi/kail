@@ -13,252 +13,254 @@
 
 #include "il_internal.h"
 #include "il_manip.h"
+#include "il_states.h"
+
 #include <limits.h>
 
 
 ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 {
-	static const ILfloat LumFactor[3] = { 0.212671f, 0.715160f, 0.072169f };  // http://www.inforamp.net/~poynton/ and libpng's libpng.txt - Used for conversion to luminance.
-	ILimage		*NewImage = NULL; //, *CurImage = NULL;
-	ILuint		i, j, k, c, Size, LumBpp = 1;
-	ILfloat		Resultf;
-	ILubyte		*Temp = NULL;
-	ILboolean	Converted;
-	ILboolean	HasAlpha;
+  static const ILfloat LumFactor[3] = { 0.212671f, 0.715160f, 0.072169f };  // http://www.inforamp.net/~poynton/ and libpng's libpng.txt - Used for conversion to luminance.
+  ILimage   *NewImage = NULL; //, *CurImage = NULL;
+  ILuint    i, j, k, c, Size, LumBpp = 1;
+  ILfloat   Resultf;
+  ILubyte   *Temp = NULL;
+  ILboolean Converted;
+  ILboolean HasAlpha;
 
-	NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
-	if (NewImage == NULL) {
-		return IL_FALSE;
-	}
+  NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
+  if (NewImage == NULL) {
+    return IL_FALSE;
+  }
 
-	ilCopyImageAttr(NewImage, Image);
+  ilCopyImageAttr(NewImage, Image);
 
-	if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || Image->Bpp != 1) {
-		ilCloseImage(NewImage);
-		iSetError(IL_ILLEGAL_OPERATION);
-		return NULL;
-	}
+  if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || Image->Bpp != 1) {
+    ilCloseImage(NewImage);
+    iSetError(IL_ILLEGAL_OPERATION);
+    return NULL;
+  }
 
-	if (DestFormat == IL_LUMINANCE || DestFormat == IL_LUMINANCE_ALPHA) {
-		if (NewImage->Pal.Palette)
-			ifree(NewImage->Pal.Palette);
-		if (DestFormat == IL_LUMINANCE_ALPHA)
-			LumBpp = 2;
+  if (DestFormat == IL_LUMINANCE || DestFormat == IL_LUMINANCE_ALPHA) {
+    if (NewImage->Pal.Palette)
+      ifree(NewImage->Pal.Palette);
+    if (DestFormat == IL_LUMINANCE_ALPHA)
+      LumBpp = 2;
 
-		switch (Image->Pal.PalType)
-		{
-			case IL_PAL_RGB24:
-			case IL_PAL_RGB32:
-			case IL_PAL_RGBA32:
-				Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
-				if (Temp == NULL)
-					goto alloc_error;
+    switch (Image->Pal.PalType)
+    {
+      case IL_PAL_RGB24:
+      case IL_PAL_RGB32:
+      case IL_PAL_RGBA32:
+        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        if (Temp == NULL)
+          goto alloc_error;
 
-				Size = ilGetBppPal(Image->Pal.PalType);
-				for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
-					Resultf = 0.0f;
-					for (c = 0; c < Size; c++) {
-						Resultf += Image->Pal.Palette[i + c] * LumFactor[c];
-					}
-					Temp[k] = (ILubyte)Resultf;
-					if (LumBpp == 2) {
-						if (Image->Pal.PalType == IL_PAL_RGBA32)
-							Temp[k+1] = Image->Pal.Palette[i + 3];
-						else
-							Temp[k+1] = 0xff;
-					}
-				}
+        Size = ilGetBppPal(Image->Pal.PalType);
+        for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
+          Resultf = 0.0f;
+          for (c = 0; c < Size; c++) {
+            Resultf += Image->Pal.Palette[i + c] * LumFactor[c];
+          }
+          Temp[k] = (ILubyte)Resultf;
+          if (LumBpp == 2) {
+            if (Image->Pal.PalType == IL_PAL_RGBA32)
+              Temp[k+1] = Image->Pal.Palette[i + 3];
+            else
+              Temp[k+1] = 0xff;
+          }
+        }
 
-				break;
+        break;
 
-			case IL_PAL_BGR24:
-			case IL_PAL_BGR32:
-			case IL_PAL_BGRA32:
-				Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
-				if (Temp == NULL)
-					goto alloc_error;
+      case IL_PAL_BGR24:
+      case IL_PAL_BGR32:
+      case IL_PAL_BGRA32:
+        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        if (Temp == NULL)
+          goto alloc_error;
 
-				Size = ilGetBppPal(Image->Pal.PalType);
-				for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
-					Resultf = 0.0f;  j = 2;
-					for (c = 0; c < Size; c++, j--) {
-						Resultf += Image->Pal.Palette[i + c] * LumFactor[j];
-					}
-					Temp[k] = (ILubyte)Resultf;
-					if (LumBpp == 2) {
-						if (Image->Pal.PalType == IL_PAL_BGRA32)
-							Temp[k+1] = Image->Pal.Palette[i + 3];
-						else
-							Temp[k+1] = 0xff;
-					}
-				}
+        Size = ilGetBppPal(Image->Pal.PalType);
+        for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
+          Resultf = 0.0f;  j = 2;
+          for (c = 0; c < Size; c++, j--) {
+            Resultf += Image->Pal.Palette[i + c] * LumFactor[j];
+          }
+          Temp[k] = (ILubyte)Resultf;
+          if (LumBpp == 2) {
+            if (Image->Pal.PalType == IL_PAL_BGRA32)
+              Temp[k+1] = Image->Pal.Palette[i + 3];
+            else
+              Temp[k+1] = 0xff;
+          }
+        }
 
-				break;
-		}
+        break;
+    }
 
-		NewImage->Pal.Palette = NULL;
-		NewImage->Pal.PalSize = 0;
-		NewImage->Pal.PalType = IL_PAL_NONE;
-		NewImage->Format = DestFormat;
-		NewImage->Bpp = LumBpp;
-		NewImage->Bps = NewImage->Width * LumBpp;
-		NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
-		NewImage->Data = (ILubyte*)ialloc(NewImage->SizeOfData);
-		if (NewImage->Data == NULL)
-			goto alloc_error;
+    NewImage->Pal.Palette = NULL;
+    NewImage->Pal.PalSize = 0;
+    NewImage->Pal.PalType = IL_PAL_NONE;
+    NewImage->Format = DestFormat;
+    NewImage->Bpp = LumBpp;
+    NewImage->Bps = NewImage->Width * LumBpp;
+    NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
+    NewImage->Data = (ILubyte*)ialloc(NewImage->SizeOfData);
+    if (NewImage->Data == NULL)
+      goto alloc_error;
 
-		if (LumBpp == 2) {
-			for (i = 0; i < Image->SizeOfData; i++) {
-				NewImage->Data[i*2] = Temp[Image->Data[i] * 2];
-				NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
-			}
-		}
-		else {
-			for (i = 0; i < Image->SizeOfData; i++) {
-				NewImage->Data[i] = Temp[Image->Data[i]];
-			}
-		}
+    if (LumBpp == 2) {
+      for (i = 0; i < Image->SizeOfData; i++) {
+        NewImage->Data[i*2] = Temp[Image->Data[i] * 2];
+        NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
+      }
+    }
+    else {
+      for (i = 0; i < Image->SizeOfData; i++) {
+        NewImage->Data[i] = Temp[Image->Data[i]];
+      }
+    }
 
-		ifree(Temp);
+    ifree(Temp);
 
-		return NewImage;
-	}
-	else if (DestFormat == IL_ALPHA) {
-		if (NewImage->Pal.Palette)
-			ifree(NewImage->Pal.Palette);
+    return NewImage;
+  }
+  else if (DestFormat == IL_ALPHA) {
+    if (NewImage->Pal.Palette)
+      ifree(NewImage->Pal.Palette);
 
-		switch (Image->Pal.PalType)
-		{
-			// Opaque, so all the values are 0xFF.
-			case IL_PAL_RGB24:
-			case IL_PAL_RGB32:
-			case IL_PAL_BGR24:
-			case IL_PAL_BGR32:
-				HasAlpha = IL_FALSE;
-				break;
+    switch (Image->Pal.PalType)
+    {
+      // Opaque, so all the values are 0xFF.
+      case IL_PAL_RGB24:
+      case IL_PAL_RGB32:
+      case IL_PAL_BGR24:
+      case IL_PAL_BGR32:
+        HasAlpha = IL_FALSE;
+        break;
 
-			case IL_PAL_BGRA32:
-			case IL_PAL_RGBA32:
-				HasAlpha = IL_TRUE;
-				Temp = (ILubyte*)ialloc(1 * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
-				if (Temp == NULL)
-					goto alloc_error;
+      case IL_PAL_BGRA32:
+      case IL_PAL_RGBA32:
+        HasAlpha = IL_TRUE;
+        Temp = (ILubyte*)ialloc(1 * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        if (Temp == NULL)
+          goto alloc_error;
 
-				Size = ilGetBppPal(Image->Pal.PalType);
-				for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += 1) {
-					Temp[k] = Image->Pal.Palette[i + 3];
-				}
+        Size = ilGetBppPal(Image->Pal.PalType);
+        for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += 1) {
+          Temp[k] = Image->Pal.Palette[i + 3];
+        }
 
-				break;
-		}
+        break;
+    }
 
-		NewImage->Pal.Palette = NULL;
-		NewImage->Pal.PalSize = 0;
-		NewImage->Pal.PalType = IL_PAL_NONE;
-		NewImage->Format = DestFormat;
-		NewImage->Bpp = LumBpp;
-		NewImage->Bps = NewImage->Width * 1;  // Alpha is only one byte.
-		NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
-		NewImage->Data = (ILubyte*)ialloc(NewImage->SizeOfData);
-		if (NewImage->Data == NULL)
-			goto alloc_error;
+    NewImage->Pal.Palette = NULL;
+    NewImage->Pal.PalSize = 0;
+    NewImage->Pal.PalType = IL_PAL_NONE;
+    NewImage->Format = DestFormat;
+    NewImage->Bpp = LumBpp;
+    NewImage->Bps = NewImage->Width * 1;  // Alpha is only one byte.
+    NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
+    NewImage->Data = (ILubyte*)ialloc(NewImage->SizeOfData);
+    if (NewImage->Data == NULL)
+      goto alloc_error;
 
-		if (HasAlpha) {
-			for (i = 0; i < Image->SizeOfData; i++) {
-				NewImage->Data[i*2] = Temp[Image->Data[i] * 2];
-				NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
-			}
-		}
-		else {  // No alpha, opaque.
-			for (i = 0; i < Image->SizeOfData; i++) {
-				NewImage->Data[i] = 0xFF;
-			}
-		}
+    if (HasAlpha) {
+      for (i = 0; i < Image->SizeOfData; i++) {
+        NewImage->Data[i*2] = Temp[Image->Data[i] * 2];
+        NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
+      }
+    }
+    else {  // No alpha, opaque.
+      for (i = 0; i < Image->SizeOfData; i++) {
+        NewImage->Data[i] = 0xFF;
+      }
+    }
 
-		ifree(Temp);
+    ifree(Temp);
 
-		return NewImage;
-	}
+    return NewImage;
+  }
 
-	//NewImage->Format = ilGetPalBaseType(iCurImage->Pal.PalType);
-	NewImage->Format = DestFormat;
+  //NewImage->Format = ilGetPalBaseType(iCurImage->Pal.PalType);
+  NewImage->Format = DestFormat;
 
-	if (ilGetBppFormat(NewImage->Format) == 0) {
-		ilCloseImage(NewImage);
-		iSetError(IL_ILLEGAL_OPERATION);
-		return NULL;
-	}
+  if (ilGetBppFormat(NewImage->Format) == 0) {
+    ilCloseImage(NewImage);
+    iSetError(IL_ILLEGAL_OPERATION);
+    return NULL;
+  }
 
-	//CurImage = iCurImage;
-	//ilSetCurImage(NewImage);
+  //CurImage = iCurImage;
+  //ilSetCurImage(NewImage);
 
-	switch (DestFormat)
-	{
-		case IL_RGB:
-			Converted = iConvertImagePal(NewImage, IL_PAL_RGB24);
-			break;
+  switch (DestFormat)
+  {
+    case IL_RGB:
+      Converted = iConvertImagePal(NewImage, IL_PAL_RGB24);
+      break;
 
-		case IL_BGR:
-			Converted = iConvertImagePal(NewImage, IL_PAL_BGR24);
-			break;
+    case IL_BGR:
+      Converted = iConvertImagePal(NewImage, IL_PAL_BGR24);
+      break;
 
-		case IL_RGBA:
-			Converted = iConvertImagePal(NewImage, IL_PAL_RGB32);
-			break;
+    case IL_RGBA:
+      Converted = iConvertImagePal(NewImage, IL_PAL_RGB32);
+      break;
 
-		case IL_BGRA:
-			Converted = iConvertImagePal(NewImage, IL_PAL_BGR32);
-			break;
+    case IL_BGRA:
+      Converted = iConvertImagePal(NewImage, IL_PAL_BGR32);
+      break;
 
-		case IL_COLOUR_INDEX:
-			// Just copy the original image over.
-			NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
-			if (NewImage->Data == NULL)
-				goto alloc_error;
-			NewImage->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
-			if (NewImage->Pal.Palette == NULL)
-				goto alloc_error;
-			memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
-			memcpy(NewImage->Pal.Palette, Image->Pal.Palette, Image->Pal.PalSize);
-			NewImage->Pal.PalSize = Image->Pal.PalSize;
-			NewImage->Pal.PalType = Image->Pal.PalType;
-			return NewImage;
+    case IL_COLOUR_INDEX:
+      // Just copy the original image over.
+      NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
+      if (NewImage->Data == NULL)
+        goto alloc_error;
+      NewImage->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
+      if (NewImage->Pal.Palette == NULL)
+        goto alloc_error;
+      memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
+      memcpy(NewImage->Pal.Palette, Image->Pal.Palette, Image->Pal.PalSize);
+      NewImage->Pal.PalSize = Image->Pal.PalSize;
+      NewImage->Pal.PalType = Image->Pal.PalType;
+      return NewImage;
 
-		default:
-			ilCloseImage(NewImage);
-			iSetError(IL_INVALID_CONVERSION);
-			return NULL;
-	}
+    default:
+      ilCloseImage(NewImage);
+      iSetError(IL_INVALID_CONVERSION);
+      return NULL;
+  }
 
-	// Resize to new bpp
-	ilResizeImage(NewImage, NewImage->Width, NewImage->Height, NewImage->Depth, ilGetBppFormat(DestFormat), /*ilGetBpcType(DestType)*/1);
+  // Resize to new bpp
+  ilResizeImage(NewImage, NewImage->Width, NewImage->Height, NewImage->Depth, ilGetBppFormat(DestFormat), /*ilGetBpcType(DestType)*/1);
 
-	// ilConvertPal already sets the error message - no need to confuse the user.
-	if (!Converted) {
-		ilCloseImage(NewImage);
-		return NULL;
-	}
+  // ilConvertPal already sets the error message - no need to confuse the user.
+  if (!Converted) {
+    ilCloseImage(NewImage);
+    return NULL;
+  }
 
-	Size = ilGetBppPal(NewImage->Pal.PalType);
-	for (i = 0; i < Image->SizeOfData; i++) {
-		for (c = 0; c < NewImage->Bpp; c++) {
-			NewImage->Data[i * NewImage->Bpp + c] = NewImage->Pal.Palette[Image->Data[i] * Size + c];
-		}
-	}
+  Size = ilGetBppPal(NewImage->Pal.PalType);
+  for (i = 0; i < Image->SizeOfData; i++) {
+    for (c = 0; c < NewImage->Bpp; c++) {
+      NewImage->Data[i * NewImage->Bpp + c] = NewImage->Pal.Palette[Image->Data[i] * Size + c];
+    }
+  }
 
-	ifree(NewImage->Pal.Palette);
+  ifree(NewImage->Pal.Palette);
 
-	NewImage->Pal.Palette = NULL;
-	NewImage->Pal.PalSize = 0;
-	NewImage->Pal.PalType = IL_PAL_NONE;
+  NewImage->Pal.Palette = NULL;
+  NewImage->Pal.PalSize = 0;
+  NewImage->Pal.PalType = IL_PAL_NONE;
 
-	return NewImage;
+  return NewImage;
 
 alloc_error:
-	ifree(Temp);
-	if (NewImage)
-		ilCloseImage(NewImage);
-	return NULL;
+  ifree(Temp);
+  if (NewImage)
+    ilCloseImage(NewImage);
+  return NULL;
 }
 
 
@@ -270,783 +272,768 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
 // Converts an image from one format to another
 ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenum DestType)
 {
-	ILimage	*NewImage; //, *CurImage;
-	ILuint	i;
-	ILubyte	*NewData;
+  ILimage *NewImage; //, *CurImage;
+  ILuint  i;
+  ILubyte *NewData;
 
-	// CurImage = Image;
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  // CurImage = Image;
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	// We don't support 16-bit color indices (or higher).
-	if (DestFormat == IL_COLOUR_INDEX && DestType >= IL_SHORT) {
-		iSetError(IL_INVALID_CONVERSION);
-		return NULL;
-	}
+  // We don't support 16-bit color indices (or higher).
+  if (DestFormat == IL_COLOUR_INDEX && DestType >= IL_SHORT) {
+    iSetError(IL_INVALID_CONVERSION);
+    return NULL;
+  }
 
-	if (Image->Format == IL_COLOUR_INDEX) {
-		NewImage = iConvertPalette(Image, DestFormat);
+  if (Image->Format == IL_COLOUR_INDEX) {
+    NewImage = iConvertPalette(Image, DestFormat);
 
-		//added test 2003-09-01
-		if (NewImage == NULL)
-			return NULL;
+    //added test 2003-09-01
+    if (NewImage == NULL)
+      return NULL;
 
-		if (DestType == NewImage->Type)
-			return NewImage;
+    if (DestType == NewImage->Type)
+      return NewImage;
 
-		NewData = (ILubyte*)ilConvertBuffer(NewImage->SizeOfData, NewImage->Format, DestFormat, NewImage->Type, DestType, NULL, NewImage->Data);
-		if (NewData == NULL) {
-			ifree(NewImage);  // ilCloseImage not needed.
-			return NULL;
-		}
-		ifree(NewImage->Data);
-		NewImage->Data = NewData;
+    NewData = (ILubyte*)ilConvertBuffer(NewImage->SizeOfData, NewImage->Format, DestFormat, NewImage->Type, DestType, NULL, NewImage->Data);
+    if (NewData == NULL) {
+      ifree(NewImage);  // ilCloseImage not needed.
+      return NULL;
+    }
+    ifree(NewImage->Data);
+    NewImage->Data = NewData;
 
-		ilCopyImageAttr(NewImage, Image);
-		NewImage->Format = DestFormat;
-		NewImage->Type = DestType;
-		NewImage->Bpc = ilGetBpcType(DestType);
-		NewImage->Bpp = ilGetBppFormat(DestFormat);
-		NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
-		NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
-		NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
-	}
-	else if (DestFormat == IL_COLOUR_INDEX && Image->Format != IL_LUMINANCE) {
-		if (iGetInt(IL_QUANTIZATION_MODE) == IL_NEU_QUANT)
-			return iNeuQuant(Image, iGetInt(IL_MAX_QUANT_INDICES));
-		else // Assume IL_WU_QUANT otherwise.
-			return iQuantizeImage(Image, iGetInt(IL_MAX_QUANT_INDICES));
-	}
-	else {
-		NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
-		if (NewImage == NULL) {
-			return NULL;
-		}
+    ilCopyImageAttr(NewImage, Image);
+    NewImage->Format = DestFormat;
+    NewImage->Type = DestType;
+    NewImage->Bpc = ilGetBpcType(DestType);
+    NewImage->Bpp = ilGetBppFormat(DestFormat);
+    NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
+    NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
+    NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
+  }
+  else if (DestFormat == IL_COLOUR_INDEX && Image->Format != IL_LUMINANCE) {
+    if (iGetInt(IL_QUANTIZATION_MODE) == IL_NEU_QUANT)
+      return iNeuQuant(Image, iGetInt(IL_MAX_QUANT_INDICES));
+    else // Assume IL_WU_QUANT otherwise.
+      return iQuantizeImage(Image, iGetInt(IL_MAX_QUANT_INDICES));
+  }
+  else {
+    NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
+    if (NewImage == NULL) {
+      return NULL;
+    }
 
-		if (ilGetBppFormat(DestFormat) == 0) {
-			iSetError(IL_INVALID_PARAM);
-			ifree(NewImage);
-			return NULL;
-		}
+    if (ilGetBppFormat(DestFormat) == 0) {
+      iSetError(IL_INVALID_PARAM);
+      ifree(NewImage);
+      return NULL;
+    }
 
-		ilCopyImageAttr(NewImage, Image);
-		NewImage->Format = DestFormat;
-		NewImage->Type = DestType;
-		NewImage->Bpc = ilGetBpcType(DestType);
-		NewImage->Bpp = ilGetBppFormat(DestFormat);
-		NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
-		NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
-		NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
+    ilCopyImageAttr(NewImage, Image);
+    NewImage->Format = DestFormat;
+    NewImage->Type = DestType;
+    NewImage->Bpc = ilGetBpcType(DestType);
+    NewImage->Bpp = ilGetBppFormat(DestFormat);
+    NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
+    NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
+    NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
 
-		if (DestFormat == IL_COLOUR_INDEX && Image->Format == IL_LUMINANCE) {
-			NewImage->Pal.PalSize = 768;
-			NewImage->Pal.PalType = IL_PAL_RGB24;
-			NewImage->Pal.Palette = (ILubyte*)ialloc(768);
-			for (i = 0; i < 256; i++) {
-				NewImage->Pal.Palette[i * 3] = i;
-				NewImage->Pal.Palette[i * 3 + 1] = i;
-				NewImage->Pal.Palette[i * 3 + 2] = i;
-			}
-			NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
-			if (NewImage->Data == NULL) {
-				ilCloseImage(NewImage);
-				return NULL;
-			}
-			memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
-		}
-		else {
-			NewImage->Data = (ILubyte*)ilConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
-			if (NewImage->Data == NULL) {
-				ifree(NewImage);  // ilCloseImage not needed.
-				return NULL;
-			}
-		}
-	}
+    if (DestFormat == IL_COLOUR_INDEX && Image->Format == IL_LUMINANCE) {
+      NewImage->Pal.PalSize = 768;
+      NewImage->Pal.PalType = IL_PAL_RGB24;
+      NewImage->Pal.Palette = (ILubyte*)ialloc(768);
+      for (i = 0; i < 256; i++) {
+        NewImage->Pal.Palette[i * 3] = i;
+        NewImage->Pal.Palette[i * 3 + 1] = i;
+        NewImage->Pal.Palette[i * 3 + 2] = i;
+      }
+      NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
+      if (NewImage->Data == NULL) {
+        ilCloseImage(NewImage);
+        return NULL;
+      }
+      memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
+    }
+    else {
+      NewImage->Data = (ILubyte*)ilConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
+      if (NewImage->Data == NULL) {
+        ifree(NewImage);  // ilCloseImage not needed.
+        return NULL;
+      }
+    }
+  }
 
-	return NewImage;
+  return NewImage;
 }
 
 
 ILboolean ILAPIENTRY iConvertImage_(ILimage *BaseImage, ILenum DestFormat, ILenum DestType)
 {
-	if ( DestFormat == BaseImage->Format 
-		&& DestType   == BaseImage->Type )
-		return IL_TRUE;  // No conversion needed.
+  if ( DestFormat == BaseImage->Format 
+    && DestType   == BaseImage->Type )
+    return IL_TRUE;  // No conversion needed.
 
-	if (DestType == BaseImage->Type) {
-		if (iFastConvert(BaseImage, DestFormat)) {
-			BaseImage->Format = DestFormat;
-			return IL_TRUE;
-		}
-	}
+  if (DestType == BaseImage->Type) {
+    if (iFastConvert(BaseImage, DestFormat)) {
+      BaseImage->Format = DestFormat;
+      return IL_TRUE;
+    }
+  }
 
-	if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
-		iAddAlphaKey(BaseImage);
-	}
+  if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
+    iAddAlphaKey(BaseImage);
+  }
 
-	while (BaseImage != NULL)
-	{
-		ILimage *Image = iConvertImage(BaseImage, DestFormat, DestType);
-		if (Image == NULL)
-			return IL_FALSE;
+  while (BaseImage != NULL)
+  {
+    ILimage *Image = iConvertImage(BaseImage, DestFormat, DestType);
+    if (Image == NULL)
+      return IL_FALSE;
 
-		//ilCopyImageAttr(BaseImage, Image);  // Destroys subimages.
+    //ilCopyImageAttr(BaseImage, Image);  // Destroys subimages.
 
-		// We don't copy the colour profile here, since it stays the same.
-		//	Same with the DXTC data.
-		BaseImage->Format 			= DestFormat;
-		BaseImage->Type 				= DestType;
-		BaseImage->Bpc 					= ilGetBpcType(DestType);
-		BaseImage->Bpp 					= ilGetBppFormat(DestFormat);
-		BaseImage->Bps 					= BaseImage->Width * BaseImage->Bpc * BaseImage->Bpp;
-		BaseImage->SizeOfPlane 	= BaseImage->Bps * BaseImage->Height;
-		BaseImage->SizeOfData 	= BaseImage->Depth * BaseImage->SizeOfPlane;
-		if (BaseImage->Pal.Palette && BaseImage->Pal.PalSize && BaseImage->Pal.PalType != IL_PAL_NONE)
-			ifree(BaseImage->Pal.Palette);
-		BaseImage->Pal.Palette = Image->Pal.Palette;
-		BaseImage->Pal.PalSize = Image->Pal.PalSize;
-		BaseImage->Pal.PalType = Image->Pal.PalType;
-		Image->Pal.Palette = NULL;
-		ifree(BaseImage->Data);
-		BaseImage->Data = Image->Data;
-		Image->Data = NULL;
-		ilCloseImage(Image);
+    // We don't copy the colour profile here, since it stays the same.
+    //  Same with the DXTC data.
+    BaseImage->Format       = DestFormat;
+    BaseImage->Type         = DestType;
+    BaseImage->Bpc          = ilGetBpcType(DestType);
+    BaseImage->Bpp          = ilGetBppFormat(DestFormat);
+    BaseImage->Bps          = BaseImage->Width * BaseImage->Bpc * BaseImage->Bpp;
+    BaseImage->SizeOfPlane  = BaseImage->Bps * BaseImage->Height;
+    BaseImage->SizeOfData   = BaseImage->Depth * BaseImage->SizeOfPlane;
+    if (BaseImage->Pal.Palette && BaseImage->Pal.PalSize && BaseImage->Pal.PalType != IL_PAL_NONE)
+      ifree(BaseImage->Pal.Palette);
+    BaseImage->Pal.Palette = Image->Pal.Palette;
+    BaseImage->Pal.PalSize = Image->Pal.PalSize;
+    BaseImage->Pal.PalType = Image->Pal.PalType;
+    Image->Pal.Palette = NULL;
+    ifree(BaseImage->Data);
+    BaseImage->Data = Image->Data;
+    Image->Data = NULL;
+    ilCloseImage(Image);
 
-		BaseImage = BaseImage->Next;
-	}
+    BaseImage = BaseImage->Next;
+  }
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 
 //! Converts the current image to the DestFormat format.
 /*! \param DestFormat An enum of the desired output format.  Any format values are accepted.
     \param DestType An enum of the desired output type.  Any type values are accepted.
-	\exception IL_ILLEGAL_OPERATION No currently bound image
-	\exception IL_INVALID_CONVERSION DestFormat or DestType was an invalid identifier.
-	\exception IL_OUT_OF_MEMORY Could not allocate enough memory.
-	\return Boolean value of failure or success*/
+  \exception IL_ILLEGAL_OPERATION No currently bound image
+  \exception IL_INVALID_CONVERSION DestFormat or DestType was an invalid identifier.
+  \exception IL_OUT_OF_MEMORY Could not allocate enough memory.
+  \return Boolean value of failure or success*/
 ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
 {
-	ILimage *Image = iGetCurImage();
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	return iConvertImage_(Image, DestFormat, DestType);
+  return iConvertImage_(Image, DestFormat, DestType);
 }
 
 
 ILboolean iSwapColours(ILimage *Image)
 {
-	ILuint		i = 0, Size = Image->Bpp * Image->Width * Image->Height;
-	ILbyte		PalBpp = ilGetBppPal(Image->Pal.PalType);
-	ILushort	*ShortPtr;
-	ILuint		*IntPtr, Temp;
-	ILdouble	*DoublePtr, DoubleTemp;
+  ILuint    i = 0, Size = Image->Bpp * Image->Width * Image->Height;
+  ILbyte    PalBpp = ilGetBppPal(Image->Pal.PalType);
+  ILushort  *ShortPtr;
+  ILuint    *IntPtr, Temp;
+  ILdouble  *DoublePtr, DoubleTemp;
 
-	if ((Image->Bpp != 1 && Image->Bpp != 3 && Image->Bpp != 4)) {
-		iSetError(IL_INVALID_VALUE);
-		return IL_FALSE;
-	}
+  if ((Image->Bpp != 1 && Image->Bpp != 3 && Image->Bpp != 4)) {
+    iSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
 
-	// Just check before we change the format.
-	if (Image->Format == IL_COLOUR_INDEX) {
-		if (PalBpp == 0 || Image->Format != IL_COLOUR_INDEX) {
-			iSetError(IL_ILLEGAL_OPERATION);
-			return IL_FALSE;
-		}
-	}
+  // Just check before we change the format.
+  if (Image->Format == IL_COLOUR_INDEX) {
+    if (PalBpp == 0 || Image->Format != IL_COLOUR_INDEX) {
+      iSetError(IL_ILLEGAL_OPERATION);
+      return IL_FALSE;
+    }
+  }
 
-	switch (Image->Format)
-	{
-		case IL_RGB:
-			Image->Format = IL_BGR;
-			break;
-		case IL_RGBA:
-			Image->Format = IL_BGRA;
-			break;
-		case IL_BGR:
-			Image->Format = IL_RGB;
-			break;
-		case IL_BGRA:
-			Image->Format = IL_RGBA;
-			break;
-		case IL_ALPHA:
-		case IL_LUMINANCE:
-		case IL_LUMINANCE_ALPHA:
-			return IL_TRUE;  // No need to do anything to luminance or alpha images.
-		case IL_COLOUR_INDEX:
-			switch (Image->Pal.PalType)
-			{
-				case IL_PAL_RGB24:
-					Image->Pal.PalType = IL_PAL_BGR24;
-					break;
-				case IL_PAL_RGB32:
-					Image->Pal.PalType = IL_PAL_BGR32;
-					break;
-				case IL_PAL_RGBA32:
-					Image->Pal.PalType = IL_PAL_BGRA32;
-					break;
-				case IL_PAL_BGR24:
-					Image->Pal.PalType = IL_PAL_RGB24;
-					break;
-				case IL_PAL_BGR32:
-					Image->Pal.PalType = IL_PAL_RGB32;
-					break;
-				case IL_PAL_BGRA32:
-					Image->Pal.PalType = IL_PAL_RGBA32;
-					break;
-				default:
-					iSetError(IL_ILLEGAL_OPERATION);
-					return IL_FALSE;
-			}
-			break;
-		default:
-			iSetError(IL_ILLEGAL_OPERATION);
-			return IL_FALSE;
-	}
+  switch (Image->Format)
+  {
+    case IL_RGB:
+      Image->Format = IL_BGR;
+      break;
+    case IL_RGBA:
+      Image->Format = IL_BGRA;
+      break;
+    case IL_BGR:
+      Image->Format = IL_RGB;
+      break;
+    case IL_BGRA:
+      Image->Format = IL_RGBA;
+      break;
+    case IL_ALPHA:
+    case IL_LUMINANCE:
+    case IL_LUMINANCE_ALPHA:
+      return IL_TRUE;  // No need to do anything to luminance or alpha images.
+    case IL_COLOUR_INDEX:
+      switch (Image->Pal.PalType)
+      {
+        case IL_PAL_RGB24:
+          Image->Pal.PalType = IL_PAL_BGR24;
+          break;
+        case IL_PAL_RGB32:
+          Image->Pal.PalType = IL_PAL_BGR32;
+          break;
+        case IL_PAL_RGBA32:
+          Image->Pal.PalType = IL_PAL_BGRA32;
+          break;
+        case IL_PAL_BGR24:
+          Image->Pal.PalType = IL_PAL_RGB24;
+          break;
+        case IL_PAL_BGR32:
+          Image->Pal.PalType = IL_PAL_RGB32;
+          break;
+        case IL_PAL_BGRA32:
+          Image->Pal.PalType = IL_PAL_RGBA32;
+          break;
+        default:
+          iSetError(IL_ILLEGAL_OPERATION);
+          return IL_FALSE;
+      }
+      break;
+    default:
+      iSetError(IL_ILLEGAL_OPERATION);
+      return IL_FALSE;
+  }
 
-	if (Image->Format == IL_COLOUR_INDEX) {
-		for (; i < Image->Pal.PalSize; i += PalBpp) {
-				Temp = Image->Pal.Palette[i];
-				Image->Pal.Palette[i] = Image->Pal.Palette[i+2];
-				Image->Pal.Palette[i+2] = Temp;
-		}
-	}
-	else {
-		ShortPtr = (ILushort*)Image->Data;
-		IntPtr = (ILuint*)Image->Data;
-		DoublePtr = (ILdouble*)Image->Data;
-		switch (Image->Bpc)
-		{
-			case 1:
-				for (; i < Size; i += Image->Bpp) {
-					Temp = Image->Data[i];
-					Image->Data[i] = Image->Data[i+2];
-					Image->Data[i+2] = Temp;
-				}
-				break;
-			case 2:
-				for (; i < Size; i += Image->Bpp) {
-					Temp = ShortPtr[i];
-					ShortPtr[i] = ShortPtr[i+2];
-					ShortPtr[i+2] = Temp;
-				}
-				break;
-			case 4:  // Works fine with ILint, ILuint and ILfloat.
-				for (; i < Size; i += Image->Bpp) {
-					Temp = IntPtr[i];
-					IntPtr[i] = IntPtr[i+2];
-					IntPtr[i+2] = Temp;
-				}
-				break;
-			case 8:
-				for (; i < Size; i += Image->Bpp) {
-					DoubleTemp = DoublePtr[i];
-					DoublePtr[i] = DoublePtr[i+2];
-					DoublePtr[i+2] = DoubleTemp;
-				}
-				break;
-		}
-	}
+  if (Image->Format == IL_COLOUR_INDEX) {
+    for (; i < Image->Pal.PalSize; i += PalBpp) {
+        Temp = Image->Pal.Palette[i];
+        Image->Pal.Palette[i] = Image->Pal.Palette[i+2];
+        Image->Pal.Palette[i+2] = Temp;
+    }
+  }
+  else {
+    ShortPtr = (ILushort*)Image->Data;
+    IntPtr = (ILuint*)Image->Data;
+    DoublePtr = (ILdouble*)Image->Data;
+    switch (Image->Bpc)
+    {
+      case 1:
+        for (; i < Size; i += Image->Bpp) {
+          Temp = Image->Data[i];
+          Image->Data[i] = Image->Data[i+2];
+          Image->Data[i+2] = Temp;
+        }
+        break;
+      case 2:
+        for (; i < Size; i += Image->Bpp) {
+          Temp = ShortPtr[i];
+          ShortPtr[i] = ShortPtr[i+2];
+          ShortPtr[i+2] = Temp;
+        }
+        break;
+      case 4:  // Works fine with ILint, ILuint and ILfloat.
+        for (; i < Size; i += Image->Bpp) {
+          Temp = IntPtr[i];
+          IntPtr[i] = IntPtr[i+2];
+          IntPtr[i+2] = Temp;
+        }
+        break;
+      case 8:
+        for (; i < Size; i += Image->Bpp) {
+          DoubleTemp = DoublePtr[i];
+          DoublePtr[i] = DoublePtr[i+2];
+          DoublePtr[i+2] = DoubleTemp;
+        }
+        break;
+    }
+  }
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 // Swaps the colour order of the current image (rgb(a)->bgr(a) or vice-versa).
-//	Must be either an 8, 24 or 32-bit (coloured) image (or palette).
+//  Must be either an 8, 24 or 32-bit (coloured) image (or palette).
 ILboolean ilSwapColours()
 {
-	ILimage *Image = iGetCurImage();
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-	return iSwapColours(Image);
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+  return iSwapColours(Image);
 }
 
 
 ILboolean iAddAlpha(ILimage *Image)
 {
-	ILubyte		*NewData, NewBpp;
-	ILuint		i = 0, j = 0, Size;
+  if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
+    return iAddAlphaKey(Image);
+  }
 
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  ILubyte   *NewData, NewBpp;
+  ILuint    i = 0, j = 0, Size;
 
-	if (Image->Bpp != 3) {
-		iSetError(IL_INVALID_VALUE);
-		return IL_FALSE;
-	}
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	Size = Image->Bps * Image->Height / Image->Bpc;
-	NewBpp = (ILubyte)(Image->Bpp + 1);
-	
-	NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
-	if (NewData == NULL) {
-		return IL_FALSE;
-	}
+  if (Image->Bpp != 3) {
+    iSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
 
-	switch (Image->Type)
-	{
-		case IL_BYTE:
-		case IL_UNSIGNED_BYTE:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				NewData[j]   = Image->Data[i];
-				NewData[j+1] = Image->Data[i+1];
-				NewData[j+2] = Image->Data[i+2];
-				NewData[j+3] = UCHAR_MAX;  // Max opaqueness
-			}
-			break;
+  Size = Image->Bps * Image->Height / Image->Bpc;
+  NewBpp = (ILubyte)(Image->Bpp + 1);
+  
+  NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
+  if (NewData == NULL) {
+    return IL_FALSE;
+  }
 
-		case IL_SHORT:
-		case IL_UNSIGNED_SHORT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-				((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-				((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
-				((ILushort*)NewData)[j+3] = USHRT_MAX;
-			}
-			break;
+  switch (Image->Type)
+  {
+    case IL_BYTE:
+    case IL_UNSIGNED_BYTE:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        NewData[j]   = Image->Data[i];
+        NewData[j+1] = Image->Data[i+1];
+        NewData[j+2] = Image->Data[i+2];
+        NewData[j+3] = UCHAR_MAX;  // Max opaqueness
+      }
+      break;
 
-		case IL_INT:
-		case IL_UNSIGNED_INT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-				((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-				((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
-				((ILuint*)NewData)[j+3] = UINT_MAX;
-			}
-			break;
+    case IL_SHORT:
+    case IL_UNSIGNED_SHORT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
+        ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
+        ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+        ((ILushort*)NewData)[j+3] = USHRT_MAX;
+      }
+      break;
 
-		case IL_FLOAT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-				((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-				((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
-				((ILfloat*)NewData)[j+3] = 1.0f;
-			}
-			break;
+    case IL_INT:
+    case IL_UNSIGNED_INT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
+        ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
+        ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+        ((ILuint*)NewData)[j+3] = UINT_MAX;
+      }
+      break;
 
-		case IL_DOUBLE:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-				((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-				((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
-				((ILdouble*)NewData)[j+3] = 1.0;
-			}
-			break;
+    case IL_FLOAT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
+        ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
+        ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+        ((ILfloat*)NewData)[j+3] = 1.0f;
+      }
+      break;
 
-		default:
-			ifree(NewData);
-			iSetError(IL_INTERNAL_ERROR);
-			return IL_FALSE;
-	}
+    case IL_DOUBLE:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
+        ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
+        ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+        ((ILdouble*)NewData)[j+3] = 1.0;
+      }
+      break;
 
-
-	Image->Bpp = NewBpp;
-	Image->Bps = Image->Width * Image->Bpc * NewBpp;
-	Image->SizeOfPlane = Image->Bps * Image->Height;
-	Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-	ifree(Image->Data);
-	Image->Data = NewData;
-
-	switch (Image->Format)
-	{
-		case IL_RGB:
-			Image->Format = IL_RGBA;
-			break;
-		case IL_BGR:
-			Image->Format = IL_BGRA;
-			break;
-	}
-
-	return IL_TRUE;
-}
+    default:
+      ifree(NewData);
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+  }
 
 
-// Adds an opaque alpha channel to a 24-bit image
-ILboolean ilAddAlpha()
-{
-	ILimage *Image = iGetCurImage();
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-	return iAddAlpha(Image);
-}
+  Image->Bpp = NewBpp;
+  Image->Bps = Image->Width * Image->Bpc * NewBpp;
+  Image->SizeOfPlane = Image->Bps * Image->Height;
+  Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
+  ifree(Image->Data);
+  Image->Data = NewData;
 
-// TODO: should these go to il_state?
-ILfloat KeyRed = 0, KeyGreen = 0, KeyBlue = 0, KeyAlpha = 0;
+  switch (Image->Format)
+  {
+    case IL_RGB:
+      Image->Format = IL_RGBA;
+      break;
+    case IL_BGR:
+      Image->Format = IL_BGRA;
+      break;
+  }
 
-void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha)
-{
-  KeyRed		= Red;
-	KeyGreen	= Green;
-	KeyBlue		= Blue;
-	KeyAlpha	= Alpha;
-	return;
+  return IL_TRUE;
 }
 
 
 // Adds an alpha channel to an 8 or 24-bit image,
-//	making the image transparent where Key is equal to the pixel.
+//  making the image transparent where Key is equal to the pixel.
 ILboolean iAddAlphaKey(ILimage *Image)
 {
-  ILubyte		*NewData, NewBpp;
-	ILfloat		KeyColour[3];
-	ILuint		i = 0, j = 0, c, Size;
-	ILboolean	Same;
+  ILubyte   *NewData, NewBpp;
+  ILfloat   KeyColour[3];
+  ILuint    i = 0, j = 0, c, Size;
+  ILboolean Same;
 
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  float KeyRed    = ilStates[ilCurrentPos].ilKeyColourRed;
+  float KeyGreen  = ilStates[ilCurrentPos].ilKeyColourGreen;
+  float KeyBlue   = ilStates[ilCurrentPos].ilKeyColourBlue;
+  float KeyAlpha  = ilStates[ilCurrentPos].ilKeyColourAlpha; 
+ 
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	if (Image->Format != IL_COLOUR_INDEX) {
-		if (Image->Bpp != 3) {
-			iSetError(IL_INVALID_VALUE);
-			return IL_FALSE;
-		}
+  if (Image->Format != IL_COLOUR_INDEX) {
+    if (Image->Bpp != 3) {
+      iSetError(IL_INVALID_VALUE);
+      return IL_FALSE;
+    }
 
-		if (Image->Format == IL_BGR || Image->Format == IL_BGRA) {
-			KeyColour[0] = KeyBlue;
-			KeyColour[1] = KeyGreen;
-			KeyColour[2] = KeyRed;
-		}
-		else {
-			KeyColour[0] = KeyRed;
-			KeyColour[1] = KeyGreen;
-			KeyColour[2] = KeyBlue;
-		}
+    if (Image->Format == IL_BGR || Image->Format == IL_BGRA) {
+      KeyColour[0] = KeyBlue;
+      KeyColour[1] = KeyGreen;
+      KeyColour[2] = KeyRed;
+    }
+    else {
+      KeyColour[0] = KeyRed;
+      KeyColour[1] = KeyGreen;
+      KeyColour[2] = KeyBlue;
+    }
 
-		Size = Image->Bps * Image->Height / Image->Bpc;
+    Size = Image->Bps * Image->Height / Image->Bpc;
 
-		NewBpp = (ILubyte)(Image->Bpp + 1);
-		
-		NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
-		if (NewData == NULL) {
-			return IL_FALSE;
-		}
+    NewBpp = (ILubyte)(Image->Bpp + 1);
+    
+    NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
+    if (NewData == NULL) {
+      return IL_FALSE;
+    }
 
-		switch (Image->Type)
-		{
-			case IL_BYTE:
-			case IL_UNSIGNED_BYTE:
-				for (; i < Size; i += Image->Bpp, j += NewBpp) {
-					NewData[j]   = Image->Data[i];
-					NewData[j+1] = Image->Data[i+1];
-					NewData[j+2] = Image->Data[i+2];
-					Same = IL_TRUE;
-					for (c = 0; c < Image->Bpp; c++) {
-						if (Image->Data[i+c] != KeyColour[c] * UCHAR_MAX)
-							Same = IL_FALSE;
-					}
+    switch (Image->Type)
+    {
+      case IL_BYTE:
+      case IL_UNSIGNED_BYTE:
+        for (; i < Size; i += Image->Bpp, j += NewBpp) {
+          NewData[j]   = Image->Data[i];
+          NewData[j+1] = Image->Data[i+1];
+          NewData[j+2] = Image->Data[i+2];
+          Same = IL_TRUE;
+          for (c = 0; c < Image->Bpp; c++) {
+            if (Image->Data[i+c] != KeyColour[c] * UCHAR_MAX)
+              Same = IL_FALSE;
+          }
 
-					if (Same)
-						NewData[j+3] = 0;  // Transparent - matches key colour
-					else
-						NewData[j+3] = UCHAR_MAX;
-				}
-				break;
+          if (Same)
+            NewData[j+3] = 0;  // Transparent - matches key colour
+          else
+            NewData[j+3] = UCHAR_MAX;
+        }
+        break;
 
-			case IL_SHORT:
-			case IL_UNSIGNED_SHORT:
-				for (; i < Size; i += Image->Bpp, j += NewBpp) {
-					((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-					((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-					((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
-					Same = IL_TRUE;
-					for (c = 0; c < Image->Bpp; c++) {
-						if (((ILushort*)Image->Data)[i+c] != KeyColour[c] * USHRT_MAX)
-							Same = IL_FALSE;
-					}
+      case IL_SHORT:
+      case IL_UNSIGNED_SHORT:
+        for (; i < Size; i += Image->Bpp, j += NewBpp) {
+          ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
+          ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
+          ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+          Same = IL_TRUE;
+          for (c = 0; c < Image->Bpp; c++) {
+            if (((ILushort*)Image->Data)[i+c] != KeyColour[c] * USHRT_MAX)
+              Same = IL_FALSE;
+          }
 
-					if (Same)
-						((ILushort*)NewData)[j+3] = 0;
-					else
-						((ILushort*)NewData)[j+3] = USHRT_MAX;
-				}
-				break;
+          if (Same)
+            ((ILushort*)NewData)[j+3] = 0;
+          else
+            ((ILushort*)NewData)[j+3] = USHRT_MAX;
+        }
+        break;
 
-			case IL_INT:
-			case IL_UNSIGNED_INT:
-				for (; i < Size; i += Image->Bpp, j += NewBpp) {
-					((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-					((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-					((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
-					Same = IL_TRUE;
-					for (c = 0; c < Image->Bpp; c++) {
-						if (((ILuint*)Image->Data)[i+c] != KeyColour[c] * UINT_MAX)
-							Same = IL_FALSE;
-					}
+      case IL_INT:
+      case IL_UNSIGNED_INT:
+        for (; i < Size; i += Image->Bpp, j += NewBpp) {
+          ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
+          ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
+          ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+          Same = IL_TRUE;
+          for (c = 0; c < Image->Bpp; c++) {
+            if (((ILuint*)Image->Data)[i+c] != KeyColour[c] * UINT_MAX)
+              Same = IL_FALSE;
+          }
 
-					if (Same)
-						((ILuint*)NewData)[j+3] = 0;
-					else
-						((ILuint*)NewData)[j+3] = UINT_MAX;
-				}
-				break;
+          if (Same)
+            ((ILuint*)NewData)[j+3] = 0;
+          else
+            ((ILuint*)NewData)[j+3] = UINT_MAX;
+        }
+        break;
 
-			case IL_FLOAT:
-				for (; i < Size; i += Image->Bpp, j += NewBpp) {
-					((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-					((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-					((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
-					Same = IL_TRUE;
-					for (c = 0; c < Image->Bpp; c++) {
-						if (((ILfloat*)Image->Data)[i+c] != KeyColour[c])
-							Same = IL_FALSE;
-					}
+      case IL_FLOAT:
+        for (; i < Size; i += Image->Bpp, j += NewBpp) {
+          ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
+          ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
+          ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+          Same = IL_TRUE;
+          for (c = 0; c < Image->Bpp; c++) {
+            if (((ILfloat*)Image->Data)[i+c] != KeyColour[c])
+              Same = IL_FALSE;
+          }
 
-					if (Same)
-						((ILfloat*)NewData)[j+3] = 0.0f;
-					else
-						((ILfloat*)NewData)[j+3] = 1.0f;
-				}
-				break;
+          if (Same)
+            ((ILfloat*)NewData)[j+3] = 0.0f;
+          else
+            ((ILfloat*)NewData)[j+3] = 1.0f;
+        }
+        break;
 
-			case IL_DOUBLE:
-				for (; i < Size; i += Image->Bpp, j += NewBpp) {
-					((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-					((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-					((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
-					Same = IL_TRUE;
-					for (c = 0; c < Image->Bpp; c++) {
-						if (((ILdouble*)Image->Data)[i+c] != KeyColour[c])
-							Same = IL_FALSE;
-					}
+      case IL_DOUBLE:
+        for (; i < Size; i += Image->Bpp, j += NewBpp) {
+          ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
+          ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
+          ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+          Same = IL_TRUE;
+          for (c = 0; c < Image->Bpp; c++) {
+            if (((ILdouble*)Image->Data)[i+c] != KeyColour[c])
+              Same = IL_FALSE;
+          }
 
-					if (Same)
-						((ILdouble*)NewData)[j+3] = 0.0;
-					else
-						((ILdouble*)NewData)[j+3] = 1.0;
-				}
-				break;
+          if (Same)
+            ((ILdouble*)NewData)[j+3] = 0.0;
+          else
+            ((ILdouble*)NewData)[j+3] = 1.0;
+        }
+        break;
 
-			default:
-				ifree(NewData);
-				iSetError(IL_INTERNAL_ERROR);
-				return IL_FALSE;
-		}
+      default:
+        ifree(NewData);
+        iSetError(IL_INTERNAL_ERROR);
+        return IL_FALSE;
+    }
 
 
-		Image->Bpp = NewBpp;
-		Image->Bps = Image->Width * Image->Bpc * NewBpp;
-		Image->SizeOfPlane = Image->Bps * Image->Height;
-		Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-		ifree(Image->Data);
-		Image->Data = NewData;
+    Image->Bpp = NewBpp;
+    Image->Bps = Image->Width * Image->Bpc * NewBpp;
+    Image->SizeOfPlane = Image->Bps * Image->Height;
+    Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
+    ifree(Image->Data);
+    Image->Data = NewData;
 
-		switch (Image->Format)
-		{
-			case IL_RGB:
-				Image->Format = IL_RGBA;
-				break;
-			case IL_BGR:
-				Image->Format = IL_BGRA;
-				break;
-		}
-	}
-	else {  // IL_COLOUR_INDEX
-		if (Image->Bpp != 1) {
-			iSetError(IL_INTERNAL_ERROR);
-			return IL_FALSE;
-		}
+    switch (Image->Format)
+    {
+      case IL_RGB:
+        Image->Format = IL_RGBA;
+        break;
+      case IL_BGR:
+        Image->Format = IL_BGRA;
+        break;
+    }
+  }
+  else {  // IL_COLOUR_INDEX
+    if (Image->Bpp != 1) {
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
 
-		Size = ilGetInteger(IL_PALETTE_NUM_COLS);
-		if (Size == 0) {
-			iSetError(IL_INTERNAL_ERROR);
-			return IL_FALSE;
-		}
+    Size = ilGetInteger(IL_PALETTE_NUM_COLS);
+    if (Size == 0) {
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
 
-		if ((ILuint)(KeyAlpha * UCHAR_MAX) > Size) {
-			iSetError(IL_INVALID_VALUE);
-			return IL_FALSE;
-		}
+    if ((ILuint)(KeyAlpha * UCHAR_MAX) > Size) {
+      iSetError(IL_INVALID_VALUE);
+      return IL_FALSE;
+    }
 
-		switch (Image->Pal.PalType)
-		{
-			case IL_PAL_RGB24:
-			case IL_PAL_RGB32:
-			case IL_PAL_RGBA32:
-				if (!ilConvertPal(IL_PAL_RGBA32))
-					return IL_FALSE;
-				break;
-			case IL_PAL_BGR24:
-			case IL_PAL_BGR32:
-			case IL_PAL_BGRA32:
-				if (!ilConvertPal(IL_PAL_BGRA32))
-					return IL_FALSE;
-				break;
-			default:
-				iSetError(IL_INTERNAL_ERROR);
-				return IL_FALSE;
-		}
+    switch (Image->Pal.PalType)
+    {
+      case IL_PAL_RGB24:
+      case IL_PAL_RGB32:
+      case IL_PAL_RGBA32:
+        if (!ilConvertPal(IL_PAL_RGBA32))
+          return IL_FALSE;
+        break;
+      case IL_PAL_BGR24:
+      case IL_PAL_BGR32:
+      case IL_PAL_BGRA32:
+        if (!ilConvertPal(IL_PAL_BGRA32))
+          return IL_FALSE;
+        break;
+      default:
+        iSetError(IL_INTERNAL_ERROR);
+        return IL_FALSE;
+    }
 
-		// Set the colour index to be transparent.
-		Image->Pal.Palette[(ILuint)(KeyAlpha * UCHAR_MAX) * 4 + 3] = 0;
+    // Set the colour index to be transparent.
+    Image->Pal.Palette[(ILuint)(KeyAlpha * UCHAR_MAX) * 4 + 3] = 0;
 
-		// @TODO: Check if this is the required behaviour.
+    // @TODO: Check if this is the required behaviour.
 
-		if (Image->Pal.PalType == IL_PAL_RGBA32)
-			ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
-		else
-			ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE);
-	}
+    if (Image->Pal.PalType == IL_PAL_RGBA32)
+      ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+    else
+      ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE);
+  }
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 
 ILboolean iRemoveAlpha(ILimage *Image)
 {
   ILubyte *NewData, NewBpp;
-	ILuint i = 0, j = 0, Size;
+  ILuint i = 0, j = 0, Size;
 
-	if (Image == NULL) {
-		iSetError(IL_INVALID_PARAM);
-		return IL_FALSE;
-	}
+  if (Image == NULL) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
 
-	if (Image->Bpp != 4) {
-		iSetError(IL_INVALID_VALUE);
-		return IL_FALSE;
-	}
+  if (Image->Bpp != 4) {
+    iSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
 
-	Size = Image->Bps * Image->Height;
-	NewBpp = (ILubyte)(Image->Bpp - 1);
-	
-	NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
-	if (NewData == NULL) {
-		return IL_FALSE;
-	}
+  Size = Image->Bps * Image->Height;
+  NewBpp = (ILubyte)(Image->Bpp - 1);
+  
+  NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
+  if (NewData == NULL) {
+    return IL_FALSE;
+  }
 
-	switch (Image->Type)
-	{
-		case IL_BYTE:
-		case IL_UNSIGNED_BYTE:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				NewData[j]   = Image->Data[i];
-				NewData[j+1] = Image->Data[i+1];
-				NewData[j+2] = Image->Data[i+2];
-			}
-			break;
+  switch (Image->Type)
+  {
+    case IL_BYTE:
+    case IL_UNSIGNED_BYTE:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        NewData[j]   = Image->Data[i];
+        NewData[j+1] = Image->Data[i+1];
+        NewData[j+2] = Image->Data[i+2];
+      }
+      break;
 
-		case IL_SHORT:
-		case IL_UNSIGNED_SHORT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-				((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-				((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
-			}
-			break;
+    case IL_SHORT:
+    case IL_UNSIGNED_SHORT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
+        ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
+        ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+      }
+      break;
 
-		case IL_INT:
-		case IL_UNSIGNED_INT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-				((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-				((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
-			}
-			break;
+    case IL_INT:
+    case IL_UNSIGNED_INT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
+        ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
+        ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+      }
+      break;
 
-		case IL_FLOAT:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-				((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-				((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
-			}
-			break;
+    case IL_FLOAT:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
+        ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
+        ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+      }
+      break;
 
-		case IL_DOUBLE:
-			for (; i < Size; i += Image->Bpp, j += NewBpp) {
-				((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-				((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-				((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
-			}
-			break;
+    case IL_DOUBLE:
+      for (; i < Size; i += Image->Bpp, j += NewBpp) {
+        ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
+        ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
+        ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+      }
+      break;
 
-		default:
-			ifree(NewData);
-			iSetError(IL_INTERNAL_ERROR);
-			return IL_FALSE;
-	}
+    default:
+      ifree(NewData);
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+  }
 
 
-	Image->Bpp = NewBpp;
-	Image->Bps = Image->Width * Image->Bpc * NewBpp;
-	Image->SizeOfPlane = Image->Bps * Image->Height;
-	Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-	ifree(Image->Data);
-	Image->Data = NewData;
+  Image->Bpp = NewBpp;
+  Image->Bps = Image->Width * Image->Bpc * NewBpp;
+  Image->SizeOfPlane = Image->Bps * Image->Height;
+  Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
+  ifree(Image->Data);
+  Image->Data = NewData;
 
-	switch (Image->Format)
-	{
-		case IL_RGBA:
-			Image->Format = IL_RGB;
-			break;
-		case IL_BGRA:
-			Image->Format = IL_BGR;
-			break;
-	}
+  switch (Image->Format)
+  {
+    case IL_RGBA:
+      Image->Format = IL_RGB;
+      break;
+    case IL_BGRA:
+      Image->Format = IL_BGR;
+      break;
+  }
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 
 // Removes alpha from a 32-bit image
-//	Should we maybe add an option that changes the image based on the alpha?
+//  Should we maybe add an option that changes the image based on the alpha?
 ILboolean ilRemoveAlpha()
 {
-	ILimage *Image = iGetCurImage();
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-	return iRemoveAlpha(Image);
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+  return iRemoveAlpha(Image);
 }
 
 ILboolean iFixImage(ILimage *Image) 
 {
-	if (ilIsEnabled(IL_ORIGIN_SET)) {
-		if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
-			if (!iFlipImage(Image)) {
-				return IL_FALSE;
-			}
-		}
-	}
+  if (ilIsEnabled(IL_ORIGIN_SET)) {
+    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+      if (!iFlipImage(Image)) {
+        return IL_FALSE;
+      }
+    }
+  }
 
-	if (ilIsEnabled(IL_TYPE_SET)) {
-		if ((ILenum)ilGetInteger(IL_TYPE_MODE) != Image->Type) {
-			if (!iConvertImage_(Image, Image->Format, ilGetInteger(IL_TYPE_MODE))) {
-				return IL_FALSE;
-			}
-		}
-	}
-	if (ilIsEnabled(IL_FORMAT_SET)) {
-		if ((ILenum)ilGetInteger(IL_FORMAT_MODE) != Image->Format) {
-			if (!iConvertImage_(Image, ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
-				return IL_FALSE;
-			}
-		}
-	}
+  if (ilIsEnabled(IL_TYPE_SET)) {
+    if ((ILenum)ilGetInteger(IL_TYPE_MODE) != Image->Type) {
+      if (!iConvertImage_(Image, Image->Format, ilGetInteger(IL_TYPE_MODE))) {
+        return IL_FALSE;
+      }
+    }
+  }
+  if (ilIsEnabled(IL_FORMAT_SET)) {
+    if ((ILenum)ilGetInteger(IL_FORMAT_MODE) != Image->Format) {
+      if (!iConvertImage_(Image, ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
+        return IL_FALSE;
+      }
+    }
+  }
 
-	if (Image->Format == IL_COLOUR_INDEX) {
-		if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
-			if (!iConvertImage_(Image, IL_BGR, IL_UNSIGNED_BYTE)) {
-				return IL_FALSE;
-			}
-		}
-	}
-	
-	return IL_TRUE;
+  if (Image->Format == IL_COLOUR_INDEX) {
+    if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
+      if (!iConvertImage_(Image, IL_BGR, IL_UNSIGNED_BYTE)) {
+        return IL_FALSE;
+      }
+    }
+  }
+  
+  return IL_TRUE;
 }
 
 /*
@@ -1060,22 +1047,22 @@ be loaded anyway. Thanks to Chris Lux for pointing this out.
 // BP: rewritten to recurse into each and every mipmap, face, and layer
 
 ILboolean iFixImages(ILimage *BaseImage) {
-	while(BaseImage) {
-		if (!iFixImage(BaseImage))
-			return IL_FALSE;
+  while(BaseImage) {
+    if (!iFixImage(BaseImage))
+      return IL_FALSE;
 
-		if (!iFixImages(BaseImage->Mipmaps))
-			return IL_FALSE;
+    if (!iFixImages(BaseImage->Mipmaps))
+      return IL_FALSE;
 
-		if (!iFixImages(BaseImage->Layers))
-			return IL_FALSE;
+    if (!iFixImages(BaseImage->Layers))
+      return IL_FALSE;
 
-		if (!iFixImages(BaseImage->Faces))
-			return IL_FALSE;
+    if (!iFixImages(BaseImage->Faces))
+      return IL_FALSE;
 
-		BaseImage = BaseImage->Next;
-	}
+    BaseImage = BaseImage->Next;
+  }
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 

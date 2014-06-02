@@ -2084,11 +2084,9 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 	ilCloseImage(Image->Faces);
 	ilCloseImage(Image->Layers);
 
-	if (Image->AnimList) ifree(Image->AnimList);
 	if (Image->Profile)  ifree(Image->Profile);
 	if (Image->DxtcData) ifree(Image->DxtcData);
 	if (Image->Data)	 ifree(Image->Data);
-
 
 	////
 

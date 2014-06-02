@@ -36,29 +36,43 @@ typedef struct IL_STATES
 	// Origin states
 	ILboolean	ilOriginSet;
 	ILenum		ilOriginMode;
+
 	// Format and type states
 	ILboolean	ilFormatSet;
 	ILboolean	ilTypeSet;
 	ILenum		ilFormatMode;
 	ILenum		ilTypeMode;
+
 	// File mode states
 	ILboolean	ilOverWriteFiles;
+
 	// Palette states
 	ILboolean	ilAutoConvPal;
+
 	// Load fail states
 	ILboolean	ilDefaultOnFail;
+
 	// Key colour states
 	ILboolean	ilUseKeyColour;
+	ILfloat     ilKeyColourRed;
+	ILfloat     ilKeyColourGreen;
+	ILfloat     ilKeyColourBlue;
+	ILfloat     ilKeyColourAlpha;
+
 	// Alpha blend states
 	ILboolean	ilBlitBlend;
+
 	// Compression states
 	ILenum		ilCompression;
+
 	// Interlace states
 	ILenum		ilInterlace;
+
 	// Quantization states
 	ILenum		ilQuantMode;
 	ILuint		ilNeuSample;
 	ILuint		ilQuantMaxIndexs;
+
 	// DXTC states
 	ILboolean	ilKeepDxtcData;
 	ILboolean	ilUseNVidiaDXT;
@@ -115,5 +129,7 @@ typedef struct IL_HINTS
 extern ILuint ilCurrentPos;  // Which position on the stack
 extern IL_STATES ilStates[IL_ATTRIB_STACK_MAX];
 extern IL_HINTS ilHints;
+
+void iKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 
 #endif//STATES_H

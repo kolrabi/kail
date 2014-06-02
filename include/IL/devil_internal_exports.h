@@ -93,7 +93,9 @@ ILAPI char *    ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen);
 ILAPI char * 		ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
 
 //! The Fundamental Image structure
-/*! Every bit of information about an image is stored in this internal structure.*/
+/*! Every bit of information about an image is stored in this internal structure.
+ * @internal
+*/
 typedef struct ILimage
 {
 	ILuint          Width;       //!< the image's width
@@ -115,8 +117,6 @@ typedef struct ILimage
 	struct ILimage* Next;        //!< next image in the chain - usu. NULL
 	struct ILimage* Faces;       //!< next cubemap face in the chain - usu. NULL
 	struct ILimage* Layers;      //!< subsequent layers in the chain - usu. NULL
-	ILuint*         AnimList;    //!< animation list
-	ILuint          AnimSize;    //!< animation list size
 	void*           Profile;     //!< colour profile
 	ILuint          ProfileSize; //!< colour profile size
 	ILuint          OffX;        //!< x-offset of the image
