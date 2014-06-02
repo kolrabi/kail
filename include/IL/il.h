@@ -567,8 +567,8 @@ ILAPI ILuint    ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, I
 ILAPI ILuint    ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num);
 ILAPI void      ILAPIENTRY ilDeleteImage(const ILuint Num);
 ILAPI void      ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images);
-ILAPI void      ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images);
 ILAPI ILuint    ILAPIENTRY ilGenImage(void);
+ILAPI void      ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images);
 ILAPI void      ILAPIENTRY ilPopAttrib(void);
 ILAPI void      ILAPIENTRY ilPushAttrib(ILuint Bits);
 

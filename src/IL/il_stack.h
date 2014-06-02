@@ -34,5 +34,11 @@ void      iInitIL();
 void      iShutDownIL();
 ILboolean iIsImage(ILuint Image);
 ILuint    iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num);
+ILboolean iActiveFace(ILuint Number);
+ILboolean iActiveImage(ILuint Number);
+ILboolean iActiveLayer(ILuint Number);
+ILboolean iActiveMipmap(ILuint Number);
+void iDeleteImages(ILsizei Num, const ILuint *Images);
+void iGenImages(ILsizei Num, ILuint *Images);
 
 #endif//IMAGESTACK_H

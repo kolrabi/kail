@@ -242,6 +242,11 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName)
 		return IL_FALSE;
 	}
 
+	return iLoad(Image, Type, FileName);
+}
+
+ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
+{
 	Image->io.handle = Image->io.openReadOnly(FileName);
 	if (Image->io.handle != NULL) {
 		ILboolean bRet = ilLoadFuncs(Type);

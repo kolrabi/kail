@@ -18,5 +18,7 @@
 
 ILboolean iCopyPalette(ILpal *Dest, ILpal *Src);
 ILAPI ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat);
+ILboolean iLoadPal(ILimage *Image, ILconst_string FileName);
+ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName);
 
 #endif//IL_PAL_H

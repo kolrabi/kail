@@ -686,10 +686,7 @@ ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode)
   return IL_TRUE;
 }
 
-
-//! Pushes the states indicated by Bits onto the state stack
-void ILAPIENTRY ilPushAttrib(ILuint Bits)
-{
+void iPushAttrib(ILuint Bits) {
   // Should we check here to see if ilCurrentPos is negative?
 
   if (ilCurrentPos >= IL_ATTRIB_STACK_MAX - 1) {
@@ -791,10 +788,7 @@ void ILAPIENTRY ilPushAttrib(ILuint Bits)
 
 
 // @TODO:  Find out how this affects strings!!!
-
-//! Pops the last entry off the state stack into the current states
-void ILAPIENTRY ilPopAttrib()
-{
+void iPopAttrib() {
   if (ilCurrentPos <= 0) {
     ilCurrentPos = 0;
     iSetError(IL_STACK_UNDERFLOW);

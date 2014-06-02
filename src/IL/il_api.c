@@ -25,10 +25,50 @@
 #include "il_alloc.h"
 #include "il_manip.h" 
 
+
+/**
+ * Sets the current face if the currently bound image is a cubemap.
+ * @note The @a Number is the number of sub images down the chain, NOT the
+ * absolute face index. To go back to the base image use ilBindImage.
+ */
+ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
+  return iActiveFace(Number);
+}
+
+/**
+ * Sets the current animation frame.
+ * @note The @a Number is the number of sub images down the chain, NOT the
+ * absolute frame index. To go back to the base image use ilBindImage.
+ * @ingroup image_mgt
+ */
+ILboolean ILAPIENTRY ilActiveImage(ILuint Number) {
+  return iActiveImage(Number);
+}
+
+/**
+ * Sets the current image layer.
+ * @note The @a Number is the number of sub images down the chain, NOT the
+ * absolute layer index. To go back to the base image use ilBindImage.
+ * @ingroup image_mgt
+ */
+ILboolean ILAPIENTRY ilActiveLayer(ILuint Number) {
+  return iActiveLayer(Number);
+}
+
+/**
+ * Sets the current mipmap level.
+ * @note The @a Number is the number of sub images down the chain, NOT the
+ * absolute mipmap level. To go back to the base image use ilBindImage.
+ * @ingroup image_mgt
+ */
+ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number) {
+  return iActiveMipmap(Number);
+}
 /**
  * Adds an opaque alpha channel to the currently bound image. 
  * If IL_USE_KEY_COLOUR is enabled, the colour set with ilKeyColour will 
  * be transparent.
+ * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilAddAlpha() {
   ILimage *Image = iGetCurImage();
@@ -37,6 +77,27 @@ ILboolean ILAPIENTRY ilAddAlpha() {
     return IL_FALSE;
   }
   return iAddAlpha(Image);
+}
+
+/**
+ * Loads a palette from a file and applies it to the currently bound image.
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName) {
+  return iApplyPal(iGetCurImage(), FileName);
+}
+
+/**
+ * Apply a colour profile to the currently bound image.
+ * Profile names must be the file names of valid ICC profiles.
+ * @param InProfile Name of the image's current colour profile.
+ * @param OutProfile Name of the colour profile to apply.
+ * @note If the image library has been built without LCMS2 support,
+ *       this will have no effect.
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile) {
+  return iApplyProfile(iGetCurImage(), InProfile, OutProfile);
 }
 
 /** 
@@ -52,6 +113,18 @@ void ILAPIENTRY ilBindImage(ILuint Image) {
   iBindImage(Image);
 }
 
+/**
+ * Blit a region of pixels from a @a Source image into the currently bound image.
+ * @ingroup image_manip
+ */ 
+ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
+                                           ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
+                                           ILuint Width, ILuint Height, ILuint Depth)
+{
+  ILimage *Image = iGetCurImage();
+  return iBlit(Image, iGetImage(Source), DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
+}
+
 
 /**
  * Creates a duplicate of the currently bound image.
@@ -60,7 +133,6 @@ void ILAPIENTRY ilBindImage(ILuint Image) {
 ILuint ILAPIENTRY ilCloneCurImage() {
   return iDuplicateImage(ilGetCurName());
 }
-
 
 /**
  * Copy the pixels of a region of the currently bound image to a buffer.
@@ -119,6 +191,22 @@ ILboolean ILAPIENTRY ilDefaultImage() {
 }
 
 /**
+ * Delete one single image from the image stack.
+ * @ingroup image_mgt
+ */
+void ILAPIENTRY ilDeleteImage(const ILuint Num) {
+  ilDeleteImages(1, &Num);
+}
+
+/**
+ * Deletes Num images from the image stack - similar to glDeleteTextures().
+ * @ingroup image_mgt
+ */
+void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images) {
+  iDeleteImages(Num, Images);
+}
+
+/**
  * Disables a mode.
  * @param  Mode Mode to disable
  * @return      IL_TRUE if successful.
@@ -137,6 +225,7 @@ ILboolean ILAPIENTRY ilDisable(ILenum Mode)
  *
  * Mode                   | Default       | Description
  * ---------------------- | ------------- | ---------------------------------------------
+ * @a IL_BLIT_BLEND       | @a IL_FALSE   | When using ilBlit do alpha blending.
  * @a IL_ORIGIN_SET       | @a IL_FALSE   | Flip image on load to match @a IL_ORIGIN_MODE.
  * @a IL_FORMAT_SET       | @a IL_FALSE   | Convert image format on load to match the format set by ilFormatFunc().
  * @a IL_TYPE_SET         | @a IL_FALSE   | Convert image data type on load to match @a IL_TYPE_MODE.
@@ -168,6 +257,23 @@ ILboolean ILAPIENTRY ilFormatFunc(ILenum Mode)
   return iFormatFunc(Mode);
 }
 
+/** 
+ * Create one single new image on the image stack.
+ * @ingroup image_mgt
+ */
+ILuint ILAPIENTRY ilGenImage(void) {
+  ILuint Image;
+  ilGenImages(1, &Image);
+  return Image;
+}
+
+/** 
+ * Creates Num images and puts their index in Images - similar to glGenTextures().
+ * @ingroup image_mgt
+ */
+void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images) {
+  iGenImages(Num, Images);
+}
 
 /**
  * Sets @a Param equal to the current value of the @a Mode.
@@ -393,6 +499,30 @@ void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclamp
   iKeyColour(Red, Green, Blue, Alpha);
 }
 
+/**
+ * Pops the last entry off the state stack into the current states
+ */
+void ILAPIENTRY ilPopAttrib(void) {
+  iPopAttrib();
+}
+
+/** 
+ * Pushes the states indicated by Bits onto the state stack.
+ * States not indicated by Bits will be set to their default values.
+ * Bits can be a combination of:
+ *
+ * - IL_ORIGIN_BIT
+ * - IL_FORMAT_BIT
+ * - IL_TYPE_BIT
+ * - IL_FILE_BIT
+ * - IL_PAL_BIT
+ * - IL_FORMAT_SPECIFIC_BIT
+ *
+ * @todo Create a version of ilPushAttrib and ilPopAttrib that behaves more like OpenGL
+ */
+void ILAPIENTRY ilPushAttrib(ILuint Bits) {
+  iPushAttrib(Bits);
+}
 
 /**
  * Sets a parameter value for a @a Mode

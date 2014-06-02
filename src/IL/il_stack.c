@@ -29,8 +29,7 @@ ILboolean OnExit = IL_FALSE;
 ILboolean ParentImage = IL_TRUE;
 ILimage *iCurImage = NULL;
 
-//! Creates Num images and puts their index in Images - similar to glGenTextures().
-void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images)
+void iGenImages(ILsizei Num, ILuint *Images)
 {
   ILsizei Index = 0;
   iFree *TempFree = FreeNames;
@@ -62,13 +61,6 @@ void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images)
       LastUsed++;
     }
   } while (++Index < Num);
-}
-
-ILuint ILAPIENTRY ilGenImage()
-{
-    ILuint i;
-    ilGenImages(1,&i);
-    return i;
 }
 
 ILimage * ILAPIENTRY iGetImage(ILuint Image)
@@ -115,8 +107,7 @@ void iBindImage(ILuint Image)
 }
 
 
-//! Deletes Num images from the image stack - similar to glDeleteTextures().
-void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images)
+void iDeleteImages(ILsizei Num, const ILuint *Images)
 {
   iFree *Temp = FreeNames;
   ILuint  Index = 0;
@@ -168,10 +159,6 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images)
   } while (++Index < (ILuint)Num);
 }
 
-
-void ILAPIENTRY ilDeleteImage(const ILuint Num) {
-    ilDeleteImages(1,&Num);
-}
 
 //! Checks if Image is a valid ilGenImages-generated image (like glIsTexture()).
 ILboolean iIsImage(ILuint Image)
@@ -285,7 +272,7 @@ ILAPI ILimage * ILAPIENTRY iGetBaseImage()
 
 
 //! Sets the current mipmap level
-ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number)
+ILboolean iActiveMipmap(ILuint Number)
 {
   if (iCurImage == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -351,7 +338,7 @@ ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
 
 
 //! Used for setting the current image if it is an animation.
-ILboolean ILAPIENTRY ilActiveImage(ILuint Number)
+ILboolean iActiveImage(ILuint Number)
 {
   ILuint Current;
   ILimage *iTempImage;
@@ -415,11 +402,9 @@ ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
 }
 
 
-//! Used for setting the current face if it is a cubemap.
-ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
-{
+ILboolean iActiveFace(ILuint Number) {
   ILuint Current;
-    ILimage *iTempImage;
+  ILimage *iTempImage;
 
   if (iCurImage == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -430,7 +415,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
     return IL_TRUE;
   }
 
-    iTempImage = iCurImage;
+  iTempImage = iCurImage;
   iCurImage = iCurImage->Faces;
   if (iCurImage == NULL) {
     iCurImage = iTempImage;
@@ -438,7 +423,6 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
     return IL_FALSE;
   }
 
-  //Number--;  // Skip 0 (parent image)
   for (Current = 1; Current < Number; Current++) {
     iCurImage = iCurImage->Faces;
     if (iCurImage == NULL) {
@@ -456,7 +440,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number)
 
 
 //! Used for setting the current layer if layers exist.
-ILboolean ILAPIENTRY ilActiveLayer(ILuint Number)
+ILboolean iActiveLayer(ILuint Number)
 {
   ILuint Current;
     ILimage *iTempImage;

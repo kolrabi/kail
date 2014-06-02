@@ -652,14 +652,12 @@ ILAPI ILboolean ILAPIENTRY ilClearImage_(ILimage *Image)
   return IL_TRUE;
 }
 
-ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
+ILboolean ILAPIENTRY iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
   ILuint    x, y, z, ConvBps, ConvSizePlane;
-  ILimage   *Dest,*Src;
   ILubyte   *Converted;
-  ILuint    DestName = ilGetCurName();
   ILuint    c;
   // ILuint   StartX, StartY, StartZ;
   ILboolean DestFlipped = IL_FALSE;
@@ -667,20 +665,12 @@ ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint De
   ILubyte   *SrcTemp;
   ILfloat   ResultAlpha;
 
-  // Check if the destination image really exists
-  if (DestName == 0 || Image == NULL) {
+  // Check if the destination and source really exist
+  if (Dest == NULL || Src == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
-  Dest = Image;
 
-  // check source image
-  Src = iGetImage(Source);
-  if (Source == 0 || Src == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-  
   // set the destination image to upper left origin
   if (Dest->Origin == IL_ORIGIN_LOWER_LEFT) {  // Dest
     DestFlipped = IL_TRUE;
@@ -715,11 +705,25 @@ ILboolean ILAPIENTRY iBlit(ILimage *Image, ILuint Source, ILint DestX,  ILint De
   ConvBps       = Dest->Bpp * Src->Width;
   ConvSizePlane = ConvBps   * Src->Height;
   
-  //@NEXT in next version this would have to be removed since Dest* will be unsigned
-  // BP: no, TODO: if dest is negative, adjust src and dest accordingly to blit in the overlapped region
-  //StartX = DestX >= 0 ? 0 : -DestX;
-  //StartY = DestY >= 0 ? 0 : -DestY;
-  //StartZ = DestZ >= 0 ? 0 : -DestZ;
+  // if dest is negative, adjust src and dest accordingly to blit in the
+  // overlapped region only
+  if (DestX < 0) {
+    if (Width <= (ILuint)-DestX) return IL_TRUE; // nothing to do
+    Width -= DestX;
+    DestX = 0;
+  }
+
+  if (DestY < 0) {
+    if (Height <= (ILuint)-DestY) return IL_TRUE; // nothing to do
+    Height -= DestY;
+    DestY = 0;
+  }
+
+  if (DestZ < 0) {
+    if (Depth <= (ILuint)-DestZ) return IL_TRUE; // nothing to do
+    Depth -= DestZ;
+    DestZ = 0;
+  }
   
   // Limit the copy of data inside of the destination image
   if (Width  + DestX > Dest->Width)  Width  = Dest->Width  - DestX;
@@ -823,19 +827,8 @@ ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, I
   Height = Image->Height;  
   Depth = Image->Depth;
 
-  return iBlit(Image, Source, XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
+  return iBlit(Image, iGetImage(Source), XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
 }
-
-//@NEXT DestX,DestY,DestZ must be set to ILuint
-// TODO: il_api.c
-ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
-                                           ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
-                                           ILuint Width, ILuint Height, ILuint Depth)
-{
-  ILimage *Image = iGetCurImage();
-  return iBlit(Image, Source, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
-}
-
 
 ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
 {

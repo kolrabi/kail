@@ -131,5 +131,7 @@ extern IL_STATES ilStates[IL_ATTRIB_STACK_MAX];
 extern IL_HINTS ilHints;
 
 void iKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+void iPushAttrib(ILuint Bits);
+void iPopAttrib(void);
 
 #endif//STATES_H

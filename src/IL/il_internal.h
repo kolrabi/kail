@@ -152,18 +152,22 @@ ILboolean	iAddAlphaKey(ILimage *Image);
 ILboolean	iFastConvert(ILimage *Image, ILenum DestFormat);
 ILboolean	iSwapColours(ILimage *Image);
 ILboolean iFixImages(ILimage *Image);
+ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile);
 
 // Miscellaneous functions
 char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 ILuint iDuplicateImage(ILuint SrcName);
 ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage);
-
+ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
+                                           ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
+                                           ILuint Width, ILuint Height, ILuint Depth);
 //
 // Image loading/saving functions
 //
 #include "il_formats.h"
 
 ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type);
+ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
 
 /* FIXME:
 ILboolean ilIsValidExr(ILconst_string FileName);
