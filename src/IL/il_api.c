@@ -3,7 +3,7 @@
 // ImageLib Sources
 // Last modified: 2014-05-30
 //
-// Filename: src-IL/src/il_api.c
+// Filename: src/IL/il_api.c
 //
 //-----------------------------------------------------------------------------
 
@@ -15,13 +15,15 @@
  *
  * @defgroup state Global State
  * @defgroup setup Initialization / Deinitalization
- * @defgroup image Image Functions
+ * @defgroup image_mgt Image Management
+ * @defgroup image_manip Image Manipulation
  */
 
 #include "il_internal.h"
 #include "il_stack.h"
 #include "il_states.h"
 #include "il_alloc.h"
+#include "il_manip.h" 
 
 /** 
  * Makes Image the current active image - similar to glBindTexture().
@@ -36,6 +38,62 @@ void ILAPIENTRY ilBindImage(ILuint Image) {
   iBindImage(Image);
 }
 
+
+/**
+ * Creates a duplicate of the currently bound image.
+ * @ingroup image_mgt
+ */
+ILuint ILAPIENTRY ilCloneCurImage() {
+  return iDuplicateImage(ilGetCurName());
+}
+
+
+/**
+ * Copy the pixels of a region of the currently bound image to a buffer.
+ * @param XOff    Left border of image subregion to copy in pixels.
+ * @param YOff    Top border of image subregion to copy in pixels.
+ * @param ZOff    Front border of image subregion to copy in slices.
+ * @param Width   Width of region to copy in pixels.
+ * @param Height  Height of region to copy in pixels.
+ * @param Depth   Depth of region to copy in slices.
+ * @param Format  Format of pixel data to get.
+ * @param Type    Underlying pixel data type.
+ * @param Data    Buffer to receive pixel data.
+ * @ingroup image_manip
+ */
+ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data) {
+  return iCopyPixels(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data);
+}
+
+/**
+ * Copies everything from Src to the current bound image.
+ * @param Src Name of source image from which to copy.
+ * @ingroup image_mgt
+ */
+ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
+{
+  ILimage *DestImage = iGetCurImage();
+  ILimage *SrcImage  = iGetImage(Src);
+  return iCopyImage(DestImage, SrcImage);
+}
+
+/**
+ * Creates sub images of the given type for the currently bound image.
+ * The new sub images will be empty. Existing sub images of the type will be
+ * replaced. The current image binding will not be changed.
+ * @param Type    Sub image type, can be @a IL_SUB_NEXT to create animation frames
+ *                after the current image, @a IL_SUB_MIPMAP to create mipmaps or
+ *                @a IL_SUB_LAYER to create layers.
+ * @param Num     The number of images to create.
+ * @return        The number of images actually created.
+ * @note The original version behaved a little differently, it only created one 
+ *       sub image of the given type and the rest were added as frames in the 
+ *       animation chain. I believe this was a bug and fixed it. However if your 
+ *       program relied on that behaviour, it might be broken now. Be aware of that.
+ */
+ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num) {
+  return iCreateSubImage(iGetCurImage(), Type, Num);
+}
 
 /**
  * Disables a mode.
@@ -113,7 +171,8 @@ ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
 
 /** 
  * Gets the last error on the error stack
- * @return  An enum describing the last error;
+ * @return  An enum describing the last error.
+ * @ingroup state
  */
 ILenum ILAPIENTRY ilGetError(void) {
   return iGetError();
@@ -205,7 +264,7 @@ ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
  * IL_PALETTE_NUM_COLS        | Total number of palette entries.
  * IL_PALETTE_BASE_TYPE       | Pixel format for all palette entries.
  *
- * @ingroup image
+ * @ingroup image_mgt
  */
 ILint ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode) {
   ILimage *image = iGetImage(Image);
@@ -297,7 +356,7 @@ ILboolean ILAPIENTRY ilIsEnabled(ILenum Mode) {
 
 /**
  * Checks whether a given @a Image name is valid.
- * @ingroup image
+ * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilIsImage(ILuint Image) {
   return iIsImage(Image);

@@ -33,5 +33,6 @@ void      iBindImage(ILuint);
 void      iInitIL();
 void      iShutDownIL();
 ILboolean iIsImage(ILuint Image);
+ILuint    iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num);
 
 #endif//IMAGESTACK_H

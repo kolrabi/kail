@@ -499,15 +499,16 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number)
 }
 
 
-ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num)
+ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num)
 {
   ILimage *SubImage;
   ILuint  Count ;  // Create one before we go in the loop.
 
-  if (iCurImage == NULL) {
+  if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return 0;
   }
+
   if (Num == 0)  {
     return 0;
   }
@@ -515,24 +516,24 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num)
   switch (Type)
   {
     case IL_SUB_NEXT:
-      if (iCurImage->Next)
-        ilCloseImage(iCurImage->Next);
-      iCurImage->Next = ilNewImage(1, 1, 1, 1, 1);
-      SubImage = iCurImage->Next;
+      if (Image->Next)
+        ilCloseImage(Image->Next);
+      Image->Next = ilNewImage(1, 1, 1, 1, 1);
+      SubImage = Image->Next;
       break;
 
     case IL_SUB_MIPMAP:
-      if (iCurImage->Mipmaps)
-        ilCloseImage(iCurImage->Mipmaps);
-      iCurImage->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
-      SubImage = iCurImage->Mipmaps;
+      if (Image->Mipmaps)
+        ilCloseImage(Image->Mipmaps);
+      Image->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
+      SubImage = Image->Mipmaps;
       break;
 
     case IL_SUB_LAYER:
-      if (iCurImage->Layers)
-        ilCloseImage(iCurImage->Layers);
-      iCurImage->Layers = ilNewImage(1, 1, 1, 1, 1);
-      SubImage = iCurImage->Layers;
+      if (Image->Layers)
+        ilCloseImage(Image->Layers);
+      Image->Layers = ilNewImage(1, 1, 1, 1, 1);
+      SubImage = Image->Layers;
       break;
 
     default:
@@ -545,10 +546,14 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num)
   }
 
   for (Count = 1; Count < Num; Count++) {
-    SubImage->Next = ilNewImage(1, 1, 1, 1, 1);
-    SubImage = SubImage->Next;
-    if (SubImage == NULL)
-      return Count;
+    ILimage *Next = ilNewImage(1, 1, 1, 1, 1);
+    if (!Next) break;
+    switch (Type) {
+      case IL_SUB_NEXT:     SubImage->Next    = Next; break;
+      case IL_SUB_MIPMAP:   SubImage->Mipmaps = Next; break;
+      case IL_SUB_LAYER:    SubImage->Layers  = Next; break;
+    }
+    SubImage = Next;
   }
 
   return Count;

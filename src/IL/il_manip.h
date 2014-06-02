@@ -239,6 +239,8 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 }
 #endif //NOINLINE
 
+ILuint ILAPIENTRY iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
+
 #ifdef _cplusplus
 }
 #endif

@@ -155,6 +155,8 @@ ILboolean iFixImages(ILimage *Image);
 
 // Miscellaneous functions
 char*		iGetString(ILenum StringName);  // Internal version of ilGetString
+ILuint iDuplicateImage(ILuint SrcName);
+ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage);
 
 //
 // Image loading/saving functions
