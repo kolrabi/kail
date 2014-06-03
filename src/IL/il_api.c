@@ -783,6 +783,36 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName) {
   return iLoad(iGetCurImage(), Type, FileName);
 }
 
+
+/**
+ * Loads raw data from a file.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  ILimage *Image = iGetCurImage();
+  return iLoadData(Image, FileName, Width, Height, Depth, Bpp);
+}
+
+/**
+ * Loads raw data from an already-opened file.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  ILimage *Image = iGetCurImage();
+  return iLoadDataF(Image, File, Width, Height, Depth, Bpp);
+}
+
+/**
+ * Loads raw data from a memory "lump"
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  ILimage *Image = iGetCurImage();
+  iSetInputLump(Image, Lump, Size);
+  return iLoadDataInternal(Image, Width, Height, Depth, Bpp);
+}
+
+
 /**
  * Attempts to load an image from a file stream.  The file format is 
  * specified by the user.
@@ -877,7 +907,6 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
   }
   return IL_TRUE;
 }
-
 
 /**
  * Attempts to load an image from a memory buffer.  The file format is specified by the user.
@@ -990,6 +1019,14 @@ void ILAPIENTRY ilRegisterFormat(ILenum Format) {
 }
 
 /**
+ * Register a file loading function for a file extension.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
+  return iRegisterLoad(Ext, Load);
+}
+
+/**
  * Preallocates mipmap images for the currently bound image.
  * @ingroup register
  */
@@ -1033,6 +1070,14 @@ void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
 }
 
 /**
+ * Register a file saving function for a file extension.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
+  return iRegisterSave(Ext, Save);
+}
+
+/**
  * Sets the image pixel data type (no conversion).
  * @param Type The data type to use, valid values are:
  *               - IL_BYTE
@@ -1048,6 +1093,132 @@ void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
 void ILAPIENTRY ilRegisterType(ILenum Type) {
   iRegisterType(iGetCurImage(), Type);
 }
+
+/**
+ * Unregisters a load extension - doesn't have to be called.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext) {
+  return iRemoveLoad(Ext);
+}
+
+/**
+ * Unregisters a save extension - doesn't have to be called.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext) {
+  return iRemoveSave(Ext);
+}
+
+/**
+ * Reset the file reading functions of the currently bound image to the
+ * default.
+ * @ingroup file
+ */
+void ILAPIENTRY ilResetRead() {
+  iResetRead(iGetCurImage());
+}
+
+/**
+ * Reset the file saving functions of the currently bound image to the
+ * default.
+ * @ingroup file
+ */
+void ILAPIENTRY ilResetWrite() {
+  iResetWrite(iGetCurImage());
+}
+
+
+/**
+ * Attempts to save an image to a file.  The file format is specified by the user.
+ * @param Type Format of this file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
+ * IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
+ * IL_VTF, IL_WBMP and IL_JASC_PAL.
+ * @param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
+ *        the filename to save to.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if saving failed.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName) {
+  return iSave(iGetCurImage(), type, FileName);
+}
+
+/**
+ * Save the current image to FileName as raw data.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
+  ILimage *Image = iGetCurImage();
+  return iSaveData(Image, FileName);
+}
+
+/**
+ * Attempts to save an image to a file stream.  The file format is specified by the user.
+ * @param Type Format of this file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
+ * IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
+ * IL_VTF, IL_WBMP and IL_JASC_PAL.
+ * @param File File stream to save to.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if saving failed.
+ * @ingroup file
+ */
+ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
+  ILimage *Image = iGetCurImage();
+  iSetOutputFile(Image, File);
+  return iSaveFuncs2(Image, type);
+}
+
+/**
+ * Attempts to load an image using the currently set IO functions. 
+ * The file format is specified by the user.
+ * @ingroup file
+ */
+ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type) {
+  ILimage *Image = iGetCurImage();
+  return iSaveFuncs2(Image, type);
+}
+
+/**
+ * Saves the current image based on the extension given in FileName.
+ * @param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
+ *        the filename to save to.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if saving failed.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName) {
+  return iSaveImage(iGetCurImage(), FileName);
+}
+
+/**
+ * Attempts to save an image to a memory buffer.  
+ * The file format is specified by the user.
+ * @param Type Format of this image file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
+ * IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
+ * IL_VTF, IL_WBMP and IL_JASC_PAL.
+ * @param Lump Memory buffer to save to
+ * @param Size Size of the memory buffer
+ * @return The number of bytes written to the lump, or 0 in case of failure
+ * @ingroup file
+ */
+ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size) {
+  ILimage *Image = iGetCurImage();
+  iSetOutputLump(Image, Lump, Size);
+  ILint64 pos1 = SIOtell(&Image->io);
+  ILboolean bRet = iSaveFuncs2(Image, Type);
+  ILint64 pos2 = SIOtell(&Image->io);
+
+  if (bRet)
+    return pos2-pos1;  // Return the number of bytes written.
+  else
+    return 0;  // Error occurred
+}
+
+/**
+ * Saves a palette from the current image's palette to a file.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName) {
+  return iSavePal(iGetCurImage(), FileName);
+} 
 
 /**
  * Adds an alpha channel if not present and sets it to the given value.
@@ -1113,6 +1284,28 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
   iSetPixels(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data);
 }
 
+/** 
+ * Allows you to override the default file-reading functions.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+  fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
+{
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (!aEof || !aGetc || !aRead || !aSeek || !aTell) {
+    iSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
+
+  iSetRead(Image, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
+  return IL_TRUE;
+}
+
 /**
  * Sets a string detailing aspects about this library.
  * @param StringName Name of string to set.
@@ -1122,6 +1315,29 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
  */
 void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
   return iSetString(StringName, String);
+}
+
+/**
+ * Allows you to override the default file-writing functions.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+  fTellProc Tell, fWriteProc Write)
+{
+  ILimage *Image = iGetCurImage();
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (!Putc || !Write || !Seek || !Tell) {
+    iSetError(IL_INVALID_VALUE);
+    return IL_FALSE;
+  }
+
+  iSetWrite(Image, Open, Close, Putc, Seek, Tell, Write);
+  return IL_TRUE;
 }
 
 /**
@@ -1166,8 +1382,22 @@ ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILuby
  * DXTC compressed data.
  * @ingroup image_manip
  */
-ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) 
-{
+ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) {
   return iTexImageDxtc(iGetCurImage(), w, h, d, DxtFormat, data);
 }
 
+/**
+ * Get the image type for a given file name by its extension.
+ * @ingroup file
+ */
+ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName) {
+  return iTypeFromExt(FileName);
+}
+
+/**
+ * Sets the default type to be used.
+ * @ingroup state
+ */
+ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode) {
+  return iTypeFunc(Mode);
+}

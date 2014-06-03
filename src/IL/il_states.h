@@ -25,6 +25,7 @@ ILboolean iIsEnabled(ILenum Mode);
 void 			iSetInteger(ILenum Mode, ILint Param);
 void 			iSetString(ILenum Mode, const char *String_);
 ILboolean iOriginFunc(ILenum Mode);
+ILboolean iTypeFunc(ILenum Mode);
 
 #define IL_ATTRIB_STACK_MAX 32
 

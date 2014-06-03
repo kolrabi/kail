@@ -186,10 +186,7 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 //
 #include "il_formats.h"
 
-ILboolean iLoadFuncs2(ILimage* image, ILenum type);
-ILboolean iSaveFuncs2(ILimage* image, ILenum type);
 void iSetOutputFake(ILimage *image);
-ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
 void iSetOutputLump(ILimage *image, void *Lump, ILuint Size);
 ILuint iDetermineSize(ILimage *Image, ILenum Type);
 ILenum iDetermineType(ILimage *Image, ILconst_string FileName);
@@ -198,7 +195,25 @@ ILuint64 iGetLumpPos(ILimage *Image) ;
 ILboolean iIsValidIO(ILenum Type, SIO* io);
 void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
 ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
+ILboolean iLoadFuncs2(ILimage* image, ILenum type);
+ILboolean iSave(ILimage *Image, ILenum type, ILconst_string FileName);
+ILboolean iSaveFuncs2(ILimage* image, ILenum type);
+ILboolean iSaveImage(ILimage *Image, ILconst_string FileName);
+void iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+  fReadProc aRead, fSeekProc aSeek, fTellProc aTell);
+void iResetRead(ILimage *image);
+void iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+  fTellProc Tell, fWriteProc Write);
+void iResetWrite(ILimage *image);
 
+ILenum iTypeFromExt(ILconst_string FileName);
+
+ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
+ILboolean iLoadDataF(ILimage *Image, ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
+ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
+ILboolean iSaveData(ILimage *Image, ILconst_string FileName);
+
+ 
 /* FIXME:
 ILboolean ilIsValidExr(ILconst_string FileName);
 ILboolean ilIsValidExrF(ILHANDLE File);

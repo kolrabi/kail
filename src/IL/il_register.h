@@ -38,6 +38,11 @@ typedef struct iFormatS
 ILboolean iLoadRegistered(ILconst_string FileName);
 ILboolean iSaveRegistered(ILconst_string FileName);
 
+ILboolean iRegisterLoad(ILconst_string Ext, IL_LOADPROC Load);
+ILboolean iRegisterSave(ILconst_string Ext, IL_SAVEPROC Save);
+ILboolean iRemoveLoad(ILconst_string Ext);
+ILboolean iRemoveSave(ILconst_string Ext);
+
 void iRegisterFormat(ILimage *Image, ILenum Format);
 ILboolean iRegisterMipNum(ILimage *Image, ILuint Num);
 ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num);

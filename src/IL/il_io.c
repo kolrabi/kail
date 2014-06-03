@@ -66,9 +66,7 @@ char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide)
   return Temp;
 }
 
-
-ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
-{
+ILenum iTypeFromExt(ILconst_string FileName) {
   ILenum    Type;
   ILstring  Ext;
 
@@ -88,7 +86,7 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName)
   else if (!iStrCmp(Ext, IL_TEXT("wdp")) || !iStrCmp(Ext, IL_TEXT("hdp")))
     Type = IL_WDP;
   else
-    iIdentifyFormatExt(Ext);
+    Type = iIdentifyFormatExt(Ext);
 
   return Type;
 }
@@ -204,11 +202,6 @@ ILboolean iLoadFuncs2(ILimage* image, ILenum type) {
   return IL_FALSE;
 }
 
-
-
-
-
-
 ILboolean iSaveFuncs2(ILimage* image, ILenum type) {
   ILboolean bRet = IL_FALSE;
 
@@ -227,27 +220,7 @@ ILboolean iSaveFuncs2(ILimage* image, ILenum type) {
   return bRet;
 }
 
-ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type)
-{
-  ILimage *Image = iGetCurImage();
-  return iSaveFuncs2(Image, type);
-}
-
-//! Attempts to save an image to a file.  The file format is specified by the user.
-/*! \param Type Format of this file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
-  IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
-  IL_VTF, IL_WBMP and IL_JASC_PAL.
-  \param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
-         the filename to save to.
-  \return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
-ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
-{
-  if (FileName == NULL || iStrLen(FileName) < 1) {
-    iSetError(IL_INVALID_PARAM);
-    return IL_FALSE;
-  }
-
-  ILimage *Image = iGetCurImage();
+ILboolean iSave(ILimage *Image, ILenum type, ILconst_string FileName) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -255,6 +228,11 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
 
   if (Image->io.openWrite == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (FileName == NULL || iStrLen(FileName) < 1) {
+    iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
@@ -262,37 +240,31 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName)
   Image->io.handle = Image->io.openWrite(FileName);
   if (Image->io.handle != NULL) {
     bRet = iSaveFuncs2(Image, type);
-    Image->io.close(Image->io.handle);
+    if (Image->io.close)
+      Image->io.close(Image->io.handle);
     Image->io.handle = NULL;
   }
   return bRet;
 }
 
-
-//! Saves the current image based on the extension given in FileName.
-/*! \param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
-         the filename to save to.
-  \return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
-ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
-{
-  if (FileName == NULL || iStrLen(FileName) < 1) {
-    iSetError(IL_INVALID_PARAM);
-    return IL_FALSE;
-  }
-
-  ILimage *Image = iGetCurImage();
+ILboolean iSaveImage(ILimage *Image, ILconst_string FileName) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Image->io.openWrite == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
+  if (FileName == NULL || iStrLen(FileName) < 1) {
+    iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   if (iSaveRegistered(FileName)) {
     return IL_TRUE;
+  }
+
+  if (Image->io.openWrite == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
   }
 
   ILenum type = ilTypeFromExt(FileName);
@@ -306,37 +278,3 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName)
   return bRet;
 }
 
-//! Attempts to save an image to a file stream.  The file format is specified by the user.
-/*! \param Type Format of this file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
-  IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
-  IL_VTF, IL_WBMP and IL_JASC_PAL.
-  \param File File stream to save to.
-  \return Boolean value of failure or success.  Returns IL_FALSE if saving failed.*/
-ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File)
-{
-  ILimage *Image = iGetCurImage();
-  iSetOutputFile(Image, File);
-  return iSaveFuncs2(Image, type);
-}
-
-
-//! Attempts to save an image to a memory buffer.  The file format is specified by the user.
-/*! \param Type Format of this image file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
-  IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
-  IL_VTF, IL_WBMP and IL_JASC_PAL.
-  \param Lump Memory buffer to save to
-  \param Size Size of the memory buffer
-  \return The number of bytes written to the lump, or 0 in case of failure*/
-ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size)
-{
-  ILimage *Image = iGetCurImage();
-  iSetOutputLump(Image, Lump, Size);
-  ILint64 pos1 = Image->io.tell(Image->io.handle);
-  ILboolean bRet = iSaveFuncs2(Image, Type);
-  ILint64 pos2 = Image->io.tell(Image->io.handle);
-
-  if (bRet)
-    return pos2-pos1;  // Return the number of bytes written.
-  else
-    return 0;  // Error occurred
-}

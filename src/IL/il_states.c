@@ -642,12 +642,8 @@ ILboolean iFormatFunc(ILenum Mode) {
   return IL_TRUE;
 }
 
-
-//! Sets the default type to be used.
-ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode)
-{
-  switch (Mode)
-  {
+ILboolean iTypeFunc(ILenum Mode) {
+  switch (Mode) {
     case IL_BYTE:
     case IL_UNSIGNED_BYTE:
     case IL_SHORT:
@@ -666,8 +662,7 @@ ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode)
 }
 
 
-ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode)
-{
+ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode) {
   switch (Mode)
   {
     case IL_COMPRESS_NONE:

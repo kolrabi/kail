@@ -18,6 +18,7 @@
 
 ILboolean iCopyPalette(ILpal *Dest, ILpal *Src);
 ILboolean iLoadPal(ILimage *Image, ILconst_string FileName);
+ILboolean iSavePal(ILimage *Image, ILconst_string FileName);
 ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName);
 
 #endif//IL_PAL_H

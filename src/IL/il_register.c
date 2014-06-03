@@ -22,8 +22,7 @@
 iFormatL *LoadProcs = NULL;
 iFormatS *SaveProcs = NULL;
 
-
-ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
+ILboolean iRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
   iFormatL *TempNode, *NewNode;
 
   TempNode = LoadProcs;
@@ -56,8 +55,7 @@ ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
 }
 
 
-ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save)
-{
+ILboolean iRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
   iFormatS *TempNode, *NewNode;
 
   TempNode = SaveProcs;
@@ -89,10 +87,7 @@ ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save)
   return IL_TRUE;
 }
 
-
-//! Unregisters a load extension - doesn't have to be called.
-ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext)
-{
+ILboolean iRemoveLoad(ILconst_string Ext) {
   iFormatL *TempNode = LoadProcs, *PrevNode = NULL;
 
   while (TempNode != NULL) {
@@ -118,10 +113,7 @@ ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext)
   return IL_FALSE;
 }
 
-
-//! Unregisters a save extension - doesn't have to be called.
-ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext)
-{
+ILboolean iRemoveSave(ILconst_string Ext) {
   iFormatS *TempNode = SaveProcs, *PrevNode = NULL;
 
   while (TempNode != NULL) {

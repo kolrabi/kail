@@ -142,7 +142,7 @@ ILint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, I
   return (ILint)fwrite(Buffer, Size, Number, (FILE*)Handle);
 }
 
-void ILAPIENTRY iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+void iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell) {
   Image->io.openReadOnly   = aOpen;
   Image->io.close          = aClose;
@@ -153,36 +153,12 @@ void ILAPIENTRY iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEo
   Image->io.tell           = aTell;
 }
 
-//! Allows you to override the default file-reading functions.
-ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
-  fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
-{
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  if (!aEof || !aGetc || !aRead || !aSeek || !aTell) {
-    iSetError(IL_INVALID_VALUE);
-    return IL_FALSE;
-  }
-
-  iSetRead(Image, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
-  return IL_TRUE;
-}
-
-void ILAPIENTRY iResetRead(ILimage *image) {
+void iResetRead(ILimage *image) {
   iSetRead(image, iDefaultOpenR, iDefaultClose, iDefaultEof, iDefaultGetc, 
         iDefaultRead, iDefaultSeek, iDefaultTell);
 }
 
-void ILAPIENTRY ilResetRead() {
-  ILimage *Image = iGetCurImage();
-  iResetRead(Image);
-}
-
-void ILAPIENTRY iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+void iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
   fTellProc Tell, fWriteProc Write) {
   Image->io.openWrite      = Open;
   Image->io.close          = Close;
@@ -192,35 +168,9 @@ void ILAPIENTRY iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPut
   Image->io.tell           = Tell;
 }
 
-//! Allows you to override the default file-writing functions.
-ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
-  fTellProc Tell, fWriteProc Write)
-{
-  ILimage *Image = iGetCurImage();
-
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  if (!Putc || !Write || !Seek || !Tell) {
-    iSetError(IL_INVALID_VALUE);
-    return IL_FALSE;
-  }
-
-  iSetWrite(Image, Open, Close, Putc, Seek, Tell, Write);
-  return IL_TRUE;
-}
-
-void ILAPIENTRY iResetWrite(ILimage *image) {
+void iResetWrite(ILimage *image) {
   iSetWrite(image, iDefaultOpenW, iDefaultClose, iDefaultPutc,
         iDefaultSeek, iDefaultTell, iDefaultWrite);
-}
-
-void ILAPIENTRY ilResetWrite()
-{
-  ILimage *Image = iGetCurImage();
-  iResetWrite(Image);
 }
 
 // Tells DevIL that we're reading from a file, not a lump

@@ -574,6 +574,7 @@ ILAPI void      ILAPIENTRY ilPushAttrib(ILuint Bits);
 ILAPI void      ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI void      ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode);
+ILAPI ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode);
 
 // Image selection
 ILAPI ILboolean ILAPIENTRY ilActiveFace(ILuint Number);
@@ -658,7 +659,6 @@ ILAPI ILboolean ILAPIENTRY ilSetRead(fOpenProc, fCloseProc, fEofProc, fGetcProc,
 ILAPI ILboolean ILAPIENTRY ilSetWrite(fOpenProc, fCloseProc, fPutcProc, fSeekProc, fTellProc, fWriteProc);
 
 ILAPI ILenum    ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
-ILAPI ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode);
 
 ILAPI ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILAPI ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
@@ -674,7 +674,7 @@ ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 
 // For all those weirdos that spell "colour" without the 'u'.
 #define ilClearColor  ilClearColour
-#define ilKeyColor      ilKeyColour
+#define ilKeyColor    ilKeyColour
 
 #ifdef __cplusplus
 }

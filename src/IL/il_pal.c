@@ -34,13 +34,13 @@ ILboolean iLoadPal(ILimage *Image, ILconst_string FileName) {
 }
 
 
-ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName)
+ILboolean iSavePal(ILimage *Image, ILconst_string FileName)
 {
   ILenum type = ilTypeFromExt(FileName);
 
   // TODO: general check if type is a palette
   if (type == IL_JASC_PAL) {
-    return ilSave(type, FileName);
+    return iSave(Image, type, FileName);
   }
 
   iSetError(IL_INVALID_EXTENSION);
