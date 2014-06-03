@@ -247,7 +247,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, width, height, 1, (ILubyte)channels, format, ilGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
+	if (!iTexImage(image, width, height, 1, (ILubyte)channels, format, ilGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
 		png_destroy_read_struct(&data->png_ptr, &data->info_ptr, NULL);
 		return IL_FALSE;
 	}

@@ -61,7 +61,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	Header.Contents = GetLittleUInt(io);
 	Header.Value = GetLittleUInt(io);
 
-	if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	for (i = 0; i < 3; i++) {
@@ -81,7 +81,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 		NewW /= 2;
 		NewH /= 2;
 		Image = Mipmaps[i];
-		if (!ilTexImage_(Image, NewW, NewH, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+		if (!iTexImage(Image, NewW, NewH, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 			goto cleanup_error;
 		// Don't set until now so ilTexImage won't get rid of the palette.
 		Mipmaps[i]->Pal.PalSize = 768;

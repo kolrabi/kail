@@ -17,7 +17,7 @@
 #include "il_manip.h"
 
 // Internal version of ilTexImage.
-ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
+ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data);
 
 ILAPI ILboolean ILAPIENTRY ilInitImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
@@ -34,7 +34,7 @@ ILAPI ILboolean ILAPIENTRY ilInitImage(ILimage *Image, ILuint Width, ILuint Heig
   iResetWrite(Image);
   iResetRead(Image);
 
-  return ilTexImage_(Image, Width, Height, Depth, Bpp, Format, Type, Data);
+  return iTexImage(Image, Width, Height, Depth, Bpp, Format, Type, Data);
 }
 
 
@@ -90,28 +90,10 @@ ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Dep
 }
 
 
-//! Changes the current bound image to use these new dimensions (current data is destroyed).
-/*! \param Width Specifies the new image width.  This cannot be 0.
-  \param Height Specifies the new image height.  This cannot be 0.
-  \param Depth Specifies the new image depth.  This cannot be 0.
-  \param Bpp Number of channels (ex. 3 for RGB)
-  \param Format Enum of the desired format.  Any format values are accepted.
-  \param Type Enum of the desired type.  Any type values are accepted.
-  \param Data Specifies data that should be copied to the new image. If this parameter is NULL, no data is copied, and the new image data consists of undefined values.
-  \exception IL_ILLEGAL_OPERATION No currently bound image.
-  \exception IL_INVALID_PARAM One of the parameters is incorrect, such as one of the dimensions being 0.
-  \exception IL_OUT_OF_MEMORY Could not allocate enough memory.
-  \return Boolean value of failure or success*/
-ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data)
-{
-  ILimage *Image = iGetCurImage();
-  return ilTexImage_(Image, Width, Height, Depth, Bpp, Format, Type, Data);
-}
-
-
 // Internal version of ilTexImage.
 // Differs from ilTexImage in the first argument: ILimage* Image
-ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
+// Defined as ILAPIENTRY because it's in internal exports.
+ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data)
 {
   if (Image == NULL) {
@@ -176,28 +158,8 @@ ILAPI ILboolean ILAPIENTRY ilTexImage_(ILimage *Image, ILuint Width, ILuint Heig
   }
 }
 
-
-//! Uploads Data of the same size to replace the current image's data.
-/*! \param Data New image data to update the currently bound image
-  \exception IL_ILLEGAL_OPERATION No currently bound image
-  \exception IL_INVALID_PARAM Data was NULL.
-  \return Boolean value of failure or success
-*/
-ILboolean ILAPIENTRY ilSetData(void *Data)
-{
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-  
-  return ilTexSubImage_(Image, Data);
-}
-
-
-// Internal version of ilTexSubImage.
-ILAPI ILboolean ILAPIENTRY ilTexSubImage_(ILimage *Image, void *Data)
-{
+// Internal version of ilSetData.
+ILboolean iSetData(ILimage *Image, void *Data) {
   if (Image == NULL || Data == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
@@ -212,16 +174,7 @@ ILAPI ILboolean ILAPIENTRY ilTexSubImage_(ILimage *Image, void *Data)
 }
 
 
-//! Returns a pointer to the current image's data.
-/*! The pointer to the image data returned by this function is only valid until any
-    operations are done on the image.  After any operations, this function should be
-  called again.  The pointer can be cast to other types for images that have more
-  than one byte per channel for easier access to data.
-  \exception IL_ILLEGAL_OPERATION No currently bound image
-  \return ILubyte pointer to image data.*/
-ILubyte* ILAPIENTRY ilGetData(void)
-{
-  ILimage *Image = iGetCurImage();
+ILubyte* ILAPIENTRY iGetData(ILimage *Image) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
@@ -230,24 +183,16 @@ ILubyte* ILAPIENTRY ilGetData(void)
   return Image->Data;
 }
 
-
-//! Returns a pointer to the current image's palette data.
-/*! The pointer to the image palette data returned by this function is only valid until
-  any operations are done on the image.  After any operations, this function should be
-  called again.
-  \exception IL_ILLEGAL_OPERATION No currently bound image
-  \return ILubyte pointer to image palette data.*/
-ILubyte* ILAPIENTRY ilGetPalette(void)
-{
-  ILimage *Image = iGetCurImage();
+ILubyte *iGetPalette(ILimage *Image) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
   }
-  
   return Image->Pal.Palette;
 }
 
+
+// FIXME: move these to il_states.c
 
 //ILfloat ClearRed = 0.0f, ClearGreen = 0.0f, ClearBlue = 0.0f, ClearAlpha = 0.0f;
 
@@ -261,7 +206,7 @@ static ILfloat ClearBlue  = 0.90588f;
 static ILfloat ClearAlpha = 0.0f;
 static ILfloat ClearLum   = 1.0f;
 
-void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha)
+void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha)
 {
   // Clamp to 0.0f - 1.0f.
   ClearRed  = Red < 0.0f ? 0.0f : (Red > 1.0f ? 1.0f : Red);
@@ -551,22 +496,13 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
   return;
 }
 
-
-//! Clears the current bound image to the values specified in ilClearColour
-ILboolean ILAPIENTRY ilClearImage()
+ILboolean iClearImage(ILimage *Image)
 {
-  ILimage *Image = iGetCurImage();
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
-  
-  return ilClearImage_(Image);
-}
 
-
-ILAPI ILboolean ILAPIENTRY ilClearImage_(ILimage *Image)
-{
   ILuint    i, c, NumBytes;
   ILubyte   Colours[32];  // Maximum is sizeof(double) * 4 = 32
   ILubyte   *BytePtr;
@@ -815,19 +751,20 @@ ILboolean ILAPIENTRY iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint Dest
   return IL_TRUE;
 }
 
+ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord) {
+  // Check if the destination and source really exist
+  if (Dest == NULL || Src == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-//! Overlays the image found in Src on top of the current bound image at the coords specified.
-//! TODO: move to il_api.c
-ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord)
-{
   ILuint  Width, Height, Depth;
-  ILimage *Image = iGetCurImage();
-  
-  Width = Image->Width;  
-  Height = Image->Height;  
-  Depth = Image->Depth;
 
-  return iBlit(Image, iGetImage(Source), XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
+  Width = Dest->Width;  
+  Height = Dest->Height;  
+  Depth = Dest->Depth;
+
+  return iBlit(Dest, Src, XCoord, YCoord, ZCoord, 0, 0, 0, Width, Height, Depth);
 }
 
 ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
@@ -993,7 +930,7 @@ ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage)
     return IL_FALSE;
   }
   
-  ilTexImage_(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
+  iTexImage(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
   ilCopyImageAttr(DestImage, SrcImage);
   
   return IL_TRUE;
@@ -1041,7 +978,7 @@ ILuint iDuplicateImage(ILuint SrcName) {
   
   DestImage = iGetImage(DestName);
 
-  ilTexImage_(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
+  iTexImage(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
   ilCopyImageAttr(DestImage, SrcImage);
   
   return DestName;

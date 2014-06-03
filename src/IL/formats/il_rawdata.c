@@ -94,7 +94,7 @@ ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint 
 
 	SIO *io = &Image->io;
 
-	if (!ilTexImage_(Image, Width, Height, Depth, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Width, Height, Depth, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;

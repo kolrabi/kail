@@ -140,9 +140,14 @@ ILuint		ilRleCompress(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, 
 
 // DXTC compression
 
-ILuint											ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
-ILAPI ILubyte*	ILAPIENTRY 	ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
-ILAPI ILubyte*	ILAPIENTRY 	ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
+ILuint						ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
+ILubyte*	iNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
+ILubyte*	iSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
+ILubyte*    iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize);
+ILboolean iDxtcDataToImage(ILimage* image);
+ILboolean iDxtcDataToSurface(ILimage* image);
+ILboolean iSurfaceToDxtcData(ILimage* image, ILenum Format);
+void iFlipSurfaceDxtcData(ILimage* image);
 
 // Conversion functions
 // ILboolean	ilAddAlpha(void);
@@ -161,12 +166,37 @@ ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage);
 ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth);
+void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+ILboolean iClearImage(ILimage *Image);
+ILboolean iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenum DestType);
+ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord);
+ILubyte* iGetData(ILimage *Image);
+ILuint iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
+ILubyte *iGetPalette(ILimage *Image);
+ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image);
+ILboolean iImageToDxtcData(ILimage *image, ILenum Format);
+ILboolean iSetData(ILimage *Image, void *Data);
+ILboolean iSetDuration(ILimage *Image, ILuint Duration);
+ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data);
+
+// TODO: put all functions that have a corresponding il* public api function equivalent into internal exports
+
 //
 // Image loading/saving functions
 //
 #include "il_formats.h"
 
-ILboolean ILAPIENTRY ilLoadFuncs2(ILimage* image, ILenum type);
+ILboolean iLoadFuncs2(ILimage* image, ILenum type);
+ILboolean iSaveFuncs2(ILimage* image, ILenum type);
+void iSetOutputFake(ILimage *image);
+ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
+void iSetOutputLump(ILimage *image, void *Lump, ILuint Size);
+ILuint iDetermineSize(ILimage *Image, ILenum Type);
+ILenum iDetermineType(ILimage *Image, ILconst_string FileName);
+ILenum iDetermineTypeFuncs(ILimage *Image);
+ILuint64 iGetLumpPos(ILimage *Image) ;
+ILboolean iIsValidIO(ILenum Type, SIO* io);
+void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
 ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
 
 /* FIXME:
@@ -229,9 +259,6 @@ extern FILE *iTraceOut;
 #else
 #define iAssert(x)
 #endif
-
-ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image);
-ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format);
 
 #ifdef __cplusplus
 }

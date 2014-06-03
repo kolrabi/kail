@@ -42,11 +42,11 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 	//@TODO: Right now, it appears that all images are in RGBA format.  See if I can find specs otherwise
 	//  or images that load incorrectly like this.
 	//if (HasAlpha == 0) {  // RGBA format
-		if (!ilTexImage_(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
+		if (!iTexImage(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 			return IL_FALSE;
 	//}
 	//else if (HasAlpha == 1) {  // RGB format
-	//	if (!ilTexImage(Width, Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	//	if (!iTexImage(Image, Width, Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 	//		return IL_FALSE;
 	//}
 	//else {  // Unknown format

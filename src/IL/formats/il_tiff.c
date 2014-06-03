@@ -120,22 +120,6 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 		DirCount++;
 	} while (TIFFReadDirectory(tif));
 
-	/*
-	 if (!ilTexImage(1, 1, 1, 1, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
-		 TIFFClose(tif);
-		 return IL_FALSE;
-	}
-	Image = image;
-	for (i = 1; i < DirCount; i++) {
-		 Image->Next = ilNewImage(1, 1, 1, 1, 1);
-		if (Image->Next == NULL) {
-			TIFFClose(tif);
-			return IL_FALSE;
-		}
-		Image = Image->Next;
-	}
-	image->NumNext = DirCount - 1;
-	*/
 	Image = NULL;
 	for (i = 0; i < DirCount; i++) {
 		TIFFSetDirectory(tif, (tdir_t)i);
@@ -185,7 +169,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 			if (!Image) {
 				int type = IL_UNSIGNED_BYTE;
 				if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-				if (!ilTexImage_(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
+				if (!iTexImage(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
 					TIFFClose(tif);
 					return IL_FALSE;
 				}
@@ -330,7 +314,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 			if (!Image) {
 				int type = IL_UNSIGNED_BYTE;
 				if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-				if(!ilTexImage_(image, w, h, 1, 3, IL_RGB, type, NULL)) {
+				if(!iTexImage(image, w, h, 1, 3, IL_RGB, type, NULL)) {
 					TIFFClose(tif);
 					return IL_FALSE;
 				}
@@ -390,7 +374,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 		else {
 				//not direclty supported format
 			if(!Image) {
-				if(!ilTexImage_(image, w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+				if(!iTexImage(image, w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
 					TIFFClose(tif);
 					return IL_FALSE;
 				}

@@ -254,9 +254,9 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     if (!BaseCreated) {
       // first icon
       if (IconImages[i].Head.Size == 0) { // PNG compressed icon
-        ilTexImage_(image, IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
+        iTexImage(image, IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
       } else {
-        ilTexImage_(image, IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
+        iTexImage(image, IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
       }
       Image         = image;
       BaseCreated   = IL_TRUE;

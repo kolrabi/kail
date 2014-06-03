@@ -205,7 +205,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		}
 
 		if (Image == image) {  // This is our first image.
-			if (!ilTexImage_(Image, Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(Image, Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 		}
 		else {

@@ -609,11 +609,8 @@ ILint iGetInteger(ILenum Mode)
   return iGetIntegerImage(iGetCurImage(), Mode);
 }
 
-//! Sets the default origin to be used.
-ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode)
-{
-  switch (Mode)
-  {
+ILboolean iOriginFunc(ILenum Mode) {
+  switch (Mode) {
     case IL_ORIGIN_LOWER_LEFT:
     case IL_ORIGIN_UPPER_LEFT:
       ilStates[ilCurrentPos].ilOriginMode = Mode;

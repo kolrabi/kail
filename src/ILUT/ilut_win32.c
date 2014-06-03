@@ -482,11 +482,11 @@ ILboolean ILAPIENTRY ilutSetHBitmap(HBITMAP Bitmap)
 	}
 
 	if (Info[0].bmiHeader.biBitCount == 24) {
-		ilTexImage_(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
+		iTexImage(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
 			(ILubyte)(Info[0].bmiHeader.biBitCount >> 3), IL_BGR, IL_UNSIGNED_BYTE, Buffer2);
 	}
 	else if (Info[0].bmiHeader.biBitCount == 32) {
-		ilTexImage_(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
+		iTexImage(ilutCurImage, Info[0].bmiHeader.biWidth, Info[0].bmiHeader.biHeight, 1, 
 			(ILubyte)(Info[0].bmiHeader.biBitCount >> 3), IL_BGRA, IL_UNSIGNED_BYTE, Buffer2);
 	}
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;

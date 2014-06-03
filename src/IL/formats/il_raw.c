@@ -40,7 +40,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 	UInt(&Head.Height);
 	UInt(&Head.Depth);
 
-	if (!ilTexImage_(Image, Head.Width, Head.Height, Head.Depth, Head.Bpp, 0, ilGetTypeBpc(Head.Bpc), NULL)) {
+	if (!iTexImage(Image, Head.Width, Head.Height, Head.Depth, Head.Bpp, 0, ilGetTypeBpc(Head.Bpc), NULL)) {
 		return IL_FALSE;
 	}
 

@@ -156,7 +156,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
     format = IL_RGB; bpp = 3;
   }
 
-  if (!ilTexImage_(Image, width, height, 1, bpp, format, IL_UNSIGNED_BYTE, NULL))
+  if (!iTexImage(Image, width, height, 1, bpp, format, IL_UNSIGNED_BYTE, NULL))
     return IL_FALSE;
 
   Image->Origin = IL_ORIGIN_UPPER_LEFT;

@@ -83,7 +83,7 @@ struct ilOutputHandlerMem : public nvtt::OutputHandler
 //! Compresses data to a DXT format using nVidia's Texture Tools library.
 //  The data must be in unsigned byte RGBA format.  The alpha channel will be ignored if DxtType is IL_DXT1.
 //  DxtSize is used to return the size in bytes of the DXTC data returned.
-ILAPI ILubyte* ILAPIENTRY ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
+ILubyte* iNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
 	if (Data == NULL) {  // We cannot operate on a null pointer.
 		iSetError(IL_INVALID_PARAM);

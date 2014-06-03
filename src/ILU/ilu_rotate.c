@@ -43,7 +43,7 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 			ilSetCurImage(CurImage);
 		}
 		// FIXME:
-		ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
+		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
 		if (PalType != 0) {
 			Image = BaseImage;
 			Image->Pal.PalSize = Temp->Pal.PalSize;
@@ -73,7 +73,7 @@ ILboolean ILAPIENTRY iluRotate3D(ILfloat x, ILfloat y, ILfloat z, ILfloat Angle)
 	ILimage *  Image = iGetCurImage();
 	Temp = iluRotate3D_(Image, x, y, z, Angle);
 	if (Temp != NULL) {
-		ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
+		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
 		Image->Origin = Temp->Origin;
 		iSetPal(Image, &Temp->Pal);
 		ilCloseImage(Temp);

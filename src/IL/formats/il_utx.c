@@ -437,7 +437,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 				return IL_FALSE;
 			if (BaseCreated == IL_FALSE) {
 				BaseCreated = IL_TRUE;
-				ilTexImage_(image, Width, Height, 1, UtxFormatToBpp(Format), UtxFormatToDevIL(Format), IL_UNSIGNED_BYTE, NULL);
+				iTexImage(image, Width, Height, 1, UtxFormatToBpp(Format), UtxFormatToDevIL(Format), IL_UNSIGNED_BYTE, NULL);
 				Image = image;
 			}
 			else {

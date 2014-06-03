@@ -212,9 +212,7 @@ ILboolean iLoadExrInternal()
 		return IL_FALSE;
     }
 
-	//if (ilTexImage(dw, dh, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL) == IL_FALSE)
-	//if (ilTexImage(dw, dh, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL) == IL_FALSE)
-	if (ilTexImage_(Image, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
+	if (iTexImage(Image, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
 		return IL_FALSE;
 
 	// Determine where the origin is in the original file.

@@ -371,7 +371,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
 }
 
 
-ILboolean ILAPIENTRY iConvertImage_(ILimage *BaseImage, ILenum DestFormat, ILenum DestType)
+ILboolean iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenum DestType)
 {
   if ( DestFormat == BaseImage->Format 
     && DestType   == BaseImage->Type )
@@ -422,24 +422,6 @@ ILboolean ILAPIENTRY iConvertImage_(ILimage *BaseImage, ILenum DestFormat, ILenu
   return IL_TRUE;
 }
 
-
-//! Converts the current image to the DestFormat format.
-/*! \param DestFormat An enum of the desired output format.  Any format values are accepted.
-    \param DestType An enum of the desired output type.  Any type values are accepted.
-  \exception IL_ILLEGAL_OPERATION No currently bound image
-  \exception IL_INVALID_CONVERSION DestFormat or DestType was an invalid identifier.
-  \exception IL_OUT_OF_MEMORY Could not allocate enough memory.
-  \return Boolean value of failure or success*/
-ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
-{
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  return iConvertImage_(Image, DestFormat, DestType);
-}
 
 
 ILboolean iSwapColours(ILimage *Image)
@@ -1012,14 +994,14 @@ ILboolean iFixImage(ILimage *Image)
 
   if (ilIsEnabled(IL_TYPE_SET)) {
     if ((ILenum)ilGetInteger(IL_TYPE_MODE) != Image->Type) {
-      if (!iConvertImage_(Image, Image->Format, ilGetInteger(IL_TYPE_MODE))) {
+      if (!iConvertImages(Image, Image->Format, ilGetInteger(IL_TYPE_MODE))) {
         return IL_FALSE;
       }
     }
   }
   if (ilIsEnabled(IL_FORMAT_SET)) {
     if ((ILenum)ilGetInteger(IL_FORMAT_MODE) != Image->Format) {
-      if (!iConvertImage_(Image, ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
+      if (!iConvertImages(Image, ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
         return IL_FALSE;
       }
     }
@@ -1027,7 +1009,7 @@ ILboolean iFixImage(ILimage *Image)
 
   if (Image->Format == IL_COLOUR_INDEX) {
     if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
-      if (!iConvertImage_(Image, IL_BGR, IL_UNSIGNED_BYTE)) {
+      if (!iConvertImages(Image, IL_BGR, IL_UNSIGNED_BYTE)) {
         return IL_FALSE;
       }
     }

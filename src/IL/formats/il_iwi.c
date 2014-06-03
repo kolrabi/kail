@@ -126,7 +126,7 @@ static ILboolean iLoadIwiInternal(ILimage *Image) {
 	// Create the image, then create the mipmaps, then finally read the image.
 	Format = IwiGetFormat(Header.Format, &Bpp);
 	
-	if (!ilTexImage_(Image, Header.Width, Header.Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(Image, Header.Width, Header.Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;

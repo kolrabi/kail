@@ -198,7 +198,7 @@ ILboolean ILAPIENTRY ilutSDLSurfaceFromBitmap(SDL_Surface *Bitmap)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage_(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	return IL_TRUE;

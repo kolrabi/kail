@@ -163,21 +163,21 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	{
 		//@TODO: Can we do alpha data?  jas_image_cmpttype always returns 0 for this case.
 		case 1:  // Assuming this is luminance data.
-			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 
 		case 2:  // Assuming this is luminance-alpha data.
-			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 
 		case 3:
-			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 		case 4:
-			ilTexImage_(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 		default:

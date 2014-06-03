@@ -15,58 +15,58 @@
 //! Fake seek function
 ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint Offset, ILuint Mode)
 {
-	SIO *io = (SIO*)h;
-	switch (Mode)
-	{
-		case IL_SEEK_SET:
-			io->lumpPos = Offset;
-			if (io->lumpPos > io->lumpSize)
-				io->lumpSize = io->lumpPos;
-			break;
+  SIO *io = (SIO*)h;
+  switch (Mode)
+  {
+    case IL_SEEK_SET:
+      io->lumpPos = Offset;
+      if (io->lumpPos > io->lumpSize)
+        io->lumpSize = io->lumpPos;
+      break;
 
-		case IL_SEEK_CUR:
-			io->lumpPos = io->lumpPos + Offset;
-			break;
+    case IL_SEEK_CUR:
+      io->lumpPos = io->lumpPos + Offset;
+      break;
 
-		case IL_SEEK_END:
-			io->lumpPos = io->lumpSize + Offset;  // Offset should be negative in this case.
-			break;
+    case IL_SEEK_END:
+      io->lumpPos = io->lumpSize + Offset;  // Offset should be negative in this case.
+      break;
 
-		default:
-			iSetError(IL_INTERNAL_ERROR);  // Should never happen!
-			return -1;  // Error code
-	}
+    default:
+      iSetError(IL_INTERNAL_ERROR);  // Should never happen!
+      return -1;  // Error code
+  }
 
-	if (io->lumpPos > io->lumpSize)
-		io->lumpSize = io->lumpPos;
+  if (io->lumpPos > io->lumpSize)
+    io->lumpSize = io->lumpPos;
 
-	return 0;  // Code for success
+  return 0;  // Code for success
 }
 
 ILuint ILAPIENTRY iSizeTell(ILHANDLE h)
 {
-	SIO *io = (SIO*)h;
-	return io->lumpPos;
+  SIO *io = (SIO*)h;
+  return io->lumpPos;
 }
 
 ILint ILAPIENTRY iSizePutc(ILubyte Char, ILHANDLE h)
 {
-	SIO *io = (SIO*)h;
-	io->lumpPos++;
-	if (io->lumpPos > io->lumpSize)
-		io->lumpSize = io->lumpPos;
-	return Char;
+  SIO *io = (SIO*)h;
+  io->lumpPos++;
+  if (io->lumpPos > io->lumpSize)
+    io->lumpSize = io->lumpPos;
+  return Char;
 }
 
 ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
-	(void)Buffer;
+  (void)Buffer;
 
-	SIO *io = (SIO*)h;
-	io->lumpPos += Size * Number;
-	if (io->lumpPos > io->lumpSize)
-		io->lumpSize = io->lumpPos;
-	return Number;
+  SIO *io = (SIO*)h;
+  io->lumpPos += Size * Number;
+  if (io->lumpPos > io->lumpSize)
+    io->lumpSize = io->lumpPos;
+  return Number;
 }
 
 
@@ -76,16 +76,14 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
 //    effort in the size computation
 // 2. The uncompressed file handlers are usually not a performance concern here, considering that no data
 //    is actually written to a file
+ILuint iDetermineSize(ILimage *Image, ILenum Type) {
+   if (!Image)
+    return 0;
 
-//! Returns the size of the memory buffer needed to save the current image into this Type.
-//  A return value of 0 is an error.
-ILAPI ILuint	ILAPIENTRY ilDetermineSize(ILenum Type)
-{
-	ILimage *Image = iGetCurImage();
-	if (!Image)
-		return 0;
-
-	iSetOutputFake(Image);  // Sets iputc, iwrite, etc. to functions above.
-	ilSaveFuncs(Type);
-	return Image->io.lumpSize;
+  SIO io = Image->io;
+  iSetOutputFake(Image);  // Sets iputc, iwrite, etc. to functions above.
+  iSaveFuncs2(Image, Type);
+  ILuint size = Image->io.lumpSize;
+  Image->io = io;
+  return size;
 }

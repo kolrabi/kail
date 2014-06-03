@@ -267,7 +267,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(BaseImage, Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
+	if (!iTexImage(BaseImage, Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL))
 		return IL_FALSE;
 	// The origin should be in the upper left.
 	BaseImage->Origin = IL_ORIGIN_UPPER_LEFT;

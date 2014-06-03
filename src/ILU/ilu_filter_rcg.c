@@ -480,7 +480,7 @@ ILuint iluScaleAdvanced(ILuint Width, ILuint Height, ILenum Filter)
 		}
 	}
 
-	ilTexImage_(Image, Width, Height, 1, Image->Bpp, Image->Format, Image->Type, Dest->Data);
+	iTexImage(Image, Width, Height, 1, Image->Bpp, Image->Format, Image->Type, Dest->Data);
 	Image->Origin = Dest->Origin;
 	Image->Duration = Dest->Duration;
 	ilCloseImage(Dest);

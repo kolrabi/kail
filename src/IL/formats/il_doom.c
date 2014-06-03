@@ -49,7 +49,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 	UShort(&head.height);
 	UInt  (&head.graphic_header);
 
-	if (!ilTexImage_(Image, head.width, head.height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, head.width, head.height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -125,7 +125,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 			NewData[i * 4 + 3] = Image->Data[i] != 247 ? 255 : 0;
 		}
 
-		if (!ilTexImage_(Image, Image->Width, Image->Height, Image->Depth, 4, IL_RGBA, Image->Type, NewData)) {
+		if (!iTexImage(Image, Image->Width, Image->Height, Image->Depth, 4, IL_RGBA, Image->Type, NewData)) {
 			ifree(NewData);
 			return IL_FALSE;
 		}
@@ -155,7 +155,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 
 	SIO *io = &Image->io;
 
-	if (!ilTexImage_(Image, 64, 64, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, 64, 64, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 
@@ -185,7 +185,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 			NewData[i * 4 + 3] = Image->Data[i] != 247 ? 255 : 0;
 		}
 
-		if (!ilTexImage_(Image, Image->Width, Image->Height, Image->Depth, 4, IL_RGBA, Image->Type, NewData)) {
+		if (!iTexImage(Image, Image->Width, Image->Height, Image->Depth, 4, IL_RGBA, Image->Type, NewData)) {
 			ifree(NewData);
 			return IL_FALSE;
 		}

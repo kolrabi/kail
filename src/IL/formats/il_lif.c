@@ -74,7 +74,7 @@ static ILboolean iLoadLifInternal(ILimage *Image) {
 	if (!iGetLifHead(io, &LifHead))
 		return IL_FALSE;
 
-	if (!ilTexImage_(Image, LifHead.Width, LifHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, LifHead.Width, LifHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;

@@ -155,7 +155,7 @@ static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
 	if (SIOread(io, ID, 1, Header->IDLen) != Header->IDLen)
 		return IL_FALSE;
 	
-	if (!ilTexImage_(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	if (image->Pal.Palette && image->Pal.PalSize)
@@ -234,7 +234,7 @@ static ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header) {
 	else*/
 	Bpp = (ILubyte)(Header->Bpp >> 3);
 	
-	if (!ilTexImage_(image, Header->Width, Header->Height, 1, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, Header->Width, Header->Height, 1, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	
@@ -309,7 +309,7 @@ static ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header) {
 	// We assume that no palette is present, but it's possible...
 	//	Should we mess with it or not?
 	
-	if (!ilTexImage_(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, Header->Width, Header->Height, 1, (ILubyte)(Header->Bpp >> 3), IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	
@@ -408,7 +408,7 @@ static ILboolean i16BitTarga(ILimage *image) {
 		*Temp++ = s;*/
 	}
 	
-	if (!ilTexImage_(image, image->Width, image->Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, Data)) {
+	if (!iTexImage(image, image->Width, image->Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}

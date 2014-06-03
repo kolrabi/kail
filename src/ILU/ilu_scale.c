@@ -84,7 +84,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 					Origin = Image->Origin;
 					Temp = iluScale_(Image, Width, Image->Height, Image->Depth);
 					if (Temp != NULL) {
-						if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+						if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 							ilCloseImage(Temp);
 							return IL_FALSE;
 						}
@@ -97,7 +97,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 					Origin = Image->Origin;
 					Temp = iluScale_(Image, Image->Width, Height, Image->Depth);
 					if (Temp != NULL) {
-						if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+						if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 							ilCloseImage(Temp);
 							return IL_FALSE;
 						}
@@ -116,7 +116,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth)
 	PalType = Image->Pal.PalType;
 	Temp = iluScale_(Image, Width, Height, Depth);
 	if (Temp != NULL) {
-		if (!ilTexImage_(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
+		if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
 			ilCloseImage(Temp);
 			return IL_FALSE;
 		}

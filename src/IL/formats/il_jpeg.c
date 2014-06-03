@@ -526,7 +526,7 @@ ILboolean iLoadJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(Image, Image.JPGWidth, Image.JPGHeight, 1, (ILubyte)Image.DIBChannels, image->Format, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Image.JPGWidth, Image.JPGHeight, 1, (ILubyte)Image.DIBChannels, image->Format, IL_UNSIGNED_BYTE, NULL)) {
 		ijlFree(&Image);
 		return IL_FALSE;
 	}
@@ -720,7 +720,7 @@ ILboolean ilLoadFromJpegStruct(ILimage* image, void *_JpegInfo)
 	// sam. JpegInfo->err->error_exit = ExitErrorHandle;
 	jpeg_start_decompress((j_decompress_ptr)JpegInfo);
 
-	if (!ilTexImage_(image, JpegInfo->output_width, JpegInfo->output_height, 1, (ILubyte)JpegInfo->output_components, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, JpegInfo->output_width, JpegInfo->output_height, 1, (ILubyte)JpegInfo->output_components, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_UPPER_LEFT;

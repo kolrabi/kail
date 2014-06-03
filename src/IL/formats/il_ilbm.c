@@ -245,7 +245,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
     format = IL_COLOUR_INDEX;
   }
 
-  if( !ilTexImage_( Image, width, bmhd.h, 1, (format==IL_COLOUR_INDEX)?1:3, format, IL_UNSIGNED_BYTE, NULL ) )
+  if( !iTexImage( Image, width, bmhd.h, 1, (format==IL_COLOUR_INDEX)?1:3, format, IL_UNSIGNED_BYTE, NULL ) )
     goto done;
 
   Image->Origin = IL_ORIGIN_UPPER_LEFT;

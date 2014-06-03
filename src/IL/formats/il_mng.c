@@ -159,12 +159,12 @@ mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint3
 	AlphaDepth = mng_get_alphadepth(mng);
 
 	if (AlphaDepth == 0) {
-		ilTexImage_(Image, width, height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL);
+		iTexImage(Image, width, height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL);
 		Image->Origin = IL_ORIGIN_LOWER_LEFT;
 		mng_set_canvasstyle(mng, MNG_CANVAS_BGR8);
 	}
 	else {  // Use alpha channel
-		ilTexImage_(Image, width, height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
+		iTexImage(Image, width, height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL);
 		Image->Origin = IL_ORIGIN_LOWER_LEFT;
 		mng_set_canvasstyle(mng, MNG_CANVAS_BGRA8);
 	}

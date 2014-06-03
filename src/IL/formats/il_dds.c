@@ -597,45 +597,45 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 	switch (CompFormat)
 	{
 		case PF_RGB:
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 		case PF_ARGB:
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 4, IL_RGBA, ctx->Has16BitComponents ? IL_UNSIGNED_SHORT : IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 4, IL_RGBA, ctx->Has16BitComponents ? IL_UNSIGNED_SHORT : IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_LUMINANCE:
 			if (ctx->Head.RGBBitCount == 16 && ctx->Head.RBitMask == 0xFFFF) { //HACK
-				if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
+				if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
 					return IL_FALSE;
 			}
 			else
-				if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+				if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 					return IL_FALSE;
 			break;
 
 		case PF_LUMINANCE_ALPHA:
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_ATI1N:
 			//right now there's no OpenGL api to use the compressed 3dc data, so
 			//throw it away (I don't know how DirectX works, though)?
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_3DC:
 			//right now there's no OpenGL api to use the compressed 3dc data, so
 			//throw it away (I don't know how DirectX works, though)?
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			break;
 
 		case PF_A16B16G16R16:
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
 				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_UNSIGNED_SHORT, NULL))
 				return IL_FALSE;
 			break;
@@ -646,7 +646,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 		case PF_R32F:
 		case PF_G32R32F:
 		case PF_A32B32G32R32F:
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
 				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_FLOAT, NULL))
 				return IL_FALSE;
 			break;
@@ -657,7 +657,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 				format = IL_RGB;
 			}
 
-			if (!ilTexImage_(image, ctx->Width, ctx->Height, ctx->Depth, channels, format, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, channels, format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE && ctx->CompData) {
 				image->DxtcData = (ILubyte*)ialloc(ctx->Head.LinearSize);
@@ -1986,7 +1986,7 @@ ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image)
 }
 
 
-ILAPI ILboolean ILAPIENTRY iDxtcDataToImage(ILimage* image)
+ILboolean iDxtcDataToImage(ILimage* image)
 {
 	ILboolean ret = IL_TRUE;
 
@@ -2005,7 +2005,7 @@ ILAPI ILboolean ILAPIENTRY iDxtcDataToImage(ILimage* image)
 }
 
 
-ILAPI ILboolean ILAPIENTRY iSurfaceToDxtcData(ILimage* image, ILenum Format)
+ILboolean iSurfaceToDxtcData(ILimage* image, ILenum Format)
 {
 	ILuint Size;
 	void* Data;
@@ -2048,13 +2048,7 @@ ILboolean iImageToDxtcData(ILimage *image, ILenum Format) {
 }
 
 
-ILAPI ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format)
-{
-	return iImageToDxtcData(iGetCurImage(), Format);
-}
-
-
-//works like ilTexImage(), ie. destroys mipmaps etc (which sucks, but
+//works like iTexImage(), ie. destroys mipmaps etc (which sucks, but
 //is consistent. There should be a ilTexSurface() and ilTexSurfaceDxtc()
 //functions as well, but for now this is sufficient)
 ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data)
@@ -2064,7 +2058,7 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 	ILint xBlocks, yBlocks, BlockSize, LineSize, DataSize;
 
 
-	//The next few lines are copied from ilTexImage() and ilInitImage() -
+	//The next few lines are copied from iTexImage() and ilInitImage() -
 	//should be factored in more reusable functions...
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -2124,13 +2118,6 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 
 	return IL_TRUE;
 }
-
-// TODO: move to il_api.c
-ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) 
-{
-	return iTexImageDxtc(iGetCurImage(), w, h, d, DxtFormat, data);
-}
-
 
 /* ------------------------------------------------------------------- */
 
@@ -2230,8 +2217,7 @@ void iFlip3dc(ILubyte* data, ILuint count)
 }
 
 
-void iFlipSurfaceDxtcData(ILimage* image)
-{
+void iFlipSurfaceDxtcData(ILimage* image) {
 	ILuint y, z;
 	ILuint BlockSize, LineSize;
 	ILubyte *Temp, *Runner, *Top, *Bottom;
@@ -2306,12 +2292,6 @@ void iFlipSurfaceDxtcData(ILimage* image)
 	}
 
 	ifree(Temp);
-}
-
-// TODO: move to il_api.c
-ILAPI void ILAPIENTRY ilFlipSurfaceDxtcData() 
-{
-	iFlipSurfaceDxtcData(iGetCurImage());
 }
 
 /**********************************************************************/
@@ -2422,12 +2402,6 @@ ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image)
 	}
 
 	return IL_TRUE;
-}
-
-// TODO: move to il_api.c
-ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha()
-{
-	return iInvertSurfaceDxtcDataAlpha(iGetCurImage());
 }
 
 ILconst_string iFormatExtsDDS[] = { 

@@ -171,7 +171,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	}
 
 	// Update the current image with the new dimensions
-	if (!ilTexImage_(image, width, height, 1, 3, IL_RGB, IL_FLOAT, NULL)) {
+	if (!iTexImage(image, width, height, 1, 3, IL_RGB, IL_FLOAT, NULL)) {
 		return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_UPPER_LEFT;

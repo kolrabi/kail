@@ -219,7 +219,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
       if (File == NULL)
         return IL_FALSE;
 
-      if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+      if (!iTexImage(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
         return IL_FALSE;
 
       if (Header.ColorMapLength != 0) {
@@ -260,11 +260,11 @@ static ILboolean iLoadSunInternal(ILimage* image) {
 
     case 8:
       if (Header.ColorMapType == IL_SUN_NO_MAP) {  // Greyscale image
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
       else {  // Colour-mapped image
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
         image->Pal.Palette = (ILubyte*)ialloc(Header.ColorMapLength);  // Allocate color map.
         if (image->Pal.Palette == NULL)
@@ -310,11 +310,11 @@ static ILboolean iLoadSunInternal(ILimage* image) {
         SIOseek(io, Header.ColorMapLength, IL_SEEK_CUR);
 
       if (Header.Type == IL_SUN_RGB) {
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
       else {
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
       iSunPrepareImageBuffer(image, &Header);
@@ -338,11 +338,11 @@ static ILboolean iLoadSunInternal(ILimage* image) {
         SIOseek(io, Header.ColorMapLength, IL_SEEK_CUR);
 
       if (Header.Type == IL_SUN_RGB) {
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
       else {
-        if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
+        if (!iTexImage(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
       }
 

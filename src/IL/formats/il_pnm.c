@@ -220,7 +220,7 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 
 	Size = Info->Width * Info->Height * Info->Bpp;
 
-	if (!ilTexImage_(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -284,7 +284,7 @@ static ILboolean ilReadBinaryPpm(ILimage *Image, PPMINFO *Info) {
 
 	Size = Info->Width * Info->Height * Info->Bpp;
 
-	if (!ilTexImage_(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -310,7 +310,7 @@ static ILboolean ilReadBinaryPpm(ILimage *Image, PPMINFO *Info) {
 static ILboolean ilReadBitPbm(ILimage *Image, PPMINFO *Info) {
 	ILuint	m, j, x, CurrByte;
 
-	if (!ilTexImage_(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Info->Width, Info->Height, 1, (ILubyte)(Info->Bpp), 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;

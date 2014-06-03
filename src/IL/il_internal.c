@@ -167,15 +167,3 @@ int iSqrt(int x) {
 	//hm, x was negative....
 	return -1;
 }
-
-// TODO: move to il_api.c
-ILAPI ILboolean ILAPIENTRY ilDxtcDataToSurface()
-{
-	return iDxtcDataToSurface(iGetCurImage());
-}
-
-// TODO: move to il_api.c
-ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format)
-{
-	return iSurfaceToDxtcData(iGetCurImage(), Format);
-}

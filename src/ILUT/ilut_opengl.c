@@ -731,7 +731,7 @@ ILboolean ILAPIENTRY ilutGLScreen()
 
 	glGetIntegerv(GL_VIEWPORT, (GLint*)ViewPort);
 
-	if (!ilTexImage_(ilutCurImage, ViewPort[2], ViewPort[3], 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(ilutCurImage, ViewPort[2], ViewPort[3], 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;  // Error already set.
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
 
@@ -817,7 +817,7 @@ ILboolean ILAPIENTRY ilutGLSetTex2D(GLuint TexID)
 
 	glGetTexImage(GL_TEXTURE_2D, 0, IL_BGRA, GL_UNSIGNED_BYTE, Data);
 
-	if (!ilTexImage_(ilutCurImage, Width, Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
+	if (!iTexImage(ilutCurImage, Width, Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}
@@ -853,7 +853,7 @@ ILboolean ILAPIENTRY ilutGLSetTex3D(GLuint TexID)
 	glGetTexImage(ILGL_TEXTURE_3D, 0, IL_BGRA, GL_UNSIGNED_BYTE, Data);
 
   ILimage *ilutCurImage = iGetCurImage();
-	if (!ilTexImage_(ilutCurImage, Width, Height, Depth, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
+	if (!iTexImage(ilutCurImage, Width, Height, Depth, 4, IL_BGRA, IL_UNSIGNED_BYTE, Data)) {
 		ifree(Data);
 		return IL_FALSE;
 	}

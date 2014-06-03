@@ -87,7 +87,7 @@ static ILboolean iLoadPixInternal(ILimage* image) {
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(image, Header.Width, Header.Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	for (i = 0; i < image->SizeOfData; ) {

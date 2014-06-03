@@ -190,7 +190,7 @@ static ILboolean ReadGrey(ILimage* image, PSDHEAD *Head) {
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, Head->Width, Head->Height, 1, 1, IL_LUMINANCE, Type, NULL))
+	if (!iTexImage(image, Head->Width, Head->Height, 1, 1, IL_LUMINANCE, Type, NULL))
 		goto cleanup_error;
 
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
@@ -254,7 +254,7 @@ static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 
 	ChannelNum = Head->Channels;
 
-	if (!ilTexImage_(image, Head->Width, Head->Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(image, Head->Width, Head->Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 		goto cleanup_error;
 
 	image->Pal.Palette = (ILubyte*)ialloc(ColorMode);
@@ -341,7 +341,7 @@ static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, Head->Width, Head->Height, 1, (Format==IL_RGB) ? 3 : 4, Format, Type, NULL))
+	if (!iTexImage(image, Head->Width, Head->Height, 1, (Format==IL_RGB) ? 3 : 4, Format, Type, NULL))
 		goto cleanup_error;
 
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
@@ -414,7 +414,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 			return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, Head->Width, Head->Height, 1, (ILubyte)Head->Channels, Format, Type, NULL))
+	if (!iTexImage(image, Head->Width, Head->Height, 1, (ILubyte)Head->Channels, Format, Type, NULL))
 		goto cleanup_error;
 
 	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))

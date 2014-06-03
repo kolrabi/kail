@@ -131,7 +131,7 @@ iLoadDcxInternal(ILimage *TargetImage)
 			return IL_FALSE;
 
 		if (i == 0) {
-			ilTexImage_(Image, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
+			iTexImage(Image, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
 			Prev = TargetImage;
 			Prev->Origin = IL_ORIGIN_UPPER_LEFT;
 			ilCloseImage(Image);

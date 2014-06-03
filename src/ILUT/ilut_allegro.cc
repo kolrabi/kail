@@ -112,7 +112,7 @@ ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage_(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;  // I have no idea.

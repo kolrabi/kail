@@ -558,7 +558,7 @@ static ILboolean AssembleImage(PSP_CTX *ctx) {
 	Size = ctx->AttChunk.Width * ctx->AttChunk.Height;
 
 	if (ctx->NumChannels == 1) {
-		ilTexImage_(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
+		iTexImage(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
 		for (i = 0; i < Size; i++) {
 			ctx->Image->Data[i] = ctx->Channels[0][i];
 		}
@@ -572,7 +572,7 @@ static ILboolean AssembleImage(PSP_CTX *ctx) {
 	}
 	else {
 		if (ctx->Alpha) {
-			ilTexImage_(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			for (i = 0, j = 0; i < Size; i++, j += 4) {
 				ctx->Image->Data[j  ] = ctx->Channels[0][i];
 				ctx->Image->Data[j+1] = ctx->Channels[1][i];
@@ -583,7 +583,7 @@ static ILboolean AssembleImage(PSP_CTX *ctx) {
 
 		else if (ctx->NumChannels == 4) {
 
-			ilTexImage_(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 
 			for (i = 0, j = 0; i < Size; i++, j += 4) {
 				ctx->Image->Data[j  ] = ctx->Channels[0][i];
@@ -594,7 +594,7 @@ static ILboolean AssembleImage(PSP_CTX *ctx) {
 
 		}
 		else if (ctx->NumChannels == 3) {
-			ilTexImage_(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(ctx->Image, ctx->AttChunk.Width, ctx->AttChunk.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
 			for (i = 0, j = 0; i < Size; i++, j += 3) {
 				ctx->Image->Data[j  ] = ctx->Channels[0][i];
 				ctx->Image->Data[j+1] = ctx->Channels[1][i];

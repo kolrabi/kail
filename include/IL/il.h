@@ -571,6 +571,9 @@ ILAPI ILuint    ILAPIENTRY ilGenImage(void);
 ILAPI void      ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images);
 ILAPI void      ILAPIENTRY ilPopAttrib(void);
 ILAPI void      ILAPIENTRY ilPushAttrib(ILuint Bits);
+ILAPI void      ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+ILAPI void      ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+ILAPI ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode);
 
 // Image selection
 ILAPI ILboolean ILAPIENTRY ilActiveFace(ILuint Number);
@@ -583,14 +586,11 @@ ILAPI ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName);
 ILAPI ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile);
 ILAPI ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX, ILint DestY, ILint DestZ, ILuint SrcX, ILuint SrcY, ILuint SrcZ, ILuint Width, ILuint Height, ILuint Depth);
 ILAPI ILboolean ILAPIENTRY ilClampNTSC(void);
-ILAPI void      ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI ILboolean ILAPIENTRY ilClearImage(void);
 ILAPI ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType);
 ILAPI ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat);
 ILAPI ILboolean ILAPIENTRY ilDefaultImage(void);
-ILAPI void      ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILAPI void      ILAPIENTRY ilModAlpha(ILdouble AlphaValue);
-ILAPI ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord);
 
 // Image data

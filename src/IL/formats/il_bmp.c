@@ -193,7 +193,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 	ILubyte	ByteData;
 
 	if (Header->cBitCount == 1) {
-		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+		if (!iTexImage(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 		image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -232,7 +232,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 	}
 
 	if (Header->cBitCount == 4) {
-		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
+		if (!iTexImage(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 			return IL_FALSE;
 		}
 		image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -267,7 +267,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 
 	if (Header->cBitCount == 8) {
 		//added this line 2003-09-01...strange no-one noticed before...
-		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+		if (!iTexImage(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 			return IL_FALSE;
 
 		image->Pal.Palette = (ILubyte*)ialloc(256 * 3);
@@ -281,7 +281,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 			return IL_FALSE;
 	}
 	else { //has to be 24 bpp
-		if (!ilTexImage_(image, Header->cx, Header->cy, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
+		if (!iTexImage(image, Header->cx, Header->cy, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, NULL))
 			return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -308,7 +308,7 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 ILboolean prepareBMP(ILimage* image, BMPHEAD * Header, ILubyte bpp, ILuint format)
 {
 	// Update the current image with the new dimensions
-	if (!ilTexImage_(image, Header->biWidth, abs(Header->biHeight), 1, bpp, format, IL_UNSIGNED_BYTE, NULL)) 
+	if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, bpp, format, IL_UNSIGNED_BYTE, NULL)) 
 	{
 		return IL_FALSE;
 	}
@@ -654,7 +654,7 @@ ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
 	size_t	offset = 0, count, endOfLine = Header->biWidth;
 
 	// Update the current image with the new dimensions
-	if (!ilTexImage_(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -731,7 +731,7 @@ ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
     size_t	offset = 0, count, endOfLine = Header->biWidth;
 
 	// Update the current image with the new dimensions
-	if (!ilTexImage_(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 	image->Origin = IL_ORIGIN_LOWER_LEFT;
 

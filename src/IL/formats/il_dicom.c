@@ -443,13 +443,13 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	if (!iCheckDicom(&Header))
 		return IL_FALSE;
 
-	if (!ilTexImage_(image, Header.Width, Header.Height, Header.Depth, ilGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
+	if (!iTexImage(image, Header.Width, Header.Height, Header.Depth, ilGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
 		return IL_FALSE;
 	//@TODO: Find out if the origin is always in the upper left.
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
 	// Header.DataLen may be larger than SizeOfData, since it has to be padded with a NULL if it is not an even length,
 	//   so we just test to make sure it is at least large enough.
-	//@TODO: Do this check before ilTexImage call.
+	//@TODO: Do this check before iTexImage call.
 	if (Header.DataLen < image->SizeOfData) {
 		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;

@@ -56,13 +56,13 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
 
 	switch (Head.Bpp) {
 		case 0x08:
-			ilTexImage_(Image, Head.Width, Head.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(Image, Head.Width, Head.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
 			break;
 		case 0x0E:
-			ilTexImage_(Image, Head.Width, Head.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(Image, Head.Width, Head.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
 			break;
 		case 0x0F:
-			ilTexImage_(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(Image, Head.Width, Head.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			break;
 		default:
 			iSetError(IL_INVALID_FILE_HEADER);

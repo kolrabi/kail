@@ -232,8 +232,8 @@ iLoadBlp1(ILimage *TargetImage) {
 				// There is no alpha list, so we just read like a normal indexed image.
 				case BLP_RAW_NO_ALPHA:
 					for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
-						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
-							if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+						if (!BaseCreated) {  // Have not created the base image yet, so use iTexImage.
+							if (!iTexImage(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 								return IL_FALSE;
 							Image = TargetImage;
 							BaseCreated = IL_TRUE;
@@ -284,7 +284,7 @@ iLoadBlp1(ILimage *TargetImage) {
 				case BLP_RAW_PLUS_ALPHA1:
 				case BLP_RAW_PLUS_ALPHA2:
 					// Create the image.
-					if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
+					if (!iTexImage(Image, Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
 						return IL_FALSE;
 
 					DataAndAlpha = (ILubyte*)ialloc(Header.Width * Header.Height);
@@ -441,8 +441,8 @@ iLoadBlpInternal(ILimage *TargetImage) {
 				switch (Header.AlphaBits)
 				{
 					case 0:
-						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
-							if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
+						if (!BaseCreated) {  // Have not created the base image yet, so use iTexImage.
+							if (!iTexImage(Image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
 								return IL_FALSE;
 							Image = TargetImage;
 							BaseCreated = IL_TRUE;
@@ -480,8 +480,8 @@ iLoadBlpInternal(ILimage *TargetImage) {
 						break;
 
 					case 1:
-						if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
-							if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
+						if (!BaseCreated) {  // Have not created the base image yet, so use iTexImage.
+							if (!iTexImage(Image, Header.Width, Header.Height, 1, 4, IL_BGRA, IL_UNSIGNED_BYTE, NULL))
 								return IL_FALSE;
 							Image = TargetImage;
 							BaseCreated = IL_TRUE;
@@ -582,10 +582,10 @@ iLoadBlpInternal(ILimage *TargetImage) {
 			for (Mip = 0; Mip < 16; Mip++) {  // Possible maximum of 16 mipmaps
 				//@TODO: Other formats
 				//if (Header.AlphaBits == 0)
-				//	if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
+				//	if (!iTexImage(Image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))
 				//	return IL_FALSE;
-				if (!BaseCreated) {  // Have not created the base image yet, so use ilTexImage.
-					if (!ilTexImage_(Image, Header.Width, Header.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
+				if (!BaseCreated) {  // Have not created the base image yet, so use iTexImage.
+					if (!iTexImage(Image, Header.Width, Header.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 						return IL_FALSE;
 					Image = TargetImage;
 					BaseCreated = IL_TRUE;

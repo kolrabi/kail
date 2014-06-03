@@ -177,7 +177,7 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr (ILimage *Dest, ILimage *Src);
 ILAPI ILboolean ILAPIENTRY ilInitImage     (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILboolean ILAPIENTRY ilIsValidPal    (ILpal *Palette);
 ILAPI ILboolean ILAPIENTRY ilResizeImage   (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
-ILAPI ILboolean ILAPIENTRY ilTexImage_     (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
+ILAPI ILboolean ILAPIENTRY iTexImage       (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILboolean ILAPIENTRY ilTexSubImage_  (ILimage *Image, void *Data);
 ILAPI ILimage * ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number);
 ILAPI ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number);
@@ -187,6 +187,7 @@ ILAPI ILimage*  ILAPIENTRY ilNewImage      (ILuint Width, ILuint Height, ILuint 
 ILAPI ILimage*  ILAPIENTRY ilNewImageFull  (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILint     ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode);
 ILAPI ILpal*    ILAPIENTRY iConvertPal     (ILpal *Pal, ILenum DestFormat);
+ILAPI ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat);
 ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);

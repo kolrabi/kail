@@ -734,7 +734,7 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 	UShort(&Ctx.Screen.Height);
 
 	// create texture
-	if (!ilTexImage_(TargetImage, Ctx.Screen.Width, Ctx.Screen.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(TargetImage, Ctx.Screen.Width, Ctx.Screen.Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	// check for a global color table

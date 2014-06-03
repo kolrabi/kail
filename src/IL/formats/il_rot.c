@@ -172,7 +172,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 
 		// Just create our images here.
 		if (!BaseImage) {
-			if (!ilTexImage_(Image, MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(Image, MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			BaseImage = Image;
 		}	else {

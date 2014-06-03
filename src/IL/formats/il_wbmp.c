@@ -74,7 +74,7 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage_(Image, Width, Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(Image, Width, Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	Image->Origin = IL_ORIGIN_UPPER_LEFT;  // Always has origin in the upper left.

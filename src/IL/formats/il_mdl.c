@@ -89,7 +89,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 		}
 
 		if (!BaseImage) {
-			ilTexImage_(Image, TexHead.Width, TexHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(Image, TexHead.Width, TexHead.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL);
 			Image->Origin = IL_ORIGIN_LOWER_LEFT;
 			BaseImage 		= Image;
 		} else {

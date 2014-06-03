@@ -35,7 +35,15 @@ typedef struct iFormatS
 #define I_LOAD_FUNC 0
 #define I_SAVE_FUNC 1
 
-ILboolean iRegisterLoad(ILconst_string FileName);
-ILboolean iRegisterSave(ILconst_string FileName);
+ILboolean iLoadRegistered(ILconst_string FileName);
+ILboolean iSaveRegistered(ILconst_string FileName);
+
+void iRegisterFormat(ILimage *Image, ILenum Format);
+ILboolean iRegisterMipNum(ILimage *Image, ILuint Num);
+ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num);
+ILboolean iRegisterNumImages(ILimage *Image, ILuint Num);
+void iRegisterOrigin(ILimage *Image, ILenum Origin);
+void iRegisterType(ILimage *Image, ILenum Type);
+void iRegisterPal(ILimage *Image, void *Pal, ILuint Size, ILenum Type);
 
 #endif//REGISTER_H

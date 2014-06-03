@@ -17,13 +17,17 @@
  * @defgroup setup Initialization / Deinitalization
  * @defgroup image_mgt Image Management
  * @defgroup image_manip Image Manipulation
+ * @defgroup data Image Data Handling
+ * @defgroup file Image File Operations
+ * @defgroup register User Defined Image Types
  */
 
 #include "il_internal.h"
 #include "il_stack.h"
 #include "il_states.h"
 #include "il_alloc.h"
-#include "il_manip.h" 
+#include "il_manip.h"
+#include "il_register.h" 
 
 
 /**
@@ -125,6 +129,31 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
   return iBlit(Image, iGetImage(Source), DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
 }
 
+/**
+ * Clamps data values of unsigned bytes from 16 to 235 for display on an
+ * NTSC television.  Reasoning for this is given at
+ *   http://msdn.microsoft.com/en-us/library/bb174608.aspx
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilClampNTSC(void) {
+  return iClampNTSC(iGetCurImage());
+}
+
+/** 
+ * Set a new clear colour to use by ilClearImage().
+ * @ingroup state
+ */
+void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  iClearColour(Red, Green, Blue, Alpha);
+}
+
+/**
+ * Clears the current bound image to the values specified in ilClearColour().
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilClearImage() {
+  return iClearImage(iGetCurImage());
+}
 
 /**
  * Creates a duplicate of the currently bound image.
@@ -132,6 +161,32 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
  */
 ILuint ILAPIENTRY ilCloneCurImage() {
   return iDuplicateImage(ilGetCurName());
+}
+
+
+/**
+ * Compresses data to a DXT format using different methods.
+ * The data must be in unsigned byte RGBA or BGRA format.  Only DXT1, DXT3 and DXT5 are supported.
+ * @ingroup data
+ */
+ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize) {
+  return iCompressDXT(Data, Width, Height, Depth, DXTCFormat, DXTCSize);
+}
+
+/**
+ * Converts the current image to the DestFormat format.
+ * @param DestFormat An enum of the desired output format.  Any format values are accepted.
+ * @param DestType An enum of the desired output type.  Any type values are accepted.
+ * @exception IL_ILLEGAL_OPERATION  No currently bound image
+ * @exception IL_INVALID_CONVERSION DestFormat or DestType was an invalid identifier.
+ * @exception IL_OUT_OF_MEMORY      Could not allocate enough memory.
+ * @return Boolean value of failure or success
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
+{
+  ILimage *Image = iGetCurImage();
+  return iConvertImages(Image, DestFormat, DestType);
 }
 
 /**
@@ -207,6 +262,56 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images) {
 }
 
 /**
+ * Returns the size of the memory buffer needed to save the current
+ * image into this Type. A return value of 0 is an error.
+ * @ingroup file
+ */
+ILAPI ILuint ILAPIENTRY ilDetermineSize(ILenum Type) {
+  return iDetermineSize(iGetCurImage(), Type);
+}
+
+/**
+ * Determines the type of a file from its contents or if
+ * necessary from its extension. Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName) {
+  return iDetermineType(iGetCurImage(), FileName);
+}
+
+/**
+ * Determines the type of a file from its contents.
+ * Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File) {
+  ILimage *Image = iGetCurImage();
+  iSetInputFile(Image, File);
+  return iDetermineTypeFuncs(Image);
+}
+
+/**
+ * Determines the type of a file from its contents starting from the
+ * current position of the current file.
+ * Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILenum ILAPIENTRY ilDetermineTypeFuncs() {
+  return iDetermineTypeFuncs(iGetCurImage());
+}
+
+/**
+ * Determines the type of a lump in memory from its contents.
+ * Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size) {
+  ILimage *Image = iGetCurImage();
+  iSetInputLump(Image, Lump, Size);
+  return iDetermineTypeFuncs(Image);
+}
+
+/**
  * Disables a mode.
  * @param  Mode Mode to disable
  * @return      IL_TRUE if successful.
@@ -217,6 +322,22 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images) {
 ILboolean ILAPIENTRY ilDisable(ILenum Mode)
 {
   return iAble(Mode, IL_FALSE);
+}
+
+/**
+ * Decompresses stored DXTC data into the currently bound image and all of its mipmaps.
+ * @ingroup data
+ */
+ILAPI ILboolean ILAPIENTRY ilDxtcDataToImage() {
+  return iDxtcDataToImage(iGetCurImage());
+}
+
+/**
+ * Decompresses stored DXTC data into the currently bound image.
+ * @ingroup data
+ */
+ILAPI ILboolean ILAPIENTRY ilDxtcDataToSurface() {
+  return iDxtcDataToSurface(iGetCurImage());
 }
 
 /**
@@ -238,9 +359,16 @@ ILboolean ILAPIENTRY ilDisable(ILenum Mode)
  * @see         ilIsEnabled
  * @ingroup state
  */
-ILboolean ILAPIENTRY ilEnable(ILenum Mode)
-{
+ILboolean ILAPIENTRY ilEnable(ILenum Mode) {
   return iAble(Mode, IL_TRUE);
+}
+
+/**
+ * Flips the stored DXTC data of the currently bound image vertically.
+ * @ingroup data
+ */
+void ILAPIENTRY ilFlipSurfaceDxtcData() {
+  iFlipSurfaceDxtcData(iGetCurImage());
 }
 
 /**
@@ -276,6 +404,15 @@ void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images) {
 }
 
 /**
+ * Extract the alpha channel from the currently bound image.
+ * @param Type Data type to use.
+ * @ingroup data
+ */
+ILubyte* ILAPIENTRY ilGetAlpha(ILenum Type) {
+  return iGetAlpha(iGetCurImage(), Type);
+}
+
+/**
  * Sets @a Param equal to the current value of the @a Mode.
  * @ingroup state
  */
@@ -297,6 +434,32 @@ ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
   return iGetInteger(Mode);
 }
 
+/**
+ * Returns a pointer to the current image's data.
+ * The pointer to the image data returned by this function is only valid until any
+ * operations are done on the image.  After any operations, this function should be
+ * called again.  The pointer can be cast to other types for images that have more
+ * than one byte per channel for easier access to data.
+ * @exception IL_ILLEGAL_OPERATION No currently bound image
+ * @return ILubyte pointer to image data.
+ * @ingroup data
+ */
+ILubyte* ILAPIENTRY ilGetData(void) {
+  return iGetData(iGetCurImage());
+}
+
+
+/**
+ * Compress image data using internal DXTC compression and
+ * copy the data into the supplied buffer and returns the number 
+ * of bytes written. If Buffer is NULL no data is written and only 
+ * the minimum size of the Buffer is returned.
+ * @ingroup data
+ */
+ILuint ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
+  return iGetDXTCData(iGetCurImage(), Buffer, BufferSize, DXTCFormat);
+}
+
 
 /** 
  * Gets the last error on the error stack
@@ -306,7 +469,6 @@ ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
 ILenum ILAPIENTRY ilGetError(void) {
   return iGetError();
 }
-
 
 /**
  * Sets @a Param equal to the current value of the @a Mode.
@@ -406,6 +568,28 @@ ILint ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode) {
 }
 
 /**
+ * Get the current position into the memory lump (if any is set) 
+ * of the currently bound image.
+ * @ingroup file
+ */
+ILuint64 ILAPIENTRY ilGetLumpPos() {
+  return iGetLumpPos(iGetCurImage());
+}
+
+/**
+ * Returns a pointer to the current image's palette data.
+ * The pointer to the image palette data returned by this function is only valid until
+ * any operations are done on the image.  After any operations, this function should be
+ * called again.
+ * @exception IL_ILLEGAL_OPERATION No currently bound image
+ * @return ILubyte pointer to image palette data.
+ * @ingroup data
+ */
+ILubyte* ILAPIENTRY ilGetPalette(void) {
+  return iGetPalette(iGetCurImage());
+}
+
+/**
  * Returns a constant string detailing aspects about this library.
  *
  * Valid StringNames are:
@@ -454,6 +638,16 @@ void ILAPIENTRY ilHint(ILenum Target, ILenum Mode) {
 }
 
 /**
+ * Convert the DXTC data of the currently bound image and its 
+ * mipmaps into image data.
+ * @ingroup data
+ */
+ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format)
+{
+  return iImageToDxtcData(iGetCurImage(), Format);
+}
+
+/**
  * Initialize the image library.
  * This must be called before calling any other IL functions or their behaviour
  * is undefined.
@@ -461,6 +655,15 @@ void ILAPIENTRY ilHint(ILenum Target, ILenum Mode) {
  */
 void ILAPIENTRY ilInit(void) {
   iInitIL();
+}
+
+/**
+ * Invert the alpha channel in the DXTC data of the currently bound image.
+ * @ingroup data
+ */
+ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha()
+{
+  return iInvertSurfaceDxtcDataAlpha(iGetCurImage());
 }
 
 /**
@@ -492,11 +695,256 @@ ILboolean ILAPIENTRY ilIsImage(ILuint Image) {
 }
 
 /**
+ * Check if a file is of a given type. Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
+  if (FileName == NULL) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  ILimage *Image = iGetCurImage();
+  SIO io = Image->io;
+
+  // If we can open the file, determine file type from contents
+  // This is more reliable than the file name extension 
+  ILboolean result = IL_FALSE;
+  if (io.openReadOnly != NULL) {
+    io.handle = io.openReadOnly(FileName);
+    if (io.handle != NULL) {
+      result = iIsValidIO(Type, &io);
+      if (io.close != NULL)
+        io.close(io.handle);
+      io.handle = NULL;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Check if a file is of a given type. Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilIsValidF(ILenum Type, ILHANDLE File) {
+  if (File == NULL) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  ILimage *Image = iGetCurImage();
+  SIO io = Image->io;
+
+  io.handle = File;
+  return iIsValidIO(Type, &io);
+}
+
+/**
+ * Check if a memory lump is of a given type. Uses globally set io functions (ilSetRead/ilSetReadF)
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size) {
+  if (Lump == NULL) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  SIO io;
+
+  iSetInputLumpIO(&io, Lump, Size);
+  return iIsValidIO(Type, &io);
+}
+
+/**
  * Set the current color key.
  * @ingroup state
  */
 void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
   iKeyColour(Red, Green, Blue, Alpha);
+}
+
+/**
+ * Attempts to load an image from a file.  The file format is specified 
+ * by the user.
+ * @param Type Format of this file. Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
+ * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
+ * IL_IFF, IL_IWI, IL_JP2, IL_JPG, IL_LIF, IL_MDL, IL_MNG, IL_MP3, IL_PCD, IL_PCX, IL_PIX, IL_PNG,
+ * IL_PNM, IL_PSD, IL_PSP, IL_PXR, IL_ROT, IL_SGI, IL_SUN, IL_TEXTURE, IL_TGA, IL_TIF, IL_TPL,
+ * IL_UTX, IL_VTF, IL_WAL, IL_WBMP, IL_XPM, IL_RAW, IL_JASC_PAL and IL_TYPE_UNKNOWN.
+ * If IL_TYPE_UNKNOWN is specified, ilLoad will try to determine the type of the file and load it.
+ * @param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
+ *        the filename of the file to load.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if all three loading methods
+ *        have been tried and failed.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName) {
+  return iLoad(iGetCurImage(), Type, FileName);
+}
+
+/**
+ * Attempts to load an image from a file stream.  The file format is 
+ * specified by the user.
+ * @param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
+ * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
+ * IL_IFF, IL_IWI, IL_JP2, IL_JPG, IL_LIF, IL_MDL, IL_MNG, IL_MP3, IL_PCD, IL_PCX, IL_PIX, IL_PNG,
+ * IL_PNM, IL_PSD, IL_PSP, IL_PXR, IL_ROT, IL_SGI, IL_SUN, IL_TEXTURE, IL_TGA, IL_TIF, IL_TPL,
+ * IL_UTX, IL_VTF, IL_WAL, IL_WBMP, IL_XPM, IL_RAW, IL_JASC_PAL and IL_TYPE_UNKNOWN.
+ * If IL_TYPE_UNKNOWN is specified, ilLoadF will try to determine the type of the file and load it.
+ * @param File File stream to load from. The caller is responsible for closing the handle.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if loading fails.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
+  ILimage *Image = iGetCurImage();
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  if (File == NULL) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  iSetInputFile(Image, File);
+  SIOseek(&Image->io, 0, IL_SEEK_SET);
+
+  if (Type == IL_TYPE_UNKNOWN)
+    Type = iDetermineTypeFuncs(Image);
+ 
+  return iLoadFuncs2(Image, Type);
+}
+
+/**
+ * Attempts to load an image using the currently set IO functions. 
+ * The file format is specified by the user.
+ * @param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
+ * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
+ * IL_IFF, IL_IWI, IL_JP2, IL_JPG, IL_LIF, IL_MDL, IL_MNG, IL_MP3, IL_PCD, IL_PCX, IL_PIX, IL_PNG,
+ * IL_PNM, IL_PSD, IL_PSP, IL_PXR, IL_ROT, IL_SGI, IL_SUN, IL_TEXTURE, IL_TGA, IL_TIF, IL_TPL,
+ * IL_UTX, IL_VTF, IL_WAL, IL_WBMP, IL_XPM, IL_RAW, IL_JASC_PAL and IL_TYPE_UNKNOWN.
+ * If IL_TYPE_UNKNOWN is specified, ilLoadFuncs fails.
+ * @param File File stream to load from.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if loading fails.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
+  ILimage *Image = iGetCurImage();
+  if (type == IL_TYPE_UNKNOWN)
+    type = iDetermineTypeFuncs(Image);
+
+  return iLoadFuncs2(Image, type);
+}
+
+
+/**
+ * Attempts to load an image from a file with various different methods 
+ * before failing - very generic.
+ * The ilLoadImage function allows a general interface to the specific internal file-loading
+ * routines.  First, it finds the extension and checks to see if any user-registered functions
+ * (registered through ilRegisterLoad) match the extension. If nothing matches, it takes the
+ * extension and determines which function to call based on it. Lastly, it attempts to identify
+ * the image based on various image header verification functions, such as ilIsValidPngF.
+ * If all this checking fails, IL_FALSE is returned with no modification to the current bound image.
+ * @param FileName Ansi or Unicode string, depending on the compiled version of DevIL, that gives
+ *        the filename of the file to load.
+ * @return Boolean value of failure or success.  Returns IL_FALSE if all three loading methods
+ *        have been tried and failed.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
+  if (FileName == NULL || iStrLen(FileName) < 1) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  ILimage *Image = iGetCurImage();
+  if (Image == NULL || Image->io.openReadOnly == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  ILenum type = iDetermineType(Image, FileName);
+
+  if (type != IL_TYPE_UNKNOWN) {
+    return iLoad(Image, type, FileName);
+  } else if (!iLoadRegistered(FileName)) {
+    iSetError(IL_INVALID_EXTENSION);
+    return IL_FALSE;
+  }
+  return IL_TRUE;
+}
+
+
+/**
+ * Attempts to load an image from a memory buffer.  The file format is specified by the user.
+ * @param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
+ * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
+ * IL_IFF, IL_IWI, IL_JP2, IL_JPG, IL_LIF, IL_MDL, IL_MNG, IL_MP3, IL_PCD, IL_PCX, IL_PIX, IL_PNG,
+ * IL_PNM, IL_PSD, IL_PSP, IL_PXR, IL_ROT, IL_SGI, IL_SUN, IL_TEXTURE, IL_TGA, IL_TIF, IL_TPL,
+ * IL_UTX, IL_VTF, IL_WAL, IL_WBMP, IL_XPM, IL_RAW, IL_JASC_PAL and IL_TYPE_UNKNOWN.
+ * If IL_TYPE_UNKNOWN is specified, ilLoadL will try to determine the type of the file and load it.
+ * @param Lump The buffer where the file data is located
+ * @param Size Size of the buffer
+ * @return Boolean value of failure or success.  Returns IL_FALSE if loading fails.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
+  if (Lump == NULL || Size == 0) {
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  ILimage *Image = iGetCurImage();
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  iSetInputLump(Image, Lump, Size);
+  return iLoadFuncs2(Image, Type); 
+}
+
+/**
+ * Loads a palette from FileName into the current image's palette.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName) {
+  return iLoadPal(iGetCurImage(), FileName);
+} 
+
+/**
+ * Adds an alpha channel if not present and sets it to the given value.
+ * @ingroup image_manip
+ * @note this is the same as ilSetAlpha
+ */
+void ILAPIENTRY ilModAlpha(ILdouble AlphaValue) {
+  ILimage *Image = iGetCurImage();
+  iSetAlpha(Image, AlphaValue);
+}
+
+/** 
+ * Sets the default origin to be used.
+ * @param Mode The default origin to use. Valid values are:
+ *        - IL_ORIGIN_LOWER_LEFT
+ *        - IL_ORIGIN_UPPER_LEFT
+ * @ingroup state
+ */
+ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode) {
+  return iOriginFunc(Mode);
+}
+
+/**
+ * Overlays the image found in Src on top of the current bound image 
+ * at the coords specified.
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord) {
+  return iOverlayImage(iGetCurImage(), iGetImage(Source), XCoord, YCoord, ZCoord);
 }
 
 /**
@@ -525,6 +973,114 @@ void ILAPIENTRY ilPushAttrib(ILuint Bits) {
 }
 
 /**
+ * Sets the pixel data format of the currently bound image (no conversion).
+ * This is supposed to be called by any loaders registered by ilRegisterLoad.
+ * @param Format The format to use, valid values are:
+ *               - IL_COLOUR_INDEX
+ *               - IL_RGB
+ *               - IL_RGBA
+ *               - IL_BGR
+ *               - IL_BGRA
+ *               - IL_LUMINANCE
+ *               - IL_LUMINANCE_ALPHA
+ * @ingroup register
+ */
+void ILAPIENTRY ilRegisterFormat(ILenum Format) {
+  iRegisterFormat(iGetCurImage(), Format);
+}
+
+/**
+ * Preallocates mipmap images for the currently bound image.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num) {
+  return iRegisterMipNum(iGetCurImage(), Num);
+}
+
+/**
+ * Preallocates cubemap faces for the currently bound image.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num) {
+  return iRegisterNumFaces(iGetCurImage(), Num);
+}
+
+/**
+ * Preallocates following animation frames for currently bound image.
+ * @ingroup register
+ */
+ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num) {
+  return iRegisterNumImages(iGetCurImage(), Num);
+}
+
+/**
+ * Sets the origin of the currently bound image (no conversion).
+ * @param Type The data type to use, valid values are:
+ *               - IL_ORIGIN_LOWER_LEFT
+ *               - IL_ORIGIN_UPPER_LEFT
+ * @ingroup register
+ */
+void ILAPIENTRY ilRegisterOrigin(ILenum Origin) {
+  iRegisterOrigin(iGetCurImage(), Origin);
+}
+
+/**
+ * Sets the palette data of the currently bound image.
+ * @ingroup register
+ */
+void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
+  iRegisterPal(iGetCurImage(), Pal, Size, Type);
+}
+
+/**
+ * Sets the image pixel data type (no conversion).
+ * @param Type The data type to use, valid values are:
+ *               - IL_BYTE
+ *               - IL_UNSIGNED_BYTE
+ *               - IL_SHORT
+ *               - IL_UNSIGNED_SHORT
+ *               - IL_INT
+ *               - IL_UNSIGNED_INT
+ *               - IL_FLOAT
+ *               - IL_DOUBLE
+ * @ingroup register
+ */
+void ILAPIENTRY ilRegisterType(ILenum Type) {
+  iRegisterType(iGetCurImage(), Type);
+}
+
+/**
+ * Adds an alpha channel if not present and sets it to the given value.
+ * @ingroup image_manip
+ * @note this is the same as ilModAlpha
+ */
+ILboolean ILAPIENTRY ilSetAlpha(ILdouble AlphaValue) {
+  ILimage *Image = iGetCurImage();
+  return iSetAlpha(Image, AlphaValue);
+}
+
+/**
+ * Uploads Data of the same size to replace the current image's data.
+ * @param Data New image data to update the currently bound image
+ * @exception IL_ILLEGAL_OPERATION No currently bound image
+ * @exception IL_INVALID_PARAM Data was NULL.
+ * @return Boolean value of failure or success
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilSetData(void *Data) {
+  return iSetData(iGetCurImage(), Data);
+}
+
+/** 
+ * Set the duration of the currently bound image.
+ * Only useful if the image is part of an animation chain.
+ * @ingroup data
+ */
+ILboolean ILAPIENTRY ilSetDuration(ILuint Duration) {
+  return iSetDuration(iGetCurImage(), Duration);
+}
+
+/**
  * Sets a parameter value for a @a Mode
  * @see ilGetInteger for a list of valid @a Modes.
  * @ingroup state
@@ -550,6 +1106,14 @@ void ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc) {
 }
 
 /**
+ * Set the pixels in a region of the currently bound image.
+ * @ingroup image_manip
+ */
+void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data) {
+  iSetPixels(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data);
+}
+
+/**
  * Sets a string detailing aspects about this library.
  * @param StringName Name of string to set.
  * @param String     New string value, will be automatically converted to
@@ -567,3 +1131,43 @@ void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
 void ILAPIENTRY ilShutDown(void) {
   iShutDownIL();
 }
+
+/**
+ * Compresses the currently bound image with DXTC and store the
+ * result in its internal DXTC data buffer.
+ * @ingroup data
+ */
+ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format)
+{
+  return iSurfaceToDxtcData(iGetCurImage(), Format);
+}
+
+/**
+ * Changes the current bound image to use these new dimensions (current data is destroyed).
+ * @param Width Specifies the new image width.  This cannot be 0.
+ * @param Height Specifies the new image height.  This cannot be 0.
+ * @param Depth Specifies the new image depth.  This cannot be 0.
+ * @param Bpp Number of channels (ex. 3 for RGB)
+ * @param Format Enum of the desired format.  Any format values are accepted.
+ * @param Type Enum of the desired type.  Any type values are accepted.
+ * @param Data Specifies data that should be copied to the new image. If this parameter is NULL, no data is copied, and the new image data consists of undefined values.
+ * @exception IL_ILLEGAL_OPERATION No currently bound image.
+ * @exception IL_INVALID_PARAM One of the parameters is incorrect, such as one of the dimensions being 0.
+ * @exception IL_OUT_OF_MEMORY Could not allocate enough memory.
+ * @return Boolean value of failure or success
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data) {
+  return iTexImage(iGetCurImage(), Width, Height, Depth, Bpp, Format, Type, Data);
+}
+
+/**
+ * Sets the currently bound image data. Like ilTexImage but from 
+ * DXTC compressed data.
+ * @ingroup image_manip
+ */
+ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) 
+{
+  return iTexImageDxtc(iGetCurImage(), w, h, d, DxtFormat, data);
+}
+

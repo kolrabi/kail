@@ -305,7 +305,7 @@ static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {
 // Just an internal convenience function for reading SGI files
 static ILboolean iNewSgi(ILimage *Image, iSgiHeader *Head)
 {
-	if (!ilTexImage_(Image, Head->XSize, Head->YSize, Head->Bpc, (ILubyte)Head->ZSize, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(Image, Head->XSize, Head->YSize, Head->Bpc, (ILubyte)Head->ZSize, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	Image->Origin = IL_ORIGIN_LOWER_LEFT;

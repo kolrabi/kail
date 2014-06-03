@@ -17,11 +17,6 @@
 #include <ctype.h>
 #include <limits.h>
 
-//! Loads a palette from FileName into the current image's palette.
-ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName) {
-  return iLoadPal(iGetCurImage(), FileName);
-}
-
 ILboolean iLoadPal(ILimage *Image, ILconst_string FileName) {
   ILenum type = ilTypeFromExt(FileName);
 
@@ -357,6 +352,7 @@ alloc_error:
 ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat)
 {
   ILpal *Pal;
+
   if ( Image == NULL 
     || Image->Pal.Palette == NULL 
     || Image->Pal.PalSize == 0 
@@ -364,7 +360,6 @@ ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat)
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
-
 
   Pal = iConvertPal(&Image->Pal, DestFormat);
   if (Pal == NULL)
@@ -391,12 +386,6 @@ ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat)
 ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat)
 {
   ILimage *Image = iGetCurImage();
-
-  if ( Image == NULL ) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
   return iConvertImagePal(Image, DestFormat);
 }
 
@@ -474,7 +463,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
   switch (CurImage->Format)
   {
     case IL_COLOUR_INDEX:
-      if (!ilConvertPal(IL_PAL_RGB24)) {
+      if (!iConvertImagePal(CurImage, IL_PAL_RGB24)) {
         ifree(NewData);
         ifree(PalInfo);
         return IL_FALSE;
@@ -612,7 +601,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
   }
 
   Origin = CurImage->Origin;
-  if (!ilTexImage_(CurImage, CurImage->Width, CurImage->Height, CurImage->Depth, 1,
+  if (!iTexImage(CurImage, CurImage->Width, CurImage->Height, CurImage->Depth, 1,
     IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NewData)) {
     ifree(Image.Pal.Palette);
     ifree(PalInfo);

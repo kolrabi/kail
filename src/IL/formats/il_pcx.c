@@ -139,7 +139,7 @@ static ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header) {
 		return iUncompressSmall(image, Header);
 	}
 
-	if (!ilTexImage_(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 0, IL_UNSIGNED_BYTE, NULL))
+	if (!iTexImage(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 0, IL_UNSIGNED_BYTE, NULL))
 		return IL_FALSE;
 
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
@@ -257,7 +257,7 @@ static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header)
 
 	SIO *io = &image->io;
 
-	if (!ilTexImage_(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, 1, 0, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, 1, 0, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 

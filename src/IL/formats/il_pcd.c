@@ -72,7 +72,7 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 		return IL_FALSE;
 	}
 
-	if (!ilTexImage_(image, Width, Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL)) {
+	if (!iTexImage(image, Width, Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
 	}
 	image->Origin = IL_ORIGIN_LOWER_LEFT;

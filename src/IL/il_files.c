@@ -240,6 +240,19 @@ void iSetInputFile(ILimage *image, ILHANDLE File)
   }
 }
 
+void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size) {
+  io->eof         = iEofLump;
+  io->getchar     = iGetcLump;
+  io->read        = iReadLump;
+  io->seek        = iSeekLump;
+  io->tell        = iTellLump;
+  io->lump        = Lump;
+  io->lumpPos     = 0;
+  io->lumpSize    = Size;
+  io->WriteFileStart  = 
+  io->ReadFileStart   = 0;
+  io->handle      = (ILHANDLE)io;
+}
 
 // Tells DevIL that we're reading from a lump, not a file
 void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
@@ -253,17 +266,8 @@ void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
       }
     }
 
-    image->io.eof         = iEofLump;
-    image->io.getchar     = iGetcLump;
-    image->io.read        = iReadLump;
-    image->io.seek        = iSeekLump;
-    image->io.tell        = iTellLump;
-    image->io.lump        = Lump;
-    image->io.lumpPos     = 0;
-    image->io.lumpSize    = Size;
-    image->io.WriteFileStart  = 
-    image->io.ReadFileStart   = 0;
-    image->io.handle      = (ILHANDLE)&image->io;
+    iSetInputLumpIO(&image->io, Lump, Size);
+
   }
 }
 
@@ -337,9 +341,7 @@ void iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
   image->io.handle = (ILHANDLE)&image->io;
 }
 
-
-ILuint64 ILAPIENTRY ilGetLumpPos() {
-  ILimage *Image = iGetCurImage();
+ILuint64 iGetLumpPos(ILimage *Image) {
   if (!Image || Image->io.lump == NULL)
     return 0;
   return Image->io.lumpPos;

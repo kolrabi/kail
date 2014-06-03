@@ -182,7 +182,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 		case 8:
 		case 16:
 		case 32:
-			if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, NumChans, Format, IL_UNSIGNED_BYTE, NULL))
+			if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, NumChans, Format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
 			image->Origin = IL_ORIGIN_UPPER_LEFT;
 			if (SIOread(io, image->Data, image->SizeOfData, 1) != 1)
@@ -204,7 +204,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 				switch (Format)
 				{
 					case IL_LUMINANCE:
-						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
+						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;
@@ -218,7 +218,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						break;
 
 					case IL_RGB:
-						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 3, IL_RGB, IL_UNSIGNED_SHORT, NULL))
+						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 3, IL_RGB, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;
@@ -236,7 +236,7 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						break;
 
 					case IL_RGBA:  // Is this even a possibility?  There is a ton of wasted space here!
-						if (!ilTexImage_(image, ImageInfo.Width, ImageInfo.Height, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL))
+						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
 						ShortData = (ILushort*)image->Data;

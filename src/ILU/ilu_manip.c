@@ -29,7 +29,7 @@ ILboolean iluCrop2D(ILuint XOff, ILuint YOff, ILuint Width, ILuint Height) {
 	OldBps = Image->Bps;
 	Origin = Image->Origin;
 	ilCopyPixels(0, 0, 0, Image->Width, Image->Height, 1, Image->Format, Image->Type, Data);
-	if (!ilTexImage_(Image, Width, Height, Image->Depth, Image->Bpp, Image->Format, Image->Type, NULL)) {
+	if (!iTexImage(Image, Width, Height, Image->Depth, Image->Bpp, Image->Format, Image->Type, NULL)) {
 		free(Data);
 		return IL_FALSE;
 	}
@@ -78,7 +78,7 @@ ILboolean iluCrop3D(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint 
 	OldPlane = Image->SizeOfPlane;
 	Origin = Image->Origin;
 	ilCopyPixels(0, 0, 0, Image->Width, Image->Height, Image->Depth, Image->Format, Image->Type, Data);
-	if (!ilTexImage_(Image, Width - XOff, Height - YOff, Depth - ZOff, Image->Bpp, Image->Format, Image->Type, NULL)) {
+	if (!iTexImage(Image, Width - XOff, Height - YOff, Depth - ZOff, Image->Bpp, Image->Format, Image->Type, NULL)) {
 		ifree(Data);
 	}
 	Image->Origin = Origin;
@@ -199,7 +199,7 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
 	Origin   = Image->Origin;
 	ilCopyPixels(0, 0, 0, Image->Width, Image->Height, OldD, Image->Format, Image->Type, Data);
 
-	ilTexImage_(Image, Width, Height, Depth, Image->Bpp, Image->Format, Image->Type, NULL);
+	iTexImage(Image, Width, Height, Depth, Image->Bpp, Image->Format, Image->Type, NULL);
 	Image->Origin = Origin;
 
 	ilClearImage();
@@ -494,17 +494,17 @@ ILboolean ILAPIENTRY iluSwapColours() {
 		
 		switch( img->Pal.PalType ) {
 			case IL_PAL_RGB24:
-				return ilConvertPal(IL_PAL_BGR24);
+				return iConvertImagePal(img, IL_PAL_BGR24);
 			case IL_PAL_RGB32:
-				return ilConvertPal(IL_PAL_BGR32);
+				return iConvertImagePal(img, IL_PAL_BGR32);
 			case IL_PAL_RGBA32:
-				return ilConvertPal(IL_PAL_BGRA32);
+				return iConvertImagePal(img, IL_PAL_BGRA32);
 			case IL_PAL_BGR24:
-				return ilConvertPal(IL_PAL_RGB24);
+				return iConvertImagePal(img, IL_PAL_RGB24);
 			case IL_PAL_BGR32:
-				return ilConvertPal(IL_PAL_RGB32);
+				return iConvertImagePal(img, IL_PAL_RGB32);
 			case IL_PAL_BGRA32:
-				return ilConvertPal(IL_PAL_RGBA32);
+				return iConvertImagePal(img, IL_PAL_RGBA32);
 			default:
 				iSetError(ILU_INTERNAL_ERROR);
 				return IL_FALSE;
