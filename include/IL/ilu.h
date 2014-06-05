@@ -54,24 +54,25 @@ extern "C" {
 // Type definitions
 // 
 
+/** Information about an image. @see iluGetImageInfo */
 typedef struct ILUinfo {
-  ILuint  Id;         // the image's id
-  ILubyte *Data;      // the image's data
-  ILuint  Width;      // the image's width
-  ILuint  Height;     // the image's height
-  ILuint  Depth;      // the image's depth
-  ILubyte Bpp;        // bytes per pixel (not bits) of the image
-  ILuint  SizeOfData; // the total size of the data (in bytes)
-  ILenum  Format;     // image format (in IL enum style)
-  ILenum  Type;       // image type (in IL enum style)
-  ILenum  Origin;     // origin of the image
-  ILubyte *Palette;   // the image's palette
-  ILenum  PalType;    // palette type
-  ILuint  PalSize;    // palette size
-  ILenum  CubeFlags;  // flags for what cube map sides are present
-  ILuint  NumNext;    // number of images following
-  ILuint  NumMips;    // number of mipmaps
-  ILuint  NumLayers;  // number of layers
+  ILuint  Id;         ///< the image's id / name
+  ILubyte *Data;      ///< the image's data, only guaranteed to be valid until next operation on image
+  ILuint  Width;      ///< the image's width
+  ILuint  Height;     ///< the image's height
+  ILuint  Depth;      ///< the image's depth
+  ILubyte Bpp;        ///< bytes per pixel (not bits) of the image
+  ILuint  SizeOfData; ///< the total size of the data (in bytes)
+  ILenum  Format;     ///< image format (in IL enum style)
+  ILenum  Type;       ///< image type (in IL enum style)
+  ILenum  Origin;     ///< origin of the image
+  ILubyte *Palette;   ///< the image's palette, only guaranteed to be valid until next operation on image
+  ILenum  PalType;    ///< palette type
+  ILuint  PalSize;    ///< palette size
+  ILenum  CubeFlags;  ///< flags for what cube map sides are present
+  ILuint  NumNext;    ///< number of images following
+  ILuint  NumMips;    ///< number of mipmaps
+  ILuint  NumLayers;  ///< number of layers
 } ILUinfo;
 
 typedef ILUinfo ILinfo;       // for compatibility reasons
@@ -149,6 +150,7 @@ ILAPI ILboolean       ILAPIENTRY iluBuildMipmaps    (void);
 ILAPI ILuint          ILAPIENTRY iluColoursUsed     (void);
 ILAPI ILboolean       ILAPIENTRY iluCompareImage    (ILuint Comp);
 ILAPI ILboolean       ILAPIENTRY iluContrast        (ILfloat Contrast);
+ILAPI ILboolean       ILAPIENTRY iluConvolution     (ILint *matrix, ILint scale, ILint bias);
 ILAPI ILboolean       ILAPIENTRY iluCrop            (ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth);
 ILAPI ILboolean       ILAPIENTRY iluEdgeDetectE     (void);
 ILAPI ILboolean       ILAPIENTRY iluEdgeDetectP     (void);
@@ -158,13 +160,12 @@ ILAPI ILboolean       ILAPIENTRY iluEnlargeCanvas   (ILuint Width, ILuint Height
 ILAPI ILboolean       ILAPIENTRY iluEnlargeImage    (ILfloat XDim, ILfloat YDim, ILfloat ZDim);
 ILAPI ILboolean       ILAPIENTRY iluEqualize        (void);
 ILAPI ILconst_string  ILAPIENTRY iluErrorString     (ILenum Error);
-ILAPI ILboolean       ILAPIENTRY iluConvolution     (ILint *matrix, ILint scale, ILint bias);
 ILAPI ILboolean       ILAPIENTRY iluFlipImage       (void);
 ILAPI ILboolean       ILAPIENTRY iluGammaCorrect    (ILfloat Gamma);
 ILAPI void            ILAPIENTRY iluGetImageInfo    (ILUinfo *Info);
 ILAPI ILint           ILAPIENTRY iluGetInteger      (ILenum Mode);
 ILAPI void            ILAPIENTRY iluGetIntegerv     (ILenum Mode, ILint *Param);
-ILAPI ILstring        ILAPIENTRY iluGetString       (ILenum StringName);
+ILAPI ILconst_string  ILAPIENTRY iluGetString       (ILenum StringName);
 ILAPI void            ILAPIENTRY iluImageParameter  (ILenum PName, ILenum Param);
 ILAPI void            ILAPIENTRY iluInit            (void);
 ILAPI ILboolean       ILAPIENTRY iluInvertAlpha     (void);
@@ -177,7 +178,6 @@ ILAPI void            ILAPIENTRY iluRegionfv        (ILUpointf *Points, ILuint n
 ILAPI void            ILAPIENTRY iluRegioniv        (ILUpointi *Points, ILuint n);
 ILAPI ILboolean       ILAPIENTRY iluReplaceColour   (ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance);
 ILAPI ILboolean       ILAPIENTRY iluRotate          (ILfloat Angle);
-ILAPI ILboolean       ILAPIENTRY iluRotate3D        (ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
 ILAPI ILboolean       ILAPIENTRY iluSaturate1f      (ILfloat Saturation);
 ILAPI ILboolean       ILAPIENTRY iluSaturate4f      (ILfloat r, ILfloat g, ILfloat b, ILfloat Saturation);
 ILAPI ILboolean       ILAPIENTRY iluScale           (ILuint Width, ILuint Height, ILuint Depth);
@@ -190,6 +190,7 @@ ILAPI ILboolean       ILAPIENTRY iluWave            (ILfloat Angle);
 
 ILAPI void            ILAPIENTRY IL_DEPRECATED      (iluDeleteImage(ILuint Id)); 
 ILAPI ILuint          ILAPIENTRY IL_DEPRECATED      (iluGenImage(void));
+ILAPI ILboolean       ILAPIENTRY IL_DEPRECATED      (iluRotate3D(ILfloat x, ILfloat y, ILfloat z, ILfloat Angle));
 
 #define iluColorsUsed   iluColoursUsed
 #define iluSwapColors   iluSwapColours

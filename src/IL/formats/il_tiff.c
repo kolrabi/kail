@@ -435,15 +435,15 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 				case 1:
 					//added 2003-08-31 to keep palettized tiffs colored
 					if(photometric != 3)
-						ilConvertImage(IL_LUMINANCE, IL_UNSIGNED_BYTE);
+						iConvertImages(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
 					else //strip alpha as tiff supports no alpha palettes
-						ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+						iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
 					break;
 					
 				case 3:
 					//TODO: why the ifdef??
 #ifdef __LITTLE_ENDIAN__
-					ilConvertImage(IL_RGB, IL_UNSIGNED_BYTE);
+					iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
 #endif			
 					break; 
 					

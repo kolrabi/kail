@@ -1,0 +1,38 @@
+\hypertarget{il__dcx_8c}{\section{src/\-I\-L/formats/il\-\_\-dcx.c File Reference}
+\label{il__dcx_8c}\index{src/\-I\-L/formats/il\-\_\-dcx.\-c@{src/\-I\-L/formats/il\-\_\-dcx.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-dcx.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__dcx_8c_aa6fa178f172ddcac5392ef30b885fd3c}{i\-Format\-D\-C\-X}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__dcx_8c_a0b115b80e632344416c5ce7b7271a152}{i\-Format\-Exts\-D\-C\-X} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__dcx_8c_aa6fa178f172ddcac5392ef30b885fd3c}{\index{il\-\_\-dcx.\-c@{il\-\_\-dcx.\-c}!i\-Format\-D\-C\-X@{i\-Format\-D\-C\-X}}
+\index{i\-Format\-D\-C\-X@{i\-Format\-D\-C\-X}!il_dcx.c@{il\-\_\-dcx.\-c}}
+\subsubsection[{i\-Format\-D\-C\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-D\-C\-X}}\label{il__dcx_8c_aa6fa178f172ddcac5392ef30b885fd3c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidDcx, 
+    .Load     = iLoadDcxInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__dcx_8c_a0b115b80e632344416c5ce7b7271a152}{iFormatExtsDCX}
+\}
+\end{DoxyCode}
+\hypertarget{il__dcx_8c_a0b115b80e632344416c5ce7b7271a152}{\index{il\-\_\-dcx.\-c@{il\-\_\-dcx.\-c}!i\-Format\-Exts\-D\-C\-X@{i\-Format\-Exts\-D\-C\-X}}
+\index{i\-Format\-Exts\-D\-C\-X@{i\-Format\-Exts\-D\-C\-X}!il_dcx.c@{il\-\_\-dcx.\-c}}
+\subsubsection[{i\-Format\-Exts\-D\-C\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-D\-C\-X\mbox{[}$\,$\mbox{]}}}\label{il__dcx_8c_a0b115b80e632344416c5ce7b7271a152}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"dcx"}), 
+    NULL 
+\}
+\end{DoxyCode}

@@ -1,0 +1,193 @@
+\hypertarget{ilu__manip_8c}{\section{src/\-I\-L\-U/ilu\-\_\-manip.c File Reference}
+\label{ilu__manip_8c}\index{src/\-I\-L\-U/ilu\-\_\-manip.\-c@{src/\-I\-L\-U/ilu\-\_\-manip.\-c}}
+}
+{\ttfamily \#include \char`\"{}ilu\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ilu\-\_\-states.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$float.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_b_u_c_k_e_t}{B\-U\-C\-K\-E\-T}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_b_u_c_k_e_t}{B\-U\-C\-K\-E\-T} \hyperlink{ilu__manip_8c_a2157bfc32862ba4b1912cf6ea5d4ca21}{B\-U\-C\-K\-E\-T}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a1c019783a7ab60a1b9fee1ed5b2aadbe}{ilu\-Colours\-Used} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_ab39876b316fc278f23c3a62bb085eb48}{ilu\-Compare\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Comp)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a80e4330e84ad8ec34c701e9b72c1ffed}{ilu\-Crop} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} X\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Y\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Z\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{ilu__manip_8c_a4c563e32b3b0077fb986111803a35692}{ilu\-Crop2\-D} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} X\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Y\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{ilu__manip_8c_adb3eb8cdfc25926d72aabbe56ee358be}{ilu\-Crop3\-D} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} X\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Y\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Z\-Off, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_acba148d63e2e0da80b100c3ada950cb4}{ilu\-Enlarge\-Canvas} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\begin{DoxyCompactList}\small\item\em Enlarges the canvas. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a5543086bca10106a064d3dce59770312}{ilu\-Equalize} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a102b4491bacd9ac35795351150f6afa1}{ilu\-Flip\-Image} ()
+\begin{DoxyCompactList}\small\item\em Flips an image over its x axis. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a0e3910809ea18e77a83cee05e12613ef}{ilu\-Invert\-Alpha} ()
+\begin{DoxyCompactList}\small\item\em Inverts the alpha in the image. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a34ba55cb258ff33ab1e987a893a83c3c}{ilu\-Mirror} ()
+\begin{DoxyCompactList}\small\item\em Mirrors an image over its y axis. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a9606e892974b44e5457bc6f95de0970d}{ilu\-Negative} ()
+\begin{DoxyCompactList}\small\item\em Inverts the colours in the image. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_ac3447a57b322058f1c2e49faa724e4f0}{ilu\-Replace\-Colour} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Red, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Green, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Blue, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Tolerance)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_ad18047843d546f50472e0f0af80f2ad8}{ilu\-Swap\-Colours} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__manip_8c_a6284913f73663fb22acc0b4b2c49a5e2}{ilu\-Wave} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Angle)
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{ilu__manip_8c_a2157bfc32862ba4b1912cf6ea5d4ca21}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!B\-U\-C\-K\-E\-T@{B\-U\-C\-K\-E\-T}}
+\index{B\-U\-C\-K\-E\-T@{B\-U\-C\-K\-E\-T}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{B\-U\-C\-K\-E\-T}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf B\-U\-C\-K\-E\-T}  {\bf B\-U\-C\-K\-E\-T}}}\label{ilu__manip_8c_a2157bfc32862ba4b1912cf6ea5d4ca21}
+
+
+\subsection{Function Documentation}
+\hypertarget{ilu__manip_8c_a1c019783a7ab60a1b9fee1ed5b2aadbe}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Colours\-Used@{ilu\-Colours\-Used}}
+\index{ilu\-Colours\-Used@{ilu\-Colours\-Used}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Colours\-Used}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Colours\-Used (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a1c019783a7ab60a1b9fee1ed5b2aadbe}
+\hypertarget{ilu__manip_8c_ab39876b316fc278f23c3a62bb085eb48}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Compare\-Image@{ilu\-Compare\-Image}}
+\index{ilu\-Compare\-Image@{ilu\-Compare\-Image}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Compare\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Compare\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Comp}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_ab39876b316fc278f23c3a62bb085eb48}
+\hypertarget{ilu__manip_8c_a80e4330e84ad8ec34c701e9b72c1ffed}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Crop@{ilu\-Crop}}
+\index{ilu\-Crop@{ilu\-Crop}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Crop}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Crop (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{X\-Off, }
+\item[{{\bf I\-Luint}}]{Y\-Off, }
+\item[{{\bf I\-Luint}}]{Z\-Off, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a80e4330e84ad8ec34c701e9b72c1ffed}
+\hypertarget{ilu__manip_8c_a4c563e32b3b0077fb986111803a35692}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Crop2\-D@{ilu\-Crop2\-D}}
+\index{ilu\-Crop2\-D@{ilu\-Crop2\-D}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Crop2\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} ilu\-Crop2\-D (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{X\-Off, }
+\item[{{\bf I\-Luint}}]{Y\-Off, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a4c563e32b3b0077fb986111803a35692}
+\hypertarget{ilu__manip_8c_adb3eb8cdfc25926d72aabbe56ee358be}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Crop3\-D@{ilu\-Crop3\-D}}
+\index{ilu\-Crop3\-D@{ilu\-Crop3\-D}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Crop3\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} ilu\-Crop3\-D (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{X\-Off, }
+\item[{{\bf I\-Luint}}]{Y\-Off, }
+\item[{{\bf I\-Luint}}]{Z\-Off, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_adb3eb8cdfc25926d72aabbe56ee358be}
+\hypertarget{ilu__manip_8c_acba148d63e2e0da80b100c3ada950cb4}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Enlarge\-Canvas@{ilu\-Enlarge\-Canvas}}
+\index{ilu\-Enlarge\-Canvas@{ilu\-Enlarge\-Canvas}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Enlarge\-Canvas}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Enlarge\-Canvas (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_acba148d63e2e0da80b100c3ada950cb4}
+
+
+Enlarges the canvas. 
+
+\hypertarget{ilu__manip_8c_a5543086bca10106a064d3dce59770312}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Equalize@{ilu\-Equalize}}
+\index{ilu\-Equalize@{ilu\-Equalize}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Equalize}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Equalize (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a5543086bca10106a064d3dce59770312}
+\hypertarget{ilu__manip_8c_a102b4491bacd9ac35795351150f6afa1}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Flip\-Image@{ilu\-Flip\-Image}}
+\index{ilu\-Flip\-Image@{ilu\-Flip\-Image}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Flip\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Flip\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a102b4491bacd9ac35795351150f6afa1}
+
+
+Flips an image over its x axis. 
+
+\hypertarget{ilu__manip_8c_a0e3910809ea18e77a83cee05e12613ef}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Invert\-Alpha@{ilu\-Invert\-Alpha}}
+\index{ilu\-Invert\-Alpha@{ilu\-Invert\-Alpha}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Invert\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Invert\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a0e3910809ea18e77a83cee05e12613ef}
+
+
+Inverts the alpha in the image. 
+
+\hypertarget{ilu__manip_8c_a34ba55cb258ff33ab1e987a893a83c3c}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Mirror@{ilu\-Mirror}}
+\index{ilu\-Mirror@{ilu\-Mirror}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Mirror}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Mirror (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a34ba55cb258ff33ab1e987a893a83c3c}
+
+
+Mirrors an image over its y axis. 
+
+\hypertarget{ilu__manip_8c_a9606e892974b44e5457bc6f95de0970d}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Negative@{ilu\-Negative}}
+\index{ilu\-Negative@{ilu\-Negative}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Negative}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Negative (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a9606e892974b44e5457bc6f95de0970d}
+
+
+Inverts the colours in the image. 
+
+\hypertarget{ilu__manip_8c_ac3447a57b322058f1c2e49faa724e4f0}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Replace\-Colour@{ilu\-Replace\-Colour}}
+\index{ilu\-Replace\-Colour@{ilu\-Replace\-Colour}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Replace\-Colour}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Replace\-Colour (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Red, }
+\item[{{\bf I\-Lubyte}}]{Green, }
+\item[{{\bf I\-Lubyte}}]{Blue, }
+\item[{{\bf I\-Lfloat}}]{Tolerance}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_ac3447a57b322058f1c2e49faa724e4f0}
+\hypertarget{ilu__manip_8c_ad18047843d546f50472e0f0af80f2ad8}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Swap\-Colours@{ilu\-Swap\-Colours}}
+\index{ilu\-Swap\-Colours@{ilu\-Swap\-Colours}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Swap\-Colours}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Swap\-Colours (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_ad18047843d546f50472e0f0af80f2ad8}
+\hypertarget{ilu__manip_8c_a6284913f73663fb22acc0b4b2c49a5e2}{\index{ilu\-\_\-manip.\-c@{ilu\-\_\-manip.\-c}!ilu\-Wave@{ilu\-Wave}}
+\index{ilu\-Wave@{ilu\-Wave}!ilu_manip.c@{ilu\-\_\-manip.\-c}}
+\subsubsection[{ilu\-Wave}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Wave (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{ilu__manip_8c_a6284913f73663fb22acc0b4b2c49a5e2}

@@ -1,0 +1,58 @@
+\hypertarget{il__pal__halo_8c}{\section{src/\-I\-L/formats/il\-\_\-pal\-\_\-halo.c File Reference}
+\label{il__pal__halo_8c}\index{src/\-I\-L/formats/il\-\_\-pal\-\_\-halo.\-c@{src/\-I\-L/formats/il\-\_\-pal\-\_\-halo.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-pal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$ctype.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-push.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-pop.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_h_a_l_o_h_e_a_d}{H\-A\-L\-O\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_h_a_l_o_h_e_a_d}{H\-A\-L\-O\-H\-E\-A\-D} \hyperlink{il__pal__halo_8c_acf507761d549a505d5f7f3942ff6992c}{H\-A\-L\-O\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__pal__halo_8c_aff3e96809cc70416346f0b9d02d6d360}{i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__pal__halo_8c_affc1e912782c2284ecbb22258ad60da9}{i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L}
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__pal__halo_8c_acf507761d549a505d5f7f3942ff6992c}{\index{il\-\_\-pal\-\_\-halo.\-c@{il\-\_\-pal\-\_\-halo.\-c}!H\-A\-L\-O\-H\-E\-A\-D@{H\-A\-L\-O\-H\-E\-A\-D}}
+\index{H\-A\-L\-O\-H\-E\-A\-D@{H\-A\-L\-O\-H\-E\-A\-D}!il_pal_halo.c@{il\-\_\-pal\-\_\-halo.\-c}}
+\subsubsection[{H\-A\-L\-O\-H\-E\-A\-D}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf H\-A\-L\-O\-H\-E\-A\-D}  {\bf H\-A\-L\-O\-H\-E\-A\-D}}}\label{il__pal__halo_8c_acf507761d549a505d5f7f3942ff6992c}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pal__halo_8c_aff3e96809cc70416346f0b9d02d6d360}{\index{il\-\_\-pal\-\_\-halo.\-c@{il\-\_\-pal\-\_\-halo.\-c}!i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L@{i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L}}
+\index{i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L@{i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L}!il_pal_halo.c@{il\-\_\-pal\-\_\-halo.\-c}}
+\subsubsection[{i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-H\-A\-L\-O\-\_\-\-P\-A\-L\mbox{[}$\,$\mbox{]}}}\label{il__pal__halo_8c_aff3e96809cc70416346f0b9d02d6d360}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"pal"}),
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__pal__halo_8c_affc1e912782c2284ecbb22258ad60da9}{\index{il\-\_\-pal\-\_\-halo.\-c@{il\-\_\-pal\-\_\-halo.\-c}!i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L@{i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L}}
+\index{i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L@{i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L}!il_pal_halo.c@{il\-\_\-pal\-\_\-halo.\-c}}
+\subsubsection[{i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-H\-A\-L\-O\-\_\-\-P\-A\-L}}\label{il__pal__halo_8c_affc1e912782c2284ecbb22258ad60da9}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidHaloPal, 
+  .Load     = iLoadHaloPal, 
+  .Save     = NULL,
+  .Exts     = \hyperlink{il__pal__halo_8c_aff3e96809cc70416346f0b9d02d6d360}{iFormatExtsHALO\_PAL}
+\}
+\end{DoxyCode}

@@ -1,0 +1,425 @@
+\hypertarget{il__endian_8h}{\section{src/\-I\-L/il\-\_\-endian.h File Reference}
+\label{il__endian_8h}\index{src/\-I\-L/il\-\_\-endian.\-h@{src/\-I\-L/il\-\_\-endian.\-h}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__endian_8h_a5cc07d795fa0ad47364fc4d609e05b5a}{Big\-Double}(d)~\hyperlink{il__endian_8h_a97a32ff7f626c6db5bbf0b9d598dd376}{i\-Swap\-Double}(d)
+\item 
+\#define \hyperlink{il__endian_8h_a392ca668616fa0f8ed43a3c5d6729a8a}{Big\-Float}(f)~\hyperlink{il__endian_8h_a7c1ef4de3706cc1d8f9df191e4be80eb}{i\-Swap\-Float}(f)
+\item 
+\#define \hyperlink{il__endian_8h_a8f8dc6e8d104502c880b583ea2b850d2}{Big\-Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})~\hyperlink{il__endian_8h_ab2a6c057bf75ae0958f0364904fcb348}{i\-Swap\-Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\#define \hyperlink{il__endian_8h_ac97af1e7949a21e3fc7be8274c91c3f4}{Big\-Short}(s)~\hyperlink{il__endian_8h_a6e16a772f83f437b89b1409c50631e82}{i\-Swap\-Short}(s)
+\item 
+\#define \hyperlink{il__endian_8h_af94572c68c79436f6faa6dc395dd2e2b}{Big\-U\-Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})~\hyperlink{il__endian_8h_a674aed0039900330a9ab672c3307b0d2}{i\-Swap\-U\-Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\#define \hyperlink{il__endian_8h_a8918a73de03d36bc61359d9dfefdadad}{Big\-U\-Short}(s)~\hyperlink{il__endian_8h_a9f37e2d256804110a20bebc4dd85a0ef}{i\-Swap\-U\-Short}(s)
+\item 
+\#define \hyperlink{il__endian_8h_a9e163e15581cb08ff9c80d0c9858ffce}{Double}(d)
+\item 
+\#define \hyperlink{il__endian_8h_abc7e8eaeaec530ae62a91db2485da405}{dswap}(x, y)~t=b\mbox{[}x\mbox{]}; b\mbox{[}x\mbox{]}=b\mbox{[}y\mbox{]}; b\mbox{[}y\mbox{]}=t;
+\item 
+\#define \hyperlink{il__endian_8h_a06068811463c385bb7004b1009526030}{Float}(f)
+\item 
+\#define \hyperlink{il__endian_8h_a2a2da4292e121f2384cb2d0f86d292cc}{Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\#define \hyperlink{il__endian_8h_a8cde1433cd24bd057f335dc03845c2bc}{Short}(s)
+\item 
+\#define \hyperlink{il__endian_8h_ad920e2ad09a447de465595e85ca9a378}{U\-Int}(\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\#define \hyperlink{il__endian_8h_a69e4b8484cc561d0642599b06896135c}{U\-Short}(s)
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8228a9acca8032890e541463308bc387}{I\-Ldouble} \hyperlink{il__endian_8h_a720e363dc33af44ec0795199fd93b220}{Get\-Big\-Double} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} \hyperlink{il__endian_8h_a1ff4e91293792ff064bb580c9fedc52b}{Get\-Big\-Float} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__endian_8h_a9008950db65dcf8b5ece550cf7971d42}{Get\-Big\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_afc75ded918970afe7517d3f7f0561db3}{I\-Lshort} \hyperlink{il__endian_8h_a418f5b44c6600fbfe607d6a7b7a524a0}{Get\-Big\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__endian_8h_a3af3a46e54a37a0fb517b1f31a5f9532}{Get\-Big\-U\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} \hyperlink{il__endian_8h_af63fc6432c1458ea4938c51e6c2135d5}{Get\-Big\-U\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8228a9acca8032890e541463308bc387}{I\-Ldouble} \hyperlink{il__endian_8h_af4f722209f8b4866664e501257f4a195}{Get\-Little\-Double} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} \hyperlink{il__endian_8h_af01a334d3cbc968e82d4581c3e38563b}{Get\-Little\-Float} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__endian_8h_a28e907e67b411bbe7cb46dc4b8531620}{Get\-Little\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_afc75ded918970afe7517d3f7f0561db3}{I\-Lshort} \hyperlink{il__endian_8h_ac92deb543e6bbed8cdfd82ee9b62e7c9}{Get\-Little\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__endian_8h_a3ef417207b9389c4537c746dbbe39974}{Get\-Little\-U\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} \hyperlink{il__endian_8h_a7df5a0065f29e9825c16a04448656338}{Get\-Little\-U\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_acb6c4e7d67f145bb1981afdee25b04d2}{i\-Endian\-Swap\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$\-\_\-\-Image)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_a97a32ff7f626c6db5bbf0b9d598dd376}{i\-Swap\-Double} (\hyperlink{il_8h_a8228a9acca8032890e541463308bc387}{I\-Ldouble} $\ast$d)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_a7c1ef4de3706cc1d8f9df191e4be80eb}{i\-Swap\-Float} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} $\ast$f)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_ab2a6c057bf75ae0958f0364904fcb348}{i\-Swap\-Int} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} $\ast$\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_a6e16a772f83f437b89b1409c50631e82}{i\-Swap\-Short} (\hyperlink{il_8h_afc75ded918970afe7517d3f7f0561db3}{I\-Lshort} $\ast$s)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_a674aed0039900330a9ab672c3307b0d2}{i\-Swap\-U\-Int} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$\hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__endian_8h_a9f37e2d256804110a20bebc4dd85a0ef}{i\-Swap\-U\-Short} (\hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} $\ast$s)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a6fe681f4c694162591b29e691ce053c6}{Save\-Big\-Double} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a8228a9acca8032890e541463308bc387}{I\-Ldouble} d)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_aece886835dd860dcd2fe8a27971a2280}{Save\-Big\-Float} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} f)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a3ed1aa483b12c526d1de4603d0761783}{Save\-Big\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a71b64b08aad3780e72063b656d16caca}{Save\-Big\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_afc75ded918970afe7517d3f7f0561db3}{I\-Lshort} s)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_ac4d26ee5a19777cfa673b3610d38eb20}{Save\-Big\-U\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_aebf60fd8af5065d83619d475b59fcc13}{Save\-Big\-U\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} s)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a7eb786dcc5e5ed2da75185eead86593e}{Save\-Little\-Double} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a8228a9acca8032890e541463308bc387}{I\-Ldouble} d)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a31fef11f0187249bfc515117c72c6067}{Save\-Little\-Float} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} f)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_ae230ac5513adb668d11939bd4103aae2}{Save\-Little\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_aea9365945796505b9f2668b0923c0b16}{Save\-Little\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_afc75ded918970afe7517d3f7f0561db3}{I\-Lshort} s)
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a37d658a240451759268425df4ef15e27}{Save\-Little\-U\-Int} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i})
+\item 
+\hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__endian_8h_a81214dc4527e3090eba01a0b76ce1b78}{Save\-Little\-U\-Short} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} s)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__endian_8h_a5cc07d795fa0ad47364fc4d609e05b5a}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-Double@{Big\-Double}}
+\index{Big\-Double@{Big\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-Double}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-Double(
+\begin{DoxyParamCaption}
+\item[{}]{d}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-Double}(d)}}\label{il__endian_8h_a5cc07d795fa0ad47364fc4d609e05b5a}
+\hypertarget{il__endian_8h_a392ca668616fa0f8ed43a3c5d6729a8a}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-Float@{Big\-Float}}
+\index{Big\-Float@{Big\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-Float}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-Float(
+\begin{DoxyParamCaption}
+\item[{}]{f}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-Float}(f)}}\label{il__endian_8h_a392ca668616fa0f8ed43a3c5d6729a8a}
+\hypertarget{il__endian_8h_a8f8dc6e8d104502c880b583ea2b850d2}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-Int@{Big\-Int}}
+\index{Big\-Int@{Big\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-Int}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-Int(
+\begin{DoxyParamCaption}
+\item[{}]{{\bf i}}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-Int}({\bf i})}}\label{il__endian_8h_a8f8dc6e8d104502c880b583ea2b850d2}
+\hypertarget{il__endian_8h_ac97af1e7949a21e3fc7be8274c91c3f4}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-Short@{Big\-Short}}
+\index{Big\-Short@{Big\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-Short}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-Short(
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-Short}(s)}}\label{il__endian_8h_ac97af1e7949a21e3fc7be8274c91c3f4}
+\hypertarget{il__endian_8h_af94572c68c79436f6faa6dc395dd2e2b}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-U\-Int@{Big\-U\-Int}}
+\index{Big\-U\-Int@{Big\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-U\-Int(
+\begin{DoxyParamCaption}
+\item[{}]{{\bf i}}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-U\-Int}({\bf i})}}\label{il__endian_8h_af94572c68c79436f6faa6dc395dd2e2b}
+\hypertarget{il__endian_8h_a8918a73de03d36bc61359d9dfefdadad}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Big\-U\-Short@{Big\-U\-Short}}
+\index{Big\-U\-Short@{Big\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Big\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}\#define Big\-U\-Short(
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)~{\bf i\-Swap\-U\-Short}(s)}}\label{il__endian_8h_a8918a73de03d36bc61359d9dfefdadad}
+\hypertarget{il__endian_8h_a9e163e15581cb08ff9c80d0c9858ffce}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Double@{Double}}
+\index{Double@{Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Double}]{\setlength{\rightskip}{0pt plus 5cm}\#define Double(
+\begin{DoxyParamCaption}
+\item[{}]{d}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a9e163e15581cb08ff9c80d0c9858ffce}
+\hypertarget{il__endian_8h_abc7e8eaeaec530ae62a91db2485da405}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!dswap@{dswap}}
+\index{dswap@{dswap}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{dswap}]{\setlength{\rightskip}{0pt plus 5cm}\#define dswap(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{y}
+\end{DoxyParamCaption}
+)~t=b\mbox{[}x\mbox{]}; b\mbox{[}x\mbox{]}=b\mbox{[}y\mbox{]}; b\mbox{[}y\mbox{]}=t;}}\label{il__endian_8h_abc7e8eaeaec530ae62a91db2485da405}
+\hypertarget{il__endian_8h_a06068811463c385bb7004b1009526030}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Float@{Float}}
+\index{Float@{Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Float}]{\setlength{\rightskip}{0pt plus 5cm}\#define Float(
+\begin{DoxyParamCaption}
+\item[{}]{f}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a06068811463c385bb7004b1009526030}
+\hypertarget{il__endian_8h_a2a2da4292e121f2384cb2d0f86d292cc}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Int@{Int}}
+\index{Int@{Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Int}]{\setlength{\rightskip}{0pt plus 5cm}\#define Int(
+\begin{DoxyParamCaption}
+\item[{}]{{\bf i}}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a2a2da4292e121f2384cb2d0f86d292cc}
+\hypertarget{il__endian_8h_a8cde1433cd24bd057f335dc03845c2bc}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Short@{Short}}
+\index{Short@{Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Short}]{\setlength{\rightskip}{0pt plus 5cm}\#define Short(
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a8cde1433cd24bd057f335dc03845c2bc}
+\hypertarget{il__endian_8h_ad920e2ad09a447de465595e85ca9a378}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!U\-Int@{U\-Int}}
+\index{U\-Int@{U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\-Int(
+\begin{DoxyParamCaption}
+\item[{}]{{\bf i}}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_ad920e2ad09a447de465595e85ca9a378}
+\hypertarget{il__endian_8h_a69e4b8484cc561d0642599b06896135c}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!U\-Short@{U\-Short}}
+\index{U\-Short@{U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}\#define U\-Short(
+\begin{DoxyParamCaption}
+\item[{}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a69e4b8484cc561d0642599b06896135c}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__endian_8h_a720e363dc33af44ec0795199fd93b220}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-Double@{Get\-Big\-Double}}
+\index{Get\-Big\-Double@{Get\-Big\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-Double}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Ldouble} Get\-Big\-Double (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a720e363dc33af44ec0795199fd93b220}
+\hypertarget{il__endian_8h_a1ff4e91293792ff064bb580c9fedc52b}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-Float@{Get\-Big\-Float}}
+\index{Get\-Big\-Float@{Get\-Big\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-Float}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lfloat} Get\-Big\-Float (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a1ff4e91293792ff064bb580c9fedc52b}
+\hypertarget{il__endian_8h_a9008950db65dcf8b5ece550cf7971d42}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-Int@{Get\-Big\-Int}}
+\index{Get\-Big\-Int@{Get\-Big\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lint} Get\-Big\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a9008950db65dcf8b5ece550cf7971d42}
+\hypertarget{il__endian_8h_a418f5b44c6600fbfe607d6a7b7a524a0}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-Short@{Get\-Big\-Short}}
+\index{Get\-Big\-Short@{Get\-Big\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lshort} Get\-Big\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a418f5b44c6600fbfe607d6a7b7a524a0}
+\hypertarget{il__endian_8h_a3af3a46e54a37a0fb517b1f31a5f9532}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-U\-Int@{Get\-Big\-U\-Int}}
+\index{Get\-Big\-U\-Int@{Get\-Big\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Luint} Get\-Big\-U\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a3af3a46e54a37a0fb517b1f31a5f9532}
+\hypertarget{il__endian_8h_af63fc6432c1458ea4938c51e6c2135d5}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Big\-U\-Short@{Get\-Big\-U\-Short}}
+\index{Get\-Big\-U\-Short@{Get\-Big\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Big\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lushort} Get\-Big\-U\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_af63fc6432c1458ea4938c51e6c2135d5}
+\hypertarget{il__endian_8h_af4f722209f8b4866664e501257f4a195}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-Double@{Get\-Little\-Double}}
+\index{Get\-Little\-Double@{Get\-Little\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-Double}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Ldouble} Get\-Little\-Double (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_af4f722209f8b4866664e501257f4a195}
+\hypertarget{il__endian_8h_af01a334d3cbc968e82d4581c3e38563b}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-Float@{Get\-Little\-Float}}
+\index{Get\-Little\-Float@{Get\-Little\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-Float}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lfloat} Get\-Little\-Float (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_af01a334d3cbc968e82d4581c3e38563b}
+\hypertarget{il__endian_8h_a28e907e67b411bbe7cb46dc4b8531620}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-Int@{Get\-Little\-Int}}
+\index{Get\-Little\-Int@{Get\-Little\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lint} Get\-Little\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a28e907e67b411bbe7cb46dc4b8531620}
+\hypertarget{il__endian_8h_ac92deb543e6bbed8cdfd82ee9b62e7c9}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-Short@{Get\-Little\-Short}}
+\index{Get\-Little\-Short@{Get\-Little\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lshort} Get\-Little\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_ac92deb543e6bbed8cdfd82ee9b62e7c9}
+\hypertarget{il__endian_8h_a3ef417207b9389c4537c746dbbe39974}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-U\-Int@{Get\-Little\-U\-Int}}
+\index{Get\-Little\-U\-Int@{Get\-Little\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Luint} Get\-Little\-U\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a3ef417207b9389c4537c746dbbe39974}
+\hypertarget{il__endian_8h_a7df5a0065f29e9825c16a04448656338}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Get\-Little\-U\-Short@{Get\-Little\-U\-Short}}
+\index{Get\-Little\-U\-Short@{Get\-Little\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Get\-Little\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lushort} Get\-Little\-U\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a7df5a0065f29e9825c16a04448656338}
+\hypertarget{il__endian_8h_acb6c4e7d67f145bb1981afdee25b04d2}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Endian\-Swap\-Data@{i\-Endian\-Swap\-Data}}
+\index{i\-Endian\-Swap\-Data@{i\-Endian\-Swap\-Data}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Endian\-Swap\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Endian\-Swap\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{\-\_\-\-Image}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_acb6c4e7d67f145bb1981afdee25b04d2}
+\hypertarget{il__endian_8h_a97a32ff7f626c6db5bbf0b9d598dd376}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-Double@{i\-Swap\-Double}}
+\index{i\-Swap\-Double@{i\-Swap\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-Double}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-Double (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Ldouble} $\ast$}]{d}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a97a32ff7f626c6db5bbf0b9d598dd376}
+\hypertarget{il__endian_8h_a7c1ef4de3706cc1d8f9df191e4be80eb}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-Float@{i\-Swap\-Float}}
+\index{i\-Swap\-Float@{i\-Swap\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-Float}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-Float (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat} $\ast$}]{f}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a7c1ef4de3706cc1d8f9df191e4be80eb}
+\hypertarget{il__endian_8h_ab2a6c057bf75ae0958f0364904fcb348}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-Int@{i\-Swap\-Int}}
+\index{i\-Swap\-Int@{i\-Swap\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint} $\ast$}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_ab2a6c057bf75ae0958f0364904fcb348}
+\hypertarget{il__endian_8h_a6e16a772f83f437b89b1409c50631e82}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-Short@{i\-Swap\-Short}}
+\index{i\-Swap\-Short@{i\-Swap\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lshort} $\ast$}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a6e16a772f83f437b89b1409c50631e82}
+\hypertarget{il__endian_8h_a674aed0039900330a9ab672c3307b0d2}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-U\-Int@{i\-Swap\-U\-Int}}
+\index{i\-Swap\-U\-Int@{i\-Swap\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-U\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint} $\ast$}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a674aed0039900330a9ab672c3307b0d2}
+\hypertarget{il__endian_8h_a9f37e2d256804110a20bebc4dd85a0ef}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!i\-Swap\-U\-Short@{i\-Swap\-U\-Short}}
+\index{i\-Swap\-U\-Short@{i\-Swap\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{i\-Swap\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf void} i\-Swap\-U\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lushort} $\ast$}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a9f37e2d256804110a20bebc4dd85a0ef}
+\hypertarget{il__endian_8h_a6fe681f4c694162591b29e691ce053c6}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-Double@{Save\-Big\-Double}}
+\index{Save\-Big\-Double@{Save\-Big\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-Double}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-Double (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Ldouble}}]{d}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a6fe681f4c694162591b29e691ce053c6}
+\hypertarget{il__endian_8h_aece886835dd860dcd2fe8a27971a2280}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-Float@{Save\-Big\-Float}}
+\index{Save\-Big\-Float@{Save\-Big\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-Float}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-Float (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lfloat}}]{f}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_aece886835dd860dcd2fe8a27971a2280}
+\hypertarget{il__endian_8h_a3ed1aa483b12c526d1de4603d0761783}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-Int@{Save\-Big\-Int}}
+\index{Save\-Big\-Int@{Save\-Big\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lint}}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a3ed1aa483b12c526d1de4603d0761783}
+\hypertarget{il__endian_8h_a71b64b08aad3780e72063b656d16caca}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-Short@{Save\-Big\-Short}}
+\index{Save\-Big\-Short@{Save\-Big\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lshort}}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a71b64b08aad3780e72063b656d16caca}
+\hypertarget{il__endian_8h_ac4d26ee5a19777cfa673b3610d38eb20}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-U\-Int@{Save\-Big\-U\-Int}}
+\index{Save\-Big\-U\-Int@{Save\-Big\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-U\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Luint}}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_ac4d26ee5a19777cfa673b3610d38eb20}
+\hypertarget{il__endian_8h_aebf60fd8af5065d83619d475b59fcc13}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Big\-U\-Short@{Save\-Big\-U\-Short}}
+\index{Save\-Big\-U\-Short@{Save\-Big\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Big\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Big\-U\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lushort}}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_aebf60fd8af5065d83619d475b59fcc13}
+\hypertarget{il__endian_8h_a7eb786dcc5e5ed2da75185eead86593e}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-Double@{Save\-Little\-Double}}
+\index{Save\-Little\-Double@{Save\-Little\-Double}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-Double}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-Double (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Ldouble}}]{d}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a7eb786dcc5e5ed2da75185eead86593e}
+\hypertarget{il__endian_8h_a31fef11f0187249bfc515117c72c6067}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-Float@{Save\-Little\-Float}}
+\index{Save\-Little\-Float@{Save\-Little\-Float}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-Float}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-Float (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lfloat}}]{f}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a31fef11f0187249bfc515117c72c6067}
+\hypertarget{il__endian_8h_ae230ac5513adb668d11939bd4103aae2}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-Int@{Save\-Little\-Int}}
+\index{Save\-Little\-Int@{Save\-Little\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lint}}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_ae230ac5513adb668d11939bd4103aae2}
+\hypertarget{il__endian_8h_aea9365945796505b9f2668b0923c0b16}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-Short@{Save\-Little\-Short}}
+\index{Save\-Little\-Short@{Save\-Little\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lshort}}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_aea9365945796505b9f2668b0923c0b16}
+\hypertarget{il__endian_8h_a37d658a240451759268425df4ef15e27}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-U\-Int@{Save\-Little\-U\-Int}}
+\index{Save\-Little\-U\-Int@{Save\-Little\-U\-Int}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-U\-Int}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-U\-Int (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Luint}}]{i}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a37d658a240451759268425df4ef15e27}
+\hypertarget{il__endian_8h_a81214dc4527e3090eba01a0b76ce1b78}{\index{il\-\_\-endian.\-h@{il\-\_\-endian.\-h}!Save\-Little\-U\-Short@{Save\-Little\-U\-Short}}
+\index{Save\-Little\-U\-Short@{Save\-Little\-U\-Short}!il_endian.h@{il\-\_\-endian.\-h}}
+\subsubsection[{Save\-Little\-U\-Short}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-N\-L\-I\-N\-E} {\bf I\-Lubyte} Save\-Little\-U\-Short (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lushort}}]{s}
+\end{DoxyParamCaption}
+)}}\label{il__endian_8h_a81214dc4527e3090eba01a0b76ce1b78}

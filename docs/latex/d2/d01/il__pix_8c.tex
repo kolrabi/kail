@@ -1,0 +1,56 @@
+\hypertarget{il__pix_8c}{\section{src/\-I\-L/formats/il\-\_\-pix.c File Reference}
+\label{il__pix_8c}\index{src/\-I\-L/formats/il\-\_\-pix.\-c@{src/\-I\-L/formats/il\-\_\-pix.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-endian.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-push.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-pop.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_p_i_x_h_e_a_d}{P\-I\-X\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_p_i_x_h_e_a_d}{P\-I\-X\-H\-E\-A\-D} \hyperlink{il__pix_8c_a7cf3af8a46b76225627b98e1bae1e9cc}{P\-I\-X\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__pix_8c_ad0ca7b0187bce46bf0b907d340e9eff5}{i\-Format\-Exts\-P\-I\-X} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__pix_8c_afa11470de4b82bfc076cf38b2797b6c6}{i\-Format\-P\-I\-X}
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__pix_8c_a7cf3af8a46b76225627b98e1bae1e9cc}{\index{il\-\_\-pix.\-c@{il\-\_\-pix.\-c}!P\-I\-X\-H\-E\-A\-D@{P\-I\-X\-H\-E\-A\-D}}
+\index{P\-I\-X\-H\-E\-A\-D@{P\-I\-X\-H\-E\-A\-D}!il_pix.c@{il\-\_\-pix.\-c}}
+\subsubsection[{P\-I\-X\-H\-E\-A\-D}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf P\-I\-X\-H\-E\-A\-D}  {\bf P\-I\-X\-H\-E\-A\-D}}}\label{il__pix_8c_a7cf3af8a46b76225627b98e1bae1e9cc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pix_8c_ad0ca7b0187bce46bf0b907d340e9eff5}{\index{il\-\_\-pix.\-c@{il\-\_\-pix.\-c}!i\-Format\-Exts\-P\-I\-X@{i\-Format\-Exts\-P\-I\-X}}
+\index{i\-Format\-Exts\-P\-I\-X@{i\-Format\-Exts\-P\-I\-X}!il_pix.c@{il\-\_\-pix.\-c}}
+\subsubsection[{i\-Format\-Exts\-P\-I\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-P\-I\-X\mbox{[}$\,$\mbox{]}}}\label{il__pix_8c_ad0ca7b0187bce46bf0b907d340e9eff5}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"pix"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__pix_8c_afa11470de4b82bfc076cf38b2797b6c6}{\index{il\-\_\-pix.\-c@{il\-\_\-pix.\-c}!i\-Format\-P\-I\-X@{i\-Format\-P\-I\-X}}
+\index{i\-Format\-P\-I\-X@{i\-Format\-P\-I\-X}!il_pix.c@{il\-\_\-pix.\-c}}
+\subsubsection[{i\-Format\-P\-I\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-P\-I\-X}}\label{il__pix_8c_afa11470de4b82bfc076cf38b2797b6c6}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidPix, 
+  .Load     = iLoadPixInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__pix_8c_ad0ca7b0187bce46bf0b907d340e9eff5}{iFormatExtsPIX}
+\}
+\end{DoxyCode}

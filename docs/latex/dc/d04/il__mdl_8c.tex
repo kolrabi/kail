@@ -1,0 +1,37 @@
+\hypertarget{il__mdl_8c}{\section{src/\-I\-L/formats/il\-\_\-mdl.c File Reference}
+\label{il__mdl_8c}\index{src/\-I\-L/formats/il\-\_\-mdl.\-c@{src/\-I\-L/formats/il\-\_\-mdl.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-mdl.\-h\char`\"{}}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__mdl_8c_a1d31624af18b8d6a4c81a4839421ff40}{i\-Format\-Exts\-M\-D\-L} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__mdl_8c_a03a2ab40ed5fb64a1ed1f38791f8b41c}{i\-Format\-M\-D\-L}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__mdl_8c_a1d31624af18b8d6a4c81a4839421ff40}{\index{il\-\_\-mdl.\-c@{il\-\_\-mdl.\-c}!i\-Format\-Exts\-M\-D\-L@{i\-Format\-Exts\-M\-D\-L}}
+\index{i\-Format\-Exts\-M\-D\-L@{i\-Format\-Exts\-M\-D\-L}!il_mdl.c@{il\-\_\-mdl.\-c}}
+\subsubsection[{i\-Format\-Exts\-M\-D\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-M\-D\-L\mbox{[}$\,$\mbox{]}}}\label{il__mdl_8c_a1d31624af18b8d6a4c81a4839421ff40}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"mdl"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__mdl_8c_a03a2ab40ed5fb64a1ed1f38791f8b41c}{\index{il\-\_\-mdl.\-c@{il\-\_\-mdl.\-c}!i\-Format\-M\-D\-L@{i\-Format\-M\-D\-L}}
+\index{i\-Format\-M\-D\-L@{i\-Format\-M\-D\-L}!il_mdl.c@{il\-\_\-mdl.\-c}}
+\subsubsection[{i\-Format\-M\-D\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-M\-D\-L}}\label{il__mdl_8c_a03a2ab40ed5fb64a1ed1f38791f8b41c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidMdl, 
+  .Load     = iLoadMdlInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__mdl_8c_a1d31624af18b8d6a4c81a4839421ff40}{iFormatExtsMDL}
+\}
+\end{DoxyCode}

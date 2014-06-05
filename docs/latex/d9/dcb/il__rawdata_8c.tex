@@ -1,0 +1,76 @@
+\hypertarget{il__rawdata_8c}{\section{src/\-I\-L/formats/il\-\_\-rawdata.c File Reference}
+\label{il__rawdata_8c}\index{src/\-I\-L/formats/il\-\_\-rawdata.\-c@{src/\-I\-L/formats/il\-\_\-rawdata.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__rawdata_8c_af39ed11daf8c151dff75be87afacdfca}{il\-Load\-Data} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp)
+\begin{DoxyCompactList}\small\item\em Reads a raw data file. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__rawdata_8c_a50049c04c459b921cafcdd7b837ac8ee}{il\-Load\-Data\-F} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} File, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp)
+\begin{DoxyCompactList}\small\item\em Reads an already-\/opened raw data file. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__rawdata_8c_acee512181ef7d072d25862eace4fe568}{il\-Load\-Data\-L} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp)
+\begin{DoxyCompactList}\small\item\em Reads from a raw data memory \char`\"{}lump\char`\"{}. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__rawdata_8c_abae3fa5c553904bd5ff5c7e6abc6b2c4}{il\-Save\-Data} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\begin{DoxyCompactList}\small\item\em Save the current image to File\-Name as raw data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__rawdata_8c_af39ed11daf8c151dff75be87afacdfca}{\index{il\-\_\-rawdata.\-c@{il\-\_\-rawdata.\-c}!il\-Load\-Data@{il\-Load\-Data}}
+\index{il\-Load\-Data@{il\-Load\-Data}!il_rawdata.c@{il\-\_\-rawdata.\-c}}
+\subsubsection[{il\-Load\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Load\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp}
+\end{DoxyParamCaption}
+)}}\label{il__rawdata_8c_af39ed11daf8c151dff75be87afacdfca}
+
+
+Reads a raw data file. 
+
+\hypertarget{il__rawdata_8c_a50049c04c459b921cafcdd7b837ac8ee}{\index{il\-\_\-rawdata.\-c@{il\-\_\-rawdata.\-c}!il\-Load\-Data\-F@{il\-Load\-Data\-F}}
+\index{il\-Load\-Data\-F@{il\-Load\-Data\-F}!il_rawdata.c@{il\-\_\-rawdata.\-c}}
+\subsubsection[{il\-Load\-Data\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Load\-Data\-F (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{File, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp}
+\end{DoxyParamCaption}
+)}}\label{il__rawdata_8c_a50049c04c459b921cafcdd7b837ac8ee}
+
+
+Reads an already-\/opened raw data file. 
+
+\hypertarget{il__rawdata_8c_acee512181ef7d072d25862eace4fe568}{\index{il\-\_\-rawdata.\-c@{il\-\_\-rawdata.\-c}!il\-Load\-Data\-L@{il\-Load\-Data\-L}}
+\index{il\-Load\-Data\-L@{il\-Load\-Data\-L}!il_rawdata.c@{il\-\_\-rawdata.\-c}}
+\subsubsection[{il\-Load\-Data\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Load\-Data\-L (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp}
+\end{DoxyParamCaption}
+)}}\label{il__rawdata_8c_acee512181ef7d072d25862eace4fe568}
+
+
+Reads from a raw data memory \char`\"{}lump\char`\"{}. 
+
+\hypertarget{il__rawdata_8c_abae3fa5c553904bd5ff5c7e6abc6b2c4}{\index{il\-\_\-rawdata.\-c@{il\-\_\-rawdata.\-c}!il\-Save\-Data@{il\-Save\-Data}}
+\index{il\-Save\-Data@{il\-Save\-Data}!il_rawdata.c@{il\-\_\-rawdata.\-c}}
+\subsubsection[{il\-Save\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Save\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__rawdata_8c_abae3fa5c553904bd5ff5c7e6abc6b2c4}
+
+
+Save the current image to File\-Name as raw data. 
+

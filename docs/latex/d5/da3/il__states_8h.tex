@@ -1,0 +1,135 @@
+\hypertarget{il__states_8h}{\section{src/\-I\-L/il\-\_\-states.h File Reference}
+\label{il__states_8h}\index{src/\-I\-L/il\-\_\-states.\-h@{src/\-I\-L/il\-\_\-states.\-h}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_i_l___h_i_n_t_s}{I\-L\-\_\-\-H\-I\-N\-T\-S}
+\item 
+struct \hyperlink{struct_i_l___s_t_a_t_e_s}{I\-L\-\_\-\-S\-T\-A\-T\-E\-S}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__states_8h_a97e1345c880a71b77332ba9fd0d36219}{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}~32
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_i_l___h_i_n_t_s}{I\-L\-\_\-\-H\-I\-N\-T\-S} \hyperlink{il__states_8h_acdfc3660bb80523a6884b4e0a2dd21a9}{I\-L\-\_\-\-H\-I\-N\-T\-S}
+\item 
+typedef struct \hyperlink{struct_i_l___s_t_a_t_e_s}{I\-L\-\_\-\-S\-T\-A\-T\-E\-S} \hyperlink{il__states_8h_ab66badb8633d63c393651deecf97a2db}{I\-L\-\_\-\-S\-T\-A\-T\-E\-S}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__states_8h_a0c46a54c25fec14397bd4832c82dfd57}{i\-Able} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode, \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} Flag)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__states_8h_a4cde22f2f92b2ffc76fbdd0293832cac}{i\-Format\-Func} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__states_8h_a6d85bb6fefaafe2aead79883b3eed871}{i\-Get\-Boolean} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__states_8h_a24e0ea1ce3fc8c7a3d8966a016d70d6a}{i\-Get\-Integer} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__states_8h_a74f66f98c8a2778edf404a4bd3cc87f2}{i\-Is\-Enabled} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode)
+\begin{DoxyCompactList}\small\item\em Checks whether the mode is enabled. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__states_8h_a3845bdce12acaa25ce245fa5acbb9233}{i\-Set\-Integer} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Param)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__states_8h_a9ac2f43d8addac1eeb5a8de6f4da2e71}{i\-Set\-String} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode, const char $\ast$String\-\_\-)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__states_8h_a87c3f9761802d1e2297cbe2517971eab}{il\-Current\-Pos}
+\item 
+\hyperlink{struct_i_l___h_i_n_t_s}{I\-L\-\_\-\-H\-I\-N\-T\-S} \hyperlink{il__states_8h_ae7ffa73169f2c0cf7cf4b7e279ee1541}{il\-Hints}
+\item 
+\hyperlink{struct_i_l___s_t_a_t_e_s}{I\-L\-\_\-\-S\-T\-A\-T\-E\-S} \hyperlink{il__states_8h_aa8d8b02f6f9b879725e9f39095220fef}{il\-States} \mbox{[}\hyperlink{il__states_8h_a97e1345c880a71b77332ba9fd0d36219}{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__states_8h_a97e1345c880a71b77332ba9fd0d36219}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X@{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}}
+\index{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X@{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X~32}}\label{il__states_8h_a97e1345c880a71b77332ba9fd0d36219}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__states_8h_acdfc3660bb80523a6884b4e0a2dd21a9}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!I\-L\-\_\-\-H\-I\-N\-T\-S@{I\-L\-\_\-\-H\-I\-N\-T\-S}}
+\index{I\-L\-\_\-\-H\-I\-N\-T\-S@{I\-L\-\_\-\-H\-I\-N\-T\-S}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{I\-L\-\_\-\-H\-I\-N\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I\-L\-\_\-\-H\-I\-N\-T\-S}  {\bf I\-L\-\_\-\-H\-I\-N\-T\-S}}}\label{il__states_8h_acdfc3660bb80523a6884b4e0a2dd21a9}
+\hypertarget{il__states_8h_ab66badb8633d63c393651deecf97a2db}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!I\-L\-\_\-\-S\-T\-A\-T\-E\-S@{I\-L\-\_\-\-S\-T\-A\-T\-E\-S}}
+\index{I\-L\-\_\-\-S\-T\-A\-T\-E\-S@{I\-L\-\_\-\-S\-T\-A\-T\-E\-S}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{I\-L\-\_\-\-S\-T\-A\-T\-E\-S}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I\-L\-\_\-\-S\-T\-A\-T\-E\-S}  {\bf I\-L\-\_\-\-S\-T\-A\-T\-E\-S}}}\label{il__states_8h_ab66badb8633d63c393651deecf97a2db}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__states_8h_a0c46a54c25fec14397bd4832c82dfd57}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Able@{i\-Able}}
+\index{i\-Able@{i\-Able}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Able}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Able (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode, }
+\item[{{\bf I\-Lboolean}}]{Flag}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a0c46a54c25fec14397bd4832c82dfd57}
+\hypertarget{il__states_8h_a4cde22f2f92b2ffc76fbdd0293832cac}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Format\-Func@{i\-Format\-Func}}
+\index{i\-Format\-Func@{i\-Format\-Func}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Format\-Func}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Format\-Func (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a4cde22f2f92b2ffc76fbdd0293832cac}
+\hypertarget{il__states_8h_a6d85bb6fefaafe2aead79883b3eed871}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Get\-Boolean@{i\-Get\-Boolean}}
+\index{i\-Get\-Boolean@{i\-Get\-Boolean}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Get\-Boolean}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Get\-Boolean (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a6d85bb6fefaafe2aead79883b3eed871}
+\hypertarget{il__states_8h_a24e0ea1ce3fc8c7a3d8966a016d70d6a}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Get\-Integer@{i\-Get\-Integer}}
+\index{i\-Get\-Integer@{i\-Get\-Integer}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Get\-Integer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} i\-Get\-Integer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a24e0ea1ce3fc8c7a3d8966a016d70d6a}
+\hypertarget{il__states_8h_a74f66f98c8a2778edf404a4bd3cc87f2}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Is\-Enabled@{i\-Is\-Enabled}}
+\index{i\-Is\-Enabled@{i\-Is\-Enabled}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Is\-Enabled}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Is\-Enabled (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a74f66f98c8a2778edf404a4bd3cc87f2}
+
+
+Checks whether the mode is enabled. 
+
+\hypertarget{il__states_8h_a3845bdce12acaa25ce245fa5acbb9233}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Set\-Integer@{i\-Set\-Integer}}
+\index{i\-Set\-Integer@{i\-Set\-Integer}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Set\-Integer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Integer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode, }
+\item[{{\bf I\-Lint}}]{Param}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a3845bdce12acaa25ce245fa5acbb9233}
+\hypertarget{il__states_8h_a9ac2f43d8addac1eeb5a8de6f4da2e71}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!i\-Set\-String@{i\-Set\-String}}
+\index{i\-Set\-String@{i\-Set\-String}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{i\-Set\-String}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-String (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Mode, }
+\item[{const char $\ast$}]{String\-\_\-}
+\end{DoxyParamCaption}
+)}}\label{il__states_8h_a9ac2f43d8addac1eeb5a8de6f4da2e71}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__states_8h_a87c3f9761802d1e2297cbe2517971eab}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!il\-Current\-Pos@{il\-Current\-Pos}}
+\index{il\-Current\-Pos@{il\-Current\-Pos}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{il\-Current\-Pos}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} il\-Current\-Pos}}\label{il__states_8h_a87c3f9761802d1e2297cbe2517971eab}
+\hypertarget{il__states_8h_ae7ffa73169f2c0cf7cf4b7e279ee1541}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!il\-Hints@{il\-Hints}}
+\index{il\-Hints@{il\-Hints}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{il\-Hints}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-\_\-\-H\-I\-N\-T\-S} il\-Hints}}\label{il__states_8h_ae7ffa73169f2c0cf7cf4b7e279ee1541}
+\hypertarget{il__states_8h_aa8d8b02f6f9b879725e9f39095220fef}{\index{il\-\_\-states.\-h@{il\-\_\-states.\-h}!il\-States@{il\-States}}
+\index{il\-States@{il\-States}!il_states.h@{il\-\_\-states.\-h}}
+\subsubsection[{il\-States}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-\_\-\-S\-T\-A\-T\-E\-S} il\-States\mbox{[}{\bf I\-L\-\_\-\-A\-T\-T\-R\-I\-B\-\_\-\-S\-T\-A\-C\-K\-\_\-\-M\-A\-X}\mbox{]}}}\label{il__states_8h_aa8d8b02f6f9b879725e9f39095220fef}

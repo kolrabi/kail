@@ -1,0 +1,111 @@
+\hypertarget{il__jp2_8c}{\section{src/\-I\-L/formats/il\-\_\-jp2.c File Reference}
+\label{il__jp2_8c}\index{src/\-I\-L/formats/il\-\_\-jp2.\-c@{src/\-I\-L/formats/il\-\_\-jp2.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$jasper/jasper.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-jp2.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+jas\-\_\-stream\-\_\-t $\ast$ \hyperlink{il__jp2_8c_a3c00ab44e41201717845c64466775e4f}{i\-Jp2\-Read\-Stream} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+jas\-\_\-stream\-\_\-t $\ast$ \hyperlink{il__jp2_8c_a037fed0af50ddc53626196e411fc6bd4}{i\-Jp2\-Write\-Stream} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jp2_8c_a39adb53b7e519d023b889c32a2db1304}{il\-Load\-Jp2\-L\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size)
+\begin{DoxyCompactList}\small\item\em This is separated so that it can be called for other file types, such as .icns. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jp2_8c_a0acb725d5aa5f9bb3c2e5fe9e8ed6ff6}{i\-Load\-Jp2\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\begin{DoxyCompactList}\small\item\em This is separated so that it can be called for other file types, such as .icns. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__jp2_8c_ae5b6bd1241e8e7adc8f8ed695a2d2a3f}{Jp2\-Convert\-Data} (jas\-\_\-stream\-\_\-t $\ast$in, jas\-\_\-image\-\_\-t $\ast$image)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__jp2_8c_a962b45002400df14f35a9ea8de021189}{i\-Format\-Exts\-Jp2} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__jp2_8c_a1f50da76416441a051c9a0dd0d75a5f9}{i\-Format\-J\-P2}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jp2_8c_aed792f42207efdda98fd6d8f1069c2b5}{Jasper\-Init} = \hyperlink{il_8h_a4de3cf681ed24cec060ecec1887f9b86}{I\-L\-\_\-\-F\-A\-L\-S\-E}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__jp2_8c_a3c00ab44e41201717845c64466775e4f}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!i\-Jp2\-Read\-Stream@{i\-Jp2\-Read\-Stream}}
+\index{i\-Jp2\-Read\-Stream@{i\-Jp2\-Read\-Stream}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{i\-Jp2\-Read\-Stream}]{\setlength{\rightskip}{0pt plus 5cm}jas\-\_\-stream\-\_\-t$\ast$ i\-Jp2\-Read\-Stream (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__jp2_8c_a3c00ab44e41201717845c64466775e4f}
+
+\begin{DoxyItemize}
+\item If the buffer size specified is nonpositive, then the buffer 
+\end{DoxyItemize}\hypertarget{il__jp2_8c_a037fed0af50ddc53626196e411fc6bd4}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!i\-Jp2\-Write\-Stream@{i\-Jp2\-Write\-Stream}}
+\index{i\-Jp2\-Write\-Stream@{i\-Jp2\-Write\-Stream}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{i\-Jp2\-Write\-Stream}]{\setlength{\rightskip}{0pt plus 5cm}jas\-\_\-stream\-\_\-t$\ast$ i\-Jp2\-Write\-Stream (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__jp2_8c_a037fed0af50ddc53626196e411fc6bd4}
+\hypertarget{il__jp2_8c_a39adb53b7e519d023b889c32a2db1304}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!il\-Load\-Jp2\-L\-Internal@{il\-Load\-Jp2\-L\-Internal}}
+\index{il\-Load\-Jp2\-L\-Internal@{il\-Load\-Jp2\-L\-Internal}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{il\-Load\-Jp2\-L\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Load\-Jp2\-L\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{const {\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__jp2_8c_a39adb53b7e519d023b889c32a2db1304}
+
+
+This is separated so that it can be called for other file types, such as .icns. 
+
+\hypertarget{il__jp2_8c_a0acb725d5aa5f9bb3c2e5fe9e8ed6ff6}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!i\-Load\-Jp2\-Internal@{i\-Load\-Jp2\-Internal}}
+\index{i\-Load\-Jp2\-Internal@{i\-Load\-Jp2\-Internal}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{i\-Load\-Jp2\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Jp2\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__jp2_8c_a0acb725d5aa5f9bb3c2e5fe9e8ed6ff6}
+
+
+This is separated so that it can be called for other file types, such as .icns. 
+
+\hypertarget{il__jp2_8c_ae5b6bd1241e8e7adc8f8ed695a2d2a3f}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!Jp2\-Convert\-Data@{Jp2\-Convert\-Data}}
+\index{Jp2\-Convert\-Data@{Jp2\-Convert\-Data}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{Jp2\-Convert\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} Jp2\-Convert\-Data (
+\begin{DoxyParamCaption}
+\item[{jas\-\_\-stream\-\_\-t $\ast$}]{in, }
+\item[{jas\-\_\-image\-\_\-t $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__jp2_8c_ae5b6bd1241e8e7adc8f8ed695a2d2a3f}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__jp2_8c_a962b45002400df14f35a9ea8de021189}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!i\-Format\-Exts\-Jp2@{i\-Format\-Exts\-Jp2}}
+\index{i\-Format\-Exts\-Jp2@{i\-Format\-Exts\-Jp2}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{i\-Format\-Exts\-Jp2}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-Jp2\mbox{[}$\,$\mbox{]}}}\label{il__jp2_8c_a962b45002400df14f35a9ea8de021189}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jp2"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jpx"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"j2k"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"j2c"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__jp2_8c_a1f50da76416441a051c9a0dd0d75a5f9}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!i\-Format\-J\-P2@{i\-Format\-J\-P2}}
+\index{i\-Format\-J\-P2@{i\-Format\-J\-P2}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{i\-Format\-J\-P2}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-J\-P2}}\label{il__jp2_8c_a1f50da76416441a051c9a0dd0d75a5f9}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidJp2, 
+  .Load     = \hyperlink{il__jp2_8c_a0acb725d5aa5f9bb3c2e5fe9e8ed6ff6}{iLoadJp2Internal}, 
+  .Save     = iSaveJp2Internal, 
+  .Exts     = \hyperlink{il__jp2_8c_a962b45002400df14f35a9ea8de021189}{iFormatExtsJp2}
+\}
+\end{DoxyCode}
+\hypertarget{il__jp2_8c_aed792f42207efdda98fd6d8f1069c2b5}{\index{il\-\_\-jp2.\-c@{il\-\_\-jp2.\-c}!Jasper\-Init@{Jasper\-Init}}
+\index{Jasper\-Init@{Jasper\-Init}!il_jp2.c@{il\-\_\-jp2.\-c}}
+\subsubsection[{Jasper\-Init}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Jasper\-Init = {\bf I\-L\-\_\-\-F\-A\-L\-S\-E}}}\label{il__jp2_8c_aed792f42207efdda98fd6d8f1069c2b5}

@@ -1,0 +1,213 @@
+\hypertarget{il__mng_8c}{\section{src/\-I\-L/formats/il\-\_\-mng.c File Reference}
+\label{il__mng_8c}\index{src/\-I\-L/formats/il\-\_\-mng.\-c@{src/\-I\-L/formats/il\-\_\-mng.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$libmng.\-h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__mng_8c_a5e3da2fcf217389eff4f5da898f75a9c}{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y}
+\item 
+\#define \hyperlink{il__mng_8c_a968e079c33fe94733b134167085e674a}{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D}
+\item 
+\#define \hyperlink{il__mng_8c_a8d3a10a88a815ee6304c0a63f36e070a}{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__mng_8c_a03326fa5f5acf1a856aa891a52cae515}{i\-Save\-Mng\-Internal} ()
+\item 
+mng\-\_\-ptr M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a7beb8b210ca6363381f9ee4aaa4f7647}{mymngalloc} (mng\-\_\-size\-\_\-t \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size})
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a8c0111739b36595a2754ba914280ba9a}{mymngclosestream} (mng\-\_\-handle mng)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a0b29cd19560f2f9a60f952fae9184bb5}{mymngerror} (mng\-\_\-handle mng, mng\-\_\-int32 code, mng\-\_\-int8 severity, mng\-\_\-chunkid chunktype, mng\-\_\-uint32 chunkseq, mng\-\_\-int32 extra1, mng\-\_\-int32 extra2, mng\-\_\-pchar text)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a56694122022bf46122b6fb5c13b3e4dd}{mymngfree} (mng\-\_\-ptr p, mng\-\_\-size\-\_\-t \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size})
+\item 
+mng\-\_\-ptr M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_ab876d8821e15dacfa6186ae7bae87bc1}{mymnggetcanvasline} (mng\-\_\-handle mng, mng\-\_\-uint32 line)
+\item 
+mng\-\_\-uint32 M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_ab6c2289d7416fb704e9b6baf072df845}{mymnggetticks} (mng\-\_\-handle mng)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_af01f2f3ba566da1ae81f102ddaadbd98}{mymngopenstream} (mng\-\_\-handle mng)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_aa09561467f92d3680100a69ecbfbb97d}{mymngopenstreamwrite} (mng\-\_\-handle mng)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a4e123fd91f427888e8c36931833e0392}{mymngprocessheader} (mng\-\_\-handle mng, mng\-\_\-uint32 width, mng\-\_\-uint32 height)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a6db8d1e839439ced8674ea502a54214e}{mymngreadstream} (mng\-\_\-handle mng, mng\-\_\-ptr \hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, mng\-\_\-size\-\_\-t \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size}, mng\-\_\-uint32 $\ast$bytesread)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_ab9540cde41a6ea1aa6711c21957a4a12}{mymngrefresh} (mng\-\_\-handle mng, mng\-\_\-uint32 x, mng\-\_\-uint32 y, mng\-\_\-uint32 w, mng\-\_\-uint32 h)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_af16182b95d6e2114480cc8675be8e643}{mymngsettimer} (mng\-\_\-handle mng, mng\-\_\-uint32 msecs)
+\item 
+mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L \hyperlink{il__mng_8c_a554e3ac960a77943069eec2428bf4b3e}{mymngwritedata} (mng\-\_\-handle mng, mng\-\_\-ptr \hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, mng\-\_\-size\-\_\-t \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size}, mng\-\_\-uint32 $\ast$byteswritten)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__mng_8c_a3a550f3b0a618932ce2fbaa332cd85d4}{i\-Format\-Exts\-M\-N\-G} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__mng_8c_afc88bc296fd1ccd830233dc8708d9adb}{i\-Format\-M\-N\-G}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__mng_8c_a5e3da2fcf217389eff4f5da898f75a9c}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y}}
+\index{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-D\-I\-S\-P\-L\-A\-Y}}\label{il__mng_8c_a5e3da2fcf217389eff4f5da898f75a9c}
+\hypertarget{il__mng_8c_a968e079c33fe94733b134167085e674a}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D}}
+\index{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-R\-E\-A\-D}}\label{il__mng_8c_a968e079c33fe94733b134167085e674a}
+\hypertarget{il__mng_8c_a8d3a10a88a815ee6304c0a63f36e070a}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E}}
+\index{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E@{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-N\-G\-\_\-\-S\-U\-P\-P\-O\-R\-T\-\_\-\-W\-R\-I\-T\-E}}\label{il__mng_8c_a8d3a10a88a815ee6304c0a63f36e070a}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__mng_8c_a03326fa5f5acf1a856aa891a52cae515}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!i\-Save\-Mng\-Internal@{i\-Save\-Mng\-Internal}}
+\index{i\-Save\-Mng\-Internal@{i\-Save\-Mng\-Internal}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{i\-Save\-Mng\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Save\-Mng\-Internal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a03326fa5f5acf1a856aa891a52cae515}
+\hypertarget{il__mng_8c_a7beb8b210ca6363381f9ee4aaa4f7647}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngalloc@{mymngalloc}}
+\index{mymngalloc@{mymngalloc}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngalloc}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-ptr M\-N\-G\-\_\-\-D\-E\-C\-L mymngalloc (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-size\-\_\-t}]{size}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a7beb8b210ca6363381f9ee4aaa4f7647}
+\hypertarget{il__mng_8c_a8c0111739b36595a2754ba914280ba9a}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngclosestream@{mymngclosestream}}
+\index{mymngclosestream@{mymngclosestream}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngclosestream}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngclosestream (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a8c0111739b36595a2754ba914280ba9a}
+\hypertarget{il__mng_8c_a0b29cd19560f2f9a60f952fae9184bb5}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngerror@{mymngerror}}
+\index{mymngerror@{mymngerror}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngerror}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngerror (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-int32}]{code, }
+\item[{mng\-\_\-int8}]{severity, }
+\item[{mng\-\_\-chunkid}]{chunktype, }
+\item[{mng\-\_\-uint32}]{chunkseq, }
+\item[{mng\-\_\-int32}]{extra1, }
+\item[{mng\-\_\-int32}]{extra2, }
+\item[{mng\-\_\-pchar}]{text}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a0b29cd19560f2f9a60f952fae9184bb5}
+\hypertarget{il__mng_8c_a56694122022bf46122b6fb5c13b3e4dd}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngfree@{mymngfree}}
+\index{mymngfree@{mymngfree}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngfree}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} M\-N\-G\-\_\-\-D\-E\-C\-L mymngfree (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-ptr}]{p, }
+\item[{mng\-\_\-size\-\_\-t}]{size}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a56694122022bf46122b6fb5c13b3e4dd}
+\hypertarget{il__mng_8c_ab876d8821e15dacfa6186ae7bae87bc1}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymnggetcanvasline@{mymnggetcanvasline}}
+\index{mymnggetcanvasline@{mymnggetcanvasline}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymnggetcanvasline}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-ptr M\-N\-G\-\_\-\-D\-E\-C\-L mymnggetcanvasline (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-uint32}]{line}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_ab876d8821e15dacfa6186ae7bae87bc1}
+\hypertarget{il__mng_8c_ab6c2289d7416fb704e9b6baf072df845}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymnggetticks@{mymnggetticks}}
+\index{mymnggetticks@{mymnggetticks}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymnggetticks}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-uint32 M\-N\-G\-\_\-\-D\-E\-C\-L mymnggetticks (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_ab6c2289d7416fb704e9b6baf072df845}
+\hypertarget{il__mng_8c_af01f2f3ba566da1ae81f102ddaadbd98}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngopenstream@{mymngopenstream}}
+\index{mymngopenstream@{mymngopenstream}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngopenstream}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngopenstream (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_af01f2f3ba566da1ae81f102ddaadbd98}
+\hypertarget{il__mng_8c_aa09561467f92d3680100a69ecbfbb97d}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngopenstreamwrite@{mymngopenstreamwrite}}
+\index{mymngopenstreamwrite@{mymngopenstreamwrite}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngopenstreamwrite}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngopenstreamwrite (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_aa09561467f92d3680100a69ecbfbb97d}
+\hypertarget{il__mng_8c_a4e123fd91f427888e8c36931833e0392}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngprocessheader@{mymngprocessheader}}
+\index{mymngprocessheader@{mymngprocessheader}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngprocessheader}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngprocessheader (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-uint32}]{width, }
+\item[{mng\-\_\-uint32}]{height}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a4e123fd91f427888e8c36931833e0392}
+\hypertarget{il__mng_8c_a6db8d1e839439ced8674ea502a54214e}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngreadstream@{mymngreadstream}}
+\index{mymngreadstream@{mymngreadstream}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngreadstream}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngreadstream (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-ptr}]{buffer, }
+\item[{mng\-\_\-size\-\_\-t}]{size, }
+\item[{mng\-\_\-uint32 $\ast$}]{bytesread}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a6db8d1e839439ced8674ea502a54214e}
+\hypertarget{il__mng_8c_ab9540cde41a6ea1aa6711c21957a4a12}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngrefresh@{mymngrefresh}}
+\index{mymngrefresh@{mymngrefresh}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngrefresh}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngrefresh (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-uint32}]{x, }
+\item[{mng\-\_\-uint32}]{y, }
+\item[{mng\-\_\-uint32}]{w, }
+\item[{mng\-\_\-uint32}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_ab9540cde41a6ea1aa6711c21957a4a12}
+\hypertarget{il__mng_8c_af16182b95d6e2114480cc8675be8e643}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngsettimer@{mymngsettimer}}
+\index{mymngsettimer@{mymngsettimer}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngsettimer}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngsettimer (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-uint32}]{msecs}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_af16182b95d6e2114480cc8675be8e643}
+\hypertarget{il__mng_8c_a554e3ac960a77943069eec2428bf4b3e}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!mymngwritedata@{mymngwritedata}}
+\index{mymngwritedata@{mymngwritedata}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{mymngwritedata}]{\setlength{\rightskip}{0pt plus 5cm}mng\-\_\-bool M\-N\-G\-\_\-\-D\-E\-C\-L mymngwritedata (
+\begin{DoxyParamCaption}
+\item[{mng\-\_\-handle}]{mng, }
+\item[{mng\-\_\-ptr}]{buffer, }
+\item[{mng\-\_\-size\-\_\-t}]{size, }
+\item[{mng\-\_\-uint32 $\ast$}]{byteswritten}
+\end{DoxyParamCaption}
+)}}\label{il__mng_8c_a554e3ac960a77943069eec2428bf4b3e}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__mng_8c_a3a550f3b0a618932ce2fbaa332cd85d4}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!i\-Format\-Exts\-M\-N\-G@{i\-Format\-Exts\-M\-N\-G}}
+\index{i\-Format\-Exts\-M\-N\-G@{i\-Format\-Exts\-M\-N\-G}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{i\-Format\-Exts\-M\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-M\-N\-G\mbox{[}$\,$\mbox{]}}}\label{il__mng_8c_a3a550f3b0a618932ce2fbaa332cd85d4}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"mng"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jng"}),
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__mng_8c_afc88bc296fd1ccd830233dc8708d9adb}{\index{il\-\_\-mng.\-c@{il\-\_\-mng.\-c}!i\-Format\-M\-N\-G@{i\-Format\-M\-N\-G}}
+\index{i\-Format\-M\-N\-G@{i\-Format\-M\-N\-G}!il_mng.c@{il\-\_\-mng.\-c}}
+\subsubsection[{i\-Format\-M\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-M\-N\-G}}\label{il__mng_8c_afc88bc296fd1ccd830233dc8708d9adb}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidMng, 
+  .Load     = iLoadMngInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__mng_8c_a3a550f3b0a618932ce2fbaa332cd85d4}{iFormatExtsMNG}
+\}
+\end{DoxyCode}

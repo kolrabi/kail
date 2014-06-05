@@ -1,0 +1,93 @@
+\hypertarget{il__psd_8c}{\section{src/\-I\-L/formats/il\-\_\-psd.c File Reference}
+\label{il__psd_8c}\index{src/\-I\-L/formats/il\-\_\-psd.\-c@{src/\-I\-L/formats/il\-\_\-psd.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-psd.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__psd_8c_a32815e3911f20420d2f29a18b7060b4e}{Get\-Single\-Channel} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{struct_p_s_d_h_e_a_d}{P\-S\-D\-H\-E\-A\-D} $\ast$Head, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Buffer, \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} Compressed)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__psd_8c_a52b315fd09f716ff0f8541944514d6ee}{i\-Save\-Psd\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__psd_8c_ab9b8959f331f83810f12122575fcc2fc}{Parse\-Resources} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Resource\-Size, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Resources)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__psd_8c_adc7d499811cf86e66cbbd6d5d7d1a19e}{Psd\-Get\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{struct_p_s_d_h_e_a_d}{P\-S\-D\-H\-E\-A\-D} $\ast$Head, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} Compressed)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} \hyperlink{il__psd_8c_a1be6448361a672be97b7dc21000a25a2}{Channel\-Num}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__psd_8c_a224e5de9e13c15f6d925a0a0d93cd22c}{i\-Format\-Exts\-P\-S\-D} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__psd_8c_a79031efa86505bb11b58ab55a3907136}{i\-Format\-P\-S\-D}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__psd_8c_a32815e3911f20420d2f29a18b7060b4e}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!Get\-Single\-Channel@{Get\-Single\-Channel}}
+\index{Get\-Single\-Channel@{Get\-Single\-Channel}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{Get\-Single\-Channel}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Get\-Single\-Channel (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf P\-S\-D\-H\-E\-A\-D} $\ast$}]{Head, }
+\item[{{\bf I\-Lubyte} $\ast$}]{Buffer, }
+\item[{{\bf I\-Lboolean}}]{Compressed}
+\end{DoxyParamCaption}
+)}}\label{il__psd_8c_a32815e3911f20420d2f29a18b7060b4e}
+\hypertarget{il__psd_8c_a52b315fd09f716ff0f8541944514d6ee}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!i\-Save\-Psd\-Internal@{i\-Save\-Psd\-Internal}}
+\index{i\-Save\-Psd\-Internal@{i\-Save\-Psd\-Internal}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{i\-Save\-Psd\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Save\-Psd\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__psd_8c_a52b315fd09f716ff0f8541944514d6ee}
+\hypertarget{il__psd_8c_ab9b8959f331f83810f12122575fcc2fc}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!Parse\-Resources@{Parse\-Resources}}
+\index{Parse\-Resources@{Parse\-Resources}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{Parse\-Resources}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Parse\-Resources (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-Luint}}]{Resource\-Size, }
+\item[{{\bf I\-Lubyte} $\ast$}]{Resources}
+\end{DoxyParamCaption}
+)}}\label{il__psd_8c_ab9b8959f331f83810f12122575fcc2fc}
+\hypertarget{il__psd_8c_adc7d499811cf86e66cbbd6d5d7d1a19e}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!Psd\-Get\-Data@{Psd\-Get\-Data}}
+\index{Psd\-Get\-Data@{Psd\-Get\-Data}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{Psd\-Get\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Psd\-Get\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf P\-S\-D\-H\-E\-A\-D} $\ast$}]{Head, }
+\item[{{\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Lboolean}}]{Compressed}
+\end{DoxyParamCaption}
+)}}\label{il__psd_8c_adc7d499811cf86e66cbbd6d5d7d1a19e}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__psd_8c_a1be6448361a672be97b7dc21000a25a2}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!Channel\-Num@{Channel\-Num}}
+\index{Channel\-Num@{Channel\-Num}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{Channel\-Num}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lushort} Channel\-Num}}\label{il__psd_8c_a1be6448361a672be97b7dc21000a25a2}
+\hypertarget{il__psd_8c_a224e5de9e13c15f6d925a0a0d93cd22c}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!i\-Format\-Exts\-P\-S\-D@{i\-Format\-Exts\-P\-S\-D}}
+\index{i\-Format\-Exts\-P\-S\-D@{i\-Format\-Exts\-P\-S\-D}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{i\-Format\-Exts\-P\-S\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-P\-S\-D\mbox{[}$\,$\mbox{]}}}\label{il__psd_8c_a224e5de9e13c15f6d925a0a0d93cd22c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"psd"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"pdd"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__psd_8c_a79031efa86505bb11b58ab55a3907136}{\index{il\-\_\-psd.\-c@{il\-\_\-psd.\-c}!i\-Format\-P\-S\-D@{i\-Format\-P\-S\-D}}
+\index{i\-Format\-P\-S\-D@{i\-Format\-P\-S\-D}!il_psd.c@{il\-\_\-psd.\-c}}
+\subsubsection[{i\-Format\-P\-S\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-P\-S\-D}}\label{il__psd_8c_a79031efa86505bb11b58ab55a3907136}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidPsd, 
+  .Load     = iLoadPsdInternal, 
+  .Save     = \hyperlink{il__psd_8c_a52b315fd09f716ff0f8541944514d6ee}{iSavePsdInternal}, 
+  .Exts     = \hyperlink{il__psd_8c_a224e5de9e13c15f6d925a0a0d93cd22c}{iFormatExtsPSD}
+\}
+\end{DoxyCode}

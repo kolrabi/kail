@@ -1,0 +1,873 @@
+\hypertarget{devil__internal__exports_8h}{\section{include/\-I\-L/devil\-\_\-internal\-\_\-exports.h File Reference}
+\label{devil__internal__exports_8h}\index{include/\-I\-L/devil\-\_\-internal\-\_\-exports.\-h@{include/\-I\-L/devil\-\_\-internal\-\_\-exports.\-h}}
+}
+{\ttfamily \#include $<$I\-L/il.\-h$>$}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$wchar.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_i_limage}{I\-Limage}
+\begin{DoxyCompactList}\small\item\em The Fundamental Image structure. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_i_lpal}{I\-Lpal}
+\begin{DoxyCompactList}\small\item\em Basic Palette struct. \end{DoxyCompactList}\item 
+struct \hyperlink{struct_s_i_o}{S\-I\-O}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{devil__internal__exports_8h_af576bf8ffa22a44e53018c67095ffbf0}{assert}(x)
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a9e24f2c92d276ca8b885929d7e57eba2}{iaalloc}(T, n)~(T$\ast$)\hyperlink{devil__internal__exports_8h_a14e7c6b7e76348fb9dc743c17bbba34d}{icalloc}(sizeof(T), (n))
+\begin{DoxyCompactList}\small\item\em Allocate an array of type {\itshape T} with {\itshape n} elements. \end{DoxyCompactList}\item 
+\#define \hyperlink{devil__internal__exports_8h_af42a6c8915ad61e5f2e71691ced46971}{i\-Char\-Str\-Cpy}~strcpy
+\item 
+\#define \hyperlink{devil__internal__exports_8h_acbf96f5e011406688d3a7823d3f0b097}{i\-Char\-Str\-I\-Cmp}~strcasecmp
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a575d330bd9c244a2c42bc3b855075cc3}{i\-Char\-Str\-Len}~strlen
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{I\-N\-L\-I\-N\-E}~inline
+\item 
+\#define \hyperlink{devil__internal__exports_8h_aea8af68bb1b63edb9c6762707b3facf0}{ioalloc}(T)~\hyperlink{devil__internal__exports_8h_a9e24f2c92d276ca8b885929d7e57eba2}{iaalloc}(T, 1)
+\begin{DoxyCompactList}\small\item\em Allocate one object of type {\itshape T}. \end{DoxyCompactList}\item 
+\#define \hyperlink{devil__internal__exports_8h_ad4c70512f61de55205273708b946d8c2}{i\-Str\-Cat}~strcat
+\item 
+\#define \hyperlink{devil__internal__exports_8h_abab57f6f93210d087a47e2250ed1e001}{i\-Str\-Cmp}~strcmp
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a9db7566839c88fc79caf7532ace9eb40}{i\-Str\-Cpy}~strcpy
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a4cfabfddde204087ccfac58bdfb4fcc6}{i\-Str\-Icmp}~\hyperlink{devil__internal__exports_8h_acbf96f5e011406688d3a7823d3f0b097}{i\-Char\-Str\-I\-Cmp}
+\item 
+\#define \hyperlink{devil__internal__exports_8h_aba570311d37628c801747f066ed667a4}{i\-Str\-Len}~strlen
+\item 
+\#define \hyperlink{devil__internal__exports_8h_aeb1992d7dda2d7e993c72882c76f23cb}{S\-I\-Oclose}(io)~\{ if ((io)-\/$>$close) (io)-\/$>$close((io)-\/$>$handle); (io)-\/$>$handle = N\-U\-L\-L; \}
+\item 
+\#define \hyperlink{devil__internal__exports_8h_aba0dc8a0ddac66ce028990f9faf005bd}{S\-I\-Oeof}(io)~(io)-\/$>$eof    ((io)-\/$>$handle               )
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a2ba10310586e624ffcfb8d85f8e5c570}{S\-I\-Ogetc}(io)~(io)-\/$>$getchar((io)-\/$>$handle               )
+\item 
+\#define \hyperlink{devil__internal__exports_8h_ad5129e991b049d517155e1ed2fc0689a}{S\-I\-Oopen\-R\-O}(io,f)~((io)-\/$>$open\-Read\-Only ? (io)-\/$>$open\-Read\-Only((io)-\/$>$handle) \-: N\-U\-L\-L)
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a8794ae83ce0ae356e0fb97b989ece65f}{S\-I\-Oopen\-W\-R}(io,f)~((io)-\/$>$open\-Write    ? (io)-\/$>$open\-Write   ((io)-\/$>$handle) \-: N\-U\-L\-L)
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a4b657ddb17abf912c8730177f08485da}{S\-I\-Opad}(io,n)~for (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i}=0; \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i}$<$n; \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i}++) \hyperlink{devil__internal__exports_8h_a39bbec20651382d64037d6fed1741774}{S\-I\-Oputc}((io), 0);
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a39bbec20651382d64037d6fed1741774}{S\-I\-Oputc}(io,c)~(io)-\/$>$putchar((c), (io)-\/$>$handle          )
+\item 
+\#define \hyperlink{devil__internal__exports_8h_af56cc69d38dd3f443d5bad5618691766}{S\-I\-Oputs}(io,s)~\hyperlink{devil__internal__exports_8h_a8f484b7a85bd11dbccbba4bcb0492635}{S\-I\-Owrite}(io, s, strlen(s), 1)
+\item 
+\#define \hyperlink{devil__internal__exports_8h_ad2e01566e7121c945facc1b9ff7017b6}{S\-I\-Oread}(io, p, s, n)~(io)-\/$>$read   ((io)-\/$>$handle, (p), (s), (n))
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a014c284eb1eb6102157e08722402b496}{S\-I\-Oseek}(io,s, w)~(io)-\/$>$seek   ((io)-\/$>$handle,      (s), (w))
+\item 
+\#define \hyperlink{devil__internal__exports_8h_adadb2d059fb56325660d98ca86bdc9b4}{S\-I\-Otell}(io)~(io)-\/$>$tell   ((io)-\/$>$handle               )
+\item 
+\#define \hyperlink{devil__internal__exports_8h_a8f484b7a85bd11dbccbba4bcb0492635}{S\-I\-Owrite}(io, p, s, n)~(io)-\/$>$write  ((p), (s), (n), (io)-\/$>$handle)
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_i_limage}{I\-Limage} \hyperlink{devil__internal__exports_8h_a2013f10e057d627f97e50f39c284d28e}{I\-Limage}
+\begin{DoxyCompactList}\small\item\em The Fundamental Image structure. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_i_lpal}{I\-Lpal} \hyperlink{devil__internal__exports_8h_a7c1f98c77c36e2f2faecf64ab20f9871}{I\-Lpal}
+\begin{DoxyCompactList}\small\item\em Basic Palette struct. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{struct_s_i_o}{S\-I\-O} \hyperlink{devil__internal__exports_8h_ad6231e5f83fb18a4c1bb835908319d36}{S\-I\-O}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad7d39eb4baa250019119d81f9055a6e9}{ialloc} (\hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Size)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ab6e8060650fd03fc6aa0a15ef7dcfd38}{i\-Bind\-Image\-Temp} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a14e7c6b7e76348fb9dc743c17bbba34d}{icalloc} (const \hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Size, const \hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Num)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a4c06c4ee31018f531af608d09df88a8a}{i\-Char\-Str\-Dup} (const char $\ast$Str)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_aa2e8973b170f8beb82d7b2265b8a6680}{i\-Check\-Extension} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} Arg, \hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} Ext)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a792ea6d6158a723a4405ce340b06a54f}{i\-Convert\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Type)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a54096b235d8713ab24bc630af37cedc4}{i\-Convert\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Pal, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a4a20740215741e9b8da0c11541b4f440}{i\-Copy\-Pal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a16f8bb72f4b3f1a9984ed4b370e2ba48}{i\-Flip\-Buffer} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$buff, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} depth, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} line\-\_\-size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} line\-\_\-num)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_aec7010d5cb81f847c8fd4b709c235d79}{i\-Flip\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a12ccd2c949e934025b536f2de79427ae}{ifree} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Ptr)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad13aea2fb48e09ad3217e032d8e0eca4}{i\-Get\-Base\-Image} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a514878db68bbcabb10fbbbc09bec8908}{i\-Get\-Cur\-Image} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a0e32959a190ae33935a98df16a7fdb5a}{I\-Lstring} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_aa6684d535ce808f31be2b2b754d6620f}{i\-Get\-Extension} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a96003146e14bb47f712e104bbf07b64c}{i\-Get\-Flipped} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a064aad2442c55048ced653ce69da31f0}{i\-Get\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad745258f906f34ea230817cf6ffba721}{i\-Get\-Integer\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Mode)
+\begin{DoxyCompactList}\small\item\em Sets Param equal to the current value of the Mode. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a8dc92163e45cd8d05ff3c5db736d142a}{i\-Get\-Mipmap} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a1e9a56784f1fb080f064f08cf528e0c6}{i\-Get\-Sub\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Used for setting the current image if it is an animation. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad84f6056ea1add9c49776b33b07ffce6}{il\-Clear\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_af184305c471b662673a5ca4c352dd05b}{il\-Close\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\begin{DoxyCompactList}\small\item\em Closes Image and frees all memory associated with it. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a27fa8759c965f3fde4d4670fc76bf85e}{il\-Close\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Palette)
+\begin{DoxyCompactList}\small\item\em Closes Palette and frees all memory associated with it. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_adf7c27fb65c6b82a5f4f5e3d94816ab7}{il\-Convert\-Buffer} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size\-Of\-Data, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Src\-Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Src\-Type, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Type, \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Src\-Pal, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_acdc61520a0dbec909868fb13ba3d78a8}{il\-Copy\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a5e75115109e9ae1fa01fe1fc150f05d4}{il\-Copy\-Image\-Attr} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Dest, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a5392741ed8656f215931b79470af205c}{il\-Get\-Bpc\-Type} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad209225f56d2dd4e478a84961f38137e}{il\-Get\-Bpp\-Format} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a160c4d0aedfa5a7815f5e67ee06d0cde}{il\-Get\-Bpp\-Pal} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Pal\-Type)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a39cba432b26ef9a954392998da828094}{il\-Get\-Clear} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Colours, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a9ac53300ac678643a736d7b00c8dae4e}{il\-Get\-Cur\-Name} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a71f9c27a880b43350f3534172772ce55}{il\-Get\-Format\-Bpp} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a2fdde12d429d22d39a6961d90c6127a3}{il\-Get\-Pal\-Base\-Type} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Pal\-Type)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a59ac998348a25c53166e48d5715e754b}{il\-Get\-Type\-Bpc} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpc)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a1166b7189a4996482b1ea70dfb9eabd0}{il\-Init\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ad142fddebfccd088bc359f0e64291a5e}{il\-Is\-Valid\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Palette)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ab024c2ced9e3969fdab3780f3628746d}{il\-New\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpc)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a46184dc38bdae9fe9ffaff1b67e8dd4c}{il\-New\-Image\-Full} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a1de45d708b87053677cd9ff7592bfe9c}{il\-Next\-Power2} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Num)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a7b289e75fee0b0c15a2af071b940868c}{il\-Replace\-Cur\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a6e6aa151a3c0f6ec397ff4a670985e8b}{il\-Resize\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpc)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a30e1a59af19f9e4542e16a1a95158680}{il\-Set\-Cur\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a461ccdc9c1f94a9b2da2eb886b502bc4}{il\-Tex\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a98bd39f61d9aa6ed6c7736ab5a59e5b0}{il\-Tex\-Sub\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ac9f42ca4f6f44347115adfab70d661d2}{il\-Type\-From\-Ext} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ab4c10bd425c1e96ae961972473ed25c1}{ilu\-Rotate3\-D\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} x, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} y, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} z, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Angle)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_adaa309d3b859d93d56eee8d389844b18}{ilu\-Rotate\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Angle)
+\begin{DoxyCompactList}\small\item\em Rotates a bitmap any angle. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a760549169fd27379ef82b577ec53e474}{ilu\-Scale\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a5f8387a1b8f4f80e0b04b8d1aebeb59b}{i\-Mem\-Swap} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$, const \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a109ed504a97e73b014d6dd45ae154cff}{i\-Mirror\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\begin{DoxyCompactList}\small\item\em Mirrors an image over its y axis. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a19faaefcd622db239108dd94c9c5baad}{i\-Multi\-Byte\-From\-Wide} (const wchar\-\_\-t $\ast$Wide)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_abb551c8ff3f068aa673b5323f106a8b5}{i\-Reset\-Read} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_aacd713f3e703bfd55630b88af6f23450}{i\-Reset\-Write} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_aac01791723faa047a00269f02c503565}{i\-Set\-Error} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Error)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a9fbda63884fe1c185972a2e087752e3e}{i\-Set\-Pal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Pal)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a0e32959a190ae33935a98df16a7fdb5a}{I\-Lstring} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a1a5b013d78b5d07e787e8ce4e2a543c8}{i\-Str\-Dup} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} Str)
+\begin{DoxyCompactList}\small\item\em Glut's portability.\-txt says to use this... \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} wchar\-\_\-t $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_ae2725b65e2c6a4974fd7268c5160100a}{i\-Wide\-From\-Multi\-Byte} (const char $\ast$Multi)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_abb7a7f6d5dd7e667f001960735c0a0a8}{S\-I\-Ogets} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, char $\ast$\hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} maxlen)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{devil__internal__exports_8h_a76186b95d58224047f0d5513ecbda736}{S\-I\-Ogetw} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, char $\ast$\hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Max\-Len)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{devil__internal__exports_8h_af576bf8ffa22a44e53018c67095ffbf0}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!assert@{assert}}
+\index{assert@{assert}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{assert}]{\setlength{\rightskip}{0pt plus 5cm}\#define assert(
+\begin{DoxyParamCaption}
+\item[{}]{x}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_af576bf8ffa22a44e53018c67095ffbf0}
+\hypertarget{devil__internal__exports_8h_a9e24f2c92d276ca8b885929d7e57eba2}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!iaalloc@{iaalloc}}
+\index{iaalloc@{iaalloc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{iaalloc}]{\setlength{\rightskip}{0pt plus 5cm}\#define iaalloc(
+\begin{DoxyParamCaption}
+\item[{}]{T, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~(T$\ast$){\bf icalloc}(sizeof(T), (n))}}\label{devil__internal__exports_8h_a9e24f2c92d276ca8b885929d7e57eba2}
+
+
+Allocate an array of type {\itshape T} with {\itshape n} elements. 
+
+\hypertarget{devil__internal__exports_8h_af42a6c8915ad61e5f2e71691ced46971}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Char\-Str\-Cpy@{i\-Char\-Str\-Cpy}}
+\index{i\-Char\-Str\-Cpy@{i\-Char\-Str\-Cpy}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Char\-Str\-Cpy}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Char\-Str\-Cpy~strcpy}}\label{devil__internal__exports_8h_af42a6c8915ad61e5f2e71691ced46971}
+\hypertarget{devil__internal__exports_8h_acbf96f5e011406688d3a7823d3f0b097}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Char\-Str\-I\-Cmp@{i\-Char\-Str\-I\-Cmp}}
+\index{i\-Char\-Str\-I\-Cmp@{i\-Char\-Str\-I\-Cmp}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Char\-Str\-I\-Cmp}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Char\-Str\-I\-Cmp~strcasecmp}}\label{devil__internal__exports_8h_acbf96f5e011406688d3a7823d3f0b097}
+\hypertarget{devil__internal__exports_8h_a575d330bd9c244a2c42bc3b855075cc3}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Char\-Str\-Len@{i\-Char\-Str\-Len}}
+\index{i\-Char\-Str\-Len@{i\-Char\-Str\-Len}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Char\-Str\-Len}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Char\-Str\-Len~strlen}}\label{devil__internal__exports_8h_a575d330bd9c244a2c42bc3b855075cc3}
+\hypertarget{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!I\-N\-L\-I\-N\-E@{I\-N\-L\-I\-N\-E}}
+\index{I\-N\-L\-I\-N\-E@{I\-N\-L\-I\-N\-E}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{I\-N\-L\-I\-N\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\-N\-L\-I\-N\-E~inline}}\label{devil__internal__exports_8h_a2eb6f9e0395b47b8d5e3eeae4fe0c116}
+\hypertarget{devil__internal__exports_8h_aea8af68bb1b63edb9c6762707b3facf0}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ioalloc@{ioalloc}}
+\index{ioalloc@{ioalloc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ioalloc}]{\setlength{\rightskip}{0pt plus 5cm}\#define ioalloc(
+\begin{DoxyParamCaption}
+\item[{}]{T}
+\end{DoxyParamCaption}
+)~{\bf iaalloc}(T, 1)}}\label{devil__internal__exports_8h_aea8af68bb1b63edb9c6762707b3facf0}
+
+
+Allocate one object of type {\itshape T}. 
+
+\hypertarget{devil__internal__exports_8h_ad4c70512f61de55205273708b946d8c2}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Cat@{i\-Str\-Cat}}
+\index{i\-Str\-Cat@{i\-Str\-Cat}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Cat}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Str\-Cat~strcat}}\label{devil__internal__exports_8h_ad4c70512f61de55205273708b946d8c2}
+\hypertarget{devil__internal__exports_8h_abab57f6f93210d087a47e2250ed1e001}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Cmp@{i\-Str\-Cmp}}
+\index{i\-Str\-Cmp@{i\-Str\-Cmp}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Cmp}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Str\-Cmp~strcmp}}\label{devil__internal__exports_8h_abab57f6f93210d087a47e2250ed1e001}
+\hypertarget{devil__internal__exports_8h_a9db7566839c88fc79caf7532ace9eb40}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Cpy@{i\-Str\-Cpy}}
+\index{i\-Str\-Cpy@{i\-Str\-Cpy}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Cpy}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Str\-Cpy~strcpy}}\label{devil__internal__exports_8h_a9db7566839c88fc79caf7532ace9eb40}
+\hypertarget{devil__internal__exports_8h_a4cfabfddde204087ccfac58bdfb4fcc6}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Icmp@{i\-Str\-Icmp}}
+\index{i\-Str\-Icmp@{i\-Str\-Icmp}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Icmp}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Str\-Icmp~{\bf i\-Char\-Str\-I\-Cmp}}}\label{devil__internal__exports_8h_a4cfabfddde204087ccfac58bdfb4fcc6}
+\hypertarget{devil__internal__exports_8h_aba570311d37628c801747f066ed667a4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Len@{i\-Str\-Len}}
+\index{i\-Str\-Len@{i\-Str\-Len}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Len}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Str\-Len~strlen}}\label{devil__internal__exports_8h_aba570311d37628c801747f066ed667a4}
+\hypertarget{devil__internal__exports_8h_aeb1992d7dda2d7e993c72882c76f23cb}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oclose@{S\-I\-Oclose}}
+\index{S\-I\-Oclose@{S\-I\-Oclose}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oclose}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oclose(
+\begin{DoxyParamCaption}
+\item[{}]{io}
+\end{DoxyParamCaption}
+)~\{ if ((io)-\/$>$close) (io)-\/$>$close((io)-\/$>$handle); (io)-\/$>$handle = N\-U\-L\-L; \}}}\label{devil__internal__exports_8h_aeb1992d7dda2d7e993c72882c76f23cb}
+\hypertarget{devil__internal__exports_8h_aba0dc8a0ddac66ce028990f9faf005bd}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oeof@{S\-I\-Oeof}}
+\index{S\-I\-Oeof@{S\-I\-Oeof}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oeof}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oeof(
+\begin{DoxyParamCaption}
+\item[{}]{io}
+\end{DoxyParamCaption}
+)~(io)-\/$>$eof    ((io)-\/$>$handle               )}}\label{devil__internal__exports_8h_aba0dc8a0ddac66ce028990f9faf005bd}
+\hypertarget{devil__internal__exports_8h_a2ba10310586e624ffcfb8d85f8e5c570}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Ogetc@{S\-I\-Ogetc}}
+\index{S\-I\-Ogetc@{S\-I\-Ogetc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Ogetc}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Ogetc(
+\begin{DoxyParamCaption}
+\item[{}]{io}
+\end{DoxyParamCaption}
+)~(io)-\/$>$getchar((io)-\/$>$handle               )}}\label{devil__internal__exports_8h_a2ba10310586e624ffcfb8d85f8e5c570}
+\hypertarget{devil__internal__exports_8h_ad5129e991b049d517155e1ed2fc0689a}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oopen\-R\-O@{S\-I\-Oopen\-R\-O}}
+\index{S\-I\-Oopen\-R\-O@{S\-I\-Oopen\-R\-O}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oopen\-R\-O}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oopen\-R\-O(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{f}
+\end{DoxyParamCaption}
+)~((io)-\/$>$open\-Read\-Only ? (io)-\/$>$open\-Read\-Only((io)-\/$>$handle) \-: N\-U\-L\-L)}}\label{devil__internal__exports_8h_ad5129e991b049d517155e1ed2fc0689a}
+\hypertarget{devil__internal__exports_8h_a8794ae83ce0ae356e0fb97b989ece65f}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oopen\-W\-R@{S\-I\-Oopen\-W\-R}}
+\index{S\-I\-Oopen\-W\-R@{S\-I\-Oopen\-W\-R}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oopen\-W\-R}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oopen\-W\-R(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{f}
+\end{DoxyParamCaption}
+)~((io)-\/$>$open\-Write    ? (io)-\/$>$open\-Write   ((io)-\/$>$handle) \-: N\-U\-L\-L)}}\label{devil__internal__exports_8h_a8794ae83ce0ae356e0fb97b989ece65f}
+\hypertarget{devil__internal__exports_8h_a4b657ddb17abf912c8730177f08485da}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Opad@{S\-I\-Opad}}
+\index{S\-I\-Opad@{S\-I\-Opad}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Opad}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Opad(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~for ({\bf I\-Luint} {\bf i}=0; {\bf i}$<$n; {\bf i}++) {\bf S\-I\-Oputc}((io), 0);}}\label{devil__internal__exports_8h_a4b657ddb17abf912c8730177f08485da}
+\hypertarget{devil__internal__exports_8h_a39bbec20651382d64037d6fed1741774}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oputc@{S\-I\-Oputc}}
+\index{S\-I\-Oputc@{S\-I\-Oputc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oputc}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oputc(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{c}
+\end{DoxyParamCaption}
+)~(io)-\/$>$putchar((c), (io)-\/$>$handle          )}}\label{devil__internal__exports_8h_a39bbec20651382d64037d6fed1741774}
+\hypertarget{devil__internal__exports_8h_af56cc69d38dd3f443d5bad5618691766}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oputs@{S\-I\-Oputs}}
+\index{S\-I\-Oputs@{S\-I\-Oputs}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oputs}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oputs(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{s}
+\end{DoxyParamCaption}
+)~{\bf S\-I\-Owrite}(io, s, strlen(s), 1)}}\label{devil__internal__exports_8h_af56cc69d38dd3f443d5bad5618691766}
+\hypertarget{devil__internal__exports_8h_ad2e01566e7121c945facc1b9ff7017b6}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oread@{S\-I\-Oread}}
+\index{S\-I\-Oread@{S\-I\-Oread}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oread}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oread(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{p, }
+\item[{}]{s, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~(io)-\/$>$read   ((io)-\/$>$handle, (p), (s), (n))}}\label{devil__internal__exports_8h_ad2e01566e7121c945facc1b9ff7017b6}
+\hypertarget{devil__internal__exports_8h_a014c284eb1eb6102157e08722402b496}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Oseek@{S\-I\-Oseek}}
+\index{S\-I\-Oseek@{S\-I\-Oseek}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Oseek}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Oseek(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{s, }
+\item[{}]{w}
+\end{DoxyParamCaption}
+)~(io)-\/$>$seek   ((io)-\/$>$handle,      (s), (w))}}\label{devil__internal__exports_8h_a014c284eb1eb6102157e08722402b496}
+\hypertarget{devil__internal__exports_8h_adadb2d059fb56325660d98ca86bdc9b4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Otell@{S\-I\-Otell}}
+\index{S\-I\-Otell@{S\-I\-Otell}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Otell}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Otell(
+\begin{DoxyParamCaption}
+\item[{}]{io}
+\end{DoxyParamCaption}
+)~(io)-\/$>$tell   ((io)-\/$>$handle               )}}\label{devil__internal__exports_8h_adadb2d059fb56325660d98ca86bdc9b4}
+\hypertarget{devil__internal__exports_8h_a8f484b7a85bd11dbccbba4bcb0492635}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Owrite@{S\-I\-Owrite}}
+\index{S\-I\-Owrite@{S\-I\-Owrite}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Owrite}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\-I\-Owrite(
+\begin{DoxyParamCaption}
+\item[{}]{io, }
+\item[{}]{p, }
+\item[{}]{s, }
+\item[{}]{n}
+\end{DoxyParamCaption}
+)~(io)-\/$>$write  ((p), (s), (n), (io)-\/$>$handle)}}\label{devil__internal__exports_8h_a8f484b7a85bd11dbccbba4bcb0492635}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{devil__internal__exports_8h_a2013f10e057d627f97e50f39c284d28e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!I\-Limage@{I\-Limage}}
+\index{I\-Limage@{I\-Limage}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{I\-Limage}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I\-Limage}  {\bf I\-Limage}}}\label{devil__internal__exports_8h_a2013f10e057d627f97e50f39c284d28e}
+
+
+The Fundamental Image structure. 
+
+Every bit of information about an image is stored in this internal structure. \hypertarget{devil__internal__exports_8h_a7c1f98c77c36e2f2faecf64ab20f9871}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!I\-Lpal@{I\-Lpal}}
+\index{I\-Lpal@{I\-Lpal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{I\-Lpal}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I\-Lpal}  {\bf I\-Lpal}}}\label{devil__internal__exports_8h_a7c1f98c77c36e2f2faecf64ab20f9871}
+
+
+Basic Palette struct. 
+
+\hypertarget{devil__internal__exports_8h_ad6231e5f83fb18a4c1bb835908319d36}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-O@{S\-I\-O}}
+\index{S\-I\-O@{S\-I\-O}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-O}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf S\-I\-O}  {\bf S\-I\-O}}}\label{devil__internal__exports_8h_ad6231e5f83fb18a4c1bb835908319d36}
+
+
+\subsection{Function Documentation}
+\hypertarget{devil__internal__exports_8h_ad7d39eb4baa250019119d81f9055a6e9}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ialloc@{ialloc}}
+\index{ialloc@{ialloc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ialloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ialloc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lsizei}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad7d39eb4baa250019119d81f9055a6e9}
+\hypertarget{devil__internal__exports_8h_ab6e8060650fd03fc6aa0a15ef7dcfd38}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Bind\-Image\-Temp@{i\-Bind\-Image\-Temp}}
+\index{i\-Bind\-Image\-Temp@{i\-Bind\-Image\-Temp}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Bind\-Image\-Temp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Bind\-Image\-Temp (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ab6e8060650fd03fc6aa0a15ef7dcfd38}
+\hypertarget{devil__internal__exports_8h_a14e7c6b7e76348fb9dc743c17bbba34d}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!icalloc@{icalloc}}
+\index{icalloc@{icalloc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{icalloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} icalloc (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\-Lsizei}}]{Size, }
+\item[{const {\bf I\-Lsizei}}]{Num}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a14e7c6b7e76348fb9dc743c17bbba34d}
+\hypertarget{devil__internal__exports_8h_a4c06c4ee31018f531af608d09df88a8a}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Char\-Str\-Dup@{i\-Char\-Str\-Dup}}
+\index{i\-Char\-Str\-Dup@{i\-Char\-Str\-Dup}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Char\-Str\-Dup}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Char\-Str\-Dup (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{Str}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a4c06c4ee31018f531af608d09df88a8a}
+\hypertarget{devil__internal__exports_8h_aa2e8973b170f8beb82d7b2265b8a6680}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Check\-Extension@{i\-Check\-Extension}}
+\index{i\-Check\-Extension@{i\-Check\-Extension}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Check\-Extension}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Check\-Extension (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{Arg, }
+\item[{{\bf I\-Lconst\-\_\-string}}]{Ext}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_aa2e8973b170f8beb82d7b2265b8a6680}
+\hypertarget{devil__internal__exports_8h_a792ea6d6158a723a4405ce340b06a54f}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Convert\-Image@{i\-Convert\-Image}}
+\index{i\-Convert\-Image@{i\-Convert\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Convert\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Convert\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lenum}}]{Dest\-Format, }
+\item[{{\bf I\-Lenum}}]{Dest\-Type}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a792ea6d6158a723a4405ce340b06a54f}
+\hypertarget{devil__internal__exports_8h_a54096b235d8713ab24bc630af37cedc4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Convert\-Pal@{i\-Convert\-Pal}}
+\index{i\-Convert\-Pal@{i\-Convert\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Convert\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lpal}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Convert\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Pal, }
+\item[{{\bf I\-Lenum}}]{Dest\-Format}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a54096b235d8713ab24bc630af37cedc4}
+\hypertarget{devil__internal__exports_8h_a4a20740215741e9b8da0c11541b4f440}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Copy\-Pal@{i\-Copy\-Pal}}
+\index{i\-Copy\-Pal@{i\-Copy\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Copy\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lpal}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Copy\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a4a20740215741e9b8da0c11541b4f440}
+\hypertarget{devil__internal__exports_8h_a16f8bb72f4b3f1a9984ed4b370e2ba48}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Flip\-Buffer@{i\-Flip\-Buffer}}
+\index{i\-Flip\-Buffer@{i\-Flip\-Buffer}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Flip\-Buffer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Flip\-Buffer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{buff, }
+\item[{{\bf I\-Luint}}]{depth, }
+\item[{{\bf I\-Luint}}]{line\-\_\-size, }
+\item[{{\bf I\-Luint}}]{line\-\_\-num}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a16f8bb72f4b3f1a9984ed4b370e2ba48}
+\hypertarget{devil__internal__exports_8h_aec7010d5cb81f847c8fd4b709c235d79}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Flip\-Image@{i\-Flip\-Image}}
+\index{i\-Flip\-Image@{i\-Flip\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Flip\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Flip\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_aec7010d5cb81f847c8fd4b709c235d79}
+\hypertarget{devil__internal__exports_8h_a12ccd2c949e934025b536f2de79427ae}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ifree@{ifree}}
+\index{ifree@{ifree}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ifree}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ifree (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Ptr}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a12ccd2c949e934025b536f2de79427ae}
+\hypertarget{devil__internal__exports_8h_ad13aea2fb48e09ad3217e032d8e0eca4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Base\-Image@{i\-Get\-Base\-Image}}
+\index{i\-Get\-Base\-Image@{i\-Get\-Base\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Base\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Base\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad13aea2fb48e09ad3217e032d8e0eca4}
+\hypertarget{devil__internal__exports_8h_a514878db68bbcabb10fbbbc09bec8908}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Cur\-Image@{i\-Get\-Cur\-Image}}
+\index{i\-Get\-Cur\-Image@{i\-Get\-Cur\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a514878db68bbcabb10fbbbc09bec8908}
+\hypertarget{devil__internal__exports_8h_aa6684d535ce808f31be2b2b754d6620f}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Extension@{i\-Get\-Extension}}
+\index{i\-Get\-Extension@{i\-Get\-Extension}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Extension}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lstring} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Extension (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_aa6684d535ce808f31be2b2b754d6620f}
+\hypertarget{devil__internal__exports_8h_a96003146e14bb47f712e104bbf07b64c}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Flipped@{i\-Get\-Flipped}}
+\index{i\-Get\-Flipped@{i\-Get\-Flipped}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Flipped}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lubyte}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Flipped (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a96003146e14bb47f712e104bbf07b64c}
+\hypertarget{devil__internal__exports_8h_a064aad2442c55048ced653ce69da31f0}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Image@{i\-Get\-Image}}
+\index{i\-Get\-Image@{i\-Get\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a064aad2442c55048ced653ce69da31f0}
+\hypertarget{devil__internal__exports_8h_ad745258f906f34ea230817cf6ffba721}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Integer\-Image@{i\-Get\-Integer\-Image}}
+\index{i\-Get\-Integer\-Image@{i\-Get\-Integer\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Integer\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Integer\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lenum}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad745258f906f34ea230817cf6ffba721}
+
+
+Sets Param equal to the current value of the Mode. 
+
+\hypertarget{devil__internal__exports_8h_a8dc92163e45cd8d05ff3c5db736d142a}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Mipmap@{i\-Get\-Mipmap}}
+\index{i\-Get\-Mipmap@{i\-Get\-Mipmap}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Mipmap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Mipmap (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a8dc92163e45cd8d05ff3c5db736d142a}
+\hypertarget{devil__internal__exports_8h_a1e9a56784f1fb080f064f08cf528e0c6}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Get\-Sub\-Image@{i\-Get\-Sub\-Image}}
+\index{i\-Get\-Sub\-Image@{i\-Get\-Sub\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Get\-Sub\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Sub\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a1e9a56784f1fb080f064f08cf528e0c6}
+
+
+Used for setting the current image if it is an animation. 
+
+\hypertarget{devil__internal__exports_8h_ad84f6056ea1add9c49776b33b07ffce6}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Clear\-Image\-\_\-@{il\-Clear\-Image\-\_\-}}
+\index{il\-Clear\-Image\-\_\-@{il\-Clear\-Image\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Clear\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Clear\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad84f6056ea1add9c49776b33b07ffce6}
+\hypertarget{devil__internal__exports_8h_af184305c471b662673a5ca4c352dd05b}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Close\-Image@{il\-Close\-Image}}
+\index{il\-Close\-Image@{il\-Close\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Close\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Close\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_af184305c471b662673a5ca4c352dd05b}
+
+
+Closes Image and frees all memory associated with it. 
+
+\hypertarget{devil__internal__exports_8h_a27fa8759c965f3fde4d4670fc76bf85e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Close\-Pal@{il\-Close\-Pal}}
+\index{il\-Close\-Pal@{il\-Close\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Close\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Close\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Palette}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a27fa8759c965f3fde4d4670fc76bf85e}
+
+
+Closes Palette and frees all memory associated with it. 
+
+\hypertarget{devil__internal__exports_8h_adf7c27fb65c6b82a5f4f5e3d94816ab7}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Convert\-Buffer@{il\-Convert\-Buffer}}
+\index{il\-Convert\-Buffer@{il\-Convert\-Buffer}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Convert\-Buffer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Convert\-Buffer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Size\-Of\-Data, }
+\item[{{\bf I\-Lenum}}]{Src\-Format, }
+\item[{{\bf I\-Lenum}}]{Dest\-Format, }
+\item[{{\bf I\-Lenum}}]{Src\-Type, }
+\item[{{\bf I\-Lenum}}]{Dest\-Type, }
+\item[{{\bf I\-Lpal} $\ast$}]{Src\-Pal, }
+\item[{{\bf void} $\ast$}]{Buffer}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_adf7c27fb65c6b82a5f4f5e3d94816ab7}
+\hypertarget{devil__internal__exports_8h_acdc61520a0dbec909868fb13ba3d78a8}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Copy\-Image\-\_\-@{il\-Copy\-Image\-\_\-}}
+\index{il\-Copy\-Image\-\_\-@{il\-Copy\-Image\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Copy\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Copy\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_acdc61520a0dbec909868fb13ba3d78a8}
+\hypertarget{devil__internal__exports_8h_a5e75115109e9ae1fa01fe1fc150f05d4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Copy\-Image\-Attr@{il\-Copy\-Image\-Attr}}
+\index{il\-Copy\-Image\-Attr@{il\-Copy\-Image\-Attr}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Copy\-Image\-Attr}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Copy\-Image\-Attr (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Dest, }
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a5e75115109e9ae1fa01fe1fc150f05d4}
+\hypertarget{devil__internal__exports_8h_a5392741ed8656f215931b79470af205c}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Bpc\-Type@{il\-Get\-Bpc\-Type}}
+\index{il\-Get\-Bpc\-Type@{il\-Get\-Bpc\-Type}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Bpc\-Type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lubyte} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Bpc\-Type (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Type}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a5392741ed8656f215931b79470af205c}
+\hypertarget{devil__internal__exports_8h_ad209225f56d2dd4e478a84961f38137e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Bpp\-Format@{il\-Get\-Bpp\-Format}}
+\index{il\-Get\-Bpp\-Format@{il\-Get\-Bpp\-Format}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Bpp\-Format}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lubyte} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Bpp\-Format (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad209225f56d2dd4e478a84961f38137e}
+\hypertarget{devil__internal__exports_8h_a160c4d0aedfa5a7815f5e67ee06d0cde}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Bpp\-Pal@{il\-Get\-Bpp\-Pal}}
+\index{il\-Get\-Bpp\-Pal@{il\-Get\-Bpp\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Bpp\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lubyte} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Bpp\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Pal\-Type}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a160c4d0aedfa5a7815f5e67ee06d0cde}
+\hypertarget{devil__internal__exports_8h_a39cba432b26ef9a954392998da828094}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Clear@{il\-Get\-Clear}}
+\index{il\-Get\-Clear@{il\-Get\-Clear}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Clear}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Clear (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Colours, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a39cba432b26ef9a954392998da828094}
+\hypertarget{devil__internal__exports_8h_a9ac53300ac678643a736d7b00c8dae4e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Cur\-Name@{il\-Get\-Cur\-Name}}
+\index{il\-Get\-Cur\-Name@{il\-Get\-Cur\-Name}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Cur\-Name}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Cur\-Name (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a9ac53300ac678643a736d7b00c8dae4e}
+\hypertarget{devil__internal__exports_8h_a71f9c27a880b43350f3534172772ce55}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Format\-Bpp@{il\-Get\-Format\-Bpp}}
+\index{il\-Get\-Format\-Bpp@{il\-Get\-Format\-Bpp}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Format\-Bpp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lenum} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Format\-Bpp (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Bpp}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a71f9c27a880b43350f3534172772ce55}
+\hypertarget{devil__internal__exports_8h_a2fdde12d429d22d39a6961d90c6127a3}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Pal\-Base\-Type@{il\-Get\-Pal\-Base\-Type}}
+\index{il\-Get\-Pal\-Base\-Type@{il\-Get\-Pal\-Base\-Type}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Pal\-Base\-Type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lenum} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Pal\-Base\-Type (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Pal\-Type}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a2fdde12d429d22d39a6961d90c6127a3}
+\hypertarget{devil__internal__exports_8h_a59ac998348a25c53166e48d5715e754b}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Get\-Type\-Bpc@{il\-Get\-Type\-Bpc}}
+\index{il\-Get\-Type\-Bpc@{il\-Get\-Type\-Bpc}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Get\-Type\-Bpc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lenum} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Type\-Bpc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Bpc}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a59ac998348a25c53166e48d5715e754b}
+\hypertarget{devil__internal__exports_8h_a1166b7189a4996482b1ea70dfb9eabd0}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Init\-Image@{il\-Init\-Image}}
+\index{il\-Init\-Image@{il\-Init\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Init\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Init\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a1166b7189a4996482b1ea70dfb9eabd0}
+\hypertarget{devil__internal__exports_8h_ad142fddebfccd088bc359f0e64291a5e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Is\-Valid\-Pal@{il\-Is\-Valid\-Pal}}
+\index{il\-Is\-Valid\-Pal@{il\-Is\-Valid\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Is\-Valid\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Is\-Valid\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Palette}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ad142fddebfccd088bc359f0e64291a5e}
+\hypertarget{devil__internal__exports_8h_ab024c2ced9e3969fdab3780f3628746d}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-New\-Image@{il\-New\-Image}}
+\index{il\-New\-Image@{il\-New\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-New\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-New\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lubyte}}]{Bpc}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ab024c2ced9e3969fdab3780f3628746d}
+\hypertarget{devil__internal__exports_8h_a46184dc38bdae9fe9ffaff1b67e8dd4c}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-New\-Image\-Full@{il\-New\-Image\-Full}}
+\index{il\-New\-Image\-Full@{il\-New\-Image\-Full}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-New\-Image\-Full}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-New\-Image\-Full (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a46184dc38bdae9fe9ffaff1b67e8dd4c}
+\hypertarget{devil__internal__exports_8h_a1de45d708b87053677cd9ff7592bfe9c}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Next\-Power2@{il\-Next\-Power2}}
+\index{il\-Next\-Power2@{il\-Next\-Power2}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Next\-Power2}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Next\-Power2 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Num}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a1de45d708b87053677cd9ff7592bfe9c}
+\hypertarget{devil__internal__exports_8h_a7b289e75fee0b0c15a2af071b940868c}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Replace\-Cur\-Image@{il\-Replace\-Cur\-Image}}
+\index{il\-Replace\-Cur\-Image@{il\-Replace\-Cur\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Replace\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Replace\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a7b289e75fee0b0c15a2af071b940868c}
+\hypertarget{devil__internal__exports_8h_a6e6aa151a3c0f6ec397ff4a670985e8b}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Resize\-Image@{il\-Resize\-Image}}
+\index{il\-Resize\-Image@{il\-Resize\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Resize\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Resize\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lubyte}}]{Bpc}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a6e6aa151a3c0f6ec397ff4a670985e8b}
+\hypertarget{devil__internal__exports_8h_a30e1a59af19f9e4542e16a1a95158680}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Set\-Cur\-Image@{il\-Set\-Cur\-Image}}
+\index{il\-Set\-Cur\-Image@{il\-Set\-Cur\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Set\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Set\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a30e1a59af19f9e4542e16a1a95158680}
+\hypertarget{devil__internal__exports_8h_a461ccdc9c1f94a9b2da2eb886b502bc4}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Tex\-Image\-\_\-@{il\-Tex\-Image\-\_\-}}
+\index{il\-Tex\-Image\-\_\-@{il\-Tex\-Image\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Tex\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a461ccdc9c1f94a9b2da2eb886b502bc4}
+\hypertarget{devil__internal__exports_8h_a98bd39f61d9aa6ed6c7736ab5a59e5b0}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Tex\-Sub\-Image\-\_\-@{il\-Tex\-Sub\-Image\-\_\-}}
+\index{il\-Tex\-Sub\-Image\-\_\-@{il\-Tex\-Sub\-Image\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Tex\-Sub\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Sub\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a98bd39f61d9aa6ed6c7736ab5a59e5b0}
+\hypertarget{devil__internal__exports_8h_ac9f42ca4f6f44347115adfab70d661d2}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!il\-Type\-From\-Ext@{il\-Type\-From\-Ext}}
+\index{il\-Type\-From\-Ext@{il\-Type\-From\-Ext}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{il\-Type\-From\-Ext}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lenum} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Type\-From\-Ext (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ac9f42ca4f6f44347115adfab70d661d2}
+\hypertarget{devil__internal__exports_8h_ab4c10bd425c1e96ae961972473ed25c1}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ilu\-Rotate3\-D\-\_\-@{ilu\-Rotate3\-D\-\_\-}}
+\index{ilu\-Rotate3\-D\-\_\-@{ilu\-Rotate3\-D\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ilu\-Rotate3\-D\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Rotate3\-D\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lfloat}}]{x, }
+\item[{{\bf I\-Lfloat}}]{y, }
+\item[{{\bf I\-Lfloat}}]{z, }
+\item[{{\bf I\-Lfloat}}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ab4c10bd425c1e96ae961972473ed25c1}
+\hypertarget{devil__internal__exports_8h_adaa309d3b859d93d56eee8d389844b18}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ilu\-Rotate\-\_\-@{ilu\-Rotate\-\_\-}}
+\index{ilu\-Rotate\-\_\-@{ilu\-Rotate\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ilu\-Rotate\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Rotate\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lfloat}}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_adaa309d3b859d93d56eee8d389844b18}
+
+
+Rotates a bitmap any angle. 
+
+\hypertarget{devil__internal__exports_8h_a760549169fd27379ef82b577ec53e474}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!ilu\-Scale\-\_\-@{ilu\-Scale\-\_\-}}
+\index{ilu\-Scale\-\_\-@{ilu\-Scale\-\_\-}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{ilu\-Scale\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Scale\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a760549169fd27379ef82b577ec53e474}
+\hypertarget{devil__internal__exports_8h_a5f8387a1b8f4f80e0b04b8d1aebeb59b}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Mem\-Swap@{i\-Mem\-Swap}}
+\index{i\-Mem\-Swap@{i\-Mem\-Swap}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Mem\-Swap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Mem\-Swap (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{, }
+\item[{{\bf I\-Lubyte} $\ast$}]{, }
+\item[{const {\bf I\-Luint}}]{}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a5f8387a1b8f4f80e0b04b8d1aebeb59b}
+\hypertarget{devil__internal__exports_8h_a109ed504a97e73b014d6dd45ae154cff}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Mirror\-Image@{i\-Mirror\-Image}}
+\index{i\-Mirror\-Image@{i\-Mirror\-Image}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Mirror\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Mirror\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a109ed504a97e73b014d6dd45ae154cff}
+
+
+Mirrors an image over its y axis. 
+
+\hypertarget{devil__internal__exports_8h_a19faaefcd622db239108dd94c9c5baad}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Multi\-Byte\-From\-Wide@{i\-Multi\-Byte\-From\-Wide}}
+\index{i\-Multi\-Byte\-From\-Wide@{i\-Multi\-Byte\-From\-Wide}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Multi\-Byte\-From\-Wide}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Multi\-Byte\-From\-Wide (
+\begin{DoxyParamCaption}
+\item[{const wchar\-\_\-t $\ast$}]{Wide}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a19faaefcd622db239108dd94c9c5baad}
+\hypertarget{devil__internal__exports_8h_abb551c8ff3f068aa673b5323f106a8b5}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Reset\-Read@{i\-Reset\-Read}}
+\index{i\-Reset\-Read@{i\-Reset\-Read}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Reset\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Reset\-Read (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_abb551c8ff3f068aa673b5323f106a8b5}
+\hypertarget{devil__internal__exports_8h_aacd713f3e703bfd55630b88af6f23450}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Reset\-Write@{i\-Reset\-Write}}
+\index{i\-Reset\-Write@{i\-Reset\-Write}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Reset\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Reset\-Write (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_aacd713f3e703bfd55630b88af6f23450}
+\hypertarget{devil__internal__exports_8h_aac01791723faa047a00269f02c503565}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Set\-Error@{i\-Set\-Error}}
+\index{i\-Set\-Error@{i\-Set\-Error}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Set\-Error}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Set\-Error (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Error}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_aac01791723faa047a00269f02c503565}
+\hypertarget{devil__internal__exports_8h_a9fbda63884fe1c185972a2e087752e3e}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Set\-Pal@{i\-Set\-Pal}}
+\index{i\-Set\-Pal@{i\-Set\-Pal}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Set\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Set\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lpal} $\ast$}]{Pal}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a9fbda63884fe1c185972a2e087752e3e}
+\hypertarget{devil__internal__exports_8h_a1a5b013d78b5d07e787e8ce4e2a543c8}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Str\-Dup@{i\-Str\-Dup}}
+\index{i\-Str\-Dup@{i\-Str\-Dup}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Str\-Dup}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lstring} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Str\-Dup (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{Str}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a1a5b013d78b5d07e787e8ce4e2a543c8}
+
+
+Glut's portability.\-txt says to use this... 
+
+\hypertarget{devil__internal__exports_8h_ae2725b65e2c6a4974fd7268c5160100a}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!i\-Wide\-From\-Multi\-Byte@{i\-Wide\-From\-Multi\-Byte}}
+\index{i\-Wide\-From\-Multi\-Byte@{i\-Wide\-From\-Multi\-Byte}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{i\-Wide\-From\-Multi\-Byte}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} wchar\-\_\-t$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Wide\-From\-Multi\-Byte (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{Multi}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_ae2725b65e2c6a4974fd7268c5160100a}
+\hypertarget{devil__internal__exports_8h_abb7a7f6d5dd7e667f001960735c0a0a8}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Ogets@{S\-I\-Ogets}}
+\index{S\-I\-Ogets@{S\-I\-Ogets}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Ogets}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} S\-I\-Ogets (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{char $\ast$}]{buffer, }
+\item[{{\bf I\-Luint}}]{maxlen}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_abb7a7f6d5dd7e667f001960735c0a0a8}
+\hypertarget{devil__internal__exports_8h_a76186b95d58224047f0d5513ecbda736}{\index{devil\-\_\-internal\-\_\-exports.\-h@{devil\-\_\-internal\-\_\-exports.\-h}!S\-I\-Ogetw@{S\-I\-Ogetw}}
+\index{S\-I\-Ogetw@{S\-I\-Ogetw}!devil_internal_exports.h@{devil\-\_\-internal\-\_\-exports.\-h}}
+\subsubsection[{S\-I\-Ogetw}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} S\-I\-Ogetw (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{char $\ast$}]{buffer, }
+\item[{{\bf I\-Luint}}]{Max\-Len}
+\end{DoxyParamCaption}
+)}}\label{devil__internal__exports_8h_a76186b95d58224047f0d5513ecbda736}

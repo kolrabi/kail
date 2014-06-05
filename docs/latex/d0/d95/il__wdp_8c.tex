@@ -1,0 +1,192 @@
+\hypertarget{il__wdp_8c}{\section{src/\-I\-L/formats/il\-\_\-wdp.c File Reference}
+\label{il__wdp_8c}\index{src/\-I\-L/formats/il\-\_\-wdp.\-c@{src/\-I\-L/formats/il\-\_\-wdp.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$W\-M\-P\-Glue.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-wdp.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_ab53facf031219d01a98b90743bb6da5a}{i\-Close\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$$\ast$pp\-W\-S)
+\item 
+Bool \hyperlink{il__wdp_8c_ad2dd005efffd3ab1822f86cc2ab71df3}{i\-E\-O\-S\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$p\-W\-S)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a386b837b53da0cf601557a80a063b228}{i\-Get\-Pos\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$p\-W\-S, size\-\_\-t $\ast$poff\-Pos)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a208efb903e18a95aa91903ec6e5e946e}{il\-Create\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$$\ast$pp\-W\-S, const char $\ast$sz\-Filename, const char $\ast$sz\-Mode)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__wdp_8c_a403965c883fa53d8a24ac7def3255458}{il\-Load\-Wdp} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\begin{DoxyCompactList}\small\item\em Reads a W\-D\-P file. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__wdp_8c_a40daa589907218298c3bb52f9f7cd70e}{il\-Load\-Wdp\-F} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} File)
+\begin{DoxyCompactList}\small\item\em Reads an already-\/opened W\-D\-P file. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__wdp_8c_a6fc2e17e68ba8c26d7e3191f03d529ab}{il\-Load\-Wdp\-L} (const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size)
+\begin{DoxyCompactList}\small\item\em Reads from a memory \char`\"{}lump\char`\"{} that contains a W\-D\-P. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__wdp_8c_a1e4916a5fbac3652ad8c18ca6129bad8}{i\-Load\-Wdp\-Internal} ()
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a98aee835181e1b72d1cb22661c01d7df}{il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File} (P\-K\-Image\-Decode $\ast$$\ast$pp\-Decoder)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a98bf429fba2730c9fe66ec5dea2f89d9}{il\-P\-K\-Create\-Factory} (P\-K\-Factory $\ast$$\ast$pp\-Factory, U32 u\-Version)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a94cc5e3fecd82f65809771be5e52f6a0}{il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L} (P\-K\-Image\-Encode $\ast$p\-I\-E, U32 c\-Line, U8 $\ast$pb\-Pixel, U32 cb\-Stride)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a916bef9ecb5a53520a5b059ea7f7d3b6}{i\-Read\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$p\-W\-S, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$pv, size\-\_\-t cb)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a986e22efdb41743140dc84e06500d4d5}{i\-Set\-Pos\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$p\-W\-S, size\-\_\-t off\-Pos)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a063ff4a647df86298fc71ff4e7c326c3}{i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext} (P\-K\-Codec\-Factory $\ast$p\-C\-Factory, const char $\ast$sz\-Ext, P\-K\-Image\-Encode $\ast$$\ast$pp\-I\-E)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a2d684e037f3936ec389e42d10376644e}{i\-Write\-W\-S\-\_\-\-File} (struct W\-M\-P\-Stream $\ast$p\-W\-S, const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$pv, size\-\_\-t cb)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_a7acf1d8fd9996f6901a383f023ed5f7f}{P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L} (P\-K\-Image\-Encode $\ast$$\ast$pp\-I\-E)
+\item 
+E\-R\-R \hyperlink{il__wdp_8c_ae20af8182467f64866f67c3bc045b803}{Write\-Dev\-I\-L\-Header} (P\-K\-Image\-Encode $\ast$p\-I\-E)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__wdp_8c_ab53facf031219d01a98b90743bb6da5a}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Close\-W\-S\-\_\-\-File@{i\-Close\-W\-S\-\_\-\-File}}
+\index{i\-Close\-W\-S\-\_\-\-File@{i\-Close\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Close\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Close\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$$\ast$}]{pp\-W\-S}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_ab53facf031219d01a98b90743bb6da5a}
+\hypertarget{il__wdp_8c_ad2dd005efffd3ab1822f86cc2ab71df3}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-E\-O\-S\-W\-S\-\_\-\-File@{i\-E\-O\-S\-W\-S\-\_\-\-File}}
+\index{i\-E\-O\-S\-W\-S\-\_\-\-File@{i\-E\-O\-S\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-E\-O\-S\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}Bool i\-E\-O\-S\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$}]{p\-W\-S}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_ad2dd005efffd3ab1822f86cc2ab71df3}
+\hypertarget{il__wdp_8c_a386b837b53da0cf601557a80a063b228}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Get\-Pos\-W\-S\-\_\-\-File@{i\-Get\-Pos\-W\-S\-\_\-\-File}}
+\index{i\-Get\-Pos\-W\-S\-\_\-\-File@{i\-Get\-Pos\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Get\-Pos\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Get\-Pos\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$}]{p\-W\-S, }
+\item[{size\-\_\-t $\ast$}]{poff\-Pos}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a386b837b53da0cf601557a80a063b228}
+\hypertarget{il__wdp_8c_a208efb903e18a95aa91903ec6e5e946e}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-Create\-W\-S\-\_\-\-File@{il\-Create\-W\-S\-\_\-\-File}}
+\index{il\-Create\-W\-S\-\_\-\-File@{il\-Create\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-Create\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R il\-Create\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$$\ast$}]{pp\-W\-S, }
+\item[{const char $\ast$}]{sz\-Filename, }
+\item[{const char $\ast$}]{sz\-Mode}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a208efb903e18a95aa91903ec6e5e946e}
+\hypertarget{il__wdp_8c_a403965c883fa53d8a24ac7def3255458}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-Load\-Wdp@{il\-Load\-Wdp}}
+\index{il\-Load\-Wdp@{il\-Load\-Wdp}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-Load\-Wdp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Load\-Wdp (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a403965c883fa53d8a24ac7def3255458}
+
+
+Reads a W\-D\-P file. 
+
+\hypertarget{il__wdp_8c_a40daa589907218298c3bb52f9f7cd70e}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-Load\-Wdp\-F@{il\-Load\-Wdp\-F}}
+\index{il\-Load\-Wdp\-F@{il\-Load\-Wdp\-F}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-Load\-Wdp\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Load\-Wdp\-F (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{File}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a40daa589907218298c3bb52f9f7cd70e}
+
+
+Reads an already-\/opened W\-D\-P file. 
+
+\hypertarget{il__wdp_8c_a6fc2e17e68ba8c26d7e3191f03d529ab}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-Load\-Wdp\-L@{il\-Load\-Wdp\-L}}
+\index{il\-Load\-Wdp\-L@{il\-Load\-Wdp\-L}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-Load\-Wdp\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Load\-Wdp\-L (
+\begin{DoxyParamCaption}
+\item[{const {\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a6fc2e17e68ba8c26d7e3191f03d529ab}
+
+
+Reads from a memory \char`\"{}lump\char`\"{} that contains a W\-D\-P. 
+
+\hypertarget{il__wdp_8c_a1e4916a5fbac3652ad8c18ca6129bad8}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Load\-Wdp\-Internal@{i\-Load\-Wdp\-Internal}}
+\index{i\-Load\-Wdp\-Internal@{i\-Load\-Wdp\-Internal}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Load\-Wdp\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Wdp\-Internal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a1e4916a5fbac3652ad8c18ca6129bad8}
+\hypertarget{il__wdp_8c_a98aee835181e1b72d1cb22661c01d7df}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File@{il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File}}
+\index{il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File@{il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R il\-P\-K\-Codec\-Factory\-\_\-\-Create\-Decoder\-From\-File (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Image\-Decode $\ast$$\ast$}]{pp\-Decoder}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a98aee835181e1b72d1cb22661c01d7df}
+\hypertarget{il__wdp_8c_a98bf429fba2730c9fe66ec5dea2f89d9}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-P\-K\-Create\-Factory@{il\-P\-K\-Create\-Factory}}
+\index{il\-P\-K\-Create\-Factory@{il\-P\-K\-Create\-Factory}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-P\-K\-Create\-Factory}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R il\-P\-K\-Create\-Factory (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Factory $\ast$$\ast$}]{pp\-Factory, }
+\item[{U32}]{u\-Version}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a98bf429fba2730c9fe66ec5dea2f89d9}
+\hypertarget{il__wdp_8c_a94cc5e3fecd82f65809771be5e52f6a0}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L@{il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L}}
+\index{il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L@{il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R il\-P\-K\-Image\-Encode\-\_\-\-Write\-Pixels\-\_\-\-Dev\-I\-L (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Image\-Encode $\ast$}]{p\-I\-E, }
+\item[{U32}]{c\-Line, }
+\item[{U8 $\ast$}]{pb\-Pixel, }
+\item[{U32}]{cb\-Stride}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a94cc5e3fecd82f65809771be5e52f6a0}
+\hypertarget{il__wdp_8c_a916bef9ecb5a53520a5b059ea7f7d3b6}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Read\-W\-S\-\_\-\-File@{i\-Read\-W\-S\-\_\-\-File}}
+\index{i\-Read\-W\-S\-\_\-\-File@{i\-Read\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Read\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Read\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$}]{p\-W\-S, }
+\item[{{\bf void} $\ast$}]{pv, }
+\item[{size\-\_\-t}]{cb}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a916bef9ecb5a53520a5b059ea7f7d3b6}
+\hypertarget{il__wdp_8c_a986e22efdb41743140dc84e06500d4d5}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Set\-Pos\-W\-S\-\_\-\-File@{i\-Set\-Pos\-W\-S\-\_\-\-File}}
+\index{i\-Set\-Pos\-W\-S\-\_\-\-File@{i\-Set\-Pos\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Set\-Pos\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Set\-Pos\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$}]{p\-W\-S, }
+\item[{size\-\_\-t}]{off\-Pos}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a986e22efdb41743140dc84e06500d4d5}
+\hypertarget{il__wdp_8c_a063ff4a647df86298fc71ff4e7c326c3}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext@{i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext}}
+\index{i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext@{i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Wmp\-Dec\-App\-Create\-Encoder\-From\-Ext (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Codec\-Factory $\ast$}]{p\-C\-Factory, }
+\item[{const char $\ast$}]{sz\-Ext, }
+\item[{P\-K\-Image\-Encode $\ast$$\ast$}]{pp\-I\-E}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a063ff4a647df86298fc71ff4e7c326c3}
+\hypertarget{il__wdp_8c_a2d684e037f3936ec389e42d10376644e}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!i\-Write\-W\-S\-\_\-\-File@{i\-Write\-W\-S\-\_\-\-File}}
+\index{i\-Write\-W\-S\-\_\-\-File@{i\-Write\-W\-S\-\_\-\-File}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{i\-Write\-W\-S\-\_\-\-File}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R i\-Write\-W\-S\-\_\-\-File (
+\begin{DoxyParamCaption}
+\item[{struct W\-M\-P\-Stream $\ast$}]{p\-W\-S, }
+\item[{const {\bf void} $\ast$}]{pv, }
+\item[{size\-\_\-t}]{cb}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a2d684e037f3936ec389e42d10376644e}
+\hypertarget{il__wdp_8c_a7acf1d8fd9996f6901a383f023ed5f7f}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L@{P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L}}
+\index{P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L@{P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R P\-K\-Image\-Encode\-\_\-\-Create\-\_\-\-Dev\-I\-L (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Image\-Encode $\ast$$\ast$}]{pp\-I\-E}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_a7acf1d8fd9996f6901a383f023ed5f7f}
+\hypertarget{il__wdp_8c_ae20af8182467f64866f67c3bc045b803}{\index{il\-\_\-wdp.\-c@{il\-\_\-wdp.\-c}!Write\-Dev\-I\-L\-Header@{Write\-Dev\-I\-L\-Header}}
+\index{Write\-Dev\-I\-L\-Header@{Write\-Dev\-I\-L\-Header}!il_wdp.c@{il\-\_\-wdp.\-c}}
+\subsubsection[{Write\-Dev\-I\-L\-Header}]{\setlength{\rightskip}{0pt plus 5cm}E\-R\-R Write\-Dev\-I\-L\-Header (
+\begin{DoxyParamCaption}
+\item[{P\-K\-Image\-Encode $\ast$}]{p\-I\-E}
+\end{DoxyParamCaption}
+)}}\label{il__wdp_8c_ae20af8182467f64866f67c3bc045b803}

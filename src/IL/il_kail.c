@@ -923,7 +923,7 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
 }
 
 
-ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage)
+ILboolean ILAPIENTRY iCopyImage(ILimage *DestImage, ILimage *SrcImage)
 {
   if (SrcImage == NULL || SrcImage == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);

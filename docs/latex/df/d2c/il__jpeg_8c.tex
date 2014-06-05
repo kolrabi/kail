@@ -1,0 +1,262 @@
+\hypertarget{il__jpeg_8c}{\section{src/\-I\-L/formats/il\-\_\-jpeg.c File Reference}
+\label{il__jpeg_8c}\index{src/\-I\-L/formats/il\-\_\-jpeg.\-c@{src/\-I\-L/formats/il\-\_\-jpeg.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}jpeglib.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-jpeg.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$setjmp.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structiread__mgr}{iread\-\_\-mgr}
+\item 
+struct \hyperlink{structiwrite__mgr}{iwrite\-\_\-mgr}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__jpeg_8c_a8f53190540130db759820c0d9ab78f60}{I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}~4096
+\item 
+\#define \hyperlink{il__jpeg_8c_a8acf94def2dcba72a4fce097981e0aa7}{O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}~4096
+\item 
+\#define \hyperlink{il__jpeg_8c_a0eff802f1ca228046476209dc01c76ad}{R\-G\-B\-\_\-\-B\-L\-U\-E}~2
+\item 
+\#define \hyperlink{il__jpeg_8c_ab6c97468034c02fe204fd37036d9be15}{R\-G\-B\-\_\-\-G\-R\-E\-E\-N}~1
+\item 
+\#define \hyperlink{il__jpeg_8c_aa039288455af8a3812a35aa1e7b903e4}{R\-G\-B\-\_\-\-R\-E\-D}~0
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef \hyperlink{structiread__mgr}{iread\-\_\-mgr} $\ast$ \hyperlink{il__jpeg_8c_a1391602511d210f4a38ef17f0287f657}{iread\-\_\-ptr}
+\item 
+typedef \hyperlink{structiwrite__mgr}{iwrite\-\_\-mgr} $\ast$ \hyperlink{il__jpeg_8c_a8463917161e165b5cceda2c92ba97e31}{iwrite\-\_\-ptr}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il__jpeg_8c_a9266d12edfc71a567b49ec74520cdf02}{devil\-\_\-jpeg\-\_\-read\-\_\-init} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, j\-\_\-decompress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il__jpeg_8c_aa8dd0dd1dea9be8a46e8f372366c6a95}{devil\-\_\-jpeg\-\_\-write\-\_\-init} (j\-\_\-compress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il__jpeg_8c_ad29423c77a4142a1ec1771aa4a419a09}{empty\-\_\-output\-\_\-buffer} (j\-\_\-compress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__jpeg_8c_a3d8b885dd2158a3754e4b90148fa8616}{Exit\-Error\-Handle} (struct jpeg\-\_\-common\-\_\-struct $\ast$Jpeg\-Info)
+\item 
+\hyperlink{il__jpeg_8c_aa3542f61993ed4a526694556fac65941}{fill\-\_\-input\-\_\-buffer} (j\-\_\-decompress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jpeg_8c_a7d2a5746e80acd3b3b8e00681dd57104}{i\-Check\-Jpg} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Header\mbox{[}2\mbox{]})
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__jpeg_8c_a02102ac9554701f7aec16139c9cc9ed8}{i\-Get\-Jpg\-Head} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Header)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jpeg_8c_ae738a0263714ce4c087c1c1d8273eb92}{il\-Load\-From\-Jpeg\-Struct} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\-\_\-\-Jpeg\-Info)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jpeg_8c_a1b56489a71f2d8d34555e6b359302f5c}{i\-Load\-Jpeg\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jpeg_8c_a9bc978c6222b0f4e76dd3abc58ae0430}{il\-Save\-From\-Jpeg\-Struct} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\-\_\-\-Jpeg\-Info)
+\item 
+\hyperlink{il__jpeg_8c_abc7ed5278b728c7fd1cb2b00d5297c75}{init\-\_\-destination} (j\-\_\-compress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il__jpeg_8c_ada3118e56d083499ce141e98ec116648}{init\-\_\-source} (j\-\_\-decompress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__jpeg_8c_a0e1146b7473dc18080a71310ec6271a3}{i\-Save\-Jpeg\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__jpeg_8c_a99c567c8240edd80ebec96c36f5d6c5e}{Output\-Msg} (struct jpeg\-\_\-common\-\_\-struct $\ast$Jpeg\-Info)
+\item 
+\hyperlink{il__jpeg_8c_ae539a6d1c36b54a0ef6168fecdc8379e}{skip\-\_\-input\-\_\-data} (j\-\_\-decompress\-\_\-ptr cinfo, long num\-\_\-bytes)
+\item 
+\hyperlink{il__jpeg_8c_a6501130b84bb53734f08418196d00dc4}{term\-\_\-destination} (j\-\_\-compress\-\_\-ptr cinfo)
+\item 
+\hyperlink{il__jpeg_8c_a0337cf4ba81c0f78c48b5de379cca33e}{term\-\_\-source} (j\-\_\-decompress\-\_\-ptr cinfo)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__jpeg_8c_a72c250b704171b51b3d35dd47183db1c}{i\-Format\-Exts\-J\-P\-G} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__jpeg_8c_a90e41688442f86631604d6aa115bf60e}{i\-Format\-J\-P\-G}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__jpeg_8c_a8f53190540130db759820c0d9ab78f60}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E@{I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}}
+\index{I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E@{I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\-N\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E~4096}}\label{il__jpeg_8c_a8f53190540130db759820c0d9ab78f60}
+\hypertarget{il__jpeg_8c_a8acf94def2dcba72a4fce097981e0aa7}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E@{O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}}
+\index{O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E@{O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define O\-U\-T\-P\-U\-T\-\_\-\-B\-U\-F\-\_\-\-S\-I\-Z\-E~4096}}\label{il__jpeg_8c_a8acf94def2dcba72a4fce097981e0aa7}
+\hypertarget{il__jpeg_8c_a0eff802f1ca228046476209dc01c76ad}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!R\-G\-B\-\_\-\-B\-L\-U\-E@{R\-G\-B\-\_\-\-B\-L\-U\-E}}
+\index{R\-G\-B\-\_\-\-B\-L\-U\-E@{R\-G\-B\-\_\-\-B\-L\-U\-E}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{R\-G\-B\-\_\-\-B\-L\-U\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-G\-B\-\_\-\-B\-L\-U\-E~2}}\label{il__jpeg_8c_a0eff802f1ca228046476209dc01c76ad}
+\hypertarget{il__jpeg_8c_ab6c97468034c02fe204fd37036d9be15}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!R\-G\-B\-\_\-\-G\-R\-E\-E\-N@{R\-G\-B\-\_\-\-G\-R\-E\-E\-N}}
+\index{R\-G\-B\-\_\-\-G\-R\-E\-E\-N@{R\-G\-B\-\_\-\-G\-R\-E\-E\-N}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{R\-G\-B\-\_\-\-G\-R\-E\-E\-N}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-G\-B\-\_\-\-G\-R\-E\-E\-N~1}}\label{il__jpeg_8c_ab6c97468034c02fe204fd37036d9be15}
+\hypertarget{il__jpeg_8c_aa039288455af8a3812a35aa1e7b903e4}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!R\-G\-B\-\_\-\-R\-E\-D@{R\-G\-B\-\_\-\-R\-E\-D}}
+\index{R\-G\-B\-\_\-\-R\-E\-D@{R\-G\-B\-\_\-\-R\-E\-D}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{R\-G\-B\-\_\-\-R\-E\-D}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\-G\-B\-\_\-\-R\-E\-D~0}}\label{il__jpeg_8c_aa039288455af8a3812a35aa1e7b903e4}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__jpeg_8c_a1391602511d210f4a38ef17f0287f657}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!iread\-\_\-ptr@{iread\-\_\-ptr}}
+\index{iread\-\_\-ptr@{iread\-\_\-ptr}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{iread\-\_\-ptr}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf iread\-\_\-mgr}$\ast$ {\bf iread\-\_\-ptr}}}\label{il__jpeg_8c_a1391602511d210f4a38ef17f0287f657}
+\hypertarget{il__jpeg_8c_a8463917161e165b5cceda2c92ba97e31}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!iwrite\-\_\-ptr@{iwrite\-\_\-ptr}}
+\index{iwrite\-\_\-ptr@{iwrite\-\_\-ptr}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{iwrite\-\_\-ptr}]{\setlength{\rightskip}{0pt plus 5cm}typedef {\bf iwrite\-\_\-mgr}$\ast$ {\bf iwrite\-\_\-ptr}}}\label{il__jpeg_8c_a8463917161e165b5cceda2c92ba97e31}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__jpeg_8c_a9266d12edfc71a567b49ec74520cdf02}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!devil\-\_\-jpeg\-\_\-read\-\_\-init@{devil\-\_\-jpeg\-\_\-read\-\_\-init}}
+\index{devil\-\_\-jpeg\-\_\-read\-\_\-init@{devil\-\_\-jpeg\-\_\-read\-\_\-init}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{devil\-\_\-jpeg\-\_\-read\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}devil\-\_\-jpeg\-\_\-read\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{j\-\_\-decompress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a9266d12edfc71a567b49ec74520cdf02}
+\hypertarget{il__jpeg_8c_aa8dd0dd1dea9be8a46e8f372366c6a95}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!devil\-\_\-jpeg\-\_\-write\-\_\-init@{devil\-\_\-jpeg\-\_\-write\-\_\-init}}
+\index{devil\-\_\-jpeg\-\_\-write\-\_\-init@{devil\-\_\-jpeg\-\_\-write\-\_\-init}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{devil\-\_\-jpeg\-\_\-write\-\_\-init}]{\setlength{\rightskip}{0pt plus 5cm}devil\-\_\-jpeg\-\_\-write\-\_\-init (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-compress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_aa8dd0dd1dea9be8a46e8f372366c6a95}
+\hypertarget{il__jpeg_8c_ad29423c77a4142a1ec1771aa4a419a09}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!empty\-\_\-output\-\_\-buffer@{empty\-\_\-output\-\_\-buffer}}
+\index{empty\-\_\-output\-\_\-buffer@{empty\-\_\-output\-\_\-buffer}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{empty\-\_\-output\-\_\-buffer}]{\setlength{\rightskip}{0pt plus 5cm}empty\-\_\-output\-\_\-buffer (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-compress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_ad29423c77a4142a1ec1771aa4a419a09}
+\hypertarget{il__jpeg_8c_a3d8b885dd2158a3754e4b90148fa8616}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!Exit\-Error\-Handle@{Exit\-Error\-Handle}}
+\index{Exit\-Error\-Handle@{Exit\-Error\-Handle}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{Exit\-Error\-Handle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Exit\-Error\-Handle (
+\begin{DoxyParamCaption}
+\item[{struct jpeg\-\_\-common\-\_\-struct $\ast$}]{Jpeg\-Info}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a3d8b885dd2158a3754e4b90148fa8616}
+\hypertarget{il__jpeg_8c_aa3542f61993ed4a526694556fac65941}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!fill\-\_\-input\-\_\-buffer@{fill\-\_\-input\-\_\-buffer}}
+\index{fill\-\_\-input\-\_\-buffer@{fill\-\_\-input\-\_\-buffer}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{fill\-\_\-input\-\_\-buffer}]{\setlength{\rightskip}{0pt plus 5cm}fill\-\_\-input\-\_\-buffer (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-decompress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_aa3542f61993ed4a526694556fac65941}
+\hypertarget{il__jpeg_8c_a7d2a5746e80acd3b3b8e00681dd57104}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Check\-Jpg@{i\-Check\-Jpg}}
+\index{i\-Check\-Jpg@{i\-Check\-Jpg}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Check\-Jpg}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Check\-Jpg (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Header\mbox{[}2\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a7d2a5746e80acd3b3b8e00681dd57104}
+\hypertarget{il__jpeg_8c_a02102ac9554701f7aec16139c9cc9ed8}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Get\-Jpg\-Head@{i\-Get\-Jpg\-Head}}
+\index{i\-Get\-Jpg\-Head@{i\-Get\-Jpg\-Head}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Get\-Jpg\-Head}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} i\-Get\-Jpg\-Head (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lubyte} $\ast$}]{Header}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a02102ac9554701f7aec16139c9cc9ed8}
+\hypertarget{il__jpeg_8c_ae738a0263714ce4c087c1c1d8273eb92}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!il\-Load\-From\-Jpeg\-Struct@{il\-Load\-From\-Jpeg\-Struct}}
+\index{il\-Load\-From\-Jpeg\-Struct@{il\-Load\-From\-Jpeg\-Struct}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{il\-Load\-From\-Jpeg\-Struct}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Load\-From\-Jpeg\-Struct (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf void} $\ast$}]{\-\_\-\-Jpeg\-Info}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_ae738a0263714ce4c087c1c1d8273eb92}
+\hypertarget{il__jpeg_8c_a1b56489a71f2d8d34555e6b359302f5c}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Load\-Jpeg\-Internal@{i\-Load\-Jpeg\-Internal}}
+\index{i\-Load\-Jpeg\-Internal@{i\-Load\-Jpeg\-Internal}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Load\-Jpeg\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Jpeg\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a1b56489a71f2d8d34555e6b359302f5c}
+\hypertarget{il__jpeg_8c_a9bc978c6222b0f4e76dd3abc58ae0430}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!il\-Save\-From\-Jpeg\-Struct@{il\-Save\-From\-Jpeg\-Struct}}
+\index{il\-Save\-From\-Jpeg\-Struct@{il\-Save\-From\-Jpeg\-Struct}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{il\-Save\-From\-Jpeg\-Struct}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Save\-From\-Jpeg\-Struct (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf void} $\ast$}]{\-\_\-\-Jpeg\-Info}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a9bc978c6222b0f4e76dd3abc58ae0430}
+\hypertarget{il__jpeg_8c_abc7ed5278b728c7fd1cb2b00d5297c75}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!init\-\_\-destination@{init\-\_\-destination}}
+\index{init\-\_\-destination@{init\-\_\-destination}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{init\-\_\-destination}]{\setlength{\rightskip}{0pt plus 5cm}init\-\_\-destination (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-compress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_abc7ed5278b728c7fd1cb2b00d5297c75}
+\hypertarget{il__jpeg_8c_ada3118e56d083499ce141e98ec116648}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!init\-\_\-source@{init\-\_\-source}}
+\index{init\-\_\-source@{init\-\_\-source}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{init\-\_\-source}]{\setlength{\rightskip}{0pt plus 5cm}init\-\_\-source (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-decompress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_ada3118e56d083499ce141e98ec116648}
+\hypertarget{il__jpeg_8c_a0e1146b7473dc18080a71310ec6271a3}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Save\-Jpeg\-Internal@{i\-Save\-Jpeg\-Internal}}
+\index{i\-Save\-Jpeg\-Internal@{i\-Save\-Jpeg\-Internal}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Save\-Jpeg\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Save\-Jpeg\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a0e1146b7473dc18080a71310ec6271a3}
+\hypertarget{il__jpeg_8c_a99c567c8240edd80ebec96c36f5d6c5e}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!Output\-Msg@{Output\-Msg}}
+\index{Output\-Msg@{Output\-Msg}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{Output\-Msg}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Output\-Msg (
+\begin{DoxyParamCaption}
+\item[{struct jpeg\-\_\-common\-\_\-struct $\ast$}]{Jpeg\-Info}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a99c567c8240edd80ebec96c36f5d6c5e}
+\hypertarget{il__jpeg_8c_ae539a6d1c36b54a0ef6168fecdc8379e}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!skip\-\_\-input\-\_\-data@{skip\-\_\-input\-\_\-data}}
+\index{skip\-\_\-input\-\_\-data@{skip\-\_\-input\-\_\-data}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{skip\-\_\-input\-\_\-data}]{\setlength{\rightskip}{0pt plus 5cm}skip\-\_\-input\-\_\-data (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-decompress\-\_\-ptr}]{cinfo, }
+\item[{long}]{num\-\_\-bytes}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_ae539a6d1c36b54a0ef6168fecdc8379e}
+\hypertarget{il__jpeg_8c_a6501130b84bb53734f08418196d00dc4}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!term\-\_\-destination@{term\-\_\-destination}}
+\index{term\-\_\-destination@{term\-\_\-destination}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{term\-\_\-destination}]{\setlength{\rightskip}{0pt plus 5cm}term\-\_\-destination (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-compress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a6501130b84bb53734f08418196d00dc4}
+\hypertarget{il__jpeg_8c_a0337cf4ba81c0f78c48b5de379cca33e}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!term\-\_\-source@{term\-\_\-source}}
+\index{term\-\_\-source@{term\-\_\-source}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{term\-\_\-source}]{\setlength{\rightskip}{0pt plus 5cm}term\-\_\-source (
+\begin{DoxyParamCaption}
+\item[{j\-\_\-decompress\-\_\-ptr}]{cinfo}
+\end{DoxyParamCaption}
+)}}\label{il__jpeg_8c_a0337cf4ba81c0f78c48b5de379cca33e}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__jpeg_8c_a72c250b704171b51b3d35dd47183db1c}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Format\-Exts\-J\-P\-G@{i\-Format\-Exts\-J\-P\-G}}
+\index{i\-Format\-Exts\-J\-P\-G@{i\-Format\-Exts\-J\-P\-G}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Format\-Exts\-J\-P\-G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-J\-P\-G\mbox{[}$\,$\mbox{]}}}\label{il__jpeg_8c_a72c250b704171b51b3d35dd47183db1c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jfif"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jif"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jpe"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jpeg"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"jpg"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__jpeg_8c_a90e41688442f86631604d6aa115bf60e}{\index{il\-\_\-jpeg.\-c@{il\-\_\-jpeg.\-c}!i\-Format\-J\-P\-G@{i\-Format\-J\-P\-G}}
+\index{i\-Format\-J\-P\-G@{i\-Format\-J\-P\-G}!il_jpeg.c@{il\-\_\-jpeg.\-c}}
+\subsubsection[{i\-Format\-J\-P\-G}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-J\-P\-G}}\label{il__jpeg_8c_a90e41688442f86631604d6aa115bf60e}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidJpeg, 
+  .Load     = \hyperlink{il__jpeg_8c_a1b56489a71f2d8d34555e6b359302f5c}{iLoadJpegInternal}, 
+  .Save     = \hyperlink{il__jpeg_8c_a0e1146b7473dc18080a71310ec6271a3}{iSaveJpegInternal}, 
+  .Exts     = \hyperlink{il__jpeg_8c_a72c250b704171b51b3d35dd47183db1c}{iFormatExtsJPG}
+\}
+\end{DoxyCode}

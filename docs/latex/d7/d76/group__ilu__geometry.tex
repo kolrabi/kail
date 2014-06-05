@@ -1,0 +1,118 @@
+\hypertarget{group__ilu__geometry}{\section{Image Geometry}
+\label{group__ilu__geometry}\index{Image Geometry@{Image Geometry}}
+}
+
+
+Simple image transformations.  
+
+
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga80e4330e84ad8ec34c701e9b72c1ffed}{ilu\-Crop} (I\-Luint X\-Off, I\-Luint Y\-Off, I\-Luint Z\-Off, I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em \char`\"{}\-Crops\char`\"{} the current image to new dimensions. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gacba148d63e2e0da80b100c3ada950cb4}{ilu\-Enlarge\-Canvas} (I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em Enlarges the canvas of the current image. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gaa9fe272b82b15ed2e52762e5e763b908}{ilu\-Enlarge\-Image} (I\-Lfloat X\-Dim, I\-Lfloat Y\-Dim, I\-Lfloat Z\-Dim)
+\begin{DoxyCompactList}\small\item\em Enlarges an image's dimensions by multipliers, via ilu\-Scale. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}{ilu\-Flip\-Image} ()}\label{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}
+
+\begin{DoxyCompactList}\small\item\em Flips an image over its x axis. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}{ilu\-Mirror} ()}\label{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}
+
+\begin{DoxyCompactList}\small\item\em Mirrors an image over its y axis. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gacc794d0e5a6951bb801fb9b278d63215}{ilu\-Rotate} (I\-Lfloat Angle)
+\begin{DoxyCompactList}\small\item\em Simply rotates an image about the center by {\itshape Angle} degrees. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gab62dd0f340a7f55455ab4c5a92747f2d}{ilu\-Rotate3\-D} (I\-Lfloat x, I\-Lfloat y, I\-Lfloat z, I\-Lfloat Angle)
+\begin{DoxyCompactList}\small\item\em Rotates an image around a given axis. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga34b36ea94ddcbc730391534ffd497d1d}{ilu\-Scale} (I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em Scales the image to the new dimensions specified, shrinking or enlarging the image, depending on the image's original dimensions. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Simple image transformations. Resizing, rescaling, flipping, mirroring, etc. 
+
+\subsection{Function Documentation}
+\hypertarget{group__ilu__geometry_ga80e4330e84ad8ec34c701e9b72c1ffed}{\index{Image Geometry@{Image Geometry}!ilu\-Crop@{ilu\-Crop}}
+\index{ilu\-Crop@{ilu\-Crop}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Crop}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Crop (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{X\-Off, }
+\item[{I\-Luint}]{Y\-Off, }
+\item[{I\-Luint}]{Z\-Off, }
+\item[{I\-Luint}]{Width, }
+\item[{I\-Luint}]{Height, }
+\item[{I\-Luint}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_ga80e4330e84ad8ec34c701e9b72c1ffed}
+
+
+\char`\"{}\-Crops\char`\"{} the current image to new dimensions. 
+
+The new image appears the same as the original, but portions of the image are clipped-\/off, depending on the values of the parameters of these functions. If X\-Off + Width, Y\-Off + Height or Z\-Off + Depth is larger than the current image's dimensions, I\-L\-U\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N is set. \hypertarget{group__ilu__geometry_gacba148d63e2e0da80b100c3ada950cb4}{\index{Image Geometry@{Image Geometry}!ilu\-Enlarge\-Canvas@{ilu\-Enlarge\-Canvas}}
+\index{ilu\-Enlarge\-Canvas@{ilu\-Enlarge\-Canvas}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Enlarge\-Canvas}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Enlarge\-Canvas (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{Width, }
+\item[{I\-Luint}]{Height, }
+\item[{I\-Luint}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_gacba148d63e2e0da80b100c3ada950cb4}
+
+
+Enlarges the canvas of the current image. 
+
+Clears the background to the colour specified in il\-Clear\-Colour. To control the placement of the image, use \hyperlink{group__ilu__state_ga1f7db294cdcd2a8285ae24c29bb1f750}{ilu\-Image\-Parameter()}. \hypertarget{group__ilu__geometry_gaa9fe272b82b15ed2e52762e5e763b908}{\index{Image Geometry@{Image Geometry}!ilu\-Enlarge\-Image@{ilu\-Enlarge\-Image}}
+\index{ilu\-Enlarge\-Image@{ilu\-Enlarge\-Image}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Enlarge\-Image}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Enlarge\-Image (
+\begin{DoxyParamCaption}
+\item[{I\-Lfloat}]{X\-Dim, }
+\item[{I\-Lfloat}]{Y\-Dim, }
+\item[{I\-Lfloat}]{Z\-Dim}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_gaa9fe272b82b15ed2e52762e5e763b908}
+
+
+Enlarges an image's dimensions by multipliers, via ilu\-Scale. 
+
+This function could be useful if you wanted to double the size of all images or something similar. \hypertarget{group__ilu__geometry_gacc794d0e5a6951bb801fb9b278d63215}{\index{Image Geometry@{Image Geometry}!ilu\-Rotate@{ilu\-Rotate}}
+\index{ilu\-Rotate@{ilu\-Rotate}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Rotate}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Rotate (
+\begin{DoxyParamCaption}
+\item[{I\-Lfloat}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_gacc794d0e5a6951bb801fb9b278d63215}
+
+
+Simply rotates an image about the center by {\itshape Angle} degrees. 
+
+The background where there is space left by the rotation will be filled with the colour set by \hyperlink{group__state_gaca1dc7f7b8e61eb134060c9c8a8b72f2}{il\-Clear\-Colour()}. \hypertarget{group__ilu__geometry_gab62dd0f340a7f55455ab4c5a92747f2d}{\index{Image Geometry@{Image Geometry}!ilu\-Rotate3\-D@{ilu\-Rotate3\-D}}
+\index{ilu\-Rotate3\-D@{ilu\-Rotate3\-D}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Rotate3\-D}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Rotate3\-D (
+\begin{DoxyParamCaption}
+\item[{I\-Lfloat}]{x, }
+\item[{I\-Lfloat}]{y, }
+\item[{I\-Lfloat}]{z, }
+\item[{I\-Lfloat}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_gab62dd0f340a7f55455ab4c5a92747f2d}
+
+
+Rotates an image around a given axis. 
+
+\begin{DoxyRefDesc}{Deprecated}
+\item[\hyperlink{deprecated__deprecated000003}{Deprecated}]Not working. Never worked and I'm not planning to implement it.\end{DoxyRefDesc}
+\hypertarget{group__ilu__geometry_ga34b36ea94ddcbc730391534ffd497d1d}{\index{Image Geometry@{Image Geometry}!ilu\-Scale@{ilu\-Scale}}
+\index{ilu\-Scale@{ilu\-Scale}!Image Geometry@{Image Geometry}}
+\subsubsection[{ilu\-Scale}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Scale (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{Width, }
+\item[{I\-Luint}]{Height, }
+\item[{I\-Luint}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{group__ilu__geometry_ga34b36ea94ddcbc730391534ffd497d1d}
+
+
+Scales the image to the new dimensions specified, shrinking or enlarging the image, depending on the image's original dimensions. 
+
+There are different filters that can be used to scale an image, and which filter to use can be specified via ilu\-Image\-Parameter. 

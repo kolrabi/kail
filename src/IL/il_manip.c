@@ -308,8 +308,7 @@ ILboolean iCopyPixels3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, I
 }
 
 
-ILuint ILAPIENTRY iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data)
-{
+ILuint ILAPIENTRY iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data) {
   void  *Converted = NULL;
   ILubyte *TempBuff = NULL;
   ILuint  SrcSize, DestSize;

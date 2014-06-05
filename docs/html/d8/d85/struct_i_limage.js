@@ -1,7 +1,5 @@
 var struct_i_limage =
 [
-    [ "AnimList", "d8/d85/struct_i_limage.html#a499410d11fe3a68c675c9b4fb72b7c32", null ],
-    [ "AnimSize", "d8/d85/struct_i_limage.html#ad142feb9e25ce56b324ff5bb860964b8", null ],
     [ "Bpc", "d8/d85/struct_i_limage.html#a77cd917981bd92ddb76c5108db5993e8", null ],
     [ "Bpp", "d8/d85/struct_i_limage.html#acb619433784a0e26c0f1f18b3700c9f7", null ],
     [ "Bps", "d8/d85/struct_i_limage.html#a014c9fe6e8ca1f1343288fd3be38249f", null ],
@@ -15,7 +13,6 @@ var struct_i_limage =
     [ "Faces", "d8/d85/struct_i_limage.html#aa7050b85a7ab3fc70b21ce7bf64fb411", null ],
     [ "Format", "d8/d85/struct_i_limage.html#aab6d023e52ab2d90be412df75a42abfb", null ],
     [ "Height", "d8/d85/struct_i_limage.html#a8a8093d76b61a95fc96df24af29b107a", null ],
-    [ "io", "d8/d85/struct_i_limage.html#afc1b3ad588c15c04a880970f25a43203", null ],
     [ "Layers", "d8/d85/struct_i_limage.html#ab9677b31b029dff8fecf52eef54223e8", null ],
     [ "Mipmaps", "d8/d85/struct_i_limage.html#a7ebe7b0ac80e0ff043b4339aec9bd202", null ],
     [ "Next", "d8/d85/struct_i_limage.html#a996f4ecbbfd30cc5868deb90cca0bf39", null ],

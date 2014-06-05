@@ -1,0 +1,81 @@
+\hypertarget{il__internal_8c}{\section{src/\-I\-L/il\-\_\-internal.c File Reference}
+\label{il__internal_8c}\index{src/\-I\-L/il\-\_\-internal.\-c@{src/\-I\-L/il\-\_\-internal.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$ctype.\-h$>$}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__internal_8c_a47d75dcf63acef3fe09bd047a25e0bb8}{i\-File\-Exists} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__internal_8c_a1357342a2f78514311614044bc6adee2}{il\-Dxtc\-Data\-To\-Surface} ()
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__internal_8c_a9fdc29fee3450b319f3a6e3b3f86af8a}{il\-Surface\-To\-Dxtc\-Data} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+int \hyperlink{il__internal_8c_add77d188bbe4981afa014c89536036a3}{i\-Sqrt} (int x)
+\item 
+char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__internal_8c_ae057f750b37852ad54883faec6818f41}{S\-I\-Ogets} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, char $\ast$\hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Max\-Len)
+\item 
+char $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__internal_8c_a964d13ed1d9f7755a27fb14ae8b19d41}{S\-I\-Ogetw} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, char $\ast$\hyperlink{il__quantizer_8c_ae97595b5d0551696829539418db9d885}{buffer}, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Max\-Len)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+F\-I\-L\-E $\ast$ \hyperlink{il__internal_8c_a13bc111e32e8d570d11682d9135fb539}{i\-Trace\-Out} = N\-U\-L\-L
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__internal_8c_a47d75dcf63acef3fe09bd047a25e0bb8}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!i\-File\-Exists@{i\-File\-Exists}}
+\index{i\-File\-Exists@{i\-File\-Exists}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{i\-File\-Exists}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-File\-Exists (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_a47d75dcf63acef3fe09bd047a25e0bb8}
+\hypertarget{il__internal_8c_a1357342a2f78514311614044bc6adee2}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!il\-Dxtc\-Data\-To\-Surface@{il\-Dxtc\-Data\-To\-Surface}}
+\index{il\-Dxtc\-Data\-To\-Surface@{il\-Dxtc\-Data\-To\-Surface}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{il\-Dxtc\-Data\-To\-Surface}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Dxtc\-Data\-To\-Surface (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_a1357342a2f78514311614044bc6adee2}
+\hypertarget{il__internal_8c_a9fdc29fee3450b319f3a6e3b3f86af8a}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!il\-Surface\-To\-Dxtc\-Data@{il\-Surface\-To\-Dxtc\-Data}}
+\index{il\-Surface\-To\-Dxtc\-Data@{il\-Surface\-To\-Dxtc\-Data}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{il\-Surface\-To\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Surface\-To\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_a9fdc29fee3450b319f3a6e3b3f86af8a}
+\hypertarget{il__internal_8c_add77d188bbe4981afa014c89536036a3}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!i\-Sqrt@{i\-Sqrt}}
+\index{i\-Sqrt@{i\-Sqrt}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{i\-Sqrt}]{\setlength{\rightskip}{0pt plus 5cm}int i\-Sqrt (
+\begin{DoxyParamCaption}
+\item[{int}]{x}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_add77d188bbe4981afa014c89536036a3}
+\hypertarget{il__internal_8c_ae057f750b37852ad54883faec6818f41}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!S\-I\-Ogets@{S\-I\-Ogets}}
+\index{S\-I\-Ogets@{S\-I\-Ogets}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{S\-I\-Ogets}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} S\-I\-Ogets (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{char $\ast$}]{buffer, }
+\item[{{\bf I\-Luint}}]{Max\-Len}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_ae057f750b37852ad54883faec6818f41}
+\hypertarget{il__internal_8c_a964d13ed1d9f7755a27fb14ae8b19d41}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!S\-I\-Ogetw@{S\-I\-Ogetw}}
+\index{S\-I\-Ogetw@{S\-I\-Ogetw}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{S\-I\-Ogetw}]{\setlength{\rightskip}{0pt plus 5cm}char$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} S\-I\-Ogetw (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{char $\ast$}]{buffer, }
+\item[{{\bf I\-Luint}}]{Max\-Len}
+\end{DoxyParamCaption}
+)}}\label{il__internal_8c_a964d13ed1d9f7755a27fb14ae8b19d41}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__internal_8c_a13bc111e32e8d570d11682d9135fb539}{\index{il\-\_\-internal.\-c@{il\-\_\-internal.\-c}!i\-Trace\-Out@{i\-Trace\-Out}}
+\index{i\-Trace\-Out@{i\-Trace\-Out}!il_internal.c@{il\-\_\-internal.\-c}}
+\subsubsection[{i\-Trace\-Out}]{\setlength{\rightskip}{0pt plus 5cm}F\-I\-L\-E$\ast$ i\-Trace\-Out = N\-U\-L\-L}}\label{il__internal_8c_a13bc111e32e8d570d11682d9135fb539}

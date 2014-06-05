@@ -1,0 +1,308 @@
+\hypertarget{group__image__manip}{\section{Image Manipulation}
+\label{group__image__manip}\index{Image Manipulation@{Image Manipulation}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga0e950cae1c2b697137d8e39a56a2602a}{il\-Add\-Alpha} ()
+\begin{DoxyCompactList}\small\item\em Adds an opaque alpha channel to the currently bound image. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_ga014c750459309c1df11cd535b6440786}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga014c750459309c1df11cd535b6440786}{il\-Apply\-Pal} (I\-Lconst\-\_\-string File\-Name)}\label{group__image__manip_ga014c750459309c1df11cd535b6440786}
+
+\begin{DoxyCompactList}\small\item\em Loads a palette from a file and applies it to the currently bound image. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gad41bda3bd56aa5df16c34b98c8a50224}{il\-Apply\-Profile} (I\-Lstring In\-Profile, I\-Lstring Out\-Profile)
+\begin{DoxyCompactList}\small\item\em Apply a colour profile to the currently bound image. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_ga5733e9e8126ebeea814e1b0f5bb9be44}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga5733e9e8126ebeea814e1b0f5bb9be44}{il\-Blit} (I\-Luint Source, I\-Lint Dest\-X, I\-Lint Dest\-Y, I\-Lint Dest\-Z, I\-Luint Src\-X, I\-Luint Src\-Y, I\-Luint Src\-Z, I\-Luint Width, I\-Luint Height, I\-Luint Depth)}\label{group__image__manip_ga5733e9e8126ebeea814e1b0f5bb9be44}
+
+\begin{DoxyCompactList}\small\item\em Blit a region of pixels from a {\itshape Source} image into the currently bound image. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gab2c623d693bf0f5c2f046a64af7b22ba}{il\-Clamp\-N\-T\-S\-C} (void)
+\begin{DoxyCompactList}\small\item\em Clamps data values of unsigned bytes from 16 to 235 for display on an N\-T\-S\-C television. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_gae48d76d54f6f00fe54b304c29224653f}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gae48d76d54f6f00fe54b304c29224653f}{il\-Clear\-Image} ()}\label{group__image__manip_gae48d76d54f6f00fe54b304c29224653f}
+
+\begin{DoxyCompactList}\small\item\em Clears the current bound image to the values specified in \hyperlink{group__state_gaca1dc7f7b8e61eb134060c9c8a8b72f2}{il\-Clear\-Colour()}. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga82b125402ed12ed399f181165374a7c1}{il\-Convert\-Image} (I\-Lenum Dest\-Format, I\-Lenum Dest\-Type)
+\begin{DoxyCompactList}\small\item\em Converts the current image to the Dest\-Format format. \end{DoxyCompactList}\item 
+I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gaa1410977695d1633907ff371e5b9c77e}{il\-Copy\-Pixels} (I\-Luint X\-Off, I\-Luint Y\-Off, I\-Luint Z\-Off, I\-Luint Width, I\-Luint Height, I\-Luint Depth, I\-Lenum Format, I\-Lenum Type, void $\ast$Data)
+\begin{DoxyCompactList}\small\item\em Copy the pixels of a region of the currently bound image to a buffer. \end{DoxyCompactList}\item 
+I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gabc158c1aed9358ad456527f7cdb03446}{il\-Create\-Sub\-Image} (I\-Lenum Type, I\-Luint Num)
+\begin{DoxyCompactList}\small\item\em Creates sub images of the given type for the currently bound image. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_ga3084506414c867df1f37234d996e2501}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga3084506414c867df1f37234d996e2501}{il\-Default\-Image} ()}\label{group__image__manip_ga3084506414c867df1f37234d996e2501}
+
+\begin{DoxyCompactList}\small\item\em Creates an ugly 64x64 black and yellow checkerboard image. \end{DoxyCompactList}\item 
+void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gaca8654129c04ebccba49f71d7e13edfe}{il\-Mod\-Alpha} (I\-Ldouble Alpha\-Value)
+\begin{DoxyCompactList}\small\item\em Adds an alpha channel if not present and sets it to the given value. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_ga2e07d47b40a202e9fdf26d49e8dcdd4c}{I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga2e07d47b40a202e9fdf26d49e8dcdd4c}{il\-Overlay\-Image} (I\-Luint Source, I\-Lint X\-Coord, I\-Lint Y\-Coord, I\-Lint Z\-Coord)}\label{group__image__manip_ga2e07d47b40a202e9fdf26d49e8dcdd4c}
+
+\begin{DoxyCompactList}\small\item\em Overlays the image found in Src on top of the current bound image at the coords specified. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga8887f494b3ed8dc889e783d5e3e3865f}{il\-Set\-Alpha} (I\-Ldouble Alpha\-Value)
+\begin{DoxyCompactList}\small\item\em Adds an alpha channel if not present and sets it to the given value. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga0f4d316f0aa3420fae6817cd8b8c6a7c}{il\-Set\-Data} (void $\ast$Data)
+\begin{DoxyCompactList}\small\item\em Uploads Data of the same size to replace the current image's data. \end{DoxyCompactList}\item 
+\hypertarget{group__image__manip_gacbb2f4de541d3ea64b2ef079bb78e724}{void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_gacbb2f4de541d3ea64b2ef079bb78e724}{il\-Set\-Pixels} (I\-Lint X\-Off, I\-Lint Y\-Off, I\-Lint Z\-Off, I\-Luint Width, I\-Luint Height, I\-Luint Depth, I\-Lenum Format, I\-Lenum Type, void $\ast$Data)}\label{group__image__manip_gacbb2f4de541d3ea64b2ef079bb78e724}
+
+\begin{DoxyCompactList}\small\item\em Set the pixels in a region of the currently bound image. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga4a0b02cccd4ccb9c863235fbfdb646eb}{il\-Tex\-Image} (I\-Luint Width, I\-Luint Height, I\-Luint Depth, I\-Lubyte Bpp, I\-Lenum Format, I\-Lenum Type, void $\ast$Data)
+\begin{DoxyCompactList}\small\item\em Changes the current bound image to use these new dimensions (current data is destroyed). \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__image__manip_ga7be29284583785797fbda3b49a939975}{il\-Tex\-Image\-Dxtc} (I\-Lint w, I\-Lint h, I\-Lint d, I\-Lenum Dxt\-Format, const I\-Lubyte $\ast$data)
+\begin{DoxyCompactList}\small\item\em Sets the currently bound image data. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function Documentation}
+\hypertarget{group__image__manip_ga0e950cae1c2b697137d8e39a56a2602a}{\index{Image Manipulation@{Image Manipulation}!il\-Add\-Alpha@{il\-Add\-Alpha}}
+\index{il\-Add\-Alpha@{il\-Add\-Alpha}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Add\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Add\-Alpha (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga0e950cae1c2b697137d8e39a56a2602a}
+
+
+Adds an opaque alpha channel to the currently bound image. 
+
+If I\-L\-\_\-\-U\-S\-E\-\_\-\-K\-E\-Y\-\_\-\-C\-O\-L\-O\-U\-R is enabled, the colour set with il\-Key\-Colour will be transparent. \hypertarget{group__image__manip_gad41bda3bd56aa5df16c34b98c8a50224}{\index{Image Manipulation@{Image Manipulation}!il\-Apply\-Profile@{il\-Apply\-Profile}}
+\index{il\-Apply\-Profile@{il\-Apply\-Profile}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Apply\-Profile}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Apply\-Profile (
+\begin{DoxyParamCaption}
+\item[{I\-Lstring}]{In\-Profile, }
+\item[{I\-Lstring}]{Out\-Profile}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_gad41bda3bd56aa5df16c34b98c8a50224}
+
+
+Apply a colour profile to the currently bound image. 
+
+Profile names must be the file names of valid I\-C\-C profiles. 
+\begin{DoxyParams}{Parameters}
+{\em In\-Profile} & Name of the image's current colour profile. \\
+\hline
+{\em Out\-Profile} & Name of the colour profile to apply. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyNote}{Note}
+If the image library has been built without L\-C\-M\-S2 support, this will have no effect. 
+\end{DoxyNote}
+\hypertarget{group__image__manip_gab2c623d693bf0f5c2f046a64af7b22ba}{\index{Image Manipulation@{Image Manipulation}!il\-Clamp\-N\-T\-S\-C@{il\-Clamp\-N\-T\-S\-C}}
+\index{il\-Clamp\-N\-T\-S\-C@{il\-Clamp\-N\-T\-S\-C}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Clamp\-N\-T\-S\-C}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Clamp\-N\-T\-S\-C (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_gab2c623d693bf0f5c2f046a64af7b22ba}
+
+
+Clamps data values of unsigned bytes from 16 to 235 for display on an N\-T\-S\-C television. 
+
+Reasoning for this is given at \href{http://msdn.microsoft.com/en-us/library/bb174608.aspx}{\tt http\-://msdn.\-microsoft.\-com/en-\/us/library/bb174608.\-aspx} \hypertarget{group__image__manip_ga82b125402ed12ed399f181165374a7c1}{\index{Image Manipulation@{Image Manipulation}!il\-Convert\-Image@{il\-Convert\-Image}}
+\index{il\-Convert\-Image@{il\-Convert\-Image}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Convert\-Image}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Convert\-Image (
+\begin{DoxyParamCaption}
+\item[{I\-Lenum}]{Dest\-Format, }
+\item[{I\-Lenum}]{Dest\-Type}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga82b125402ed12ed399f181165374a7c1}
+
+
+Converts the current image to the Dest\-Format format. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Dest\-Format} & An enum of the desired output format. Any format values are accepted. \\
+\hline
+{\em Dest\-Type} & An enum of the desired output type. Any type values are accepted. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image \\
+\hline
+{\em I\-L\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-C\-O\-N\-V\-E\-R\-S\-I\-O\-N} & Dest\-Format or Dest\-Type was an invalid identifier. \\
+\hline
+{\em I\-L\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y} & Could not allocate enough memory. \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Boolean value of failure or success 
+\end{DoxyReturn}
+\hypertarget{group__image__manip_gaa1410977695d1633907ff371e5b9c77e}{\index{Image Manipulation@{Image Manipulation}!il\-Copy\-Pixels@{il\-Copy\-Pixels}}
+\index{il\-Copy\-Pixels@{il\-Copy\-Pixels}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Copy\-Pixels}]{\setlength{\rightskip}{0pt plus 5cm}I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Copy\-Pixels (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{X\-Off, }
+\item[{I\-Luint}]{Y\-Off, }
+\item[{I\-Luint}]{Z\-Off, }
+\item[{I\-Luint}]{Width, }
+\item[{I\-Luint}]{Height, }
+\item[{I\-Luint}]{Depth, }
+\item[{I\-Lenum}]{Format, }
+\item[{I\-Lenum}]{Type, }
+\item[{void $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_gaa1410977695d1633907ff371e5b9c77e}
+
+
+Copy the pixels of a region of the currently bound image to a buffer. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em X\-Off} & Left border of image subregion to copy in pixels. \\
+\hline
+{\em Y\-Off} & Top border of image subregion to copy in pixels. \\
+\hline
+{\em Z\-Off} & Front border of image subregion to copy in slices. \\
+\hline
+{\em Width} & Width of region to copy in pixels. \\
+\hline
+{\em Height} & Height of region to copy in pixels. \\
+\hline
+{\em Depth} & Depth of region to copy in slices. \\
+\hline
+{\em Format} & Format of pixel data to get. \\
+\hline
+{\em Type} & Underlying pixel data type. \\
+\hline
+{\em Data} & Buffer to receive pixel data. \\
+\hline
+\end{DoxyParams}
+\hypertarget{group__image__manip_gabc158c1aed9358ad456527f7cdb03446}{\index{Image Manipulation@{Image Manipulation}!il\-Create\-Sub\-Image@{il\-Create\-Sub\-Image}}
+\index{il\-Create\-Sub\-Image@{il\-Create\-Sub\-Image}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Create\-Sub\-Image}]{\setlength{\rightskip}{0pt plus 5cm}I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Create\-Sub\-Image (
+\begin{DoxyParamCaption}
+\item[{I\-Lenum}]{Type, }
+\item[{I\-Luint}]{Num}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_gabc158c1aed9358ad456527f7cdb03446}
+
+
+Creates sub images of the given type for the currently bound image. 
+
+The new sub images will be empty. Existing sub images of the type will be replaced. The current image binding will not be changed. 
+\begin{DoxyParams}{Parameters}
+{\em Type} & Sub image type, can be {\itshape I\-L\-\_\-\-S\-U\-B\-\_\-\-N\-E\-X\-T} to create animation frames after the current image, {\itshape I\-L\-\_\-\-S\-U\-B\-\_\-\-M\-I\-P\-M\-A\-P} to create mipmaps or {\itshape I\-L\-\_\-\-S\-U\-B\-\_\-\-L\-A\-Y\-E\-R} to create layers. \\
+\hline
+{\em Num} & The number of images to create. \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+The number of images actually created. 
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+The original version behaved a little differently, it only created one sub image of the given type and the rest were added as frames in the animation chain. I believe this was a bug and fixed it. However if your program relied on that behaviour, it might be broken now. Be aware of that. 
+\end{DoxyNote}
+\hypertarget{group__image__manip_gaca8654129c04ebccba49f71d7e13edfe}{\index{Image Manipulation@{Image Manipulation}!il\-Mod\-Alpha@{il\-Mod\-Alpha}}
+\index{il\-Mod\-Alpha@{il\-Mod\-Alpha}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Mod\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Mod\-Alpha (
+\begin{DoxyParamCaption}
+\item[{I\-Ldouble}]{Alpha\-Value}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_gaca8654129c04ebccba49f71d7e13edfe}
+
+
+Adds an alpha channel if not present and sets it to the given value. 
+
+\begin{DoxyNote}{Note}
+this is the same as il\-Set\-Alpha 
+\end{DoxyNote}
+\hypertarget{group__image__manip_ga8887f494b3ed8dc889e783d5e3e3865f}{\index{Image Manipulation@{Image Manipulation}!il\-Set\-Alpha@{il\-Set\-Alpha}}
+\index{il\-Set\-Alpha@{il\-Set\-Alpha}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Set\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Set\-Alpha (
+\begin{DoxyParamCaption}
+\item[{I\-Ldouble}]{Alpha\-Value}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga8887f494b3ed8dc889e783d5e3e3865f}
+
+
+Adds an alpha channel if not present and sets it to the given value. 
+
+\begin{DoxyNote}{Note}
+this is the same as il\-Mod\-Alpha 
+\end{DoxyNote}
+\hypertarget{group__image__manip_ga0f4d316f0aa3420fae6817cd8b8c6a7c}{\index{Image Manipulation@{Image Manipulation}!il\-Set\-Data@{il\-Set\-Data}}
+\index{il\-Set\-Data@{il\-Set\-Data}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Set\-Data}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Set\-Data (
+\begin{DoxyParamCaption}
+\item[{void $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga0f4d316f0aa3420fae6817cd8b8c6a7c}
+
+
+Uploads Data of the same size to replace the current image's data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Data} & New image data to update the currently bound image \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image \\
+\hline
+{\em I\-L\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M} & Data was N\-U\-L\-L. \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Boolean value of failure or success 
+\end{DoxyReturn}
+\hypertarget{group__image__manip_ga4a0b02cccd4ccb9c863235fbfdb646eb}{\index{Image Manipulation@{Image Manipulation}!il\-Tex\-Image@{il\-Tex\-Image}}
+\index{il\-Tex\-Image@{il\-Tex\-Image}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Tex\-Image}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Tex\-Image (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{Width, }
+\item[{I\-Luint}]{Height, }
+\item[{I\-Luint}]{Depth, }
+\item[{I\-Lubyte}]{Bpp, }
+\item[{I\-Lenum}]{Format, }
+\item[{I\-Lenum}]{Type, }
+\item[{void $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga4a0b02cccd4ccb9c863235fbfdb646eb}
+
+
+Changes the current bound image to use these new dimensions (current data is destroyed). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Width} & Specifies the new image width. This cannot be 0. \\
+\hline
+{\em Height} & Specifies the new image height. This cannot be 0. \\
+\hline
+{\em Depth} & Specifies the new image depth. This cannot be 0. \\
+\hline
+{\em Bpp} & Number of channels (ex. 3 for R\-G\-B) \\
+\hline
+{\em Format} & Enum of the desired format. Any format values are accepted. \\
+\hline
+{\em Type} & Enum of the desired type. Any type values are accepted. \\
+\hline
+{\em Data} & Specifies data that should be copied to the new image. If this parameter is N\-U\-L\-L, no data is copied, and the new image data consists of undefined values. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image. \\
+\hline
+{\em I\-L\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M} & One of the parameters is incorrect, such as one of the dimensions being 0. \\
+\hline
+{\em I\-L\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y} & Could not allocate enough memory. \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Boolean value of failure or success 
+\end{DoxyReturn}
+\hypertarget{group__image__manip_ga7be29284583785797fbda3b49a939975}{\index{Image Manipulation@{Image Manipulation}!il\-Tex\-Image\-Dxtc@{il\-Tex\-Image\-Dxtc}}
+\index{il\-Tex\-Image\-Dxtc@{il\-Tex\-Image\-Dxtc}!Image Manipulation@{Image Manipulation}}
+\subsubsection[{il\-Tex\-Image\-Dxtc}]{\setlength{\rightskip}{0pt plus 5cm}I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Tex\-Image\-Dxtc (
+\begin{DoxyParamCaption}
+\item[{I\-Lint}]{w, }
+\item[{I\-Lint}]{h, }
+\item[{I\-Lint}]{d, }
+\item[{I\-Lenum}]{Dxt\-Format, }
+\item[{const I\-Lubyte $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{group__image__manip_ga7be29284583785797fbda3b49a939975}
+
+
+Sets the currently bound image data. 
+
+Like il\-Tex\-Image but from D\-X\-T\-C compressed data. 

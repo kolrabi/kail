@@ -2,6 +2,7 @@ var il__stack_8c =
 [
     [ "iBindImage", "da/d73/il__stack_8c.html#a2e4b38ad423dee7a972ad94d210b736f", null ],
     [ "iBindImageTemp", "da/d73/il__stack_8c.html#afe2657b007dbc710d192749744e090a5", null ],
+    [ "iCreateSubImage", "da/d73/il__stack_8c.html#a8d5074be4b53375a97bf84827bae9fe9", null ],
     [ "iEnlargeStack", "da/d73/il__stack_8c.html#a253393284fddc6fdfaf188047ecd48ab", null ],
     [ "iGetBaseImage", "da/d73/il__stack_8c.html#aa9550fe4a4d0900e0e3fa024cb0fb2a2", null ],
     [ "iGetCurImage", "da/d73/il__stack_8c.html#abc0748336a44895286b2137eaefe3734", null ],
@@ -16,7 +17,6 @@ var il__stack_8c =
     [ "ilActiveMipmap", "da/d73/il__stack_8c.html#a02171eee15fcaf5fb1d1741307e7f8bc", null ],
     [ "ilCloseImage", "da/d73/il__stack_8c.html#af184305c471b662673a5ca4c352dd05b", null ],
     [ "ilClosePal", "da/d73/il__stack_8c.html#a27fa8759c965f3fde4d4670fc76bf85e", null ],
-    [ "ilCreateSubImage", "da/d73/il__stack_8c.html#abc158c1aed9358ad456527f7cdb03446", null ],
     [ "ilDeleteImage", "da/d73/il__stack_8c.html#a74c70352949963d2b30c919662a65844", null ],
     [ "ilDeleteImages", "da/d73/il__stack_8c.html#ab4346d371243537a7050e255f99c8b16", null ],
     [ "ilGenImage", "da/d73/il__stack_8c.html#a97ac04e1816cf63cf13b2c7b00b3b725", null ],

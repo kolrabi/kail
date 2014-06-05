@@ -15,12 +15,10 @@
 #include "ilu_states.h"
 
 
-ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
-{
+ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 	ILimage	*Temp, *Temp1, *CurImage = NULL;
 	ILenum	PalType = 0;
 
-	ILimage *  Image = iGetCurImage();
 	ILimage *  BaseImage = Image;
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
@@ -30,7 +28,7 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 	if (Image->Format == IL_COLOUR_INDEX) {
 		PalType = Image->Pal.PalType;
 		CurImage = Image;
-		Image = iConvertImage(Image, ilGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
+		Image = iConvertImage(CurImage, ilGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
 	}
 
 	Temp = iluRotate_(Image, Angle);
@@ -40,7 +38,6 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 			Temp1 = iConvertImage(Temp, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
 			ilCloseImage(Temp);
 			Temp = Temp1;
-			ilSetCurImage(CurImage);
 		}
 		// FIXME:
 		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
@@ -62,26 +59,6 @@ ILboolean ILAPIENTRY iluRotate(ILfloat Angle)
 	}
 	return IL_FALSE;
 }
-
-
-ILboolean ILAPIENTRY iluRotate3D(ILfloat x, ILfloat y, ILfloat z, ILfloat Angle)
-{
-	ILimage *Temp;
-
-// return IL_FALSE;
-
-	ILimage *  Image = iGetCurImage();
-	Temp = iluRotate3D_(Image, x, y, z, Angle);
-	if (Temp != NULL) {
-		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
-		Image->Origin = Temp->Origin;
-		iSetPal(Image, &Temp->Pal);
-		ilCloseImage(Temp);
-		return IL_TRUE;
-	}
-	return IL_FALSE;
-}
-
 
 //! Rotates a bitmap any angle.
 //  Code help comes from http://www.leunen.com/cbuilder/rotbmp.html.
@@ -131,7 +108,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 		return IL_FALSE;
 	}
 
-	ilClearImage_(Rotated);
+	iClearImage(Rotated);
 
 	ShortPtr = (ILushort*)Image->Data;
 	IntPtr = (ILuint*)Image->Data;
@@ -363,9 +340,10 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 	return Rotated;
 }
 
-
+/*
 ILAPI ILimage* ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle)
 {
 	(void)Image; (void)x; (void)y; (void)z; (void)Angle;
 	return NULL;
 }
+*/

@@ -44,8 +44,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
 #endif
 #endif
 
-void ILAPIENTRY iluInit()
-{
+void iInit() {
 	// Used mostly for rotations
 	//IL_PI = 4 * atan(1);		// precomputed value of pi
 	//IL_DEGCONV = IL_PI / 180;	// division is slow on some computers
@@ -54,18 +53,3 @@ void ILAPIENTRY iluInit()
 	return;
 }
 
-
-//#ifndef _WIN32_WCE
-ILuint ILAPIENTRY iluLoadImage(ILconst_string FileName)
-{
-	ILuint Id;
-	ilGenImages(1, &Id);
-	if (Id == 0)
-		return 0;
-	if (!ilLoadImage(FileName)) {
-		ilDeleteImages(1, &Id);
-		return 0;
-	}
-	return Id;
-}
-//#endif//_WIN32_WCE

@@ -1,0 +1,176 @@
+\hypertarget{ilu__region_8c}{\section{src/\-I\-L\-U/ilu\-\_\-region.c File Reference}
+\label{ilu__region_8c}\index{src/\-I\-L\-U/ilu\-\_\-region.\-c@{src/\-I\-L\-U/ilu\-\_\-region.\-c}}
+}
+{\ttfamily \#include \char`\"{}ilu\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ilu\-\_\-region.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{ilu__region_8c_a52e2ed7ac7f7eac00b9ce26e9c428af2}{i\-Region\-Set\-Pixel}(x, y)~(\hyperlink{ilu__region_8c_a8a15c42b28c6530708cb29ac93d36de5}{i\-Region\-Mask}\mbox{[}y $\ast$ \hyperlink{ilu__internal_8h_aedd741283e3699ce792ef1057fb743af}{ilu\-Cur\-Image}-\/$>$Width + x\mbox{]} = 1 )
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_a2a32593e60ff4f6574bdefc6f17ddcbf}{Build\-Active\-List} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} scan, \hyperlink{struct_edge}{Edge} $\ast$active, \hyperlink{struct_edge}{Edge} $\ast$edges\mbox{[}$\,$\mbox{]})
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_ab2d5e046f5e5d1618f15fdba2984bdd4}{Build\-Edge\-List} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} cnt, \hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} $\ast$pts, \hyperlink{struct_edge}{Edge} $\ast$$\ast$edges)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_accf5bbf1bb2d917b5898a124761a3488}{Delete\-After} (\hyperlink{struct_edge}{Edge} $\ast$q)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_a838eb5f9df03bf6d0dba83566ed3a254}{Fill\-Scan} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} scan, \hyperlink{struct_edge}{Edge} $\ast$active)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__region_8c_a8eef54c8dae1971913a66303829e04cc}{ilu\-Regionfv} (\hyperlink{ilu_8h_ac5a6edc02104b571e21e919c52e2adc0}{I\-Lpointf} $\ast$Points, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} n)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__region_8c_a5e9fe7c87bafe3aa2d9456385c8d5721}{ilu\-Regioniv} (\hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} $\ast$Points, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} n)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_a8d32848186a8514881c127843baa5d66}{Insert\-Edge} (\hyperlink{struct_edge}{Edge} $\ast$list, \hyperlink{struct_edge}{Edge} $\ast$edge)
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$ \hyperlink{ilu__region_8c_a0e1f544699e61a2914caa7bd1124e6ac}{i\-Scan\-Fill} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_ad3bfefbdc701cda6f1d5421765f008dc}{Make\-Edge\-Rec} (\hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} lower, \hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} upper, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} y\-Comp, \hyperlink{struct_edge}{Edge} $\ast$edge, \hyperlink{struct_edge}{Edge} $\ast$edges\mbox{[}$\,$\mbox{]})
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_a59dcf7923e0e5b13bc241c786cc1ee72}{Resort\-Active\-List} (\hyperlink{struct_edge}{Edge} $\ast$active)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__region_8c_a51467f9eec7a85a6e6fd7f509ab62e6d}{Update\-Active\-List} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} scan, \hyperlink{struct_edge}{Edge} $\ast$active)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{ilu__region_8c_a36a498bd474d5392e516a5357282d521}{y\-Next} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} k, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} cnt, \hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} $\ast$pts)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$ \hyperlink{ilu__region_8c_a8a15c42b28c6530708cb29ac93d36de5}{i\-Region\-Mask} = N\-U\-L\-L
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{ilu__region_8c_a7023bbb435d6ef233ddf964f4ac604a1}{Point\-Num} = 0
+\item 
+\hyperlink{ilu_8h_ac5a6edc02104b571e21e919c52e2adc0}{I\-Lpointf} $\ast$ \hyperlink{ilu__region_8c_a78a8a3f6c2d7dad4440542ec1408c391}{Region\-Pointsf} = N\-U\-L\-L
+\item 
+\hyperlink{ilu_8h_a06bc6350eb8f00bf87da9cbd879e65a8}{I\-Lpointi} $\ast$ \hyperlink{ilu__region_8c_a03b0d42af75617089cb65b3a5ffebd64}{Region\-Pointsi} = N\-U\-L\-L
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{ilu__region_8c_a52e2ed7ac7f7eac00b9ce26e9c428af2}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!i\-Region\-Set\-Pixel@{i\-Region\-Set\-Pixel}}
+\index{i\-Region\-Set\-Pixel@{i\-Region\-Set\-Pixel}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{i\-Region\-Set\-Pixel}]{\setlength{\rightskip}{0pt plus 5cm}\#define i\-Region\-Set\-Pixel(
+\begin{DoxyParamCaption}
+\item[{}]{x, }
+\item[{}]{y}
+\end{DoxyParamCaption}
+)~({\bf i\-Region\-Mask}\mbox{[}y $\ast$ {\bf ilu\-Cur\-Image}-\/$>$Width + x\mbox{]} = 1 )}}\label{ilu__region_8c_a52e2ed7ac7f7eac00b9ce26e9c428af2}
+
+
+\subsection{Function Documentation}
+\hypertarget{ilu__region_8c_a2a32593e60ff4f6574bdefc6f17ddcbf}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Build\-Active\-List@{Build\-Active\-List}}
+\index{Build\-Active\-List@{Build\-Active\-List}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Build\-Active\-List}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Build\-Active\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint}}]{scan, }
+\item[{{\bf Edge} $\ast$}]{active, }
+\item[{{\bf Edge} $\ast$}]{edges\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a2a32593e60ff4f6574bdefc6f17ddcbf}
+\hypertarget{ilu__region_8c_ab2d5e046f5e5d1618f15fdba2984bdd4}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Build\-Edge\-List@{Build\-Edge\-List}}
+\index{Build\-Edge\-List@{Build\-Edge\-List}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Build\-Edge\-List}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Build\-Edge\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{cnt, }
+\item[{{\bf I\-Lpointi} $\ast$}]{pts, }
+\item[{{\bf Edge} $\ast$$\ast$}]{edges}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_ab2d5e046f5e5d1618f15fdba2984bdd4}
+\hypertarget{ilu__region_8c_accf5bbf1bb2d917b5898a124761a3488}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Delete\-After@{Delete\-After}}
+\index{Delete\-After@{Delete\-After}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Delete\-After}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Delete\-After (
+\begin{DoxyParamCaption}
+\item[{{\bf Edge} $\ast$}]{q}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_accf5bbf1bb2d917b5898a124761a3488}
+\hypertarget{ilu__region_8c_a838eb5f9df03bf6d0dba83566ed3a254}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Fill\-Scan@{Fill\-Scan}}
+\index{Fill\-Scan@{Fill\-Scan}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Fill\-Scan}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Fill\-Scan (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint}}]{scan, }
+\item[{{\bf Edge} $\ast$}]{active}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a838eb5f9df03bf6d0dba83566ed3a254}
+\hypertarget{ilu__region_8c_a8eef54c8dae1971913a66303829e04cc}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!ilu\-Regionfv@{ilu\-Regionfv}}
+\index{ilu\-Regionfv@{ilu\-Regionfv}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{ilu\-Regionfv}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Regionfv (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpointf} $\ast$}]{Points, }
+\item[{{\bf I\-Luint}}]{n}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a8eef54c8dae1971913a66303829e04cc}
+\hypertarget{ilu__region_8c_a5e9fe7c87bafe3aa2d9456385c8d5721}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!ilu\-Regioniv@{ilu\-Regioniv}}
+\index{ilu\-Regioniv@{ilu\-Regioniv}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{ilu\-Regioniv}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Regioniv (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpointi} $\ast$}]{Points, }
+\item[{{\bf I\-Luint}}]{n}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a5e9fe7c87bafe3aa2d9456385c8d5721}
+\hypertarget{ilu__region_8c_a8d32848186a8514881c127843baa5d66}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Insert\-Edge@{Insert\-Edge}}
+\index{Insert\-Edge@{Insert\-Edge}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Insert\-Edge}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Insert\-Edge (
+\begin{DoxyParamCaption}
+\item[{{\bf Edge} $\ast$}]{list, }
+\item[{{\bf Edge} $\ast$}]{edge}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a8d32848186a8514881c127843baa5d66}
+\hypertarget{ilu__region_8c_a0e1f544699e61a2914caa7bd1124e6ac}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!i\-Scan\-Fill@{i\-Scan\-Fill}}
+\index{i\-Scan\-Fill@{i\-Scan\-Fill}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{i\-Scan\-Fill}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ i\-Scan\-Fill (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a0e1f544699e61a2914caa7bd1124e6ac}
+\hypertarget{ilu__region_8c_ad3bfefbdc701cda6f1d5421765f008dc}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Make\-Edge\-Rec@{Make\-Edge\-Rec}}
+\index{Make\-Edge\-Rec@{Make\-Edge\-Rec}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Make\-Edge\-Rec}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Make\-Edge\-Rec (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpointi}}]{lower, }
+\item[{{\bf I\-Lpointi}}]{upper, }
+\item[{{\bf I\-Lint}}]{y\-Comp, }
+\item[{{\bf Edge} $\ast$}]{edge, }
+\item[{{\bf Edge} $\ast$}]{edges\mbox{[}$\,$\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_ad3bfefbdc701cda6f1d5421765f008dc}
+\hypertarget{ilu__region_8c_a59dcf7923e0e5b13bc241c786cc1ee72}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Resort\-Active\-List@{Resort\-Active\-List}}
+\index{Resort\-Active\-List@{Resort\-Active\-List}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Resort\-Active\-List}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Resort\-Active\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf Edge} $\ast$}]{active}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a59dcf7923e0e5b13bc241c786cc1ee72}
+\hypertarget{ilu__region_8c_a51467f9eec7a85a6e6fd7f509ab62e6d}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Update\-Active\-List@{Update\-Active\-List}}
+\index{Update\-Active\-List@{Update\-Active\-List}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Update\-Active\-List}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Update\-Active\-List (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint}}]{scan, }
+\item[{{\bf Edge} $\ast$}]{active}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a51467f9eec7a85a6e6fd7f509ab62e6d}
+\hypertarget{ilu__region_8c_a36a498bd474d5392e516a5357282d521}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!y\-Next@{y\-Next}}
+\index{y\-Next@{y\-Next}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{y\-Next}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} y\-Next (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint}}]{k, }
+\item[{{\bf I\-Lint}}]{cnt, }
+\item[{{\bf I\-Lpointi} $\ast$}]{pts}
+\end{DoxyParamCaption}
+)}}\label{ilu__region_8c_a36a498bd474d5392e516a5357282d521}
+
+
+\subsection{Variable Documentation}
+\hypertarget{ilu__region_8c_a8a15c42b28c6530708cb29ac93d36de5}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!i\-Region\-Mask@{i\-Region\-Mask}}
+\index{i\-Region\-Mask@{i\-Region\-Mask}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{i\-Region\-Mask}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ i\-Region\-Mask = N\-U\-L\-L}}\label{ilu__region_8c_a8a15c42b28c6530708cb29ac93d36de5}
+\hypertarget{ilu__region_8c_a7023bbb435d6ef233ddf964f4ac604a1}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Point\-Num@{Point\-Num}}
+\index{Point\-Num@{Point\-Num}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Point\-Num}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Point\-Num = 0}}\label{ilu__region_8c_a7023bbb435d6ef233ddf964f4ac604a1}
+\hypertarget{ilu__region_8c_a78a8a3f6c2d7dad4440542ec1408c391}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Region\-Pointsf@{Region\-Pointsf}}
+\index{Region\-Pointsf@{Region\-Pointsf}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Region\-Pointsf}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lpointf}$\ast$ Region\-Pointsf = N\-U\-L\-L}}\label{ilu__region_8c_a78a8a3f6c2d7dad4440542ec1408c391}
+\hypertarget{ilu__region_8c_a03b0d42af75617089cb65b3a5ffebd64}{\index{ilu\-\_\-region.\-c@{ilu\-\_\-region.\-c}!Region\-Pointsi@{Region\-Pointsi}}
+\index{Region\-Pointsi@{Region\-Pointsi}!ilu_region.c@{ilu\-\_\-region.\-c}}
+\subsubsection[{Region\-Pointsi}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lpointi}$\ast$ Region\-Pointsi = N\-U\-L\-L}}\label{ilu__region_8c_a03b0d42af75617089cb65b3a5ffebd64}

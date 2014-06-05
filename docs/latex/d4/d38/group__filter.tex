@@ -1,0 +1,133 @@
+\hypertarget{group__filter}{\section{Image Filters}
+\label{group__filter}\index{Image Filters@{Image Filters}}
+}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_gacb6e1a0e8dc10748f1cfbf60b1f8c350}{ilu\-Alienify} (void)
+\begin{DoxyCompactList}\small\item\em Funny as hell filter that I stumbled upon accidentally. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_ga017478330f243e5bb6e6edc29cdf1f37}{ilu\-Blur\-Avg} (I\-Luint Iter)
+\begin{DoxyCompactList}\small\item\em Average each pixel with its surrounding pixels {\itshape Iter} times. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_ga4163c484488b3afc352e3ed6c768babf}{ilu\-Blur\-Gaussian} (I\-Luint Iter)
+\begin{DoxyCompactList}\small\item\em Blurs an image using a Gaussian convolution filter, which usually gives better results than the filter used by ilu\-Blur\-Avg. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_gaeb5bb85ceb172bd9742f7f0730a1d440}{ilu\-Convolution} (I\-Lint $\ast$matrix, I\-Lint scale, I\-Lint bias)
+\begin{DoxyCompactList}\small\item\em Applies a user supplied convolution matrix. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_gafbd320c463d5e8a45e68d0edb3973597}{ilu\-Edge\-Detect\-E} ()
+\begin{DoxyCompactList}\small\item\em Performs edge detection using an emboss convolution filter. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_gac902e008927e48ce132306e344f5010d}{ilu\-Edge\-Detect\-P} ()
+\begin{DoxyCompactList}\small\item\em Detects the edges in the current image by combining two convolution filters. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_ga91f176b607f5357b748079e21a6bbc63}{ilu\-Edge\-Detect\-S} ()
+\begin{DoxyCompactList}\small\item\em Detects the edges in the current image by combining two convolution filters. \end{DoxyCompactList}\item 
+I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__filter_gab94eba669177860af590c7bed1927c30}{ilu\-Emboss} ()
+\begin{DoxyCompactList}\small\item\em Embosses an image, causing it to have a \char`\"{}relief\char`\"{} feel to it. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+\subsection{Function Documentation}
+\hypertarget{group__filter_gacb6e1a0e8dc10748f1cfbf60b1f8c350}{\index{Image Filters@{Image Filters}!ilu\-Alienify@{ilu\-Alienify}}
+\index{ilu\-Alienify@{ilu\-Alienify}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Alienify}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Alienify (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__filter_gacb6e1a0e8dc10748f1cfbf60b1f8c350}
+
+
+Funny as hell filter that I stumbled upon accidentally. 
+
+\begin{DoxyRefDesc}{Bug}
+\item[\hyperlink{bug__bug000001}{Bug}]Only works with I\-L\-\_\-\-U\-N\-S\-I\-G\-N\-E\-D\-\_\-\-B\-Y\-T\-E typed non paletted images.\end{DoxyRefDesc}
+\hypertarget{group__filter_ga017478330f243e5bb6e6edc29cdf1f37}{\index{Image Filters@{Image Filters}!ilu\-Blur\-Avg@{ilu\-Blur\-Avg}}
+\index{ilu\-Blur\-Avg@{ilu\-Blur\-Avg}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Blur\-Avg}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Blur\-Avg (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{Iter}
+\end{DoxyParamCaption}
+)}}\label{group__filter_ga017478330f243e5bb6e6edc29cdf1f37}
+
+
+Average each pixel with its surrounding pixels {\itshape Iter} times. 
+
+The 3x3 convolution filter used to do the average blur is\-:
+
+$ \frac{ \left[ \begin{array}{rrr} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{array} \right] }{ 9 } $ \hypertarget{group__filter_ga4163c484488b3afc352e3ed6c768babf}{\index{Image Filters@{Image Filters}!ilu\-Blur\-Gaussian@{ilu\-Blur\-Gaussian}}
+\index{ilu\-Blur\-Gaussian@{ilu\-Blur\-Gaussian}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Blur\-Gaussian}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Blur\-Gaussian (
+\begin{DoxyParamCaption}
+\item[{I\-Luint}]{Iter}
+\end{DoxyParamCaption}
+)}}\label{group__filter_ga4163c484488b3afc352e3ed6c768babf}
+
+
+Blurs an image using a Gaussian convolution filter, which usually gives better results than the filter used by ilu\-Blur\-Avg. 
+
+The filter is applied up to Iter number of times, giving more of a blurring effect the higher Iter is. The 3x3 convolution filter used to do the gaussian blur is\-:
+
+$ \frac{ \left[ \begin{array}{rrr} 1 & 2 & 1 \\ 2 & 4 & 2 \\ 1 & 2 & 1 \end{array} \right] }{ 16 } $ \hypertarget{group__filter_gaeb5bb85ceb172bd9742f7f0730a1d440}{\index{Image Filters@{Image Filters}!ilu\-Convolution@{ilu\-Convolution}}
+\index{ilu\-Convolution@{ilu\-Convolution}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Convolution}]{\setlength{\rightskip}{0pt plus 5cm}I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Convolution (
+\begin{DoxyParamCaption}
+\item[{I\-Lint $\ast$}]{matrix, }
+\item[{I\-Lint}]{scale, }
+\item[{I\-Lint}]{bias}
+\end{DoxyParamCaption}
+)}}\label{group__filter_gaeb5bb85ceb172bd9742f7f0730a1d440}
+
+
+Applies a user supplied convolution matrix. 
+
+The matrix must be a 3x3 matrix. \hypertarget{group__filter_gafbd320c463d5e8a45e68d0edb3973597}{\index{Image Filters@{Image Filters}!ilu\-Edge\-Detect\-E@{ilu\-Edge\-Detect\-E}}
+\index{ilu\-Edge\-Detect\-E@{ilu\-Edge\-Detect\-E}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Edge\-Detect\-E}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Edge\-Detect\-E (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__filter_gafbd320c463d5e8a45e68d0edb3973597}
+
+
+Performs edge detection using an emboss convolution filter. 
+
+The 3x3 convolution filter used to do the edge detected is\-:
+
+$ \frac{ \left[ \begin{array}{rrr} -1 & 0 & 1 \\ -1 & 0 & 1 \\ -1 & 0 & 1 \end{array} \right] }{ 1 } $ \hypertarget{group__filter_gac902e008927e48ce132306e344f5010d}{\index{Image Filters@{Image Filters}!ilu\-Edge\-Detect\-P@{ilu\-Edge\-Detect\-P}}
+\index{ilu\-Edge\-Detect\-P@{ilu\-Edge\-Detect\-P}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Edge\-Detect\-P}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Edge\-Detect\-P (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__filter_gac902e008927e48ce132306e344f5010d}
+
+
+Detects the edges in the current image by combining two convolution filters. 
+
+The filters used are Prewitt filters. The two filters are\-:
+
+$ A = \left[ \begin{array}{rrr} -1 & -1 & -1 \\ 0 & 0 & 0 \\ 1 & 1 & 1 \end{array} \right] , B = \left[ \begin{array}{rrr} 1 & 0 & -1 \\ 1 & 0 & -1 \\ 1 & 0 & -1 \end{array} \right] $ \hypertarget{group__filter_ga91f176b607f5357b748079e21a6bbc63}{\index{Image Filters@{Image Filters}!ilu\-Edge\-Detect\-S@{ilu\-Edge\-Detect\-S}}
+\index{ilu\-Edge\-Detect\-S@{ilu\-Edge\-Detect\-S}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Edge\-Detect\-S}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Edge\-Detect\-S (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__filter_ga91f176b607f5357b748079e21a6bbc63}
+
+
+Detects the edges in the current image by combining two convolution filters. 
+
+The filters used are Sobel filters. The two filters are\-:
+
+$ A = \left[ \begin{array}{rrr} 1 & 2 & 1 \\ 0 & 0 & 0 \\ -1 & -2 & -1 \end{array} \right] , B = \left[ \begin{array}{rrr} 1 & 0 & -1 \\ 2 & 0 & -2 \\ 1 & 0 & -1 \end{array} \right] $ \hypertarget{group__filter_gab94eba669177860af590c7bed1927c30}{\index{Image Filters@{Image Filters}!ilu\-Emboss@{ilu\-Emboss}}
+\index{ilu\-Emboss@{ilu\-Emboss}!Image Filters@{Image Filters}}
+\subsubsection[{ilu\-Emboss}]{\setlength{\rightskip}{0pt plus 5cm}I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y ilu\-Emboss (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}}\label{group__filter_gab94eba669177860af590c7bed1927c30}
+
+
+Embosses an image, causing it to have a \char`\"{}relief\char`\"{} feel to it. 
+
+The 3x3 convolution filter used is\-:
+
+$ \left[ \begin{array}{rrr} -1 & 0 & 1 \\ -1 & 0 & 1 \\ -1 & 0 & 1 \end{array} \right] + 0.5 $ 

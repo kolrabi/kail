@@ -45,6 +45,8 @@ var il__internal_8h =
     [ "NUL", "dc/d82/il__internal_8h.html#af19d48b9f61047a668649a2f9dc317ff", null ],
     [ "iAddAlpha", "dc/d82/il__internal_8h.html#ae7c704f1678a92fca0a623ca5cac3385", null ],
     [ "iAddAlphaKey", "dc/d82/il__internal_8h.html#a342735fe10bc1409d424280578585c73", null ],
+    [ "iCopyImage", "dc/d82/il__internal_8h.html#adb3e40e8c32f4e84ea09408b2258d36c", null ],
+    [ "iDuplicateImage", "dc/d82/il__internal_8h.html#ab9c5da8590bf2a4e82c745b5d14f136e", null ],
     [ "iDxtcDataToSurface", "dc/d82/il__internal_8h.html#aab806c5bc41d6bb924e1c6b9b0773ecb", null ],
     [ "iFastConvert", "dc/d82/il__internal_8h.html#a457ab7acf08fbcb47093b72021d59a2e", null ],
     [ "iFileExists", "dc/d82/il__internal_8h.html#a47d75dcf63acef3fe09bd047a25e0bb8", null ],

@@ -1,0 +1,38 @@
+\hypertarget{il__pcd_8c}{\section{src/\-I\-L/formats/il\-\_\-pcd.c File Reference}
+\label{il__pcd_8c}\index{src/\-I\-L/formats/il\-\_\-pcd.\-c@{src/\-I\-L/formats/il\-\_\-pcd.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-color.\-h\char`\"{}}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__pcd_8c_a1952f759ad08a181708e977db055ed40}{i\-Format\-Exts\-P\-C\-D} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__pcd_8c_a608dc70ac7416e5a34d38988d57de82c}{i\-Format\-P\-C\-D}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pcd_8c_a1952f759ad08a181708e977db055ed40}{\index{il\-\_\-pcd.\-c@{il\-\_\-pcd.\-c}!i\-Format\-Exts\-P\-C\-D@{i\-Format\-Exts\-P\-C\-D}}
+\index{i\-Format\-Exts\-P\-C\-D@{i\-Format\-Exts\-P\-C\-D}!il_pcd.c@{il\-\_\-pcd.\-c}}
+\subsubsection[{i\-Format\-Exts\-P\-C\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-P\-C\-D\mbox{[}$\,$\mbox{]}}}\label{il__pcd_8c_a1952f759ad08a181708e977db055ed40}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"pcd"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__pcd_8c_a608dc70ac7416e5a34d38988d57de82c}{\index{il\-\_\-pcd.\-c@{il\-\_\-pcd.\-c}!i\-Format\-P\-C\-D@{i\-Format\-P\-C\-D}}
+\index{i\-Format\-P\-C\-D@{i\-Format\-P\-C\-D}!il_pcd.c@{il\-\_\-pcd.\-c}}
+\subsubsection[{i\-Format\-P\-C\-D}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-P\-C\-D}}\label{il__pcd_8c_a608dc70ac7416e5a34d38988d57de82c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = NULL, 
+  .Load     = iLoadPcdInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__pcd_8c_a1952f759ad08a181708e977db055ed40}{iFormatExtsPCD}
+\}
+\end{DoxyCode}

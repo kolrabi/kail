@@ -1,0 +1,219 @@
+\hypertarget{ilu__filter_8c}{\section{src/\-I\-L\-U/ilu\-\_\-filter.c File Reference}
+\label{ilu__filter_8c}\index{src/\-I\-L\-U/ilu\-\_\-filter.\-c@{src/\-I\-L\-U/ilu\-\_\-filter.\-c}}
+}
+{\ttfamily \#include \char`\"{}ilu\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}ilu\-\_\-filter.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$math.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$ \hyperlink{ilu__filter_8c_a547e04cc110280c3020c3354a3a5c8ed}{Filter} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, const \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} $\ast$matrix, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} scale, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} bias)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__filter_8c_a2aa93a5f057e6a18d32ce90c4fccb40d}{i\-Apply\-Matrix} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Mat\mbox{[}4\mbox{]}\mbox{[}4\mbox{]})
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__filter_8c_ad0c13739b1a6cb710f0e42bb13b2f900}{i\-Identity} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} $\ast$Matrix)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{ilu__filter_8c_a9a95c5910c2f6351859000608b4e7d13}{i\-Int\-Ext\-Img} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image1, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Image2, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} a)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_acb6e1a0e8dc10748f1cfbf60b1f8c350}{ilu\-Alienify} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\begin{DoxyCompactList}\small\item\em Funny as hell filter that I stumbled upon accidentally. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a017478330f243e5bb6e6edc29cdf1f37}{ilu\-Blur\-Avg} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Iter)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a4163c484488b3afc352e3ed6c768babf}{ilu\-Blur\-Gaussian} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Iter)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a674c6a79168815f579338c30e94cd086}{ilu\-Contrast} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Contrast)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_aeb5bb85ceb172bd9742f7f0730a1d440}{ilu\-Convolution} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} $\ast$matrix, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} scale, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} bias)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_afbd320c463d5e8a45e68d0edb3973597}{ilu\-Edge\-Detect\-E} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_ac902e008927e48ce132306e344f5010d}{ilu\-Edge\-Detect\-P} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a91f176b607f5357b748079e21a6bbc63}{ilu\-Edge\-Detect\-S} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_ab94eba669177860af590c7bed1927c30}{ilu\-Emboss} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a06739004ee4930a65ebf57354060095a}{ilu\-Gamma\-Correct} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Gamma)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a609a51f490472174047feaf70918e3ac}{ilu\-Pixelize} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Pix\-Size)
+\begin{DoxyCompactList}\small\item\em Pixelizes an image. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_aa8f7b3bdc21492fddac12dd823051c3b}{ilu\-Saturate1f} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Saturation)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_ac117ee194f9075d2600f147e08a59251}{ilu\-Saturate4f} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} r, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} g, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} b, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Saturation)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a12f99569c175ef8b6f26c7713703380c}{ilu\-Scale\-Alpha} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} scale)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_a59c222c85f299a8bf12206dfd86646b8}{ilu\-Scale\-Colours} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} r, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} g, \hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} b)
+\begin{DoxyCompactList}\small\item\em Scales image colours. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{ilu__filter_8c_ab8e36ca96f5766b4c9fd6727d688405a}{ilu\-Sharpen} (\hyperlink{il_8h_a0576415379485bafa4b5f61989797b5e}{I\-Lfloat} Factor, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Iter)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{ilu__filter_8c_a547e04cc110280c3020c3354a3a5c8ed}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!Filter@{Filter}}
+\index{Filter@{Filter}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{Filter}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ Filter (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{const {\bf I\-Lint} $\ast$}]{matrix, }
+\item[{{\bf I\-Lint}}]{scale, }
+\item[{{\bf I\-Lint}}]{bias}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a547e04cc110280c3020c3354a3a5c8ed}
+\hypertarget{ilu__filter_8c_a2aa93a5f057e6a18d32ce90c4fccb40d}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!i\-Apply\-Matrix@{i\-Apply\-Matrix}}
+\index{i\-Apply\-Matrix@{i\-Apply\-Matrix}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{i\-Apply\-Matrix}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Apply\-Matrix (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lfloat}}]{Mat\mbox{[}4\mbox{]}\mbox{[}4\mbox{]}}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a2aa93a5f057e6a18d32ce90c4fccb40d}
+\hypertarget{ilu__filter_8c_ad0c13739b1a6cb710f0e42bb13b2f900}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!i\-Identity@{i\-Identity}}
+\index{i\-Identity@{i\-Identity}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{i\-Identity}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Identity (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat} $\ast$}]{Matrix}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_ad0c13739b1a6cb710f0e42bb13b2f900}
+Matrix++ = 0.\-0; // row 4 Matrix++ = 0.\-0; Matrix++ = 0.\-0; Matrix++ = 1.\-0; \hypertarget{ilu__filter_8c_a9a95c5910c2f6351859000608b4e7d13}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!i\-Int\-Ext\-Img@{i\-Int\-Ext\-Img}}
+\index{i\-Int\-Ext\-Img@{i\-Int\-Ext\-Img}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{i\-Int\-Ext\-Img}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Int\-Ext\-Img (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image1, }
+\item[{{\bf I\-Limage} $\ast$}]{Image2, }
+\item[{{\bf I\-Lfloat}}]{a}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a9a95c5910c2f6351859000608b4e7d13}
+\hypertarget{ilu__filter_8c_acb6e1a0e8dc10748f1cfbf60b1f8c350}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Alienify@{ilu\-Alienify}}
+\index{ilu\-Alienify@{ilu\-Alienify}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Alienify}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Alienify (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_acb6e1a0e8dc10748f1cfbf60b1f8c350}
+
+
+Funny as hell filter that I stumbled upon accidentally. 
+
+\hypertarget{ilu__filter_8c_a017478330f243e5bb6e6edc29cdf1f37}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Blur\-Avg@{ilu\-Blur\-Avg}}
+\index{ilu\-Blur\-Avg@{ilu\-Blur\-Avg}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Blur\-Avg}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Blur\-Avg (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Iter}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a017478330f243e5bb6e6edc29cdf1f37}
+\hypertarget{ilu__filter_8c_a4163c484488b3afc352e3ed6c768babf}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Blur\-Gaussian@{ilu\-Blur\-Gaussian}}
+\index{ilu\-Blur\-Gaussian@{ilu\-Blur\-Gaussian}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Blur\-Gaussian}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Blur\-Gaussian (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Iter}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a4163c484488b3afc352e3ed6c768babf}
+\hypertarget{ilu__filter_8c_a674c6a79168815f579338c30e94cd086}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Contrast@{ilu\-Contrast}}
+\index{ilu\-Contrast@{ilu\-Contrast}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Contrast}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Contrast (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{Contrast}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a674c6a79168815f579338c30e94cd086}
+\hypertarget{ilu__filter_8c_aeb5bb85ceb172bd9742f7f0730a1d440}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Convolution@{ilu\-Convolution}}
+\index{ilu\-Convolution@{ilu\-Convolution}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Convolution}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Convolution (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint} $\ast$}]{matrix, }
+\item[{{\bf I\-Lint}}]{scale, }
+\item[{{\bf I\-Lint}}]{bias}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_aeb5bb85ceb172bd9742f7f0730a1d440}
+\hypertarget{ilu__filter_8c_afbd320c463d5e8a45e68d0edb3973597}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Edge\-Detect\-E@{ilu\-Edge\-Detect\-E}}
+\index{ilu\-Edge\-Detect\-E@{ilu\-Edge\-Detect\-E}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Edge\-Detect\-E}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Edge\-Detect\-E (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_afbd320c463d5e8a45e68d0edb3973597}
+\hypertarget{ilu__filter_8c_ac902e008927e48ce132306e344f5010d}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Edge\-Detect\-P@{ilu\-Edge\-Detect\-P}}
+\index{ilu\-Edge\-Detect\-P@{ilu\-Edge\-Detect\-P}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Edge\-Detect\-P}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Edge\-Detect\-P (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_ac902e008927e48ce132306e344f5010d}
+\hypertarget{ilu__filter_8c_a91f176b607f5357b748079e21a6bbc63}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Edge\-Detect\-S@{ilu\-Edge\-Detect\-S}}
+\index{ilu\-Edge\-Detect\-S@{ilu\-Edge\-Detect\-S}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Edge\-Detect\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Edge\-Detect\-S (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a91f176b607f5357b748079e21a6bbc63}
+\hypertarget{ilu__filter_8c_ab94eba669177860af590c7bed1927c30}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Emboss@{ilu\-Emboss}}
+\index{ilu\-Emboss@{ilu\-Emboss}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Emboss}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Emboss (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_ab94eba669177860af590c7bed1927c30}
+\hypertarget{ilu__filter_8c_a06739004ee4930a65ebf57354060095a}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Gamma\-Correct@{ilu\-Gamma\-Correct}}
+\index{ilu\-Gamma\-Correct@{ilu\-Gamma\-Correct}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Gamma\-Correct}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Gamma\-Correct (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{Gamma}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a06739004ee4930a65ebf57354060095a}
+\hypertarget{ilu__filter_8c_a609a51f490472174047feaf70918e3ac}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Pixelize@{ilu\-Pixelize}}
+\index{ilu\-Pixelize@{ilu\-Pixelize}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Pixelize}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Pixelize (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Pix\-Size}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a609a51f490472174047feaf70918e3ac}
+
+
+Pixelizes an image. 
+
+\hypertarget{ilu__filter_8c_aa8f7b3bdc21492fddac12dd823051c3b}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Saturate1f@{ilu\-Saturate1f}}
+\index{ilu\-Saturate1f@{ilu\-Saturate1f}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Saturate1f}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Saturate1f (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{Saturation}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_aa8f7b3bdc21492fddac12dd823051c3b}
+\hypertarget{ilu__filter_8c_ac117ee194f9075d2600f147e08a59251}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Saturate4f@{ilu\-Saturate4f}}
+\index{ilu\-Saturate4f@{ilu\-Saturate4f}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Saturate4f}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Saturate4f (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{r, }
+\item[{{\bf I\-Lfloat}}]{g, }
+\item[{{\bf I\-Lfloat}}]{b, }
+\item[{{\bf I\-Lfloat}}]{Saturation}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_ac117ee194f9075d2600f147e08a59251}
+\hypertarget{ilu__filter_8c_a12f99569c175ef8b6f26c7713703380c}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Scale\-Alpha@{ilu\-Scale\-Alpha}}
+\index{ilu\-Scale\-Alpha@{ilu\-Scale\-Alpha}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Scale\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Scale\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{scale}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a12f99569c175ef8b6f26c7713703380c}
+\hypertarget{ilu__filter_8c_a59c222c85f299a8bf12206dfd86646b8}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Scale\-Colours@{ilu\-Scale\-Colours}}
+\index{ilu\-Scale\-Colours@{ilu\-Scale\-Colours}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Scale\-Colours}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Scale\-Colours (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{r, }
+\item[{{\bf I\-Lfloat}}]{g, }
+\item[{{\bf I\-Lfloat}}]{b}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_a59c222c85f299a8bf12206dfd86646b8}
+
+
+Scales image colours. 
+
+\hypertarget{ilu__filter_8c_ab8e36ca96f5766b4c9fd6727d688405a}{\index{ilu\-\_\-filter.\-c@{ilu\-\_\-filter.\-c}!ilu\-Sharpen@{ilu\-Sharpen}}
+\index{ilu\-Sharpen@{ilu\-Sharpen}!ilu_filter.c@{ilu\-\_\-filter.\-c}}
+\subsubsection[{ilu\-Sharpen}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ilu\-Sharpen (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lfloat}}]{Factor, }
+\item[{{\bf I\-Luint}}]{Iter}
+\end{DoxyParamCaption}
+)}}\label{ilu__filter_8c_ab8e36ca96f5766b4c9fd6727d688405a}

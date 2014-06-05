@@ -1,0 +1,40 @@
+\hypertarget{il__pal__act_8c}{\section{src/\-I\-L/formats/il\-\_\-pal\-\_\-act.c File Reference}
+\label{il__pal__act_8c}\index{src/\-I\-L/formats/il\-\_\-pal\-\_\-act.\-c@{src/\-I\-L/formats/il\-\_\-pal\-\_\-act.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-pal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$ctype.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__pal__act_8c_a6191c4389a177e93f5493df420c2714c}{i\-Format\-A\-C\-T\-\_\-\-P\-A\-L}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__pal__act_8c_a1d0191445e274655a4ef3937ea5d61aa}{i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pal__act_8c_a6191c4389a177e93f5493df420c2714c}{\index{il\-\_\-pal\-\_\-act.\-c@{il\-\_\-pal\-\_\-act.\-c}!i\-Format\-A\-C\-T\-\_\-\-P\-A\-L@{i\-Format\-A\-C\-T\-\_\-\-P\-A\-L}}
+\index{i\-Format\-A\-C\-T\-\_\-\-P\-A\-L@{i\-Format\-A\-C\-T\-\_\-\-P\-A\-L}!il_pal_act.c@{il\-\_\-pal\-\_\-act.\-c}}
+\subsubsection[{i\-Format\-A\-C\-T\-\_\-\-P\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-A\-C\-T\-\_\-\-P\-A\-L}}\label{il__pal__act_8c_a6191c4389a177e93f5493df420c2714c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidActPal, 
+  .Load     = iLoadActPal, 
+  .Save     = NULL,
+  .Exts     = \hyperlink{il__pal__act_8c_a1d0191445e274655a4ef3937ea5d61aa}{iFormatExtsACT\_PAL}
+\}
+\end{DoxyCode}
+\hypertarget{il__pal__act_8c_a1d0191445e274655a4ef3937ea5d61aa}{\index{il\-\_\-pal\-\_\-act.\-c@{il\-\_\-pal\-\_\-act.\-c}!i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L@{i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L}}
+\index{i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L@{i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L}!il_pal_act.c@{il\-\_\-pal\-\_\-act.\-c}}
+\subsubsection[{i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-A\-C\-T\-\_\-\-P\-A\-L\mbox{[}$\,$\mbox{]}}}\label{il__pal__act_8c_a1d0191445e274655a4ef3937ea5d61aa}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"act"}),
+  NULL 
+\}
+\end{DoxyCode}

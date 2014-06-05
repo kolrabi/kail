@@ -1,0 +1,60 @@
+\hypertarget{il__texture_8c}{\section{src/\-I\-L/formats/il\-\_\-texture.c File Reference}
+\label{il__texture_8c}\index{src/\-I\-L/formats/il\-\_\-texture.\-c@{src/\-I\-L/formats/il\-\_\-texture.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__texture_8c_af6c3afc133aa77dba9e917ba5ba4ef91}{i\-Is\-Valid\-Dds} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__texture_8c_ad729799725a17706e81562d04a644493}{i\-Load\-Dds\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__texture_8c_acc87b05208950deec86aa1c698bc9ca2}{i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__texture_8c_a23f959a3a352f1f307371caea09827fc}{i\-Format\-T\-E\-X\-T\-U\-R\-E}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__texture_8c_af6c3afc133aa77dba9e917ba5ba4ef91}{\index{il\-\_\-texture.\-c@{il\-\_\-texture.\-c}!i\-Is\-Valid\-Dds@{i\-Is\-Valid\-Dds}}
+\index{i\-Is\-Valid\-Dds@{i\-Is\-Valid\-Dds}!il_texture.c@{il\-\_\-texture.\-c}}
+\subsubsection[{i\-Is\-Valid\-Dds}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Is\-Valid\-Dds (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__texture_8c_af6c3afc133aa77dba9e917ba5ba4ef91}
+\hypertarget{il__texture_8c_ad729799725a17706e81562d04a644493}{\index{il\-\_\-texture.\-c@{il\-\_\-texture.\-c}!i\-Load\-Dds\-Internal@{i\-Load\-Dds\-Internal}}
+\index{i\-Load\-Dds\-Internal@{i\-Load\-Dds\-Internal}!il_texture.c@{il\-\_\-texture.\-c}}
+\subsubsection[{i\-Load\-Dds\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Dds\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__texture_8c_ad729799725a17706e81562d04a644493}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__texture_8c_acc87b05208950deec86aa1c698bc9ca2}{\index{il\-\_\-texture.\-c@{il\-\_\-texture.\-c}!i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E@{i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E}}
+\index{i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E@{i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E}!il_texture.c@{il\-\_\-texture.\-c}}
+\subsubsection[{i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-T\-E\-X\-T\-U\-R\-E\mbox{[}$\,$\mbox{]}}}\label{il__texture_8c_acc87b05208950deec86aa1c698bc9ca2}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"texture"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__texture_8c_a23f959a3a352f1f307371caea09827fc}{\index{il\-\_\-texture.\-c@{il\-\_\-texture.\-c}!i\-Format\-T\-E\-X\-T\-U\-R\-E@{i\-Format\-T\-E\-X\-T\-U\-R\-E}}
+\index{i\-Format\-T\-E\-X\-T\-U\-R\-E@{i\-Format\-T\-E\-X\-T\-U\-R\-E}!il_texture.c@{il\-\_\-texture.\-c}}
+\subsubsection[{i\-Format\-T\-E\-X\-T\-U\-R\-E}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-T\-E\-X\-T\-U\-R\-E}}\label{il__texture_8c_a23f959a3a352f1f307371caea09827fc}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidTexture, 
+  .Load     = iLoadTextureInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__texture_8c_acc87b05208950deec86aa1c698bc9ca2}{iFormatExtsTEXTURE}
+\}
+\end{DoxyCode}

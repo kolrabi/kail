@@ -1,0 +1,43 @@
+\hypertarget{il__ftx_8c}{\section{src/\-I\-L/formats/il\-\_\-ftx.c File Reference}
+\label{il__ftx_8c}\index{src/\-I\-L/formats/il\-\_\-ftx.\-c@{src/\-I\-L/formats/il\-\_\-ftx.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-push.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-pop.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_f_t_x___h_e_a_d}{F\-T\-X\-\_\-\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__ftx_8c_ab7af76ae22dc73f74ab76dfe64a9f501}{i\-Format\-Exts\-F\-T\-X} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__ftx_8c_aeae9215c89bd5ca5e665d7b21cf7eda5}{i\-Format\-F\-T\-X}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__ftx_8c_ab7af76ae22dc73f74ab76dfe64a9f501}{\index{il\-\_\-ftx.\-c@{il\-\_\-ftx.\-c}!i\-Format\-Exts\-F\-T\-X@{i\-Format\-Exts\-F\-T\-X}}
+\index{i\-Format\-Exts\-F\-T\-X@{i\-Format\-Exts\-F\-T\-X}!il_ftx.c@{il\-\_\-ftx.\-c}}
+\subsubsection[{i\-Format\-Exts\-F\-T\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-F\-T\-X\mbox{[}$\,$\mbox{]}}}\label{il__ftx_8c_ab7af76ae22dc73f74ab76dfe64a9f501}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"ftx"}), 
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__ftx_8c_aeae9215c89bd5ca5e665d7b21cf7eda5}{\index{il\-\_\-ftx.\-c@{il\-\_\-ftx.\-c}!i\-Format\-F\-T\-X@{i\-Format\-F\-T\-X}}
+\index{i\-Format\-F\-T\-X@{i\-Format\-F\-T\-X}!il_ftx.c@{il\-\_\-ftx.\-c}}
+\subsubsection[{i\-Format\-F\-T\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-F\-T\-X}}\label{il__ftx_8c_aeae9215c89bd5ca5e665d7b21cf7eda5}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = NULL, 
+    .Load     = iLoadFtxInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__ftx_8c_ab7af76ae22dc73f74ab76dfe64a9f501}{iFormatExtsFTX}
+\}
+\end{DoxyCode}

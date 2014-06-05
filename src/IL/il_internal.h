@@ -162,13 +162,10 @@ ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile)
 // Miscellaneous functions
 char*		iGetString(ILenum StringName);  // Internal version of ilGetString
 ILuint iDuplicateImage(ILuint SrcName);
-ILboolean iCopyImage(ILimage *DestImage, ILimage *SrcImage);
 ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth);
 void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
-ILboolean iClearImage(ILimage *Image);
-ILboolean iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenum DestType);
 ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord);
 ILubyte* iGetData(ILimage *Image);
 ILuint iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);

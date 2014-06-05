@@ -1,0 +1,371 @@
+\hypertarget{il__kail_8c}{\section{src/\-I\-L/il\-\_\-kail.c File Reference}
+\label{il__kail_8c}\index{src/\-I\-L/il\-\_\-kail.\-c@{src/\-I\-L/il\-\_\-kail.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_abb6d881241df450072c1b49cc3d253f3}{i\-Blit} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Source, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-X, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-Y, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-Z, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-X, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-Y, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-Z, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__kail_8c_adb3e40e8c32f4e84ea09408b2258d36c}{i\-Copy\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Dest\-Image, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Src\-Image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__kail_8c_ae3da1131304b453adcfca5a363d48a59}{i\-Copy\-Sub\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Dest, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__kail_8c_ab940464d4a92c9e103f5ced8ef1622ce}{i\-Copy\-Sub\-Images} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Dest, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__kail_8c_ab9c5da8590bf2a4e82c745b5d14f136e}{i\-Duplicate\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-Name)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a5733e9e8126ebeea814e1b0f5bb9be44}{il\-Blit} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Source, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-X, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-Y, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Dest\-Z, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-X, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-Y, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Src\-Z, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_aca1dc7f7b8e61eb134060c9c8a8b72f2}{il\-Clear\-Colour} (\hyperlink{il_8h_ad0325dd7e3fdd55546edbb20253095fa}{I\-Lclampf} Red, \hyperlink{il_8h_ad0325dd7e3fdd55546edbb20253095fa}{I\-Lclampf} Green, \hyperlink{il_8h_ad0325dd7e3fdd55546edbb20253095fa}{I\-Lclampf} Blue, \hyperlink{il_8h_ad0325dd7e3fdd55546edbb20253095fa}{I\-Lclampf} Alpha)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_ae48d76d54f6f00fe54b304c29224653f}{il\-Clear\-Image} ()
+\begin{DoxyCompactList}\small\item\em Clears the current bound image to the values specified in il\-Clear\-Colour. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_ad84f6056ea1add9c49776b33b07ffce6}{il\-Clear\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_acdc61520a0dbec909868fb13ba3d78a8}{il\-Copy\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a5e75115109e9ae1fa01fe1fc150f05d4}{il\-Copy\-Image\-Attr} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Dest, \hyperlink{struct_i_limage}{I\-Limage} $\ast$Src)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a39cba432b26ef9a954392998da828094}{il\-Get\-Clear} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Colours, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type)
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a7935a3b79dcdc71ee0f682854939dcc9}{il\-Get\-Data} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the current image's data. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_affc60ac194afa1ed9d1bdc266adc5d29}{il\-Get\-Palette} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void})
+\begin{DoxyCompactList}\small\item\em Returns a pointer to the current image's palette data. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a1166b7189a4996482b1ea70dfb9eabd0}{il\-Init\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_ab024c2ced9e3969fdab3780f3628746d}{il\-New\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpc)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a46184dc38bdae9fe9ffaff1b67e8dd4c}{il\-New\-Image\-Full} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a2e07d47b40a202e9fdf26d49e8dcdd4c}{il\-Overlay\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Source, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} X\-Coord, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Y\-Coord, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Z\-Coord)
+\begin{DoxyCompactList}\small\item\em Overlays the image found in Src on top of the current bound image at the coords specified. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a6e6aa151a3c0f6ec397ff4a670985e8b}{il\-Resize\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpc)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a0f4d316f0aa3420fae6817cd8b8c6a7c}{il\-Set\-Data} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\begin{DoxyCompactList}\small\item\em Uploads Data of the same size to replace the current image's data. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a4a0b02cccd4ccb9c863235fbfdb646eb}{il\-Tex\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\begin{DoxyCompactList}\small\item\em Changes the current bound image to use these new dimensions (current data is destroyed). \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a461ccdc9c1f94a9b2da2eb886b502bc4}{il\-Tex\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Width, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Height, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Depth, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Bpp, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__kail_8c_a98bd39f61d9aa6ed6c7736ab5a59e5b0}{il\-Tex\-Sub\-Image\-\_\-} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Data)
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__kail_8c_abb6d881241df450072c1b49cc3d253f3}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!i\-Blit@{i\-Blit}}
+\index{i\-Blit@{i\-Blit}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{i\-Blit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Blit (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Source, }
+\item[{{\bf I\-Lint}}]{Dest\-X, }
+\item[{{\bf I\-Lint}}]{Dest\-Y, }
+\item[{{\bf I\-Lint}}]{Dest\-Z, }
+\item[{{\bf I\-Luint}}]{Src\-X, }
+\item[{{\bf I\-Luint}}]{Src\-Y, }
+\item[{{\bf I\-Luint}}]{Src\-Z, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_abb6d881241df450072c1b49cc3d253f3}
+\hypertarget{il__kail_8c_adb3e40e8c32f4e84ea09408b2258d36c}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!i\-Copy\-Image@{i\-Copy\-Image}}
+\index{i\-Copy\-Image@{i\-Copy\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{i\-Copy\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Copy\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Dest\-Image, }
+\item[{{\bf I\-Limage} $\ast$}]{Src\-Image}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_adb3e40e8c32f4e84ea09408b2258d36c}
+\hypertarget{il__kail_8c_ae3da1131304b453adcfca5a363d48a59}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!i\-Copy\-Sub\-Image@{i\-Copy\-Sub\-Image}}
+\index{i\-Copy\-Sub\-Image@{i\-Copy\-Sub\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{i\-Copy\-Sub\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Copy\-Sub\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Dest, }
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ae3da1131304b453adcfca5a363d48a59}
+\hypertarget{il__kail_8c_ab940464d4a92c9e103f5ced8ef1622ce}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!i\-Copy\-Sub\-Images@{i\-Copy\-Sub\-Images}}
+\index{i\-Copy\-Sub\-Images@{i\-Copy\-Sub\-Images}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{i\-Copy\-Sub\-Images}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Copy\-Sub\-Images (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Dest, }
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ab940464d4a92c9e103f5ced8ef1622ce}
+\hypertarget{il__kail_8c_ab9c5da8590bf2a4e82c745b5d14f136e}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!i\-Duplicate\-Image@{i\-Duplicate\-Image}}
+\index{i\-Duplicate\-Image@{i\-Duplicate\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{i\-Duplicate\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} i\-Duplicate\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Src\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ab9c5da8590bf2a4e82c745b5d14f136e}
+\hypertarget{il__kail_8c_a5733e9e8126ebeea814e1b0f5bb9be44}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Blit@{il\-Blit}}
+\index{il\-Blit@{il\-Blit}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Blit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Blit (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Source, }
+\item[{{\bf I\-Lint}}]{Dest\-X, }
+\item[{{\bf I\-Lint}}]{Dest\-Y, }
+\item[{{\bf I\-Lint}}]{Dest\-Z, }
+\item[{{\bf I\-Luint}}]{Src\-X, }
+\item[{{\bf I\-Luint}}]{Src\-Y, }
+\item[{{\bf I\-Luint}}]{Src\-Z, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a5733e9e8126ebeea814e1b0f5bb9be44}
+\hypertarget{il__kail_8c_aca1dc7f7b8e61eb134060c9c8a8b72f2}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Clear\-Colour@{il\-Clear\-Colour}}
+\index{il\-Clear\-Colour@{il\-Clear\-Colour}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Clear\-Colour}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Clear\-Colour (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lclampf}}]{Red, }
+\item[{{\bf I\-Lclampf}}]{Green, }
+\item[{{\bf I\-Lclampf}}]{Blue, }
+\item[{{\bf I\-Lclampf}}]{Alpha}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_aca1dc7f7b8e61eb134060c9c8a8b72f2}
+\hypertarget{il__kail_8c_ae48d76d54f6f00fe54b304c29224653f}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Clear\-Image@{il\-Clear\-Image}}
+\index{il\-Clear\-Image@{il\-Clear\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Clear\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Clear\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ae48d76d54f6f00fe54b304c29224653f}
+
+
+Clears the current bound image to the values specified in il\-Clear\-Colour. 
+
+\hypertarget{il__kail_8c_ad84f6056ea1add9c49776b33b07ffce6}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Clear\-Image\-\_\-@{il\-Clear\-Image\-\_\-}}
+\index{il\-Clear\-Image\-\_\-@{il\-Clear\-Image\-\_\-}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Clear\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Clear\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ad84f6056ea1add9c49776b33b07ffce6}
+\hypertarget{il__kail_8c_acdc61520a0dbec909868fb13ba3d78a8}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Copy\-Image\-\_\-@{il\-Copy\-Image\-\_\-}}
+\index{il\-Copy\-Image\-\_\-@{il\-Copy\-Image\-\_\-}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Copy\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Copy\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_acdc61520a0dbec909868fb13ba3d78a8}
+\hypertarget{il__kail_8c_a5e75115109e9ae1fa01fe1fc150f05d4}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Copy\-Image\-Attr@{il\-Copy\-Image\-Attr}}
+\index{il\-Copy\-Image\-Attr@{il\-Copy\-Image\-Attr}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Copy\-Image\-Attr}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Copy\-Image\-Attr (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Dest, }
+\item[{{\bf I\-Limage} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a5e75115109e9ae1fa01fe1fc150f05d4}
+\hypertarget{il__kail_8c_a39cba432b26ef9a954392998da828094}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Get\-Clear@{il\-Get\-Clear}}
+\index{il\-Get\-Clear@{il\-Get\-Clear}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Get\-Clear}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Clear (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Colours, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a39cba432b26ef9a954392998da828094}
+\hypertarget{il__kail_8c_a7935a3b79dcdc71ee0f682854939dcc9}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Get\-Data@{il\-Get\-Data}}
+\index{il\-Get\-Data@{il\-Get\-Data}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Get\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a7935a3b79dcdc71ee0f682854939dcc9}
+
+
+Returns a pointer to the current image's data. 
+
+The pointer to the image data returned by this function is only valid until any operations are done on the image. After any operations, this function should be called again. The pointer can be cast to other types for images that have more than one byte per channel for easier access to data. 
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+I\-Lubyte pointer to image data. 
+\end{DoxyReturn}
+\hypertarget{il__kail_8c_affc60ac194afa1ed9d1bdc266adc5d29}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Get\-Palette@{il\-Get\-Palette}}
+\index{il\-Get\-Palette@{il\-Get\-Palette}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Get\-Palette}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Palette (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_affc60ac194afa1ed9d1bdc266adc5d29}
+
+
+Returns a pointer to the current image's palette data. 
+
+The pointer to the image palette data returned by this function is only valid until any operations are done on the image. After any operations, this function should be called again. 
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+I\-Lubyte pointer to image palette data. 
+\end{DoxyReturn}
+\hypertarget{il__kail_8c_a1166b7189a4996482b1ea70dfb9eabd0}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Init\-Image@{il\-Init\-Image}}
+\index{il\-Init\-Image@{il\-Init\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Init\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Init\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a1166b7189a4996482b1ea70dfb9eabd0}
+\hypertarget{il__kail_8c_ab024c2ced9e3969fdab3780f3628746d}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-New\-Image@{il\-New\-Image}}
+\index{il\-New\-Image@{il\-New\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-New\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-New\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lubyte}}]{Bpc}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_ab024c2ced9e3969fdab3780f3628746d}
+\hypertarget{il__kail_8c_a46184dc38bdae9fe9ffaff1b67e8dd4c}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-New\-Image\-Full@{il\-New\-Image\-Full}}
+\index{il\-New\-Image\-Full@{il\-New\-Image\-Full}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-New\-Image\-Full}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-New\-Image\-Full (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a46184dc38bdae9fe9ffaff1b67e8dd4c}
+\hypertarget{il__kail_8c_a2e07d47b40a202e9fdf26d49e8dcdd4c}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Overlay\-Image@{il\-Overlay\-Image}}
+\index{il\-Overlay\-Image@{il\-Overlay\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Overlay\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Overlay\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Source, }
+\item[{{\bf I\-Lint}}]{X\-Coord, }
+\item[{{\bf I\-Lint}}]{Y\-Coord, }
+\item[{{\bf I\-Lint}}]{Z\-Coord}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a2e07d47b40a202e9fdf26d49e8dcdd4c}
+
+
+Overlays the image found in Src on top of the current bound image at the coords specified. 
+
+T\-O\-D\-O\-: move to \hyperlink{il__api_8c}{il\-\_\-api.\-c} \hypertarget{il__kail_8c_a6e6aa151a3c0f6ec397ff4a670985e8b}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Resize\-Image@{il\-Resize\-Image}}
+\index{il\-Resize\-Image@{il\-Resize\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Resize\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Resize\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lubyte}}]{Bpc}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a6e6aa151a3c0f6ec397ff4a670985e8b}
+\hypertarget{il__kail_8c_a0f4d316f0aa3420fae6817cd8b8c6a7c}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Set\-Data@{il\-Set\-Data}}
+\index{il\-Set\-Data@{il\-Set\-Data}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Set\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Set\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a0f4d316f0aa3420fae6817cd8b8c6a7c}
+
+
+Uploads Data of the same size to replace the current image's data. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Data} & New image data to update the currently bound image \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image \\
+\hline
+{\em I\-L\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M} & Data was N\-U\-L\-L. \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Boolean value of failure or success 
+\end{DoxyReturn}
+\hypertarget{il__kail_8c_a4a0b02cccd4ccb9c863235fbfdb646eb}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Tex\-Image@{il\-Tex\-Image}}
+\index{il\-Tex\-Image@{il\-Tex\-Image}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Tex\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a4a0b02cccd4ccb9c863235fbfdb646eb}
+
+
+Changes the current bound image to use these new dimensions (current data is destroyed). 
+
+
+\begin{DoxyParams}{Parameters}
+{\em Width} & Specifies the new image width. This cannot be 0. \\
+\hline
+{\em Height} & Specifies the new image height. This cannot be 0. \\
+\hline
+{\em Depth} & Specifies the new image depth. This cannot be 0. \\
+\hline
+{\em Bpp} & Number of channels (ex. 3 for R\-G\-B) \\
+\hline
+{\em Format} & Enum of the desired format. Any format values are accepted. \\
+\hline
+{\em Type} & Enum of the desired type. Any type values are accepted. \\
+\hline
+{\em Data} & Specifies data that should be copied to the new image. If this parameter is N\-U\-L\-L, no data is copied, and the new image data consists of undefined values. \\
+\hline
+\end{DoxyParams}
+
+\begin{DoxyExceptions}{Exceptions}
+{\em I\-L\-\_\-\-I\-L\-L\-E\-G\-A\-L\-\_\-\-O\-P\-E\-R\-A\-T\-I\-O\-N} & No currently bound image. \\
+\hline
+{\em I\-L\-\_\-\-I\-N\-V\-A\-L\-I\-D\-\_\-\-P\-A\-R\-A\-M} & One of the parameters is incorrect, such as one of the dimensions being 0. \\
+\hline
+{\em I\-L\-\_\-\-O\-U\-T\-\_\-\-O\-F\-\_\-\-M\-E\-M\-O\-R\-Y} & Could not allocate enough memory. \\
+\hline
+\end{DoxyExceptions}
+\begin{DoxyReturn}{Returns}
+Boolean value of failure or success 
+\end{DoxyReturn}
+\hypertarget{il__kail_8c_a461ccdc9c1f94a9b2da2eb886b502bc4}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Tex\-Image\-\_\-@{il\-Tex\-Image\-\_\-}}
+\index{il\-Tex\-Image\-\_\-@{il\-Tex\-Image\-\_\-}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Tex\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Width, }
+\item[{{\bf I\-Luint}}]{Height, }
+\item[{{\bf I\-Luint}}]{Depth, }
+\item[{{\bf I\-Lubyte}}]{Bpp, }
+\item[{{\bf I\-Lenum}}]{Format, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a461ccdc9c1f94a9b2da2eb886b502bc4}
+\hypertarget{il__kail_8c_a98bd39f61d9aa6ed6c7736ab5a59e5b0}{\index{il\-\_\-kail.\-c@{il\-\_\-kail.\-c}!il\-Tex\-Sub\-Image\-\_\-@{il\-Tex\-Sub\-Image\-\_\-}}
+\index{il\-Tex\-Sub\-Image\-\_\-@{il\-Tex\-Sub\-Image\-\_\-}!il_kail.c@{il\-\_\-kail.\-c}}
+\subsubsection[{il\-Tex\-Sub\-Image\-\_\-}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Sub\-Image\-\_\- (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf void} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__kail_8c_a98bd39f61d9aa6ed6c7736ab5a59e5b0}

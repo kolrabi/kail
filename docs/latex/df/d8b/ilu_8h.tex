@@ -1,0 +1,126 @@
+\hypertarget{ilu_8h}{\section{include/\-I\-L/ilu.h File Reference}
+\label{ilu_8h}\index{include/\-I\-L/ilu.\-h@{include/\-I\-L/ilu.\-h}}
+}
+{\ttfamily \#include $<$I\-L/il.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_i_l_uinfo}{I\-L\-Uinfo}
+\begin{DoxyCompactList}\small\item\em Information about an image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_i_l_uinfo}{I\-L\-Uinfo} \hyperlink{ilu_8h_af3215e176e270aecc380878003554633}{I\-L\-Uinfo}
+\begin{DoxyCompactList}\small\item\em Information about an image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gacb6e1a0e8dc10748f1cfbf60b1f8c350}{ilu\-Alienify} (void)
+\begin{DoxyCompactList}\small\item\em Funny as hell filter that I stumbled upon accidentally. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_ga017478330f243e5bb6e6edc29cdf1f37}{ilu\-Blur\-Avg} (I\-Luint Iter)
+\begin{DoxyCompactList}\small\item\em Average each pixel with its surrounding pixels {\itshape Iter} times. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_ga4163c484488b3afc352e3ed6c768babf}{ilu\-Blur\-Gaussian} (I\-Luint Iter)
+\begin{DoxyCompactList}\small\item\em Blurs an image using a Gaussian convolution filter, which usually gives better results than the filter used by ilu\-Blur\-Avg. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__util_ga7a8bbd9d1eae3c620a937b6cde501d38}{ilu\-Build\-Mipmaps} (void)
+\begin{DoxyCompactList}\small\item\em Generates as many mipmaps for an image as possible. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga1c019783a7ab60a1b9fee1ed5b2aadbe}{ilu\-Colours\-Used} (void)
+\begin{DoxyCompactList}\small\item\em Returns the number of colours used in the current image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__util_gab39876b316fc278f23c3a62bb085eb48}{ilu\-Compare\-Image} (I\-Luint Comp)
+\begin{DoxyCompactList}\small\item\em Compares the current image to the image having the name in Comp. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga674c6a79168815f579338c30e94cd086}{ilu\-Contrast} (I\-Lfloat Contrast)
+\begin{DoxyCompactList}\small\item\em changes the contrast of an image by using interpolation and extrapolation. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gaeb5bb85ceb172bd9742f7f0730a1d440}{ilu\-Convolution} (I\-Lint $\ast$matrix, I\-Lint scale, I\-Lint bias)
+\begin{DoxyCompactList}\small\item\em Applies a user supplied convolution matrix. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga80e4330e84ad8ec34c701e9b72c1ffed}{ilu\-Crop} (I\-Luint X\-Off, I\-Luint Y\-Off, I\-Luint Z\-Off, I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em \char`\"{}\-Crops\char`\"{} the current image to new dimensions. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gafbd320c463d5e8a45e68d0edb3973597}{ilu\-Edge\-Detect\-E} (void)
+\begin{DoxyCompactList}\small\item\em Performs edge detection using an emboss convolution filter. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gac902e008927e48ce132306e344f5010d}{ilu\-Edge\-Detect\-P} (void)
+\begin{DoxyCompactList}\small\item\em Detects the edges in the current image by combining two convolution filters. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_ga91f176b607f5357b748079e21a6bbc63}{ilu\-Edge\-Detect\-S} (void)
+\begin{DoxyCompactList}\small\item\em Detects the edges in the current image by combining two convolution filters. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gab94eba669177860af590c7bed1927c30}{ilu\-Emboss} (void)
+\begin{DoxyCompactList}\small\item\em Embosses an image, causing it to have a \char`\"{}relief\char`\"{} feel to it. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gacba148d63e2e0da80b100c3ada950cb4}{ilu\-Enlarge\-Canvas} (I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em Enlarges the canvas of the current image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gaa9fe272b82b15ed2e52762e5e763b908}{ilu\-Enlarge\-Image} (I\-Lfloat X\-Dim, I\-Lfloat Y\-Dim, I\-Lfloat Z\-Dim)
+\begin{DoxyCompactList}\small\item\em Enlarges an image's dimensions by multipliers, via ilu\-Scale. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga5543086bca10106a064d3dce59770312}{ilu\-Equalize} (void)
+\begin{DoxyCompactList}\small\item\em Equalizes the intensities of an image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lconst\-\_\-string I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__util_gaa899a04791dfb88d8b48c823998af427}{ilu\-Error\-String} (I\-Lenum Error)
+\begin{DoxyCompactList}\small\item\em Returns a human-\/readable string of the error in {\itshape Error}. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}{I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}{ilu\-Flip\-Image} (void)}\label{group__ilu__geometry_ga102b4491bacd9ac35795351150f6afa1}
+
+\begin{DoxyCompactList}\small\item\em Flips an image over its x axis. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga06739004ee4930a65ebf57354060095a}{ilu\-Gamma\-Correct} (I\-Lfloat Gamma)
+\begin{DoxyCompactList}\small\item\em Performs gamma correction of an image. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__util_ga2dba9fc87a5d05e1401cd5fa08cd5728}{I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__util_ga2dba9fc87a5d05e1401cd5fa08cd5728}{ilu\-Get\-Image\-Info} (\hyperlink{struct_i_l_uinfo}{I\-L\-Uinfo} $\ast$Info)}\label{group__ilu__util_ga2dba9fc87a5d05e1401cd5fa08cd5728}
+
+\begin{DoxyCompactList}\small\item\em Retrieves information about the current bound image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_gaecb69a456d72f9c6c449604217142710}{ilu\-Get\-Integer} (I\-Lenum Mode)
+\begin{DoxyCompactList}\small\item\em Returns the current value of the {\itshape Mode}. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__state_gad63d708dd1c58cc0c0ef857119879b6d}{I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_gad63d708dd1c58cc0c0ef857119879b6d}{ilu\-Get\-Integerv} (I\-Lenum Mode, I\-Lint $\ast$Param)}\label{group__ilu__state_gad63d708dd1c58cc0c0ef857119879b6d}
+
+\begin{DoxyCompactList}\small\item\em Returns the current value of the {\itshape Mode} and stores it in {\itshape Param}. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lconst\-\_\-string I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_ga8c572ee3c422dfcc4991aeff712d1804}{ilu\-Get\-String} (I\-Lenum String\-Name)
+\begin{DoxyCompactList}\small\item\em Returns a constant string detailing aspects about this library. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_ga1f7db294cdcd2a8285ae24c29bb1f750}{ilu\-Image\-Parameter} (I\-Lenum P\-Name, I\-Lenum Param)
+\begin{DoxyCompactList}\small\item\em Sets an image parameter for a {\itshape P\-Names}. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__setup_ga93e0f1da1027ae92b2218963f1bfd334}{I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__setup_ga93e0f1da1027ae92b2218963f1bfd334}{ilu\-Init} (void)}\label{group__ilu__setup_ga93e0f1da1027ae92b2218963f1bfd334}
+
+\begin{DoxyCompactList}\small\item\em Starts I\-L\-U and must be called prior to using any other I\-L\-U function. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga0e3910809ea18e77a83cee05e12613ef}{ilu\-Invert\-Alpha} (void)
+\begin{DoxyCompactList}\small\item\em Inverts the alpha in the image. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__util_gaee81f19d4a89e17eeab168e19fa4527a}{I\-L\-A\-P\-I I\-Luint I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__util_gaee81f19d4a89e17eeab168e19fa4527a}{ilu\-Load\-Image} (I\-Lconst\-\_\-string File\-Name)}\label{group__ilu__util_gaee81f19d4a89e17eeab168e19fa4527a}
+
+\begin{DoxyCompactList}\small\item\em Loads a file into a new image. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}{I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}{ilu\-Mirror} (void)}\label{group__ilu__geometry_ga34ba55cb258ff33ab1e987a893a83c3c}
+
+\begin{DoxyCompactList}\small\item\em Mirrors an image over its y axis. \end{DoxyCompactList}\item 
+\hypertarget{group__ilu__colour_ga9606e892974b44e5457bc6f95de0970d}{I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga9606e892974b44e5457bc6f95de0970d}{ilu\-Negative} (void)}\label{group__ilu__colour_ga9606e892974b44e5457bc6f95de0970d}
+
+\begin{DoxyCompactList}\small\item\em Inverts the colours in the image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gac4c1596626e01c41075c7fdeda113642}{ilu\-Noisify} (I\-Lclampf Tolerance)
+\begin{DoxyCompactList}\small\item\em Adds some noise. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_ga609a51f490472174047feaf70918e3ac}{ilu\-Pixelize} (I\-Luint Pix\-Size)
+\begin{DoxyCompactList}\small\item\em Pixelizes an image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_gaa26c0daed6573bf4a1c8f8146de2dbfc}{ilu\-Regionfv} (I\-L\-Upointf $\ast$Points, I\-Luint n)
+\begin{DoxyCompactList}\small\item\em Sets the currently active region. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_gaf22304a1fa0728ee5fadf4d92effdb50}{ilu\-Regioniv} (I\-L\-Upointi $\ast$Points, I\-Luint n)
+\begin{DoxyCompactList}\small\item\em Sets the currently active region. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gac3447a57b322058f1c2e49faa724e4f0}{ilu\-Replace\-Colour} (I\-Lubyte Red, I\-Lubyte Green, I\-Lubyte Blue, I\-Lfloat Tolerance)
+\begin{DoxyCompactList}\small\item\em Replaces any occurence of the the color set by \hyperlink{group__state_gaca1dc7f7b8e61eb134060c9c8a8b72f2}{il\-Clear\-Colour()} with the given color where the euclidean distance between the colors is {\itshape Tolerance} or lower. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_gacc794d0e5a6951bb801fb9b278d63215}{ilu\-Rotate} (I\-Lfloat Angle)
+\begin{DoxyCompactList}\small\item\em Simply rotates an image about the center by {\itshape Angle} degrees. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_gaa8f7b3bdc21492fddac12dd823051c3b}{ilu\-Saturate1f} (I\-Lfloat Saturation)
+\begin{DoxyCompactList}\small\item\em Modifies the color saturation of an image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_gac117ee194f9075d2600f147e08a59251}{ilu\-Saturate4f} (I\-Lfloat r, I\-Lfloat g, I\-Lfloat b, I\-Lfloat Saturation)
+\begin{DoxyCompactList}\small\item\em Modifies the color saturation of an image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__geometry_ga34b36ea94ddcbc730391534ffd497d1d}{ilu\-Scale} (I\-Luint Width, I\-Luint Height, I\-Luint Depth)
+\begin{DoxyCompactList}\small\item\em Scales the image to the new dimensions specified, shrinking or enlarging the image, depending on the image's original dimensions. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga12f99569c175ef8b6f26c7713703380c}{ilu\-Scale\-Alpha} (I\-Lfloat scale)
+\begin{DoxyCompactList}\small\item\em Scales the alpha components of the current bound image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_ga59c222c85f299a8bf12206dfd86646b8}{ilu\-Scale\-Colours} (I\-Lfloat r, I\-Lfloat g, I\-Lfloat b)
+\begin{DoxyCompactList}\small\item\em Scales the individual colour components of the current bound image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__state_ga4c2e7c06c4a5677dbe58cba9c5ed075e}{ilu\-Set\-Language} (I\-Lenum Language)
+\begin{DoxyCompactList}\small\item\em Sets the current language to use for error messages. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__filter_gab8e36ca96f5766b4c9fd6727d688405a}{ilu\-Sharpen} (I\-Lfloat Factor, I\-Luint Iter)
+\begin{DoxyCompactList}\small\item\em Sharpens an image. \end{DoxyCompactList}\item 
+I\-L\-A\-P\-I I\-Lboolean I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__ilu__colour_gad18047843d546f50472e0f0af80f2ad8}{ilu\-Swap\-Colours} (void)
+\begin{DoxyCompactList}\small\item\em \char`\"{}\-Swaps\char`\"{} the colour order of the current image. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The main include file for I\-L\-U 
+
+\subsection{Typedef Documentation}
+\hypertarget{ilu_8h_af3215e176e270aecc380878003554633}{\index{ilu.\-h@{ilu.\-h}!I\-L\-Uinfo@{I\-L\-Uinfo}}
+\index{I\-L\-Uinfo@{I\-L\-Uinfo}!ilu.h@{ilu.\-h}}
+\subsubsection[{I\-L\-Uinfo}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf I\-L\-Uinfo}  {\bf I\-L\-Uinfo}}}\label{ilu_8h_af3215e176e270aecc380878003554633}
+
+
+Information about an image. 
+
+\begin{DoxySeeAlso}{See Also}
+\hyperlink{group__ilu__util_ga2dba9fc87a5d05e1401cd5fa08cd5728}{ilu\-Get\-Image\-Info} 
+\end{DoxySeeAlso}

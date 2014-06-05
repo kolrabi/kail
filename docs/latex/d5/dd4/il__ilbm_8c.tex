@@ -1,0 +1,57 @@
+\hypertarget{il__ilbm_8c}{\section{src/\-I\-L/formats/il\-\_\-ilbm.c File Reference}
+\label{il__ilbm_8c}\index{src/\-I\-L/formats/il\-\_\-ilbm.\-c@{src/\-I\-L/formats/il\-\_\-ilbm.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-push.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-pop.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_b_m_h_d}{B\-M\-H\-D}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__ilbm_8c_a653a781f54d9d640c5dc8eb5360892a9}{M\-A\-X\-C\-O\-L\-O\-R\-S}~256
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__ilbm_8c_a6ce9efcd2b6ec7a6ae5ce65fc47fe6ef}{i\-Format\-Exts\-I\-L\-B\-M} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__ilbm_8c_afeb9a9d5416bea11a673621ade985dde}{i\-Format\-I\-L\-B\-M}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__ilbm_8c_a653a781f54d9d640c5dc8eb5360892a9}{\index{il\-\_\-ilbm.\-c@{il\-\_\-ilbm.\-c}!M\-A\-X\-C\-O\-L\-O\-R\-S@{M\-A\-X\-C\-O\-L\-O\-R\-S}}
+\index{M\-A\-X\-C\-O\-L\-O\-R\-S@{M\-A\-X\-C\-O\-L\-O\-R\-S}!il_ilbm.c@{il\-\_\-ilbm.\-c}}
+\subsubsection[{M\-A\-X\-C\-O\-L\-O\-R\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-A\-X\-C\-O\-L\-O\-R\-S~256}}\label{il__ilbm_8c_a653a781f54d9d640c5dc8eb5360892a9}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__ilbm_8c_a6ce9efcd2b6ec7a6ae5ce65fc47fe6ef}{\index{il\-\_\-ilbm.\-c@{il\-\_\-ilbm.\-c}!i\-Format\-Exts\-I\-L\-B\-M@{i\-Format\-Exts\-I\-L\-B\-M}}
+\index{i\-Format\-Exts\-I\-L\-B\-M@{i\-Format\-Exts\-I\-L\-B\-M}!il_ilbm.c@{il\-\_\-ilbm.\-c}}
+\subsubsection[{i\-Format\-Exts\-I\-L\-B\-M}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-I\-L\-B\-M\mbox{[}$\,$\mbox{]}}}\label{il__ilbm_8c_a6ce9efcd2b6ec7a6ae5ce65fc47fe6ef}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"ilbm"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"lbm"}), 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"ham"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__ilbm_8c_afeb9a9d5416bea11a673621ade985dde}{\index{il\-\_\-ilbm.\-c@{il\-\_\-ilbm.\-c}!i\-Format\-I\-L\-B\-M@{i\-Format\-I\-L\-B\-M}}
+\index{i\-Format\-I\-L\-B\-M@{i\-Format\-I\-L\-B\-M}!il_ilbm.c@{il\-\_\-ilbm.\-c}}
+\subsubsection[{i\-Format\-I\-L\-B\-M}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-I\-L\-B\-M}}\label{il__ilbm_8c_afeb9a9d5416bea11a673621ade985dde}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidIlbm, 
+  .Load     = iLoadIlbmInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__ilbm_8c_a6ce9efcd2b6ec7a6ae5ce65fc47fe6ef}{iFormatExtsILBM}
+\}
+\end{DoxyCode}

@@ -1,0 +1,260 @@
+\hypertarget{il__neuquant_8c}{\section{src/\-I\-L/algo/il\-\_\-neuquant.c File Reference}
+\label{il__neuquant_8c}\index{src/\-I\-L/algo/il\-\_\-neuquant.\-c@{src/\-I\-L/algo/il\-\_\-neuquant.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__neuquant_8c_aab7db1d48971896e80e4ca1b3a60263f}{alphabiasshift}~10
+\item 
+\#define \hyperlink{il__neuquant_8c_a2a4cc5d71e1d342127d9b1b81d57ce40}{alpharadbias}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_a659d8f8318a25d79eaeb65afe4c9aff4}{alpharadbshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_a659d8f8318a25d79eaeb65afe4c9aff4}{alpharadbshift}~(\hyperlink{il__neuquant_8c_aab7db1d48971896e80e4ca1b3a60263f}{alphabiasshift}+\hyperlink{il__neuquant_8c_abf85531a0f9937bc8d372622e2c0584a}{radbiasshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_a40b4fe45622d5b33767ead7735f354c4}{beta}~(\hyperlink{il__neuquant_8c_a660b13e95f2cb8b77c50150b48e31369}{intbias}$>$$>$\hyperlink{il__neuquant_8c_ae122d9e9a3efd7d0de6a6f3d4c415c08}{betashift})
+\item 
+\#define \hyperlink{il__neuquant_8c_ac6d904aa9a1cb1ac0d806479f4aae513}{betagamma}~(\hyperlink{il__neuquant_8c_a660b13e95f2cb8b77c50150b48e31369}{intbias}$<$$<$(\hyperlink{il__neuquant_8c_a17cb474cf631344d0dc1087c4438793c}{gammashift}-\/\hyperlink{il__neuquant_8c_ae122d9e9a3efd7d0de6a6f3d4c415c08}{betashift}))
+\item 
+\#define \hyperlink{il__neuquant_8c_ae122d9e9a3efd7d0de6a6f3d4c415c08}{betashift}~10
+\item 
+\#define \hyperlink{il__neuquant_8c_a42e729077189bab1dae844253dd2ad1d}{gamma}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_a17cb474cf631344d0dc1087c4438793c}{gammashift})
+\item 
+\#define \hyperlink{il__neuquant_8c_a17cb474cf631344d0dc1087c4438793c}{gammashift}~10
+\item 
+\#define \hyperlink{il__neuquant_8c_a2662980782f9f1fb359eecdb1599b0e7}{initalpha}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_aab7db1d48971896e80e4ca1b3a60263f}{alphabiasshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_aa2b20fb42cab7e9f11a80c702af1cf49}{initrad}~(\hyperlink{il__neuquant_8c_ae651ff1a07d9fb1d49074e40d7568e80}{netsize}$>$$>$3)
+\item 
+\#define \hyperlink{il__neuquant_8c_af59d4d03b04ce7da30f451b760de655d}{initradius}~(\hyperlink{il__neuquant_8c_aa2b20fb42cab7e9f11a80c702af1cf49}{initrad}$\ast$\hyperlink{il__neuquant_8c_a31a78f59e70bfd675125f56b47004712}{radiusbias})
+\item 
+\#define \hyperlink{il__neuquant_8c_a660b13e95f2cb8b77c50150b48e31369}{intbias}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_a18e104e354eb0b9555e69f9bcd472c46}{intbiasshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_a18e104e354eb0b9555e69f9bcd472c46}{intbiasshift}~16
+\item 
+\#define \hyperlink{il__neuquant_8c_a28685bd1afe3285473f9f9e274e06b32}{maxnetpos}(ctx)~((ctx)-\/$>$netsizethink-\/1)
+\item 
+\#define \hyperlink{il__neuquant_8c_a5b35cd356588aa412178ad121a73c51a}{minpicturebytes}~(3$\ast$\hyperlink{il__neuquant_8c_a0310a3498745d78851ffe1f219e5c4a3}{prime4})
+\item 
+\#define \hyperlink{il__neuquant_8c_ac3a5aa359a0aaccf94ad1c5a21f3475b}{ncycles}~100
+\item 
+\#define \hyperlink{il__neuquant_8c_ae41ca075648526cefb9f1b4dc91254ee}{netbiasshift}~4
+\item 
+\#define \hyperlink{il__neuquant_8c_ae651ff1a07d9fb1d49074e40d7568e80}{netsize}~256
+\item 
+\#define \hyperlink{il__neuquant_8c_a2a4152f009ee9c2e952e209d39e9937b}{prime1}~499
+\item 
+\#define \hyperlink{il__neuquant_8c_a90ac2833ad3afc21b2ef0b1f7077a939}{prime2}~491
+\item 
+\#define \hyperlink{il__neuquant_8c_a76cefa2fb9bcc59b3c5b7f19f9e96543}{prime3}~487
+\item 
+\#define \hyperlink{il__neuquant_8c_a0310a3498745d78851ffe1f219e5c4a3}{prime4}~503
+\item 
+\#define \hyperlink{il__neuquant_8c_ad22739a20f40357d90eccde993ec784f}{radbias}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_abf85531a0f9937bc8d372622e2c0584a}{radbiasshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_abf85531a0f9937bc8d372622e2c0584a}{radbiasshift}~8
+\item 
+\#define \hyperlink{il__neuquant_8c_a31a78f59e70bfd675125f56b47004712}{radiusbias}~(((\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint}) 1)$<$$<$\hyperlink{il__neuquant_8c_a5ea78e77fbabe1cedc559d3fbb71b1e7}{radiusbiasshift})
+\item 
+\#define \hyperlink{il__neuquant_8c_a5ea78e77fbabe1cedc559d3fbb71b1e7}{radiusbiasshift}~6
+\item 
+\#define \hyperlink{il__neuquant_8c_a885f667fd91ebc1f9b401671a3de39ed}{radiusdec}~30
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef int \hyperlink{il__neuquant_8c_aca0bff8bcf6a7338356c446b77c5acbb}{pixel} \mbox{[}4\mbox{]}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__neuquant_8c_a15b717461981eaca141359713a9bfa95}{alterneigh} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} rad, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i}, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} b, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} g, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} r)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__neuquant_8c_aa558995de7b0bea0f93d5739901133b2}{altersingle} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} alpha, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__quantizer_8c_a4ec4a347bb8fef1869312e9edc92266b}{i}, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} b, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} g, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} r)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__neuquant_8c_af4f779326af67fdcb940d742f92fe77c}{contest} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} b, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} g, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} r)
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$ \hyperlink{il__neuquant_8c_ac4b0264e33cca6c90c1d31d3d47dc1f3}{i\-Neu\-Quant} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Num\-Cols)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__neuquant_8c_ab89f224a6834abcfb8644f434c2a96b2}{inxbuild} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__neuquant_8c_a977b0577eea04e1e5cfc3566c65086ff}{inxsearch} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} b, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} g, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} r)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__neuquant_8c_affcd9975d73a100cd4837f14d4f88503}{learn} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__neuquant_8c_a9d9928dcc2412fcb17f04b61f3505abd}{unbiasnet} (\hyperlink{struct_neu_quant_context}{Neu\-Quant\-Context} $\ast$ctx)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__neuquant_8c_aab7db1d48971896e80e4ca1b3a60263f}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!alphabiasshift@{alphabiasshift}}
+\index{alphabiasshift@{alphabiasshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{alphabiasshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define alphabiasshift~10}}\label{il__neuquant_8c_aab7db1d48971896e80e4ca1b3a60263f}
+\hypertarget{il__neuquant_8c_a2a4cc5d71e1d342127d9b1b81d57ce40}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!alpharadbias@{alpharadbias}}
+\index{alpharadbias@{alpharadbias}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{alpharadbias}]{\setlength{\rightskip}{0pt plus 5cm}\#define alpharadbias~((({\bf I\-Lint}) 1)$<$$<${\bf alpharadbshift})}}\label{il__neuquant_8c_a2a4cc5d71e1d342127d9b1b81d57ce40}
+\hypertarget{il__neuquant_8c_a659d8f8318a25d79eaeb65afe4c9aff4}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!alpharadbshift@{alpharadbshift}}
+\index{alpharadbshift@{alpharadbshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{alpharadbshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define alpharadbshift~({\bf alphabiasshift}+{\bf radbiasshift})}}\label{il__neuquant_8c_a659d8f8318a25d79eaeb65afe4c9aff4}
+\hypertarget{il__neuquant_8c_a40b4fe45622d5b33767ead7735f354c4}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!beta@{beta}}
+\index{beta@{beta}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{beta}]{\setlength{\rightskip}{0pt plus 5cm}\#define beta~({\bf intbias}$>$$>${\bf betashift})}}\label{il__neuquant_8c_a40b4fe45622d5b33767ead7735f354c4}
+\hypertarget{il__neuquant_8c_ac6d904aa9a1cb1ac0d806479f4aae513}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!betagamma@{betagamma}}
+\index{betagamma@{betagamma}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{betagamma}]{\setlength{\rightskip}{0pt plus 5cm}\#define betagamma~({\bf intbias}$<$$<$({\bf gammashift}-\/{\bf betashift}))}}\label{il__neuquant_8c_ac6d904aa9a1cb1ac0d806479f4aae513}
+\hypertarget{il__neuquant_8c_ae122d9e9a3efd7d0de6a6f3d4c415c08}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!betashift@{betashift}}
+\index{betashift@{betashift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{betashift}]{\setlength{\rightskip}{0pt plus 5cm}\#define betashift~10}}\label{il__neuquant_8c_ae122d9e9a3efd7d0de6a6f3d4c415c08}
+\hypertarget{il__neuquant_8c_a42e729077189bab1dae844253dd2ad1d}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!gamma@{gamma}}
+\index{gamma@{gamma}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{gamma}]{\setlength{\rightskip}{0pt plus 5cm}\#define gamma~((({\bf I\-Lint}) 1)$<$$<${\bf gammashift})}}\label{il__neuquant_8c_a42e729077189bab1dae844253dd2ad1d}
+\hypertarget{il__neuquant_8c_a17cb474cf631344d0dc1087c4438793c}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!gammashift@{gammashift}}
+\index{gammashift@{gammashift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{gammashift}]{\setlength{\rightskip}{0pt plus 5cm}\#define gammashift~10}}\label{il__neuquant_8c_a17cb474cf631344d0dc1087c4438793c}
+\hypertarget{il__neuquant_8c_a2662980782f9f1fb359eecdb1599b0e7}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!initalpha@{initalpha}}
+\index{initalpha@{initalpha}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{initalpha}]{\setlength{\rightskip}{0pt plus 5cm}\#define initalpha~((({\bf I\-Lint}) 1)$<$$<${\bf alphabiasshift})}}\label{il__neuquant_8c_a2662980782f9f1fb359eecdb1599b0e7}
+\hypertarget{il__neuquant_8c_aa2b20fb42cab7e9f11a80c702af1cf49}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!initrad@{initrad}}
+\index{initrad@{initrad}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{initrad}]{\setlength{\rightskip}{0pt plus 5cm}\#define initrad~({\bf netsize}$>$$>$3)}}\label{il__neuquant_8c_aa2b20fb42cab7e9f11a80c702af1cf49}
+\hypertarget{il__neuquant_8c_af59d4d03b04ce7da30f451b760de655d}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!initradius@{initradius}}
+\index{initradius@{initradius}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{initradius}]{\setlength{\rightskip}{0pt plus 5cm}\#define initradius~({\bf initrad}$\ast${\bf radiusbias})}}\label{il__neuquant_8c_af59d4d03b04ce7da30f451b760de655d}
+\hypertarget{il__neuquant_8c_a660b13e95f2cb8b77c50150b48e31369}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!intbias@{intbias}}
+\index{intbias@{intbias}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{intbias}]{\setlength{\rightskip}{0pt plus 5cm}\#define intbias~((({\bf I\-Lint}) 1)$<$$<${\bf intbiasshift})}}\label{il__neuquant_8c_a660b13e95f2cb8b77c50150b48e31369}
+\hypertarget{il__neuquant_8c_a18e104e354eb0b9555e69f9bcd472c46}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!intbiasshift@{intbiasshift}}
+\index{intbiasshift@{intbiasshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{intbiasshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define intbiasshift~16}}\label{il__neuquant_8c_a18e104e354eb0b9555e69f9bcd472c46}
+\hypertarget{il__neuquant_8c_a28685bd1afe3285473f9f9e274e06b32}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!maxnetpos@{maxnetpos}}
+\index{maxnetpos@{maxnetpos}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{maxnetpos}]{\setlength{\rightskip}{0pt plus 5cm}\#define maxnetpos(
+\begin{DoxyParamCaption}
+\item[{}]{ctx}
+\end{DoxyParamCaption}
+)~((ctx)-\/$>$netsizethink-\/1)}}\label{il__neuquant_8c_a28685bd1afe3285473f9f9e274e06b32}
+\hypertarget{il__neuquant_8c_a5b35cd356588aa412178ad121a73c51a}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!minpicturebytes@{minpicturebytes}}
+\index{minpicturebytes@{minpicturebytes}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{minpicturebytes}]{\setlength{\rightskip}{0pt plus 5cm}\#define minpicturebytes~(3$\ast${\bf prime4})}}\label{il__neuquant_8c_a5b35cd356588aa412178ad121a73c51a}
+\hypertarget{il__neuquant_8c_ac3a5aa359a0aaccf94ad1c5a21f3475b}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!ncycles@{ncycles}}
+\index{ncycles@{ncycles}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{ncycles}]{\setlength{\rightskip}{0pt plus 5cm}\#define ncycles~100}}\label{il__neuquant_8c_ac3a5aa359a0aaccf94ad1c5a21f3475b}
+\hypertarget{il__neuquant_8c_ae41ca075648526cefb9f1b4dc91254ee}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!netbiasshift@{netbiasshift}}
+\index{netbiasshift@{netbiasshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{netbiasshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define netbiasshift~4}}\label{il__neuquant_8c_ae41ca075648526cefb9f1b4dc91254ee}
+\hypertarget{il__neuquant_8c_ae651ff1a07d9fb1d49074e40d7568e80}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!netsize@{netsize}}
+\index{netsize@{netsize}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{netsize}]{\setlength{\rightskip}{0pt plus 5cm}\#define netsize~256}}\label{il__neuquant_8c_ae651ff1a07d9fb1d49074e40d7568e80}
+\hypertarget{il__neuquant_8c_a2a4152f009ee9c2e952e209d39e9937b}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!prime1@{prime1}}
+\index{prime1@{prime1}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{prime1}]{\setlength{\rightskip}{0pt plus 5cm}\#define prime1~499}}\label{il__neuquant_8c_a2a4152f009ee9c2e952e209d39e9937b}
+\hypertarget{il__neuquant_8c_a90ac2833ad3afc21b2ef0b1f7077a939}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!prime2@{prime2}}
+\index{prime2@{prime2}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{prime2}]{\setlength{\rightskip}{0pt plus 5cm}\#define prime2~491}}\label{il__neuquant_8c_a90ac2833ad3afc21b2ef0b1f7077a939}
+\hypertarget{il__neuquant_8c_a76cefa2fb9bcc59b3c5b7f19f9e96543}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!prime3@{prime3}}
+\index{prime3@{prime3}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{prime3}]{\setlength{\rightskip}{0pt plus 5cm}\#define prime3~487}}\label{il__neuquant_8c_a76cefa2fb9bcc59b3c5b7f19f9e96543}
+\hypertarget{il__neuquant_8c_a0310a3498745d78851ffe1f219e5c4a3}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!prime4@{prime4}}
+\index{prime4@{prime4}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{prime4}]{\setlength{\rightskip}{0pt plus 5cm}\#define prime4~503}}\label{il__neuquant_8c_a0310a3498745d78851ffe1f219e5c4a3}
+\hypertarget{il__neuquant_8c_ad22739a20f40357d90eccde993ec784f}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!radbias@{radbias}}
+\index{radbias@{radbias}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{radbias}]{\setlength{\rightskip}{0pt plus 5cm}\#define radbias~((({\bf I\-Lint}) 1)$<$$<${\bf radbiasshift})}}\label{il__neuquant_8c_ad22739a20f40357d90eccde993ec784f}
+\hypertarget{il__neuquant_8c_abf85531a0f9937bc8d372622e2c0584a}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!radbiasshift@{radbiasshift}}
+\index{radbiasshift@{radbiasshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{radbiasshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define radbiasshift~8}}\label{il__neuquant_8c_abf85531a0f9937bc8d372622e2c0584a}
+\hypertarget{il__neuquant_8c_a31a78f59e70bfd675125f56b47004712}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!radiusbias@{radiusbias}}
+\index{radiusbias@{radiusbias}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{radiusbias}]{\setlength{\rightskip}{0pt plus 5cm}\#define radiusbias~((({\bf I\-Lint}) 1)$<$$<${\bf radiusbiasshift})}}\label{il__neuquant_8c_a31a78f59e70bfd675125f56b47004712}
+\hypertarget{il__neuquant_8c_a5ea78e77fbabe1cedc559d3fbb71b1e7}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!radiusbiasshift@{radiusbiasshift}}
+\index{radiusbiasshift@{radiusbiasshift}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{radiusbiasshift}]{\setlength{\rightskip}{0pt plus 5cm}\#define radiusbiasshift~6}}\label{il__neuquant_8c_a5ea78e77fbabe1cedc559d3fbb71b1e7}
+\hypertarget{il__neuquant_8c_a885f667fd91ebc1f9b401671a3de39ed}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!radiusdec@{radiusdec}}
+\index{radiusdec@{radiusdec}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{radiusdec}]{\setlength{\rightskip}{0pt plus 5cm}\#define radiusdec~30}}\label{il__neuquant_8c_a885f667fd91ebc1f9b401671a3de39ed}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__neuquant_8c_aca0bff8bcf6a7338356c446b77c5acbb}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!pixel@{pixel}}
+\index{pixel@{pixel}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{pixel}]{\setlength{\rightskip}{0pt plus 5cm}typedef int pixel\mbox{[}4\mbox{]}}}\label{il__neuquant_8c_aca0bff8bcf6a7338356c446b77c5acbb}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__neuquant_8c_a15b717461981eaca141359713a9bfa95}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!alterneigh@{alterneigh}}
+\index{alterneigh@{alterneigh}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{alterneigh}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} alterneigh (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx, }
+\item[{{\bf I\-Lint}}]{rad, }
+\item[{{\bf I\-Lint}}]{i, }
+\item[{{\bf I\-Lint}}]{b, }
+\item[{{\bf I\-Lint}}]{g, }
+\item[{{\bf I\-Lint}}]{r}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_a15b717461981eaca141359713a9bfa95}
+\hypertarget{il__neuquant_8c_aa558995de7b0bea0f93d5739901133b2}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!altersingle@{altersingle}}
+\index{altersingle@{altersingle}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{altersingle}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} altersingle (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx, }
+\item[{{\bf I\-Lint}}]{alpha, }
+\item[{{\bf I\-Lint}}]{i, }
+\item[{{\bf I\-Lint}}]{b, }
+\item[{{\bf I\-Lint}}]{g, }
+\item[{{\bf I\-Lint}}]{r}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_aa558995de7b0bea0f93d5739901133b2}
+\hypertarget{il__neuquant_8c_af4f779326af67fdcb940d742f92fe77c}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!contest@{contest}}
+\index{contest@{contest}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{contest}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} contest (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx, }
+\item[{{\bf I\-Lint}}]{b, }
+\item[{{\bf I\-Lint}}]{g, }
+\item[{{\bf I\-Lint}}]{r}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_af4f779326af67fdcb940d742f92fe77c}
+\hypertarget{il__neuquant_8c_ac4b0264e33cca6c90c1d31d3d47dc1f3}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!i\-Neu\-Quant@{i\-Neu\-Quant}}
+\index{i\-Neu\-Quant@{i\-Neu\-Quant}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{i\-Neu\-Quant}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$ i\-Neu\-Quant (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Num\-Cols}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_ac4b0264e33cca6c90c1d31d3d47dc1f3}
+\hypertarget{il__neuquant_8c_ab89f224a6834abcfb8644f434c2a96b2}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!inxbuild@{inxbuild}}
+\index{inxbuild@{inxbuild}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{inxbuild}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} inxbuild (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_ab89f224a6834abcfb8644f434c2a96b2}
+\hypertarget{il__neuquant_8c_a977b0577eea04e1e5cfc3566c65086ff}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!inxsearch@{inxsearch}}
+\index{inxsearch@{inxsearch}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{inxsearch}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte} inxsearch (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx, }
+\item[{{\bf I\-Lint}}]{b, }
+\item[{{\bf I\-Lint}}]{g, }
+\item[{{\bf I\-Lint}}]{r}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_a977b0577eea04e1e5cfc3566c65086ff}
+\hypertarget{il__neuquant_8c_affcd9975d73a100cd4837f14d4f88503}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!learn@{learn}}
+\index{learn@{learn}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{learn}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} learn (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_affcd9975d73a100cd4837f14d4f88503}
+\hypertarget{il__neuquant_8c_a9d9928dcc2412fcb17f04b61f3505abd}{\index{il\-\_\-neuquant.\-c@{il\-\_\-neuquant.\-c}!unbiasnet@{unbiasnet}}
+\index{unbiasnet@{unbiasnet}!il_neuquant.c@{il\-\_\-neuquant.\-c}}
+\subsubsection[{unbiasnet}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} unbiasnet (
+\begin{DoxyParamCaption}
+\item[{{\bf Neu\-Quant\-Context} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__neuquant_8c_a9d9928dcc2412fcb17f04b61f3505abd}

@@ -1,14 +1,14 @@
 var il__manip_8c =
 [
+    [ "iCopyPixels", "db/d2e/il__manip_8c.html#a611431349f8261a6be98f5dee359b049", null ],
     [ "iCopyPixels1D", "db/d2e/il__manip_8c.html#ac915eabcadc0f62c61118fe5bdb3c376", null ],
     [ "iCopyPixels2D", "db/d2e/il__manip_8c.html#a5916e3f3731ce94050898f35f5b47a39", null ],
     [ "iCopyPixels3D", "db/d2e/il__manip_8c.html#acf8b654f98f730e830ba9654a0b1bd7e", null ],
+    [ "iDefaultImage", "db/d2e/il__manip_8c.html#a6f4f52fc2478f23d4ba7f0c09023e659", null ],
     [ "iFlipBuffer", "db/d2e/il__manip_8c.html#a16f8bb72f4b3f1a9984ed4b370e2ba48", null ],
     [ "iFlipImage", "db/d2e/il__manip_8c.html#ad4f2df90804f162546adf356c06c31f2", null ],
     [ "iGetFlipped", "db/d2e/il__manip_8c.html#a1ec6c69cfbbd8b5f4b8c9681ac76a3b4", null ],
     [ "ilClampNTSC", "db/d2e/il__manip_8c.html#ab2c623d693bf0f5c2f046a64af7b22ba", null ],
-    [ "ilCopyPixels", "db/d2e/il__manip_8c.html#aa1410977695d1633907ff371e5b9c77e", null ],
-    [ "ilDefaultImage", "db/d2e/il__manip_8c.html#a3084506414c867df1f37234d996e2501", null ],
     [ "ilGetAlpha", "db/d2e/il__manip_8c.html#aaf70fd0dbf35dd1e31700543c6e763d4", null ],
     [ "ilModAlpha", "db/d2e/il__manip_8c.html#aca8654129c04ebccba49f71d7e13edfe", null ],
     [ "ilSetAlpha", "db/d2e/il__manip_8c.html#a8887f494b3ed8dc889e783d5e3e3865f", null ],

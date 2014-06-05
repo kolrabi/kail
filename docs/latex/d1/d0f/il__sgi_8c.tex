@@ -1,0 +1,42 @@
+\hypertarget{il__sgi_8c}{\section{src/\-I\-L/formats/il\-\_\-sgi.c File Reference}
+\label{il__sgi_8c}\index{src/\-I\-L/formats/il\-\_\-sgi.\-c@{src/\-I\-L/formats/il\-\_\-sgi.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-sgi.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__sgi_8c_a72a0d31c191cbb9ca6c43effa3125566}{i\-Format\-Exts\-S\-G\-I} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__sgi_8c_afcb2e2f239147dc7d45c1b8683cab94c}{i\-Format\-S\-G\-I}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__sgi_8c_a72a0d31c191cbb9ca6c43effa3125566}{\index{il\-\_\-sgi.\-c@{il\-\_\-sgi.\-c}!i\-Format\-Exts\-S\-G\-I@{i\-Format\-Exts\-S\-G\-I}}
+\index{i\-Format\-Exts\-S\-G\-I@{i\-Format\-Exts\-S\-G\-I}!il_sgi.c@{il\-\_\-sgi.\-c}}
+\subsubsection[{i\-Format\-Exts\-S\-G\-I}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-S\-G\-I\mbox{[}$\,$\mbox{]}}}\label{il__sgi_8c_a72a0d31c191cbb9ca6c43effa3125566}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"sgi"}), 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"bw"}), 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"rgb"}), 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"rgba"}), 
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__sgi_8c_afcb2e2f239147dc7d45c1b8683cab94c}{\index{il\-\_\-sgi.\-c@{il\-\_\-sgi.\-c}!i\-Format\-S\-G\-I@{i\-Format\-S\-G\-I}}
+\index{i\-Format\-S\-G\-I@{i\-Format\-S\-G\-I}!il_sgi.c@{il\-\_\-sgi.\-c}}
+\subsubsection[{i\-Format\-S\-G\-I}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-S\-G\-I}}\label{il__sgi_8c_afcb2e2f239147dc7d45c1b8683cab94c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidSgi, 
+    .Load     = iLoadSgiInternal, 
+    .Save     = iSaveSgiInternal, 
+    .Exts     = \hyperlink{il__sgi_8c_a72a0d31c191cbb9ca6c43effa3125566}{iFormatExtsSGI}
+\}
+\end{DoxyCode}

@@ -1,0 +1,82 @@
+\hypertarget{il__tiff_8c}{\section{src/\-I\-L/formats/il\-\_\-tiff.c File Reference}
+\label{il__tiff_8c}\index{src/\-I\-L/formats/il\-\_\-tiff.\-c@{src/\-I\-L/formats/il\-\_\-tiff.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}tiffio.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$time.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__tiff_8c_a0daaa14b2e9f983a916268fe91abe6b3}{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1}~0x4949
+\item 
+\#define \hyperlink{il__tiff_8c_abfae296a3a9faad6c80e96e5263452a5}{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2}~0x4\-D4\-D
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__tiff_8c_a0356cba84a90dda64d11dc4ac47699d5}{error\-Handler} (const char $\ast$mod, const char $\ast$fmt, va\-\_\-list ap)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__tiff_8c_af902a708dccafa210f2059b3e82084fd}{i\-Save\-Tiff\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__tiff_8c_a43d2a1c0fc85aaad220c823fdb5d11e4}{i\-Format\-Exts\-T\-I\-F} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__tiff_8c_a864b3b59fc77a4f96c6ae8b53e2aba3c}{i\-Format\-T\-I\-F}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__tiff_8c_a0daaa14b2e9f983a916268fe91abe6b3}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1@{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1}}
+\index{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1@{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R1~0x4949}}\label{il__tiff_8c_a0daaa14b2e9f983a916268fe91abe6b3}
+\hypertarget{il__tiff_8c_abfae296a3a9faad6c80e96e5263452a5}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2@{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2}}
+\index{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2@{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-A\-G\-I\-C\-\_\-\-H\-E\-A\-D\-E\-R2~0x4\-D4\-D}}\label{il__tiff_8c_abfae296a3a9faad6c80e96e5263452a5}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__tiff_8c_a0356cba84a90dda64d11dc4ac47699d5}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!error\-Handler@{error\-Handler}}
+\index{error\-Handler@{error\-Handler}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{error\-Handler}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} error\-Handler (
+\begin{DoxyParamCaption}
+\item[{const char $\ast$}]{mod, }
+\item[{const char $\ast$}]{fmt, }
+\item[{va\-\_\-list}]{ap}
+\end{DoxyParamCaption}
+)}}\label{il__tiff_8c_a0356cba84a90dda64d11dc4ac47699d5}
+\hypertarget{il__tiff_8c_af902a708dccafa210f2059b3e82084fd}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!i\-Save\-Tiff\-Internal@{i\-Save\-Tiff\-Internal}}
+\index{i\-Save\-Tiff\-Internal@{i\-Save\-Tiff\-Internal}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{i\-Save\-Tiff\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Save\-Tiff\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__tiff_8c_af902a708dccafa210f2059b3e82084fd}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__tiff_8c_a43d2a1c0fc85aaad220c823fdb5d11e4}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!i\-Format\-Exts\-T\-I\-F@{i\-Format\-Exts\-T\-I\-F}}
+\index{i\-Format\-Exts\-T\-I\-F@{i\-Format\-Exts\-T\-I\-F}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{i\-Format\-Exts\-T\-I\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-T\-I\-F\mbox{[}$\,$\mbox{]}}}\label{il__tiff_8c_a43d2a1c0fc85aaad220c823fdb5d11e4}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"tif"}), 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"tiff"}), 
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__tiff_8c_a864b3b59fc77a4f96c6ae8b53e2aba3c}{\index{il\-\_\-tiff.\-c@{il\-\_\-tiff.\-c}!i\-Format\-T\-I\-F@{i\-Format\-T\-I\-F}}
+\index{i\-Format\-T\-I\-F@{i\-Format\-T\-I\-F}!il_tiff.c@{il\-\_\-tiff.\-c}}
+\subsubsection[{i\-Format\-T\-I\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-T\-I\-F}}\label{il__tiff_8c_a864b3b59fc77a4f96c6ae8b53e2aba3c}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidTiff, 
+    .Load     = iLoadTiffInternal, 
+    .Save     = \hyperlink{il__tiff_8c_af902a708dccafa210f2059b3e82084fd}{iSaveTiffInternal}, 
+    .Exts     = \hyperlink{il__tiff_8c_a43d2a1c0fc85aaad220c823fdb5d11e4}{iFormatExtsTIF}
+\}
+\end{DoxyCode}

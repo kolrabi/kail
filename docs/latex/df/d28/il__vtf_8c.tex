@@ -1,0 +1,53 @@
+\hypertarget{il__vtf_8c}{\section{src/\-I\-L/formats/il\-\_\-vtf.c File Reference}
+\label{il__vtf_8c}\index{src/\-I\-L/formats/il\-\_\-vtf.\-c@{src/\-I\-L/formats/il\-\_\-vtf.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-vtf.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-dds.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__vtf_8c_ab84a38fed9315e479796b17f61116e15}{Get\-Face\-Flag} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Face\-Num)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__vtf_8c_ae3c8e90d2622436f4f61c178d20a5e21}{i\-Format\-Exts\-V\-T\-F} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__vtf_8c_afe8caa4cdd0c076c21358cf46dff2640}{i\-Format\-V\-T\-F}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__vtf_8c_ab84a38fed9315e479796b17f61116e15}{\index{il\-\_\-vtf.\-c@{il\-\_\-vtf.\-c}!Get\-Face\-Flag@{Get\-Face\-Flag}}
+\index{Get\-Face\-Flag@{Get\-Face\-Flag}!il_vtf.c@{il\-\_\-vtf.\-c}}
+\subsubsection[{Get\-Face\-Flag}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Get\-Face\-Flag (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Face\-Num}
+\end{DoxyParamCaption}
+)}}\label{il__vtf_8c_ab84a38fed9315e479796b17f61116e15}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__vtf_8c_ae3c8e90d2622436f4f61c178d20a5e21}{\index{il\-\_\-vtf.\-c@{il\-\_\-vtf.\-c}!i\-Format\-Exts\-V\-T\-F@{i\-Format\-Exts\-V\-T\-F}}
+\index{i\-Format\-Exts\-V\-T\-F@{i\-Format\-Exts\-V\-T\-F}!il_vtf.c@{il\-\_\-vtf.\-c}}
+\subsubsection[{i\-Format\-Exts\-V\-T\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-V\-T\-F\mbox{[}$\,$\mbox{]}}}\label{il__vtf_8c_ae3c8e90d2622436f4f61c178d20a5e21}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"vtf"}), 
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__vtf_8c_afe8caa4cdd0c076c21358cf46dff2640}{\index{il\-\_\-vtf.\-c@{il\-\_\-vtf.\-c}!i\-Format\-V\-T\-F@{i\-Format\-V\-T\-F}}
+\index{i\-Format\-V\-T\-F@{i\-Format\-V\-T\-F}!il_vtf.c@{il\-\_\-vtf.\-c}}
+\subsubsection[{i\-Format\-V\-T\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-V\-T\-F}}\label{il__vtf_8c_afe8caa4cdd0c076c21358cf46dff2640}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidVtf, 
+    .Load     = iLoadVtfInternal, 
+    .Save     = iSaveVtfInternal, 
+    .Exts     = \hyperlink{il__vtf_8c_ae3c8e90d2622436f4f61c178d20a5e21}{iFormatExtsVTF}
+\}
+\end{DoxyCode}

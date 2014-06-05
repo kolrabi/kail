@@ -1,0 +1,108 @@
+\hypertarget{il__mp3_8c}{\section{src/\-I\-L/formats/il\-\_\-mp3.c File Reference}
+\label{il__mp3_8c}\index{src/\-I\-L/formats/il\-\_\-mp3.\-c@{src/\-I\-L/formats/il\-\_\-mp3.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-jpeg.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_m_p3_h_e_a_d}{M\-P3\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__mp3_8c_a44f9b963c532c408c8f06bf3c249573c}{M\-P3\-\_\-\-J\-P\-G}~1
+\item 
+\#define \hyperlink{il__mp3_8c_ade06cd736ebafe2d3efc430cffc451b9}{M\-P3\-\_\-\-N\-O\-N\-E}~0
+\item 
+\#define \hyperlink{il__mp3_8c_af144b718256572a751f89fc315f5a443}{M\-P3\-\_\-\-P\-N\-G}~2
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_m_p3_h_e_a_d}{M\-P3\-H\-E\-A\-D} \hyperlink{il__mp3_8c_ae206e053425b0f1120309cf900249621}{M\-P3\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__mp3_8c_acacf5e76792177c7fcbbcd5b20df363a}{i\-Get\-Mp3\-Head} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{struct_m_p3_h_e_a_d}{M\-P3\-H\-E\-A\-D} $\ast$Header)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__mp3_8c_a1b56489a71f2d8d34555e6b359302f5c}{i\-Load\-Jpeg\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__mp3_8c_afb00f45c0e822319519fb45fa889717d}{i\-Load\-Png\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__mp3_8c_a0b0742ac50ba7fafad60d1c6d7c6b9ac}{i\-Format\-Exts\-M\-P3} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__mp3_8c_a98647e4df01e3cb562170fc82d447ae5}{i\-Format\-M\-P3}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__mp3_8c_a44f9b963c532c408c8f06bf3c249573c}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!M\-P3\-\_\-\-J\-P\-G@{M\-P3\-\_\-\-J\-P\-G}}
+\index{M\-P3\-\_\-\-J\-P\-G@{M\-P3\-\_\-\-J\-P\-G}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{M\-P3\-\_\-\-J\-P\-G}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-P3\-\_\-\-J\-P\-G~1}}\label{il__mp3_8c_a44f9b963c532c408c8f06bf3c249573c}
+\hypertarget{il__mp3_8c_ade06cd736ebafe2d3efc430cffc451b9}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!M\-P3\-\_\-\-N\-O\-N\-E@{M\-P3\-\_\-\-N\-O\-N\-E}}
+\index{M\-P3\-\_\-\-N\-O\-N\-E@{M\-P3\-\_\-\-N\-O\-N\-E}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{M\-P3\-\_\-\-N\-O\-N\-E}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-P3\-\_\-\-N\-O\-N\-E~0}}\label{il__mp3_8c_ade06cd736ebafe2d3efc430cffc451b9}
+\hypertarget{il__mp3_8c_af144b718256572a751f89fc315f5a443}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!M\-P3\-\_\-\-P\-N\-G@{M\-P3\-\_\-\-P\-N\-G}}
+\index{M\-P3\-\_\-\-P\-N\-G@{M\-P3\-\_\-\-P\-N\-G}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{M\-P3\-\_\-\-P\-N\-G}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\-P3\-\_\-\-P\-N\-G~2}}\label{il__mp3_8c_af144b718256572a751f89fc315f5a443}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__mp3_8c_ae206e053425b0f1120309cf900249621}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!M\-P3\-H\-E\-A\-D@{M\-P3\-H\-E\-A\-D}}
+\index{M\-P3\-H\-E\-A\-D@{M\-P3\-H\-E\-A\-D}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{M\-P3\-H\-E\-A\-D}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf M\-P3\-H\-E\-A\-D}  {\bf M\-P3\-H\-E\-A\-D}}}\label{il__mp3_8c_ae206e053425b0f1120309cf900249621}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__mp3_8c_acacf5e76792177c7fcbbcd5b20df363a}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!i\-Get\-Mp3\-Head@{i\-Get\-Mp3\-Head}}
+\index{i\-Get\-Mp3\-Head@{i\-Get\-Mp3\-Head}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{i\-Get\-Mp3\-Head}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Get\-Mp3\-Head (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf M\-P3\-H\-E\-A\-D} $\ast$}]{Header}
+\end{DoxyParamCaption}
+)}}\label{il__mp3_8c_acacf5e76792177c7fcbbcd5b20df363a}
+\hypertarget{il__mp3_8c_a1b56489a71f2d8d34555e6b359302f5c}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!i\-Load\-Jpeg\-Internal@{i\-Load\-Jpeg\-Internal}}
+\index{i\-Load\-Jpeg\-Internal@{i\-Load\-Jpeg\-Internal}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{i\-Load\-Jpeg\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Jpeg\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__mp3_8c_a1b56489a71f2d8d34555e6b359302f5c}
+\hypertarget{il__mp3_8c_afb00f45c0e822319519fb45fa889717d}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!i\-Load\-Png\-Internal@{i\-Load\-Png\-Internal}}
+\index{i\-Load\-Png\-Internal@{i\-Load\-Png\-Internal}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{i\-Load\-Png\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Png\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__mp3_8c_afb00f45c0e822319519fb45fa889717d}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__mp3_8c_a0b0742ac50ba7fafad60d1c6d7c6b9ac}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!i\-Format\-Exts\-M\-P3@{i\-Format\-Exts\-M\-P3}}
+\index{i\-Format\-Exts\-M\-P3@{i\-Format\-Exts\-M\-P3}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{i\-Format\-Exts\-M\-P3}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-M\-P3\mbox{[}$\,$\mbox{]}}}\label{il__mp3_8c_a0b0742ac50ba7fafad60d1c6d7c6b9ac}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"mp3"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__mp3_8c_a98647e4df01e3cb562170fc82d447ae5}{\index{il\-\_\-mp3.\-c@{il\-\_\-mp3.\-c}!i\-Format\-M\-P3@{i\-Format\-M\-P3}}
+\index{i\-Format\-M\-P3@{i\-Format\-M\-P3}!il_mp3.c@{il\-\_\-mp3.\-c}}
+\subsubsection[{i\-Format\-M\-P3}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-M\-P3}}\label{il__mp3_8c_a98647e4df01e3cb562170fc82d447ae5}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidMp3, 
+  .Load     = iLoadMp3Internal, 
+  .Save     = NULL,
+  .Exts     = \hyperlink{il__mp3_8c_a0b0742ac50ba7fafad60d1c6d7c6b9ac}{iFormatExtsMP3}
+\}
+\end{DoxyCode}

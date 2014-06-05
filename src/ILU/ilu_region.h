@@ -24,5 +24,8 @@ typedef struct Edge
 } Edge;
 
 
+void iRegionfv(ILUpointf *Points, ILuint n);
+void iRegioniv(ILUpointi *Points, ILuint n);
+
 #endif//ILU_REGION_H
 

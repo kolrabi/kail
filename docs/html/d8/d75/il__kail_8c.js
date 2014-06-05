@@ -1,14 +1,14 @@
 var il__kail_8c =
 [
     [ "iBlit", "d8/d75/il__kail_8c.html#abb6d881241df450072c1b49cc3d253f3", null ],
+    [ "iCopyImage", "d8/d75/il__kail_8c.html#adb3e40e8c32f4e84ea09408b2258d36c", null ],
     [ "iCopySubImage", "d8/d75/il__kail_8c.html#ae3da1131304b453adcfca5a363d48a59", null ],
     [ "iCopySubImages", "d8/d75/il__kail_8c.html#ab940464d4a92c9e103f5ced8ef1622ce", null ],
+    [ "iDuplicateImage", "d8/d75/il__kail_8c.html#ab9c5da8590bf2a4e82c745b5d14f136e", null ],
     [ "ilBlit", "d8/d75/il__kail_8c.html#a5733e9e8126ebeea814e1b0f5bb9be44", null ],
     [ "ilClearColour", "d8/d75/il__kail_8c.html#aca1dc7f7b8e61eb134060c9c8a8b72f2", null ],
     [ "ilClearImage", "d8/d75/il__kail_8c.html#ae48d76d54f6f00fe54b304c29224653f", null ],
     [ "ilClearImage_", "d8/d75/il__kail_8c.html#ad84f6056ea1add9c49776b33b07ffce6", null ],
-    [ "ilCloneCurImage", "d8/d75/il__kail_8c.html#ae0771d03e54685b692b1103a1b29f80c", null ],
-    [ "ilCopyImage", "d8/d75/il__kail_8c.html#af0f3ef5b949468a12a4b49e0fb2cb3cb", null ],
     [ "ilCopyImage_", "d8/d75/il__kail_8c.html#acdc61520a0dbec909868fb13ba3d78a8", null ],
     [ "ilCopyImageAttr", "d8/d75/il__kail_8c.html#a5e75115109e9ae1fa01fe1fc150f05d4", null ],
     [ "ilGetClear", "d8/d75/il__kail_8c.html#a39cba432b26ef9a954392998da828094", null ],

@@ -1,0 +1,522 @@
+\hypertarget{il__dds_8c}{\section{src/\-I\-L/formats/il\-\_\-dds.c File Reference}
+\label{il__dds_8c}\index{src/\-I\-L/formats/il\-\_\-dds.\-c@{src/\-I\-L/formats/il\-\_\-dds.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-dds.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a13f93a5acbb26d86ce07662ce863ab99}{Check16\-Bit\-Components} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ad8c3f6dfe40fe4086d2e1a1ce47bd1f0}{Correct\-Pre\-Mult} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__dds_8c_a8b27a80693aa142a6602ab6e04f77d1c}{Count\-Bits\-From\-Mask} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mask)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__dds_8c_a5e6df6e00a17792c85b7fd943e56bb61}{Decode\-Pixel\-Format} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$Comp\-Format)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ae8acb5b407603da1e46f527098816328}{Decompress3\-Dc} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ac024f935e05a75d7cd36c1bbb954ce2c}{Decompress\-Ati1n} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ad39dd9bcdcd8016f4a3425f613807737}{Decompress\-D\-X\-T1} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$l\-Image, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$l\-Comp\-Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ae3ba263e19230bd28554a8d61ed9d869}{Decompress\-D\-X\-T2} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$l\-Image, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$l\-Comp\-Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a3eca8249d0176da0c5c363a21f60c688}{Decompress\-D\-X\-T3} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$l\-Image, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$l\-Comp\-Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a26dad6cc7e500a4f8a4f8257a33302aa}{Decompress\-D\-X\-T4} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$l\-Image, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$l\-Comp\-Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ae9ba3cc5ebfd3da0acc8846b7f3ad4b6}{Decompress\-D\-X\-T5} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$l\-Image, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$l\-Comp\-Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a4dd1911af835f05fa321f906643590b8}{Decompress\-R\-X\-G\-B} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ac3da6a40a678ef98c8ba6e7475ac517f}{Dxtc\-Read\-Color} (\hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} Data, \hyperlink{struct_color8888}{Color8888} $\ast$Out)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a5511688a9abed935a8966fc99902b817}{Dxtc\-Read\-Colors} (const \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Data, \hyperlink{struct_color8888}{Color8888} $\ast$Out)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a4cb93adb53f274e3a5a9b7166d16ea89}{Get\-Bits\-From\-Mask} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mask, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$Shift\-Left, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$Shift\-Right)
+\item 
+unsigned int \hyperlink{il__dds_8c_aeb415376bb030584023d263874654822}{half\-To\-Float} (unsigned short y)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a2213d3aea0c2e581f88991b586effedc}{i\-Check\-Dds} (\hyperlink{struct_d_d_s_h_e_a_d}{D\-D\-S\-H\-E\-A\-D} $\ast$Head)
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} \hyperlink{il__dds_8c_a95e6ac74a3435ada1308e935092cb2ed}{i\-Comp\-Format\-To\-Channel\-Count} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a73daf4daf8da0562a490bccb3c96337a}{i\-Complex\-Alpha\-Helper} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a25bac16b3859c30833329b3b77176c2f}{i\-Conv\-Float16\-To\-Float32} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$dest, \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} $\ast$src, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size})
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a089f5f81efd49d1c4bf41213752651ac}{i\-Conv\-G16\-R16\-To\-Float32} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$dest, \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} $\ast$src, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size})
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a27d318b5a74f84f1750e5e004d213cb9}{i\-Conv\-R16\-To\-Float32} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$dest, \hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} $\ast$src, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__quantizer_8c_ae9842d9af0c4b351729c2a3a5be087a6}{size})
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_ae92af346b5468587abc7fe8f877e2ee7}{i\-Dxtc\-Data\-To\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_aab806c5bc41d6bb924e1c6b9b0773ecb}{i\-Dxtc\-Data\-To\-Surface} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_aaccb9f7536f5748594a4f3393313ccc3}{i\-Flip3dc} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} count)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a5319c533f52caac1a47c13663d6b646a}{i\-Flip\-Color\-Block} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ad8e792c1aad3161806dc5f4ad2998c2d}{i\-Flip\-Complex\-Alpha\-Block} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$Data)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ad4a37a582e5019eaab70d945d5aa1cd8}{i\-Flip\-Dxt1} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} count)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a69e48a5f6937e949157a8063016425af}{i\-Flip\-Dxt3} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} count)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a606a35e18f444ad6b4121f19cbca7bc9}{i\-Flip\-Dxt5} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} count)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_aea7b79131a63620838dd26b22937d158}{i\-Flip\-Simple\-Alpha\-Block} (\hyperlink{il_8h_af6287b43748354a7c4864da43ae56962}{I\-Lushort} $\ast$data)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a2ca4192a5f6a8d0b933af58fc752ad5c}{i\-Flip\-Surface\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ad9536662d40578015e1b2f4b94426fef}{i\-Get\-Dds\-Head} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{struct_d_d_s_h_e_a_d}{D\-D\-S\-H\-E\-A\-D} $\ast$Header)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ad24f71cad7786862ec44c0df9afff6b1}{i\-Image\-To\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ae85dec74f3fd5bb7aee2d42dbf297bc2}{i\-Invert\-Dxt3\-Alpha} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_ae2a173915a3eb8ce4a2775a729ccf33a}{i\-Invert\-Dxt5\-Alpha} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a466c801ae768ff2c193b951bf949cfe0}{i\-Invert\-Surface\-Dxtc\-Data\-Alpha} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_af6c3afc133aa77dba9e917ba5ba4ef91}{i\-Is\-Valid\-Dds} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_ae4c8a38037ccead2c88cb65c343abfe0}{il\-Flip\-Surface\-Dxtc\-Data} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a0f168e499e95a73fda4fd4de51c64851}{il\-Free\-Image\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__dds_8c_a804dbb6438d892170367b20ecc721bba}{il\-Free\-Surface\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_af9e6fadec77a462e6bc54c6393861dc8}{il\-Get\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_adb7cecee5118abfc76687bb8f5373039}{il\-Image\-To\-Dxtc\-Data} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_a895ded17dd75715105a64dddb78f9790}{il\-Invert\-Surface\-Dxtc\-Data\-Alpha} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_a5564e827cd11f29ce2150e952022f351}{i\-Load\-Dds\-Cubemap\-Internal} (\hyperlink{struct_d_d_s___c_o_n_t_e_x_t}{D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$ctx, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Comp\-Format)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ad729799725a17706e81562d04a644493}{i\-Load\-Dds\-Internal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_a7be29284583785797fbda3b49a939975}{il\-Tex\-Image\-Dxtc} (\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} w, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} h, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} d, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dxt\-Format, const \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__dds_8c_a62d88fa653db6b0b8f0b181011631e9c}{i\-Surface\-To\-Dxtc\-Data} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Format)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__dds_8c_ad634a039b283a28ae714d2f3921d7675}{i\-Tex\-Image\-Dxtc} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} w, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} h, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} d, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dxt\-Format, const \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} $\ast$data)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__dds_8c_af738ec406d6720ce01dd2e93f377ba00}{i\-Format\-D\-D\-S}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__dds_8c_ad6d942200b1aa4e0b3eb22a4061daec4}{i\-Format\-Exts\-D\-D\-S} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__dds_8c_a13f93a5acbb26d86ce07662ce863ab99}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Check16\-Bit\-Components@{Check16\-Bit\-Components}}
+\index{Check16\-Bit\-Components@{Check16\-Bit\-Components}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Check16\-Bit\-Components}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Check16\-Bit\-Components (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a13f93a5acbb26d86ce07662ce863ab99}
+\hypertarget{il__dds_8c_ad8c3f6dfe40fe4086d2e1a1ce47bd1f0}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Correct\-Pre\-Mult@{Correct\-Pre\-Mult}}
+\index{Correct\-Pre\-Mult@{Correct\-Pre\-Mult}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Correct\-Pre\-Mult}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Correct\-Pre\-Mult (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad8c3f6dfe40fe4086d2e1a1ce47bd1f0}
+\hypertarget{il__dds_8c_a8b27a80693aa142a6602ab6e04f77d1c}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Count\-Bits\-From\-Mask@{Count\-Bits\-From\-Mask}}
+\index{Count\-Bits\-From\-Mask@{Count\-Bits\-From\-Mask}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Count\-Bits\-From\-Mask}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Count\-Bits\-From\-Mask (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Mask}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a8b27a80693aa142a6602ab6e04f77d1c}
+\hypertarget{il__dds_8c_a5e6df6e00a17792c85b7fd943e56bb61}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decode\-Pixel\-Format@{Decode\-Pixel\-Format}}
+\index{Decode\-Pixel\-Format@{Decode\-Pixel\-Format}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decode\-Pixel\-Format}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Decode\-Pixel\-Format (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx, }
+\item[{{\bf I\-Luint} $\ast$}]{Comp\-Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a5e6df6e00a17792c85b7fd943e56bb61}
+\hypertarget{il__dds_8c_ae8acb5b407603da1e46f527098816328}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress3\-Dc@{Decompress3\-Dc}}
+\index{Decompress3\-Dc@{Decompress3\-Dc}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress3\-Dc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress3\-Dc (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae8acb5b407603da1e46f527098816328}
+\hypertarget{il__dds_8c_ac024f935e05a75d7cd36c1bbb954ce2c}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-Ati1n@{Decompress\-Ati1n}}
+\index{Decompress\-Ati1n@{Decompress\-Ati1n}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-Ati1n}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-Ati1n (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ac024f935e05a75d7cd36c1bbb954ce2c}
+\hypertarget{il__dds_8c_ad39dd9bcdcd8016f4a3425f613807737}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-D\-X\-T1@{Decompress\-D\-X\-T1}}
+\index{Decompress\-D\-X\-T1@{Decompress\-D\-X\-T1}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-D\-X\-T1}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-D\-X\-T1 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{l\-Image, }
+\item[{{\bf I\-Lubyte} $\ast$}]{l\-Comp\-Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad39dd9bcdcd8016f4a3425f613807737}
+\hypertarget{il__dds_8c_ae3ba263e19230bd28554a8d61ed9d869}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-D\-X\-T2@{Decompress\-D\-X\-T2}}
+\index{Decompress\-D\-X\-T2@{Decompress\-D\-X\-T2}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-D\-X\-T2}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-D\-X\-T2 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{l\-Image, }
+\item[{{\bf I\-Lubyte} $\ast$}]{l\-Comp\-Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae3ba263e19230bd28554a8d61ed9d869}
+\hypertarget{il__dds_8c_a3eca8249d0176da0c5c363a21f60c688}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-D\-X\-T3@{Decompress\-D\-X\-T3}}
+\index{Decompress\-D\-X\-T3@{Decompress\-D\-X\-T3}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-D\-X\-T3}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-D\-X\-T3 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{l\-Image, }
+\item[{{\bf I\-Lubyte} $\ast$}]{l\-Comp\-Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a3eca8249d0176da0c5c363a21f60c688}
+\hypertarget{il__dds_8c_a26dad6cc7e500a4f8a4f8257a33302aa}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-D\-X\-T4@{Decompress\-D\-X\-T4}}
+\index{Decompress\-D\-X\-T4@{Decompress\-D\-X\-T4}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-D\-X\-T4}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-D\-X\-T4 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{l\-Image, }
+\item[{{\bf I\-Lubyte} $\ast$}]{l\-Comp\-Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a26dad6cc7e500a4f8a4f8257a33302aa}
+\hypertarget{il__dds_8c_ae9ba3cc5ebfd3da0acc8846b7f3ad4b6}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-D\-X\-T5@{Decompress\-D\-X\-T5}}
+\index{Decompress\-D\-X\-T5@{Decompress\-D\-X\-T5}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-D\-X\-T5}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-D\-X\-T5 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{l\-Image, }
+\item[{{\bf I\-Lubyte} $\ast$}]{l\-Comp\-Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae9ba3cc5ebfd3da0acc8846b7f3ad4b6}
+\hypertarget{il__dds_8c_a4dd1911af835f05fa321f906643590b8}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Decompress\-R\-X\-G\-B@{Decompress\-R\-X\-G\-B}}
+\index{Decompress\-R\-X\-G\-B@{Decompress\-R\-X\-G\-B}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Decompress\-R\-X\-G\-B}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Decompress\-R\-X\-G\-B (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a4dd1911af835f05fa321f906643590b8}
+\hypertarget{il__dds_8c_ac3da6a40a678ef98c8ba6e7475ac517f}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Dxtc\-Read\-Color@{Dxtc\-Read\-Color}}
+\index{Dxtc\-Read\-Color@{Dxtc\-Read\-Color}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Dxtc\-Read\-Color}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Dxtc\-Read\-Color (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lushort}}]{Data, }
+\item[{{\bf Color8888} $\ast$}]{Out}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ac3da6a40a678ef98c8ba6e7475ac517f}
+\hypertarget{il__dds_8c_a5511688a9abed935a8966fc99902b817}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Dxtc\-Read\-Colors@{Dxtc\-Read\-Colors}}
+\index{Dxtc\-Read\-Colors@{Dxtc\-Read\-Colors}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Dxtc\-Read\-Colors}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Dxtc\-Read\-Colors (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\-Lubyte} $\ast$}]{Data, }
+\item[{{\bf Color8888} $\ast$}]{Out}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a5511688a9abed935a8966fc99902b817}
+\hypertarget{il__dds_8c_a4cb93adb53f274e3a5a9b7166d16ea89}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!Get\-Bits\-From\-Mask@{Get\-Bits\-From\-Mask}}
+\index{Get\-Bits\-From\-Mask@{Get\-Bits\-From\-Mask}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{Get\-Bits\-From\-Mask}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} Get\-Bits\-From\-Mask (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Mask, }
+\item[{{\bf I\-Luint} $\ast$}]{Shift\-Left, }
+\item[{{\bf I\-Luint} $\ast$}]{Shift\-Right}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a4cb93adb53f274e3a5a9b7166d16ea89}
+\hypertarget{il__dds_8c_aeb415376bb030584023d263874654822}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!half\-To\-Float@{half\-To\-Float}}
+\index{half\-To\-Float@{half\-To\-Float}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{half\-To\-Float}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int half\-To\-Float (
+\begin{DoxyParamCaption}
+\item[{unsigned short}]{y}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_aeb415376bb030584023d263874654822}
+\hypertarget{il__dds_8c_a2213d3aea0c2e581f88991b586effedc}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Check\-Dds@{i\-Check\-Dds}}
+\index{i\-Check\-Dds@{i\-Check\-Dds}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Check\-Dds}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Check\-Dds (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-H\-E\-A\-D} $\ast$}]{Head}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a2213d3aea0c2e581f88991b586effedc}
+\hypertarget{il__dds_8c_a95e6ac74a3435ada1308e935092cb2ed}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Comp\-Format\-To\-Channel\-Count@{i\-Comp\-Format\-To\-Channel\-Count}}
+\index{i\-Comp\-Format\-To\-Channel\-Count@{i\-Comp\-Format\-To\-Channel\-Count}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Comp\-Format\-To\-Channel\-Count}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte} i\-Comp\-Format\-To\-Channel\-Count (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a95e6ac74a3435ada1308e935092cb2ed}
+\hypertarget{il__dds_8c_a73daf4daf8da0562a490bccb3c96337a}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Complex\-Alpha\-Helper@{i\-Complex\-Alpha\-Helper}}
+\index{i\-Complex\-Alpha\-Helper@{i\-Complex\-Alpha\-Helper}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Complex\-Alpha\-Helper}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Complex\-Alpha\-Helper (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a73daf4daf8da0562a490bccb3c96337a}
+\hypertarget{il__dds_8c_a25bac16b3859c30833329b3b77176c2f}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Conv\-Float16\-To\-Float32@{i\-Conv\-Float16\-To\-Float32}}
+\index{i\-Conv\-Float16\-To\-Float32@{i\-Conv\-Float16\-To\-Float32}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Conv\-Float16\-To\-Float32}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Conv\-Float16\-To\-Float32 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint} $\ast$}]{dest, }
+\item[{{\bf I\-Lushort} $\ast$}]{src, }
+\item[{{\bf I\-Luint}}]{size}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a25bac16b3859c30833329b3b77176c2f}
+\hypertarget{il__dds_8c_a089f5f81efd49d1c4bf41213752651ac}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Conv\-G16\-R16\-To\-Float32@{i\-Conv\-G16\-R16\-To\-Float32}}
+\index{i\-Conv\-G16\-R16\-To\-Float32@{i\-Conv\-G16\-R16\-To\-Float32}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Conv\-G16\-R16\-To\-Float32}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Conv\-G16\-R16\-To\-Float32 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint} $\ast$}]{dest, }
+\item[{{\bf I\-Lushort} $\ast$}]{src, }
+\item[{{\bf I\-Luint}}]{size}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a089f5f81efd49d1c4bf41213752651ac}
+\hypertarget{il__dds_8c_a27d318b5a74f84f1750e5e004d213cb9}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Conv\-R16\-To\-Float32@{i\-Conv\-R16\-To\-Float32}}
+\index{i\-Conv\-R16\-To\-Float32@{i\-Conv\-R16\-To\-Float32}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Conv\-R16\-To\-Float32}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Conv\-R16\-To\-Float32 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint} $\ast$}]{dest, }
+\item[{{\bf I\-Lushort} $\ast$}]{src, }
+\item[{{\bf I\-Luint}}]{size}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a27d318b5a74f84f1750e5e004d213cb9}
+\hypertarget{il__dds_8c_ae92af346b5468587abc7fe8f877e2ee7}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Dxtc\-Data\-To\-Image@{i\-Dxtc\-Data\-To\-Image}}
+\index{i\-Dxtc\-Data\-To\-Image@{i\-Dxtc\-Data\-To\-Image}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Dxtc\-Data\-To\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Dxtc\-Data\-To\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae92af346b5468587abc7fe8f877e2ee7}
+\hypertarget{il__dds_8c_aab806c5bc41d6bb924e1c6b9b0773ecb}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Dxtc\-Data\-To\-Surface@{i\-Dxtc\-Data\-To\-Surface}}
+\index{i\-Dxtc\-Data\-To\-Surface@{i\-Dxtc\-Data\-To\-Surface}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Dxtc\-Data\-To\-Surface}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Dxtc\-Data\-To\-Surface (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_aab806c5bc41d6bb924e1c6b9b0773ecb}
+\hypertarget{il__dds_8c_aaccb9f7536f5748594a4f3393313ccc3}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip3dc@{i\-Flip3dc}}
+\index{i\-Flip3dc@{i\-Flip3dc}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip3dc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip3dc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data, }
+\item[{{\bf I\-Luint}}]{count}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_aaccb9f7536f5748594a4f3393313ccc3}
+\hypertarget{il__dds_8c_a5319c533f52caac1a47c13663d6b646a}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Color\-Block@{i\-Flip\-Color\-Block}}
+\index{i\-Flip\-Color\-Block@{i\-Flip\-Color\-Block}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Color\-Block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Color\-Block (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a5319c533f52caac1a47c13663d6b646a}
+\hypertarget{il__dds_8c_ad8e792c1aad3161806dc5f4ad2998c2d}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Complex\-Alpha\-Block@{i\-Flip\-Complex\-Alpha\-Block}}
+\index{i\-Flip\-Complex\-Alpha\-Block@{i\-Flip\-Complex\-Alpha\-Block}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Complex\-Alpha\-Block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Complex\-Alpha\-Block (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{Data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad8e792c1aad3161806dc5f4ad2998c2d}
+\hypertarget{il__dds_8c_ad4a37a582e5019eaab70d945d5aa1cd8}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Dxt1@{i\-Flip\-Dxt1}}
+\index{i\-Flip\-Dxt1@{i\-Flip\-Dxt1}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Dxt1}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Dxt1 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data, }
+\item[{{\bf I\-Luint}}]{count}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad4a37a582e5019eaab70d945d5aa1cd8}
+\hypertarget{il__dds_8c_a69e48a5f6937e949157a8063016425af}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Dxt3@{i\-Flip\-Dxt3}}
+\index{i\-Flip\-Dxt3@{i\-Flip\-Dxt3}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Dxt3}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Dxt3 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data, }
+\item[{{\bf I\-Luint}}]{count}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a69e48a5f6937e949157a8063016425af}
+\hypertarget{il__dds_8c_a606a35e18f444ad6b4121f19cbca7bc9}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Dxt5@{i\-Flip\-Dxt5}}
+\index{i\-Flip\-Dxt5@{i\-Flip\-Dxt5}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Dxt5}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Dxt5 (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data, }
+\item[{{\bf I\-Luint}}]{count}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a606a35e18f444ad6b4121f19cbca7bc9}
+\hypertarget{il__dds_8c_aea7b79131a63620838dd26b22937d158}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Simple\-Alpha\-Block@{i\-Flip\-Simple\-Alpha\-Block}}
+\index{i\-Flip\-Simple\-Alpha\-Block@{i\-Flip\-Simple\-Alpha\-Block}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Simple\-Alpha\-Block}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Simple\-Alpha\-Block (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lushort} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_aea7b79131a63620838dd26b22937d158}
+\hypertarget{il__dds_8c_a2ca4192a5f6a8d0b933af58fc752ad5c}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Flip\-Surface\-Dxtc\-Data@{i\-Flip\-Surface\-Dxtc\-Data}}
+\index{i\-Flip\-Surface\-Dxtc\-Data@{i\-Flip\-Surface\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Flip\-Surface\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Flip\-Surface\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a2ca4192a5f6a8d0b933af58fc752ad5c}
+\hypertarget{il__dds_8c_ad9536662d40578015e1b2f4b94426fef}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Get\-Dds\-Head@{i\-Get\-Dds\-Head}}
+\index{i\-Get\-Dds\-Head@{i\-Get\-Dds\-Head}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Get\-Dds\-Head}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Get\-Dds\-Head (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf D\-D\-S\-H\-E\-A\-D} $\ast$}]{Header}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad9536662d40578015e1b2f4b94426fef}
+\hypertarget{il__dds_8c_ad24f71cad7786862ec44c0df9afff6b1}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Image\-To\-Dxtc\-Data@{i\-Image\-To\-Dxtc\-Data}}
+\index{i\-Image\-To\-Dxtc\-Data@{i\-Image\-To\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Image\-To\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Image\-To\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad24f71cad7786862ec44c0df9afff6b1}
+\hypertarget{il__dds_8c_ae85dec74f3fd5bb7aee2d42dbf297bc2}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Invert\-Dxt3\-Alpha@{i\-Invert\-Dxt3\-Alpha}}
+\index{i\-Invert\-Dxt3\-Alpha@{i\-Invert\-Dxt3\-Alpha}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Invert\-Dxt3\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Invert\-Dxt3\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae85dec74f3fd5bb7aee2d42dbf297bc2}
+\hypertarget{il__dds_8c_ae2a173915a3eb8ce4a2775a729ccf33a}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Invert\-Dxt5\-Alpha@{i\-Invert\-Dxt5\-Alpha}}
+\index{i\-Invert\-Dxt5\-Alpha@{i\-Invert\-Dxt5\-Alpha}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Invert\-Dxt5\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Invert\-Dxt5\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae2a173915a3eb8ce4a2775a729ccf33a}
+\hypertarget{il__dds_8c_a466c801ae768ff2c193b951bf949cfe0}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Invert\-Surface\-Dxtc\-Data\-Alpha@{i\-Invert\-Surface\-Dxtc\-Data\-Alpha}}
+\index{i\-Invert\-Surface\-Dxtc\-Data\-Alpha@{i\-Invert\-Surface\-Dxtc\-Data\-Alpha}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Invert\-Surface\-Dxtc\-Data\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Invert\-Surface\-Dxtc\-Data\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a466c801ae768ff2c193b951bf949cfe0}
+\hypertarget{il__dds_8c_af6c3afc133aa77dba9e917ba5ba4ef91}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Is\-Valid\-Dds@{i\-Is\-Valid\-Dds}}
+\index{i\-Is\-Valid\-Dds@{i\-Is\-Valid\-Dds}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Is\-Valid\-Dds}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Is\-Valid\-Dds (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_af6c3afc133aa77dba9e917ba5ba4ef91}
+\hypertarget{il__dds_8c_ae4c8a38037ccead2c88cb65c343abfe0}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Flip\-Surface\-Dxtc\-Data@{il\-Flip\-Surface\-Dxtc\-Data}}
+\index{il\-Flip\-Surface\-Dxtc\-Data@{il\-Flip\-Surface\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Flip\-Surface\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Flip\-Surface\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ae4c8a38037ccead2c88cb65c343abfe0}
+\hypertarget{il__dds_8c_a0f168e499e95a73fda4fd4de51c64851}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Free\-Image\-Dxtc\-Data@{il\-Free\-Image\-Dxtc\-Data}}
+\index{il\-Free\-Image\-Dxtc\-Data@{il\-Free\-Image\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Free\-Image\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} il\-Free\-Image\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a0f168e499e95a73fda4fd4de51c64851}
+\hypertarget{il__dds_8c_a804dbb6438d892170367b20ecc721bba}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Free\-Surface\-Dxtc\-Data@{il\-Free\-Surface\-Dxtc\-Data}}
+\index{il\-Free\-Surface\-Dxtc\-Data@{il\-Free\-Surface\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Free\-Surface\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} il\-Free\-Surface\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a804dbb6438d892170367b20ecc721bba}
+\hypertarget{il__dds_8c_af9e6fadec77a462e6bc54c6393861dc8}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Get\-Dxtc\-Data@{il\-Get\-Dxtc\-Data}}
+\index{il\-Get\-Dxtc\-Data@{il\-Get\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Get\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lubyte}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_af9e6fadec77a462e6bc54c6393861dc8}
+\hypertarget{il__dds_8c_adb7cecee5118abfc76687bb8f5373039}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Image\-To\-Dxtc\-Data@{il\-Image\-To\-Dxtc\-Data}}
+\index{il\-Image\-To\-Dxtc\-Data@{il\-Image\-To\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Image\-To\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Image\-To\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_adb7cecee5118abfc76687bb8f5373039}
+\hypertarget{il__dds_8c_a895ded17dd75715105a64dddb78f9790}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Invert\-Surface\-Dxtc\-Data\-Alpha@{il\-Invert\-Surface\-Dxtc\-Data\-Alpha}}
+\index{il\-Invert\-Surface\-Dxtc\-Data\-Alpha@{il\-Invert\-Surface\-Dxtc\-Data\-Alpha}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Invert\-Surface\-Dxtc\-Data\-Alpha}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Invert\-Surface\-Dxtc\-Data\-Alpha (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a895ded17dd75715105a64dddb78f9790}
+\hypertarget{il__dds_8c_a5564e827cd11f29ce2150e952022f351}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Load\-Dds\-Cubemap\-Internal@{i\-Load\-Dds\-Cubemap\-Internal}}
+\index{i\-Load\-Dds\-Cubemap\-Internal@{i\-Load\-Dds\-Cubemap\-Internal}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Load\-Dds\-Cubemap\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Dds\-Cubemap\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf D\-D\-S\-\_\-\-C\-O\-N\-T\-E\-X\-T} $\ast$}]{ctx, }
+\item[{{\bf I\-Luint}}]{Comp\-Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a5564e827cd11f29ce2150e952022f351}
+\hypertarget{il__dds_8c_ad729799725a17706e81562d04a644493}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Load\-Dds\-Internal@{i\-Load\-Dds\-Internal}}
+\index{i\-Load\-Dds\-Internal@{i\-Load\-Dds\-Internal}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Load\-Dds\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Dds\-Internal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad729799725a17706e81562d04a644493}
+\hypertarget{il__dds_8c_a7be29284583785797fbda3b49a939975}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!il\-Tex\-Image\-Dxtc@{il\-Tex\-Image\-Dxtc}}
+\index{il\-Tex\-Image\-Dxtc@{il\-Tex\-Image\-Dxtc}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{il\-Tex\-Image\-Dxtc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Tex\-Image\-Dxtc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lint}}]{w, }
+\item[{{\bf I\-Lint}}]{h, }
+\item[{{\bf I\-Lint}}]{d, }
+\item[{{\bf I\-Lenum}}]{Dxt\-Format, }
+\item[{const {\bf I\-Lubyte} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a7be29284583785797fbda3b49a939975}
+\hypertarget{il__dds_8c_a62d88fa653db6b0b8f0b181011631e9c}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Surface\-To\-Dxtc\-Data@{i\-Surface\-To\-Dxtc\-Data}}
+\index{i\-Surface\-To\-Dxtc\-Data@{i\-Surface\-To\-Dxtc\-Data}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Surface\-To\-Dxtc\-Data}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Surface\-To\-Dxtc\-Data (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-Lenum}}]{Format}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_a62d88fa653db6b0b8f0b181011631e9c}
+\hypertarget{il__dds_8c_ad634a039b283a28ae714d2f3921d7675}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Tex\-Image\-Dxtc@{i\-Tex\-Image\-Dxtc}}
+\index{i\-Tex\-Image\-Dxtc@{i\-Tex\-Image\-Dxtc}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Tex\-Image\-Dxtc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Tex\-Image\-Dxtc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-Lint}}]{w, }
+\item[{{\bf I\-Lint}}]{h, }
+\item[{{\bf I\-Lint}}]{d, }
+\item[{{\bf I\-Lenum}}]{Dxt\-Format, }
+\item[{const {\bf I\-Lubyte} $\ast$}]{data}
+\end{DoxyParamCaption}
+)}}\label{il__dds_8c_ad634a039b283a28ae714d2f3921d7675}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__dds_8c_af738ec406d6720ce01dd2e93f377ba00}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Format\-D\-D\-S@{i\-Format\-D\-D\-S}}
+\index{i\-Format\-D\-D\-S@{i\-Format\-D\-D\-S}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Format\-D\-D\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-D\-D\-S}}\label{il__dds_8c_af738ec406d6720ce01dd2e93f377ba00}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = \hyperlink{il__dds_8c_af6c3afc133aa77dba9e917ba5ba4ef91}{iIsValidDds}, 
+    .Load     = \hyperlink{il__dds_8c_ad729799725a17706e81562d04a644493}{iLoadDdsInternal}, 
+    .Save     = \hyperlink{il__dds-save_8c_ade47c3367f39f7ba62daf2383189f5f9}{iSaveDdsInternal}, 
+    .Exts     = \hyperlink{il__dds_8c_ad6d942200b1aa4e0b3eb22a4061daec4}{iFormatExtsDDS}
+\}
+\end{DoxyCode}
+\hypertarget{il__dds_8c_ad6d942200b1aa4e0b3eb22a4061daec4}{\index{il\-\_\-dds.\-c@{il\-\_\-dds.\-c}!i\-Format\-Exts\-D\-D\-S@{i\-Format\-Exts\-D\-D\-S}}
+\index{i\-Format\-Exts\-D\-D\-S@{i\-Format\-Exts\-D\-D\-S}!il_dds.c@{il\-\_\-dds.\-c}}
+\subsubsection[{i\-Format\-Exts\-D\-D\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-D\-D\-S\mbox{[}$\,$\mbox{]}}}\label{il__dds_8c_ad6d942200b1aa4e0b3eb22a4061daec4}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"dds"}), 
+    NULL 
+\}
+\end{DoxyCode}

@@ -1,0 +1,144 @@
+\hypertarget{il__pal_8c}{\section{src/\-I\-L/il\-\_\-pal.c File Reference}
+\label{il__pal_8c}\index{src/\-I\-L/il\-\_\-pal.\-c@{src/\-I\-L/il\-\_\-pal.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-pal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$string.\-h$>$}\\*
+{\ttfamily \#include $<$ctype.\-h$>$}\\*
+{\ttfamily \#include $<$limits.\-h$>$}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_c_o_l___c_u_b_e}{C\-O\-L\-\_\-\-C\-U\-B\-E}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_c_o_l___c_u_b_e}{C\-O\-L\-\_\-\-C\-U\-B\-E} \hyperlink{il__pal_8c_aac053870a68087518480c0a98a2022d0}{C\-O\-L\-\_\-\-C\-U\-B\-E}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_a9e607f1aa64f29fe6e85a7ebb50b0706}{i\-Convert\-Image\-Pal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_a54096b235d8713ab24bc630af37cedc4}{i\-Convert\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Pal, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_a4a20740215741e9b8da0c11541b4f440}{i\-Copy\-Pal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__pal_8c_a64b40c2595a4e1fa71af88cb59eba40f}{i\-Copy\-Palette} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Dest, \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Src)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_a014c750459309c1df11cd535b6440786}{il\-Apply\-Pal} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_af3e055a50d9dcc791b249bfd6152ba58}{il\-Convert\-Pal} (\hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Dest\-Format)
+\begin{DoxyCompactList}\small\item\em Converts the current image to the Dest\-Format format. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_ac412222fcdd3ae96b1d9de01c8e17a5a}{il\-Load\-Pal} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\begin{DoxyCompactList}\small\item\em Loads a palette from File\-Name into the current image's palette. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_afa4316e5d7b9a35bf872e7ddd2a8bb64}{il\-Save\-Pal} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__pal_8c_a9fbda63884fe1c185972a2e087752e3e}{i\-Set\-Pal} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Pal)
+\item 
+int \hyperlink{il__pal_8c_a68acda4fe339dfbfcd0cd0ea347c3e15}{sort\-\_\-func} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$e1, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$e2)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__pal_8c_a269ce03c41ff5774c1afad91e5f9413f}{Cur\-Sort} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__pal_8c_aac053870a68087518480c0a98a2022d0}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!C\-O\-L\-\_\-\-C\-U\-B\-E@{C\-O\-L\-\_\-\-C\-U\-B\-E}}
+\index{C\-O\-L\-\_\-\-C\-U\-B\-E@{C\-O\-L\-\_\-\-C\-U\-B\-E}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{C\-O\-L\-\_\-\-C\-U\-B\-E}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf C\-O\-L\-\_\-\-C\-U\-B\-E}  {\bf C\-O\-L\-\_\-\-C\-U\-B\-E}}}\label{il__pal_8c_aac053870a68087518480c0a98a2022d0}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__pal_8c_a9e607f1aa64f29fe6e85a7ebb50b0706}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!i\-Convert\-Image\-Pal@{i\-Convert\-Image\-Pal}}
+\index{i\-Convert\-Image\-Pal@{i\-Convert\-Image\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{i\-Convert\-Image\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Convert\-Image\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lenum}}]{Dest\-Format}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a9e607f1aa64f29fe6e85a7ebb50b0706}
+\hypertarget{il__pal_8c_a54096b235d8713ab24bc630af37cedc4}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!i\-Convert\-Pal@{i\-Convert\-Pal}}
+\index{i\-Convert\-Pal@{i\-Convert\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{i\-Convert\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lpal}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Convert\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Pal, }
+\item[{{\bf I\-Lenum}}]{Dest\-Format}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a54096b235d8713ab24bc630af37cedc4}
+\hypertarget{il__pal_8c_a4a20740215741e9b8da0c11541b4f440}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!i\-Copy\-Pal@{i\-Copy\-Pal}}
+\index{i\-Copy\-Pal@{i\-Copy\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{i\-Copy\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lpal}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Copy\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a4a20740215741e9b8da0c11541b4f440}
+\hypertarget{il__pal_8c_a64b40c2595a4e1fa71af88cb59eba40f}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!i\-Copy\-Palette@{i\-Copy\-Palette}}
+\index{i\-Copy\-Palette@{i\-Copy\-Palette}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{i\-Copy\-Palette}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Copy\-Palette (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Dest, }
+\item[{{\bf I\-Lpal} $\ast$}]{Src}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a64b40c2595a4e1fa71af88cb59eba40f}
+\hypertarget{il__pal_8c_a014c750459309c1df11cd535b6440786}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!il\-Apply\-Pal@{il\-Apply\-Pal}}
+\index{il\-Apply\-Pal@{il\-Apply\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{il\-Apply\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Apply\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a014c750459309c1df11cd535b6440786}
+\hypertarget{il__pal_8c_af3e055a50d9dcc791b249bfd6152ba58}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!il\-Convert\-Pal@{il\-Convert\-Pal}}
+\index{il\-Convert\-Pal@{il\-Convert\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{il\-Convert\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Convert\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lenum}}]{Dest\-Format}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_af3e055a50d9dcc791b249bfd6152ba58}
+
+
+Converts the current image to the Dest\-Format format. 
+
+\hypertarget{il__pal_8c_ac412222fcdd3ae96b1d9de01c8e17a5a}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!il\-Load\-Pal@{il\-Load\-Pal}}
+\index{il\-Load\-Pal@{il\-Load\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{il\-Load\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Load\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_ac412222fcdd3ae96b1d9de01c8e17a5a}
+
+
+Loads a palette from File\-Name into the current image's palette. 
+
+\hypertarget{il__pal_8c_afa4316e5d7b9a35bf872e7ddd2a8bb64}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!il\-Save\-Pal@{il\-Save\-Pal}}
+\index{il\-Save\-Pal@{il\-Save\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{il\-Save\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Save\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_afa4316e5d7b9a35bf872e7ddd2a8bb64}
+\hypertarget{il__pal_8c_a9fbda63884fe1c185972a2e087752e3e}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!i\-Set\-Pal@{i\-Set\-Pal}}
+\index{i\-Set\-Pal@{i\-Set\-Pal}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{i\-Set\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Set\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lpal} $\ast$}]{Pal}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a9fbda63884fe1c185972a2e087752e3e}
+\hypertarget{il__pal_8c_a68acda4fe339dfbfcd0cd0ea347c3e15}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!sort\-\_\-func@{sort\-\_\-func}}
+\index{sort\-\_\-func@{sort\-\_\-func}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{sort\-\_\-func}]{\setlength{\rightskip}{0pt plus 5cm}int sort\-\_\-func (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{e1, }
+\item[{{\bf void} $\ast$}]{e2}
+\end{DoxyParamCaption}
+)}}\label{il__pal_8c_a68acda4fe339dfbfcd0cd0ea347c3e15}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pal_8c_a269ce03c41ff5774c1afad91e5f9413f}{\index{il\-\_\-pal.\-c@{il\-\_\-pal.\-c}!Cur\-Sort@{Cur\-Sort}}
+\index{Cur\-Sort@{Cur\-Sort}!il_pal.c@{il\-\_\-pal.\-c}}
+\subsubsection[{Cur\-Sort}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Cur\-Sort = 0}}\label{il__pal_8c_a269ce03c41ff5774c1afad91e5f9413f}

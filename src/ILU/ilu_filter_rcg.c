@@ -440,13 +440,12 @@ __zoom_cleanup:
 } /* zoom */
 
 
-ILuint iluScaleAdvanced(ILuint Width, ILuint Height, ILenum Filter)
+ILuint iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter)
 {
 	double (*f)(double) = filter;
 	double s = filter_support;
 	ILimage *Dest;
 
-	ILimage *  Image = iGetCurImage();
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;

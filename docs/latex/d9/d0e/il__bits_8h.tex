@@ -1,0 +1,102 @@
+\hypertarget{il__bits_8h}{\section{src/\-I\-L/il\-\_\-bits.h File Reference}
+\label{il__bits_8h}\index{src/\-I\-L/il\-\_\-bits.\-h@{src/\-I\-L/il\-\_\-bits.\-h}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__bits_8h_adcdd7e8b1c57c715f9aa8f01f4e5ba7b}{Clear\-Bits}(var, bits)~(var \&= $\sim$(bits))
+\item 
+\#define \hyperlink{il__bits_8h_aea4bc6f567dc1fa5cab4d5105ce41835}{Set\-Bits}(var, bits)~(var $|$= bits)
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} \hyperlink{il__bits_8h_ace2888a3a0a37f75408fb052a6c719bf}{B\-I\-T\-F\-I\-L\-E}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__bits_8h_a73ca51d647f3e76a5b7d53afb9eb673b}{bclose} (\hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} $\ast$Bit\-File)
+\item 
+\hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} $\ast$ \hyperlink{il__bits_8h_ac04d18b09fff1f978a62ce133b89707e}{bitfile} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__bits_8h_a785177dd69be052f4d1306a6f4ee7300}{bread} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number, \hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} $\ast$Bit\-File)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__bits_8h_a02f7b715f8bc74ab96f9cb756b7422ca}{bseek} (\hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} $\ast$Bit\-File, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Offset, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mode)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il__bits_8h_a6223b170b73c22b604e8bb7125fcd19f}{btell} (\hyperlink{struct_b_i_t_f_i_l_e}{B\-I\-T\-F\-I\-L\-E} $\ast$Bit\-File)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__bits_8h_adcdd7e8b1c57c715f9aa8f01f4e5ba7b}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!Clear\-Bits@{Clear\-Bits}}
+\index{Clear\-Bits@{Clear\-Bits}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{Clear\-Bits}]{\setlength{\rightskip}{0pt plus 5cm}\#define Clear\-Bits(
+\begin{DoxyParamCaption}
+\item[{}]{var, }
+\item[{}]{bits}
+\end{DoxyParamCaption}
+)~(var \&= $\sim$(bits))}}\label{il__bits_8h_adcdd7e8b1c57c715f9aa8f01f4e5ba7b}
+\hypertarget{il__bits_8h_aea4bc6f567dc1fa5cab4d5105ce41835}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!Set\-Bits@{Set\-Bits}}
+\index{Set\-Bits@{Set\-Bits}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{Set\-Bits}]{\setlength{\rightskip}{0pt plus 5cm}\#define Set\-Bits(
+\begin{DoxyParamCaption}
+\item[{}]{var, }
+\item[{}]{bits}
+\end{DoxyParamCaption}
+)~(var $|$= bits)}}\label{il__bits_8h_aea4bc6f567dc1fa5cab4d5105ce41835}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__bits_8h_ace2888a3a0a37f75408fb052a6c719bf}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!B\-I\-T\-F\-I\-L\-E@{B\-I\-T\-F\-I\-L\-E}}
+\index{B\-I\-T\-F\-I\-L\-E@{B\-I\-T\-F\-I\-L\-E}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{B\-I\-T\-F\-I\-L\-E}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf B\-I\-T\-F\-I\-L\-E}  {\bf B\-I\-T\-F\-I\-L\-E}}}\label{il__bits_8h_ace2888a3a0a37f75408fb052a6c719bf}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__bits_8h_a73ca51d647f3e76a5b7d53afb9eb673b}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!bclose@{bclose}}
+\index{bclose@{bclose}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{bclose}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} bclose (
+\begin{DoxyParamCaption}
+\item[{{\bf B\-I\-T\-F\-I\-L\-E} $\ast$}]{Bit\-File}
+\end{DoxyParamCaption}
+)}}\label{il__bits_8h_a73ca51d647f3e76a5b7d53afb9eb673b}
+\hypertarget{il__bits_8h_ac04d18b09fff1f978a62ce133b89707e}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!bitfile@{bitfile}}
+\index{bitfile@{bitfile}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{bitfile}]{\setlength{\rightskip}{0pt plus 5cm}{\bf B\-I\-T\-F\-I\-L\-E}$\ast$ bitfile (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io}
+\end{DoxyParamCaption}
+)}}\label{il__bits_8h_ac04d18b09fff1f978a62ce133b89707e}
+\hypertarget{il__bits_8h_a785177dd69be052f4d1306a6f4ee7300}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!bread@{bread}}
+\index{bread@{bread}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{bread}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} bread (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Number, }
+\item[{{\bf B\-I\-T\-F\-I\-L\-E} $\ast$}]{Bit\-File}
+\end{DoxyParamCaption}
+)}}\label{il__bits_8h_a785177dd69be052f4d1306a6f4ee7300}
+\hypertarget{il__bits_8h_a02f7b715f8bc74ab96f9cb756b7422ca}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!bseek@{bseek}}
+\index{bseek@{bseek}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{bseek}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} bseek (
+\begin{DoxyParamCaption}
+\item[{{\bf B\-I\-T\-F\-I\-L\-E} $\ast$}]{Bit\-File, }
+\item[{{\bf I\-Luint}}]{Offset, }
+\item[{{\bf I\-Luint}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__bits_8h_a02f7b715f8bc74ab96f9cb756b7422ca}
+\hypertarget{il__bits_8h_a6223b170b73c22b604e8bb7125fcd19f}{\index{il\-\_\-bits.\-h@{il\-\_\-bits.\-h}!btell@{btell}}
+\index{btell@{btell}!il_bits.h@{il\-\_\-bits.\-h}}
+\subsubsection[{btell}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} btell (
+\begin{DoxyParamCaption}
+\item[{{\bf B\-I\-T\-F\-I\-L\-E} $\ast$}]{Bit\-File}
+\end{DoxyParamCaption}
+)}}\label{il__bits_8h_a6223b170b73c22b604e8bb7125fcd19f}

@@ -1,0 +1,348 @@
+\hypertarget{il__stack_8c}{\section{src/\-I\-L/il\-\_\-stack.c File Reference}
+\label{il__stack_8c}\index{src/\-I\-L/il\-\_\-stack.\-c@{src/\-I\-L/il\-\_\-stack.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-stack.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__stack_8c_a2e4b38ad423dee7a972ad94d210b736f}{i\-Bind\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_afe2657b007dbc710d192749744e090a5}{i\-Bind\-Image\-Temp} ()
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__stack_8c_a8d5074be4b53375a97bf84827bae9fe9}{i\-Create\-Sub\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_a1542f3a70c0c5370a30a1fa5ce349e2d}{I\-Lenum} Type, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Num)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__stack_8c_a253393284fddc6fdfaf188047ecd48ab}{i\-Enlarge\-Stack} ()
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_aa9550fe4a4d0900e0e3fa024cb0fb2a2}{i\-Get\-Base\-Image} ()
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_abc0748336a44895286b2137eaefe3734}{i\-Get\-Cur\-Image} ()
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a292d3df2a765d8bb7fafde8bd1905e9f}{i\-Get\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Image)
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a459dcf777fa6b56a919d05f2d57126ff}{i\-Get\-Mipmap} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a45406bd67c96853a97d0f0aca5ecbee3}{i\-Get\-Sub\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Used for setting the current image if it is an animation. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__stack_8c_af4d2d888dc40149cc1636f853939188d}{i\-Init\-I\-L} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__stack_8c_a9431faa48bd98b32e6351f59280db306}{i\-Is\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Image)
+\begin{DoxyCompactList}\small\item\em Checks if Image is a valid il\-Gen\-Images-\/generated image (like gl\-Is\-Texture()). \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a77651f86dfb248dddfead0c095ed2c12}{il\-Active\-Face} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Used for setting the current face if it is a cubemap. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a1ea5b35280be4128de20e7218108d669}{il\-Active\-Image} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Used for setting the current image if it is an animation. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_ad362b9264fd40f787f2748237b214f96}{il\-Active\-Layer} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Used for setting the current layer if layers exist. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a02171eee15fcaf5fb1d1741307e7f8bc}{il\-Active\-Mipmap} (\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\begin{DoxyCompactList}\small\item\em Sets the current mipmap level. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_af184305c471b662673a5ca4c352dd05b}{il\-Close\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\begin{DoxyCompactList}\small\item\em Closes Image and frees all memory associated with it. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a27fa8759c965f3fde4d4670fc76bf85e}{il\-Close\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Palette)
+\begin{DoxyCompactList}\small\item\em Closes Palette and frees all memory associated with it. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a74c70352949963d2b30c919662a65844}{il\-Delete\-Image} (const \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Num)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_ab4346d371243537a7050e255f99c8b16}{il\-Delete\-Images} (\hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Num, const \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$Images)
+\begin{DoxyCompactList}\small\item\em Deletes Num images from the image stack -\/ similar to gl\-Delete\-Textures(). \end{DoxyCompactList}\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a97ac04e1816cf63cf13b2c7b00b3b725}{il\-Gen\-Image} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a2bd61fd22ff429363d44a4eaff3b064d}{il\-Gen\-Images} (\hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Num, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} $\ast$Images)
+\begin{DoxyCompactList}\small\item\em Creates Num images and puts their index in Images -\/ similar to gl\-Gen\-Textures(). \end{DoxyCompactList}\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a205752d8f3f48edab971e60b1015c21e}{il\-Get\-Cur\-Name} ()
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_ad142fddebfccd088bc359f0e64291a5e}{il\-Is\-Valid\-Pal} (\hyperlink{struct_i_lpal}{I\-Lpal} $\ast$Palette)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a689339f4f7454bbcc6a8b299fced3c59}{il\-Recalloc} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Ptr, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Old\-Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} New\-Size)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a7b289e75fee0b0c15a2af071b940868c}{il\-Replace\-Cur\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_aedb0c8b2b033d0612e3d784d2f598758}{I\-L\-A\-P\-I} \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__stack_8c_a30e1a59af19f9e4542e16a1a95158680}{il\-Set\-Cur\-Image} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__stack_8c_a2c92cd30023b301cb331da4b85bce924}{i\-Shut\-Down\-I\-L} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__stack_8c_acfa692c4a4a6ea7dfef3085ed29256a7}{Cur\-Name} = 0
+\item 
+\hyperlink{structi_free}{i\-Free} $\ast$ \hyperlink{il__stack_8c_a4a51fa0abf5437a2629db3d9131d8592}{Free\-Names} = N\-U\-L\-L
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$ \hyperlink{il__stack_8c_a96dea2bdc4f390f63e247dc15868b33a}{i\-Cur\-Image} = N\-U\-L\-L
+\item 
+\hyperlink{struct_i_limage}{I\-Limage} $\ast$$\ast$ \hyperlink{il__stack_8c_ad166ad7a26101e9005778b6b8fcb130a}{Image\-Stack} = N\-U\-L\-L
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__stack_8c_a177455792593855919405b9297fd62d9}{Last\-Used} = 0
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__stack_8c_a1ef6288f9aa0ea591fff0aa6f6553a80}{On\-Exit} = \hyperlink{il_8h_a4de3cf681ed24cec060ecec1887f9b86}{I\-L\-\_\-\-F\-A\-L\-S\-E}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__stack_8c_ab52080b7a8b7e98d20ab0e987f9ce51e}{Parent\-Image} = \hyperlink{il_8h_a8eb333d556aa3f6fb074fa69250c8164}{I\-L\-\_\-\-T\-R\-U\-E}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__stack_8c_aecf6d7f022ff497b79339e60899bf4c6}{Stack\-Size} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__stack_8c_a2e4b38ad423dee7a972ad94d210b736f}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Bind\-Image@{i\-Bind\-Image}}
+\index{i\-Bind\-Image@{i\-Bind\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Bind\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Bind\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a2e4b38ad423dee7a972ad94d210b736f}
+\hypertarget{il__stack_8c_afe2657b007dbc710d192749744e090a5}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Bind\-Image\-Temp@{i\-Bind\-Image\-Temp}}
+\index{i\-Bind\-Image\-Temp@{i\-Bind\-Image\-Temp}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Bind\-Image\-Temp}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Bind\-Image\-Temp (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_afe2657b007dbc710d192749744e090a5}
+\hypertarget{il__stack_8c_a8d5074be4b53375a97bf84827bae9fe9}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Create\-Sub\-Image@{i\-Create\-Sub\-Image}}
+\index{i\-Create\-Sub\-Image@{i\-Create\-Sub\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Create\-Sub\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} i\-Create\-Sub\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Lenum}}]{Type, }
+\item[{{\bf I\-Luint}}]{Num}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a8d5074be4b53375a97bf84827bae9fe9}
+\hypertarget{il__stack_8c_a253393284fddc6fdfaf188047ecd48ab}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Enlarge\-Stack@{i\-Enlarge\-Stack}}
+\index{i\-Enlarge\-Stack@{i\-Enlarge\-Stack}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Enlarge\-Stack}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Enlarge\-Stack (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a253393284fddc6fdfaf188047ecd48ab}
+\hypertarget{il__stack_8c_aa9550fe4a4d0900e0e3fa024cb0fb2a2}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Get\-Base\-Image@{i\-Get\-Base\-Image}}
+\index{i\-Get\-Base\-Image@{i\-Get\-Base\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Get\-Base\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Base\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_aa9550fe4a4d0900e0e3fa024cb0fb2a2}
+\hypertarget{il__stack_8c_abc0748336a44895286b2137eaefe3734}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Get\-Cur\-Image@{i\-Get\-Cur\-Image}}
+\index{i\-Get\-Cur\-Image@{i\-Get\-Cur\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Get\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_abc0748336a44895286b2137eaefe3734}
+\hypertarget{il__stack_8c_a292d3df2a765d8bb7fafde8bd1905e9f}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Get\-Image@{i\-Get\-Image}}
+\index{i\-Get\-Image@{i\-Get\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Get\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a292d3df2a765d8bb7fafde8bd1905e9f}
+\hypertarget{il__stack_8c_a459dcf777fa6b56a919d05f2d57126ff}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Get\-Mipmap@{i\-Get\-Mipmap}}
+\index{i\-Get\-Mipmap@{i\-Get\-Mipmap}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Get\-Mipmap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Mipmap (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a459dcf777fa6b56a919d05f2d57126ff}
+\hypertarget{il__stack_8c_a45406bd67c96853a97d0f0aca5ecbee3}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Get\-Sub\-Image@{i\-Get\-Sub\-Image}}
+\index{i\-Get\-Sub\-Image@{i\-Get\-Sub\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Get\-Sub\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Get\-Sub\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a45406bd67c96853a97d0f0aca5ecbee3}
+
+
+Used for setting the current image if it is an animation. 
+
+\hypertarget{il__stack_8c_af4d2d888dc40149cc1636f853939188d}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Init\-I\-L@{i\-Init\-I\-L}}
+\index{i\-Init\-I\-L@{i\-Init\-I\-L}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Init\-I\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Init\-I\-L (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_af4d2d888dc40149cc1636f853939188d}
+\hypertarget{il__stack_8c_a9431faa48bd98b32e6351f59280db306}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Is\-Image@{i\-Is\-Image}}
+\index{i\-Is\-Image@{i\-Is\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Is\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Is\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a9431faa48bd98b32e6351f59280db306}
+
+
+Checks if Image is a valid il\-Gen\-Images-\/generated image (like gl\-Is\-Texture()). 
+
+\hypertarget{il__stack_8c_a77651f86dfb248dddfead0c095ed2c12}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Active\-Face@{il\-Active\-Face}}
+\index{il\-Active\-Face@{il\-Active\-Face}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Active\-Face}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Active\-Face (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a77651f86dfb248dddfead0c095ed2c12}
+
+
+Used for setting the current face if it is a cubemap. 
+
+\hypertarget{il__stack_8c_a1ea5b35280be4128de20e7218108d669}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Active\-Image@{il\-Active\-Image}}
+\index{il\-Active\-Image@{il\-Active\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Active\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Active\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a1ea5b35280be4128de20e7218108d669}
+
+
+Used for setting the current image if it is an animation. 
+
+\hypertarget{il__stack_8c_ad362b9264fd40f787f2748237b214f96}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Active\-Layer@{il\-Active\-Layer}}
+\index{il\-Active\-Layer@{il\-Active\-Layer}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Active\-Layer}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Active\-Layer (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_ad362b9264fd40f787f2748237b214f96}
+
+
+Used for setting the current layer if layers exist. 
+
+\hypertarget{il__stack_8c_a02171eee15fcaf5fb1d1741307e7f8bc}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Active\-Mipmap@{il\-Active\-Mipmap}}
+\index{il\-Active\-Mipmap@{il\-Active\-Mipmap}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Active\-Mipmap}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Active\-Mipmap (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a02171eee15fcaf5fb1d1741307e7f8bc}
+
+
+Sets the current mipmap level. 
+
+\hypertarget{il__stack_8c_af184305c471b662673a5ca4c352dd05b}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Close\-Image@{il\-Close\-Image}}
+\index{il\-Close\-Image@{il\-Close\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Close\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Close\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_af184305c471b662673a5ca4c352dd05b}
+
+
+Closes Image and frees all memory associated with it. 
+
+\hypertarget{il__stack_8c_a27fa8759c965f3fde4d4670fc76bf85e}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Close\-Pal@{il\-Close\-Pal}}
+\index{il\-Close\-Pal@{il\-Close\-Pal}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Close\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Close\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Palette}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a27fa8759c965f3fde4d4670fc76bf85e}
+
+
+Closes Palette and frees all memory associated with it. 
+
+\hypertarget{il__stack_8c_a74c70352949963d2b30c919662a65844}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Delete\-Image@{il\-Delete\-Image}}
+\index{il\-Delete\-Image@{il\-Delete\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Delete\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Delete\-Image (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\-Luint}}]{Num}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a74c70352949963d2b30c919662a65844}
+\hypertarget{il__stack_8c_ab4346d371243537a7050e255f99c8b16}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Delete\-Images@{il\-Delete\-Images}}
+\index{il\-Delete\-Images@{il\-Delete\-Images}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Delete\-Images}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Delete\-Images (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lsizei}}]{Num, }
+\item[{const {\bf I\-Luint} $\ast$}]{Images}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_ab4346d371243537a7050e255f99c8b16}
+
+
+Deletes Num images from the image stack -\/ similar to gl\-Delete\-Textures(). 
+
+\hypertarget{il__stack_8c_a97ac04e1816cf63cf13b2c7b00b3b725}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Gen\-Image@{il\-Gen\-Image}}
+\index{il\-Gen\-Image@{il\-Gen\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Gen\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Gen\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a97ac04e1816cf63cf13b2c7b00b3b725}
+\hypertarget{il__stack_8c_a2bd61fd22ff429363d44a4eaff3b064d}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Gen\-Images@{il\-Gen\-Images}}
+\index{il\-Gen\-Images@{il\-Gen\-Images}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Gen\-Images}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Gen\-Images (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lsizei}}]{Num, }
+\item[{{\bf I\-Luint} $\ast$}]{Images}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a2bd61fd22ff429363d44a4eaff3b064d}
+
+
+Creates Num images and puts their index in Images -\/ similar to gl\-Gen\-Textures(). 
+
+\hypertarget{il__stack_8c_a205752d8f3f48edab971e60b1015c21e}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Get\-Cur\-Name@{il\-Get\-Cur\-Name}}
+\index{il\-Get\-Cur\-Name@{il\-Get\-Cur\-Name}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Get\-Cur\-Name}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Cur\-Name (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a205752d8f3f48edab971e60b1015c21e}
+\hypertarget{il__stack_8c_ad142fddebfccd088bc359f0e64291a5e}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Is\-Valid\-Pal@{il\-Is\-Valid\-Pal}}
+\index{il\-Is\-Valid\-Pal@{il\-Is\-Valid\-Pal}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Is\-Valid\-Pal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Is\-Valid\-Pal (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lpal} $\ast$}]{Palette}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_ad142fddebfccd088bc359f0e64291a5e}
+\hypertarget{il__stack_8c_a689339f4f7454bbcc6a8b299fced3c59}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Recalloc@{il\-Recalloc}}
+\index{il\-Recalloc@{il\-Recalloc}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Recalloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Recalloc (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Ptr, }
+\item[{{\bf I\-Luint}}]{Old\-Size, }
+\item[{{\bf I\-Luint}}]{New\-Size}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a689339f4f7454bbcc6a8b299fced3c59}
+\hypertarget{il__stack_8c_a7b289e75fee0b0c15a2af071b940868c}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Replace\-Cur\-Image@{il\-Replace\-Cur\-Image}}
+\index{il\-Replace\-Cur\-Image@{il\-Replace\-Cur\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Replace\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Replace\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a7b289e75fee0b0c15a2af071b940868c}
+\hypertarget{il__stack_8c_a30e1a59af19f9e4542e16a1a95158680}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!il\-Set\-Cur\-Image@{il\-Set\-Cur\-Image}}
+\index{il\-Set\-Cur\-Image@{il\-Set\-Cur\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{il\-Set\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-A\-P\-I} {\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Set\-Cur\-Image (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a30e1a59af19f9e4542e16a1a95158680}
+\hypertarget{il__stack_8c_a2c92cd30023b301cb331da4b85bce924}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Shut\-Down\-I\-L@{i\-Shut\-Down\-I\-L}}
+\index{i\-Shut\-Down\-I\-L@{i\-Shut\-Down\-I\-L}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Shut\-Down\-I\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Shut\-Down\-I\-L (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__stack_8c_a2c92cd30023b301cb331da4b85bce924}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__stack_8c_acfa692c4a4a6ea7dfef3085ed29256a7}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Cur\-Name@{Cur\-Name}}
+\index{Cur\-Name@{Cur\-Name}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Cur\-Name}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Cur\-Name = 0}}\label{il__stack_8c_acfa692c4a4a6ea7dfef3085ed29256a7}
+\hypertarget{il__stack_8c_a4a51fa0abf5437a2629db3d9131d8592}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Free\-Names@{Free\-Names}}
+\index{Free\-Names@{Free\-Names}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Free\-Names}]{\setlength{\rightskip}{0pt plus 5cm}{\bf i\-Free}$\ast$ Free\-Names = N\-U\-L\-L}}\label{il__stack_8c_a4a51fa0abf5437a2629db3d9131d8592}
+\hypertarget{il__stack_8c_a96dea2bdc4f390f63e247dc15868b33a}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!i\-Cur\-Image@{i\-Cur\-Image}}
+\index{i\-Cur\-Image@{i\-Cur\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{i\-Cur\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$ i\-Cur\-Image = N\-U\-L\-L}}\label{il__stack_8c_a96dea2bdc4f390f63e247dc15868b33a}
+\hypertarget{il__stack_8c_ad166ad7a26101e9005778b6b8fcb130a}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Image\-Stack@{Image\-Stack}}
+\index{Image\-Stack@{Image\-Stack}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Image\-Stack}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Limage}$\ast$$\ast$ Image\-Stack = N\-U\-L\-L}}\label{il__stack_8c_ad166ad7a26101e9005778b6b8fcb130a}
+\hypertarget{il__stack_8c_a177455792593855919405b9297fd62d9}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Last\-Used@{Last\-Used}}
+\index{Last\-Used@{Last\-Used}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Last\-Used}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Last\-Used = 0}}\label{il__stack_8c_a177455792593855919405b9297fd62d9}
+\hypertarget{il__stack_8c_a1ef6288f9aa0ea591fff0aa6f6553a80}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!On\-Exit@{On\-Exit}}
+\index{On\-Exit@{On\-Exit}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{On\-Exit}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} On\-Exit = {\bf I\-L\-\_\-\-F\-A\-L\-S\-E}}}\label{il__stack_8c_a1ef6288f9aa0ea591fff0aa6f6553a80}
+\hypertarget{il__stack_8c_ab52080b7a8b7e98d20ab0e987f9ce51e}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Parent\-Image@{Parent\-Image}}
+\index{Parent\-Image@{Parent\-Image}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Parent\-Image}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} Parent\-Image = {\bf I\-L\-\_\-\-T\-R\-U\-E}}}\label{il__stack_8c_ab52080b7a8b7e98d20ab0e987f9ce51e}
+\hypertarget{il__stack_8c_aecf6d7f022ff497b79339e60899bf4c6}{\index{il\-\_\-stack.\-c@{il\-\_\-stack.\-c}!Stack\-Size@{Stack\-Size}}
+\index{Stack\-Size@{Stack\-Size}!il_stack.c@{il\-\_\-stack.\-c}}
+\subsubsection[{Stack\-Size}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} Stack\-Size = 0}}\label{il__stack_8c_aecf6d7f022ff497b79339e60899bf4c6}

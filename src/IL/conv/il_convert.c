@@ -371,8 +371,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
 }
 
 
-ILboolean iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenum DestType)
-{
+ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenum DestType) {
   if ( DestFormat == BaseImage->Format 
     && DestType   == BaseImage->Type )
     return IL_TRUE;  // No conversion needed.
@@ -865,9 +864,9 @@ ILboolean iAddAlphaKey(ILimage *Image)
     // @TODO: Check if this is the required behaviour.
 
     if (Image->Pal.PalType == IL_PAL_RGBA32)
-      ilConvertImage(IL_RGBA, IL_UNSIGNED_BYTE);
+      iConvertImages(Image, IL_RGBA, IL_UNSIGNED_BYTE);
     else
-      ilConvertImage(IL_BGRA, IL_UNSIGNED_BYTE);
+      iConvertImages(Image, IL_BGRA, IL_UNSIGNED_BYTE);
   }
 
   return IL_TRUE;

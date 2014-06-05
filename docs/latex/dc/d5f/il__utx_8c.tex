@@ -1,0 +1,37 @@
+\hypertarget{il__utx_8c}{\section{src/\-I\-L/formats/il\-\_\-utx.c File Reference}
+\label{il__utx_8c}\index{src/\-I\-L/formats/il\-\_\-utx.\-c@{src/\-I\-L/formats/il\-\_\-utx.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-utx.\-h\char`\"{}}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__utx_8c_afa4f4869e54cbb1a60be8ee7cb3b642f}{i\-Format\-Exts\-U\-T\-X} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__utx_8c_acca73ef25c3e4a5554d4a58386f75c95}{i\-Format\-U\-T\-X}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__utx_8c_afa4f4869e54cbb1a60be8ee7cb3b642f}{\index{il\-\_\-utx.\-c@{il\-\_\-utx.\-c}!i\-Format\-Exts\-U\-T\-X@{i\-Format\-Exts\-U\-T\-X}}
+\index{i\-Format\-Exts\-U\-T\-X@{i\-Format\-Exts\-U\-T\-X}!il_utx.c@{il\-\_\-utx.\-c}}
+\subsubsection[{i\-Format\-Exts\-U\-T\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-U\-T\-X\mbox{[}$\,$\mbox{]}}}\label{il__utx_8c_afa4f4869e54cbb1a60be8ee7cb3b642f}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"utx"}), 
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__utx_8c_acca73ef25c3e4a5554d4a58386f75c95}{\index{il\-\_\-utx.\-c@{il\-\_\-utx.\-c}!i\-Format\-U\-T\-X@{i\-Format\-U\-T\-X}}
+\index{i\-Format\-U\-T\-X@{i\-Format\-U\-T\-X}!il_utx.c@{il\-\_\-utx.\-c}}
+\subsubsection[{i\-Format\-U\-T\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-U\-T\-X}}\label{il__utx_8c_acca73ef25c3e4a5554d4a58386f75c95}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidUtx, 
+    .Load     = iLoadUtxInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__utx_8c_afa4f4869e54cbb1a60be8ee7cb3b642f}{iFormatExtsUTX}
+\}
+\end{DoxyCode}

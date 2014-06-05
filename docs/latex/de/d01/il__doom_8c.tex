@@ -1,0 +1,59 @@
+\hypertarget{il__doom_8c}{\section{src/\-I\-L/formats/il\-\_\-doom.c File Reference}
+\label{il__doom_8c}\index{src/\-I\-L/formats/il\-\_\-doom.\-c@{src/\-I\-L/formats/il\-\_\-doom.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-pal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-doompal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-push.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}pack\-\_\-pop.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_d_o_o_m___h_e_a_d}{D\-O\-O\-M\-\_\-\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__doom_8c_a25cb0d58d3f91b7f3305d58b1fe223c8}{i\-Format\-D\-O\-O\-M}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__doom_8c_a9cf908d1cde47d6703d80c5115d5b6a8}{i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__doom_8c_aaa095910497245b413ee086c98c7a57b}{i\-Format\-Exts\-D\-O\-O\-M} \mbox{[}$\,$\mbox{]}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__doom_8c_a25cb0d58d3f91b7f3305d58b1fe223c8}{\index{il\-\_\-doom.\-c@{il\-\_\-doom.\-c}!i\-Format\-D\-O\-O\-M@{i\-Format\-D\-O\-O\-M}}
+\index{i\-Format\-D\-O\-O\-M@{i\-Format\-D\-O\-O\-M}!il_doom.c@{il\-\_\-doom.\-c}}
+\subsubsection[{i\-Format\-D\-O\-O\-M}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-D\-O\-O\-M}}\label{il__doom_8c_a25cb0d58d3f91b7f3305d58b1fe223c8}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = NULL, 
+    .Load     = iLoadDoomInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__doom_8c_aaa095910497245b413ee086c98c7a57b}{iFormatExtsDOOM}
+\}
+\end{DoxyCode}
+\hypertarget{il__doom_8c_a9cf908d1cde47d6703d80c5115d5b6a8}{\index{il\-\_\-doom.\-c@{il\-\_\-doom.\-c}!i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T@{i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T}}
+\index{i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T@{i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T}!il_doom.c@{il\-\_\-doom.\-c}}
+\subsubsection[{i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-D\-O\-O\-M\-\_\-\-F\-L\-A\-T}}\label{il__doom_8c_a9cf908d1cde47d6703d80c5115d5b6a8}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = NULL, 
+    .Load     = iLoadDoomFlatInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__doom_8c_aaa095910497245b413ee086c98c7a57b}{iFormatExtsDOOM}
+\}
+\end{DoxyCode}
+\hypertarget{il__doom_8c_aaa095910497245b413ee086c98c7a57b}{\index{il\-\_\-doom.\-c@{il\-\_\-doom.\-c}!i\-Format\-Exts\-D\-O\-O\-M@{i\-Format\-Exts\-D\-O\-O\-M}}
+\index{i\-Format\-Exts\-D\-O\-O\-M@{i\-Format\-Exts\-D\-O\-O\-M}!il_doom.c@{il\-\_\-doom.\-c}}
+\subsubsection[{i\-Format\-Exts\-D\-O\-O\-M}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-D\-O\-O\-M\mbox{[}$\,$\mbox{]}}}\label{il__doom_8c_aaa095910497245b413ee086c98c7a57b}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    NULL 
+\}
+\end{DoxyCode}

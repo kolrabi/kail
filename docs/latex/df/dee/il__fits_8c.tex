@@ -1,0 +1,93 @@
+\hypertarget{il__fits_8c}{\section{src/\-I\-L/formats/il\-\_\-fits.c File Reference}
+\label{il__fits_8c}\index{src/\-I\-L/formats/il\-\_\-fits.\-c@{src/\-I\-L/formats/il\-\_\-fits.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_f_i_t_s_h_e_a_d}{F\-I\-T\-S\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{struct_f_i_t_s_h_e_a_d}{F\-I\-T\-S\-H\-E\-A\-D} \hyperlink{il__fits_8c_ad632e547a264112d49eb5c650016316f}{F\-I\-T\-S\-H\-E\-A\-D}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \\*
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba5264ed9283652766ef5f43f0adea9673}{C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L} = -\/1, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba481cf0df7eaa4981557490661e5a86f1}{C\-A\-R\-D\-\_\-\-E\-N\-D} = 1, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55bab2ab5c41c17ad648beddf319d0ead2c6}{C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E}, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba3447357ea9f6a96d883d7c36db079593}{C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E}, 
+\\*
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9a3438a3582335f2ba1784490218071a}{C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X}, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba6693f4940b2793e118d2a6c65f94360d}{C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S}, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba06b82f728cc2b00ddc699dbfe9c1689d}{C\-A\-R\-D\-\_\-\-A\-X\-I\-S}, 
+\hyperlink{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9ed30893dc6f98994ca1f894e2d224ae}{C\-A\-R\-D\-\_\-\-S\-K\-I\-P}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__fits_8c_ad5b3b78310d560e48f2409577295062f}{i\-Format\-Exts\-F\-I\-T\-S} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__fits_8c_ae28f71f01eb9e23e0fec30a72f2ebe9e}{i\-Format\-F\-I\-T\-S}
+\end{DoxyCompactItemize}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__fits_8c_ad632e547a264112d49eb5c650016316f}{\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!F\-I\-T\-S\-H\-E\-A\-D@{F\-I\-T\-S\-H\-E\-A\-D}}
+\index{F\-I\-T\-S\-H\-E\-A\-D@{F\-I\-T\-S\-H\-E\-A\-D}!il_fits.c@{il\-\_\-fits.\-c}}
+\subsubsection[{F\-I\-T\-S\-H\-E\-A\-D}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf F\-I\-T\-S\-H\-E\-A\-D}  {\bf F\-I\-T\-S\-H\-E\-A\-D}}}\label{il__fits_8c_ad632e547a264112d49eb5c650016316f}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55b}{\subsubsection[{anonymous enum}]{\setlength{\rightskip}{0pt plus 5cm}anonymous enum}}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55b}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L@{C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L@{C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba5264ed9283652766ef5f43f0adea9673}{C\-A\-R\-D\-\_\-\-R\-E\-A\-D\-\_\-\-F\-A\-I\-L}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba5264ed9283652766ef5f43f0adea9673}
+}]\index{C\-A\-R\-D\-\_\-\-E\-N\-D@{C\-A\-R\-D\-\_\-\-E\-N\-D}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-E\-N\-D@{C\-A\-R\-D\-\_\-\-E\-N\-D}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba481cf0df7eaa4981557490661e5a86f1}{C\-A\-R\-D\-\_\-\-E\-N\-D}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba481cf0df7eaa4981557490661e5a86f1}
+}]\index{C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E@{C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E@{C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55bab2ab5c41c17ad648beddf319d0ead2c6}{C\-A\-R\-D\-\_\-\-S\-I\-M\-P\-L\-E}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55bab2ab5c41c17ad648beddf319d0ead2c6}
+}]\index{C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E@{C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E@{C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba3447357ea9f6a96d883d7c36db079593}{C\-A\-R\-D\-\_\-\-N\-O\-T\-\_\-\-S\-I\-M\-P\-L\-E}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba3447357ea9f6a96d883d7c36db079593}
+}]\index{C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X@{C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X@{C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9a3438a3582335f2ba1784490218071a}{C\-A\-R\-D\-\_\-\-B\-I\-T\-P\-I\-X}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9a3438a3582335f2ba1784490218071a}
+}]\index{C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S@{C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S@{C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba6693f4940b2793e118d2a6c65f94360d}{C\-A\-R\-D\-\_\-\-N\-U\-M\-A\-X\-E\-S}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba6693f4940b2793e118d2a6c65f94360d}
+}]\index{C\-A\-R\-D\-\_\-\-A\-X\-I\-S@{C\-A\-R\-D\-\_\-\-A\-X\-I\-S}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-A\-X\-I\-S@{C\-A\-R\-D\-\_\-\-A\-X\-I\-S}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba06b82f728cc2b00ddc699dbfe9c1689d}{C\-A\-R\-D\-\_\-\-A\-X\-I\-S}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba06b82f728cc2b00ddc699dbfe9c1689d}
+}]\index{C\-A\-R\-D\-\_\-\-S\-K\-I\-P@{C\-A\-R\-D\-\_\-\-S\-K\-I\-P}!il\-\_\-fits.\-c@{il\-\_\-fits.\-c}}\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!C\-A\-R\-D\-\_\-\-S\-K\-I\-P@{C\-A\-R\-D\-\_\-\-S\-K\-I\-P}}\item[{\em 
+\hypertarget{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9ed30893dc6f98994ca1f894e2d224ae}{C\-A\-R\-D\-\_\-\-S\-K\-I\-P}\label{il__fits_8c_a06fc87d81c62e9abb8790b6e5713c55ba9ed30893dc6f98994ca1f894e2d224ae}
+}]\end{description}
+\end{Desc}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__fits_8c_ad5b3b78310d560e48f2409577295062f}{\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!i\-Format\-Exts\-F\-I\-T\-S@{i\-Format\-Exts\-F\-I\-T\-S}}
+\index{i\-Format\-Exts\-F\-I\-T\-S@{i\-Format\-Exts\-F\-I\-T\-S}!il_fits.c@{il\-\_\-fits.\-c}}
+\subsubsection[{i\-Format\-Exts\-F\-I\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-F\-I\-T\-S\mbox{[}$\,$\mbox{]}}}\label{il__fits_8c_ad5b3b78310d560e48f2409577295062f}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"fit"}),
+    \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"fits"}),
+    NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__fits_8c_ae28f71f01eb9e23e0fec30a72f2ebe9e}{\index{il\-\_\-fits.\-c@{il\-\_\-fits.\-c}!i\-Format\-F\-I\-T\-S@{i\-Format\-F\-I\-T\-S}}
+\index{i\-Format\-F\-I\-T\-S@{i\-Format\-F\-I\-T\-S}!il_fits.c@{il\-\_\-fits.\-c}}
+\subsubsection[{i\-Format\-F\-I\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-F\-I\-T\-S}}\label{il__fits_8c_ae28f71f01eb9e23e0fec30a72f2ebe9e}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+    .Validate = iIsValidFits, 
+    .Load     = iLoadFitsInternal, 
+    .Save     = NULL, 
+    .Exts     = \hyperlink{il__fits_8c_ad5b3b78310d560e48f2409577295062f}{iFormatExtsFITS}
+\}
+\end{DoxyCode}

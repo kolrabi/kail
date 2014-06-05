@@ -5,6 +5,7 @@ SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 SET                     ( SOURCES
 
                           ilu_alloc.c
+                          ilu_api.c
                           ilu_error.c
                           ilu_filter.c
                           ilu_filter_rcg.c

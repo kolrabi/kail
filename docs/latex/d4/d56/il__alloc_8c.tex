@@ -1,0 +1,70 @@
+\hypertarget{il__alloc_8c}{\section{src/\-I\-L/il\-\_\-alloc.c File Reference}
+\label{il__alloc_8c}\index{src/\-I\-L/il\-\_\-alloc.\-c@{src/\-I\-L/il\-\_\-alloc.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdlib.\-h$>$}\\*
+{\ttfamily \#include $<$math.\-h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__alloc_8c_a5b6de6045b30eb361f00d739559720c0}{\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__alloc_8c_a79709c1b1a432d1cd3763ccbe8e8e021}{ialloc} (const \hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Size)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$\hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__alloc_8c_a0fa7389c30fe32e47010ab5c37760e22}{icalloc} (const \hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Size, const \hyperlink{il_8h_af0bc37c16e8aa38766a4dfa0090507b9}{I\-Lsizei} Num)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__alloc_8c_ae64f07a26ba418fe2acd170e928ffde1}{ifree} (\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Ptr)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__alloc_8c_ae4e13c825f12157095990b8e1b12f447}{il\-Reset\-Memory} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__alloc_8c_afb8f830294d4827399e5563ca5dc80b3}{i\-Set\-Memory} (\hyperlink{il_8h_a3e5d6d09d93e8d0031e8f3b95e3538b0}{m\-Alloc} Alloc\-Func, m\-Free Free\-Func)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__alloc_8c_a5b6de6045b30eb361f00d739559720c0}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C@{\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C}}
+\index{\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C@{\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{\-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define \-\_\-\-\_\-\-A\-L\-L\-O\-C\-\_\-\-C}}\label{il__alloc_8c_a5b6de6045b30eb361f00d739559720c0}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__alloc_8c_a79709c1b1a432d1cd3763ccbe8e8e021}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!ialloc@{ialloc}}
+\index{ialloc@{ialloc}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{ialloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ialloc (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\-Lsizei}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__alloc_8c_a79709c1b1a432d1cd3763ccbe8e8e021}
+\hypertarget{il__alloc_8c_a0fa7389c30fe32e47010ab5c37760e22}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!icalloc@{icalloc}}
+\index{icalloc@{icalloc}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{icalloc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void}$\ast$ {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} icalloc (
+\begin{DoxyParamCaption}
+\item[{const {\bf I\-Lsizei}}]{Size, }
+\item[{const {\bf I\-Lsizei}}]{Num}
+\end{DoxyParamCaption}
+)}}\label{il__alloc_8c_a0fa7389c30fe32e47010ab5c37760e22}
+\hypertarget{il__alloc_8c_ae64f07a26ba418fe2acd170e928ffde1}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!ifree@{ifree}}
+\index{ifree@{ifree}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{ifree}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} ifree (
+\begin{DoxyParamCaption}
+\item[{{\bf void} $\ast$}]{Ptr}
+\end{DoxyParamCaption}
+)}}\label{il__alloc_8c_ae64f07a26ba418fe2acd170e928ffde1}
+\hypertarget{il__alloc_8c_ae4e13c825f12157095990b8e1b12f447}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!il\-Reset\-Memory@{il\-Reset\-Memory}}
+\index{il\-Reset\-Memory@{il\-Reset\-Memory}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{il\-Reset\-Memory}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Reset\-Memory (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__alloc_8c_ae4e13c825f12157095990b8e1b12f447}
+\hypertarget{il__alloc_8c_afb8f830294d4827399e5563ca5dc80b3}{\index{il\-\_\-alloc.\-c@{il\-\_\-alloc.\-c}!i\-Set\-Memory@{i\-Set\-Memory}}
+\index{i\-Set\-Memory@{i\-Set\-Memory}!il_alloc.c@{il\-\_\-alloc.\-c}}
+\subsubsection[{i\-Set\-Memory}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Memory (
+\begin{DoxyParamCaption}
+\item[{{\bf m\-Alloc}}]{Alloc\-Func, }
+\item[{m\-Free}]{Free\-Func}
+\end{DoxyParamCaption}
+)}}\label{il__alloc_8c_afb8f830294d4827399e5563ca5dc80b3}

@@ -78,4 +78,13 @@ static const ILint filter_embossedge[] =
 	-1,  0, 1,
     -1,  0, 1 };
 
+ILboolean iAlienify(ILimage *Image);
+ILboolean iApplyFilter(ILimage *Image, ILuint Iter, const ILint *Kernel, ILint Scale, ILint Bias);
+ILboolean iApplyFilter2(ILimage *Image, ILuint Iter, const ILint *Kernel1, ILint Scale1, ILint Bias1, const ILint *Kernel2, ILint Scale2, ILint Bias2);
+ILboolean iPixelize(ILimage *Image, ILuint PixSize);
+ILboolean iSaturate4f(ILimage *Image, ILfloat r, ILfloat g, ILfloat b, ILfloat Saturation);
+ILboolean iScaleAlpha(ILimage *Image, ILfloat scale);
+ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b);
+ILboolean iSharpen(ILimage *Image, ILfloat Factor, ILuint Iter);
+
 #endif//FILTER_H

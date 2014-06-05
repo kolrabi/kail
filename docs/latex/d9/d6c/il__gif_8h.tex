@@ -1,0 +1,175 @@
+\hypertarget{il__gif_8h}{\section{src/\-I\-L/formats/il\-\_\-gif.h File Reference}
+\label{il__gif_8h}\index{src/\-I\-L/formats/il\-\_\-gif.\-h@{src/\-I\-L/formats/il\-\_\-gif.\-h}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_gif_graphic_control_extension}{Gif\-Graphic\-Control\-Extension}
+\item 
+struct \hyperlink{struct_gif_image_descriptor}{Gif\-Image\-Descriptor}
+\item 
+struct \hyperlink{struct_gif_loading_context}{Gif\-Loading\-Context}
+\item 
+struct \hyperlink{struct_gif_logical_screen_descriptor}{Gif\-Logical\-Screen\-Descriptor}
+\item 
+struct \hyperlink{struct_gif_signature}{Gif\-Signature}
+\item 
+struct \hyperlink{struct_l_z_w_input_stream}{L\-Z\-W\-Input\-Stream}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__gif_8h_a292bb6e357cf6931e1030576e7eb28a9}{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A}~\char`\"{}G\-I\-F87a\char`\"{}
+\item 
+\#define \hyperlink{il__gif_8h_acaf8d463f7c533cab19ea2832b67bbe3}{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A}~\char`\"{}G\-I\-F89a\char`\"{}
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \\*
+\hyperlink{struct_gif_graphic_control_extension}{Gif\-Graphic\-Control\-Extension} \hyperlink{il__gif_8h_a403d5861ad453f371043b85b478bd51b}{Gif\-Graphic\-Control\-Extension}
+\item 
+typedef struct \hyperlink{struct_gif_image_descriptor}{Gif\-Image\-Descriptor} \hyperlink{il__gif_8h_aef558e0ccff2f7fe78da05cb7fa33d3a}{Gif\-Image\-Descriptor}
+\item 
+typedef struct \hyperlink{struct_gif_loading_context}{Gif\-Loading\-Context} \hyperlink{il__gif_8h_aee26b05370ddabc7e5ce0398f00cefbf}{Gif\-Loading\-Context}
+\item 
+typedef struct \\*
+\hyperlink{struct_gif_logical_screen_descriptor}{Gif\-Logical\-Screen\-Descriptor} \hyperlink{il__gif_8h_a243e9e104d50ce5c0495c518b8aca459}{Gif\-Logical\-Screen\-Descriptor}
+\item 
+typedef struct \hyperlink{struct_gif_signature}{Gif\-Signature} \hyperlink{il__gif_8h_aa27f9fba43ff99db123d783b9c513453}{Gif\-Signature}
+\item 
+typedef struct \hyperlink{struct_l_z_w_input_stream}{L\-Z\-W\-Input\-Stream} \hyperlink{il__gif_8h_af9b6e7df41c43332eba3daddb347af9d}{L\-Z\-W\-Input\-Stream}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \{ \\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7acfa228d737fcc8626fdcd160f6e17c28}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask} = (7$<$$<$0), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a47b4c9bbc18d5a9d0add08d8db0e81f6}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort} = (1$<$$<$3), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9aa42f80965cbcf905bbf55eba9cd76}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask} = (7$<$$<$4), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aa168fbf855c35cfeb697327521a39ffa}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table} = (1$<$$<$7), 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a74c4a29717ddb1e508807560fb6e101e}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color} = (1$<$$<$0), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af136f9f55c5bbe18c6fe0b77c2f9e8bf}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input} = (1$<$$<$1), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7afeb72a5acfc3d94ca0134a01cf406d16}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask} = (7$<$$<$2), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af98169934679146d5145d723c2342a36}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift} = 2, 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3d40560af1ac821f1b1afe573da7b1ef}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask} = (3$<$$<$5), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a5c84220ef526221cbd054918977321fe}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift} = 5, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aab0f868ad4238186e3330ffaced386f8}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask} = (7$<$$<$0), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a263490ee40488f3052af57568baad170}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask} = (3$<$$<$3), 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4b1419ca8698b2269374972eb2ca429e}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort} = (1$<$$<$5), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9df5b200fd4fcc44c688f1ec2fde6d1}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced} = (1$<$$<$6), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a7db27cafae7ef10fbf2f64f296e21c08}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table} = (1$<$$<$7), 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7abd0efbe9aa3ec132b43f5e4a2220c920}{Gif\-I\-D\-\_\-\-Terminator} = 0x00, 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a386a55f6f8905a2a48118950a858659c}{Gif\-I\-D\-\_\-\-Extension} = 0x21, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4d139e5846b3658ebff280750b16bd76}{Gif\-I\-D\-\_\-\-Image} = 0x2c, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a012915a4c965978acaaf34e46a4d3730}{Gif\-I\-D\-\_\-\-End} = 0x3b, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ad73c2a9b4fc9e6b2cb766d47f011d75c}{Gif\-Ext\-\_\-\-Plain\-Text} = 0x01, 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a0a55b80242009a58628d3ef561fdd0f8}{Gif\-Ext\-\_\-\-Graphic\-Control} = 0xf9, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a802d4fa1922b752e69f12131cd17e927}{Gif\-Ext\-\_\-\-Comment} = 0xfe, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a649cb1261bc1177208dfbfaa7ba4636a}{Gif\-Ext\-\_\-\-Application} = 0xff, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3329ebd34316735eaaaad681911c4d76}{Gif\-Disposal\-\_\-\-Dont\-Care} = 0, 
+\\*
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a723e8ee59304a2b2968b296146e6597d}{Gif\-Disposal\-\_\-\-Overlay} = 1, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a57ac52611342ea8f7799602b0eba9dfd}{Gif\-Disposal\-\_\-\-Clear} = 2, 
+\hyperlink{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a56307fdde8d270120e6711f3afc986fd}{Gif\-Disposal\-\_\-\-Restore} = 3
+ \}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__gif_8h_a292bb6e357cf6931e1030576e7eb28a9}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A@{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A}}
+\index{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A@{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A}]{\setlength{\rightskip}{0pt plus 5cm}\#define G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N87\-A~\char`\"{}G\-I\-F87a\char`\"{}}}\label{il__gif_8h_a292bb6e357cf6931e1030576e7eb28a9}
+\hypertarget{il__gif_8h_acaf8d463f7c533cab19ea2832b67bbe3}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A@{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A}}
+\index{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A@{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A}]{\setlength{\rightskip}{0pt plus 5cm}\#define G\-I\-F\-\_\-\-V\-E\-R\-S\-I\-O\-N89\-A~\char`\"{}G\-I\-F89a\char`\"{}}}\label{il__gif_8h_acaf8d463f7c533cab19ea2832b67bbe3}
+
+
+\subsection{Typedef Documentation}
+\hypertarget{il__gif_8h_a403d5861ad453f371043b85b478bd51b}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Graphic\-Control\-Extension@{Gif\-Graphic\-Control\-Extension}}
+\index{Gif\-Graphic\-Control\-Extension@{Gif\-Graphic\-Control\-Extension}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{Gif\-Graphic\-Control\-Extension}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Gif\-Graphic\-Control\-Extension}  {\bf Gif\-Graphic\-Control\-Extension}}}\label{il__gif_8h_a403d5861ad453f371043b85b478bd51b}
+\hypertarget{il__gif_8h_aef558e0ccff2f7fe78da05cb7fa33d3a}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Image\-Descriptor@{Gif\-Image\-Descriptor}}
+\index{Gif\-Image\-Descriptor@{Gif\-Image\-Descriptor}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{Gif\-Image\-Descriptor}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Gif\-Image\-Descriptor}  {\bf Gif\-Image\-Descriptor}}}\label{il__gif_8h_aef558e0ccff2f7fe78da05cb7fa33d3a}
+\hypertarget{il__gif_8h_aee26b05370ddabc7e5ce0398f00cefbf}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Loading\-Context@{Gif\-Loading\-Context}}
+\index{Gif\-Loading\-Context@{Gif\-Loading\-Context}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{Gif\-Loading\-Context}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Gif\-Loading\-Context}  {\bf Gif\-Loading\-Context}}}\label{il__gif_8h_aee26b05370ddabc7e5ce0398f00cefbf}
+\hypertarget{il__gif_8h_a243e9e104d50ce5c0495c518b8aca459}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Logical\-Screen\-Descriptor@{Gif\-Logical\-Screen\-Descriptor}}
+\index{Gif\-Logical\-Screen\-Descriptor@{Gif\-Logical\-Screen\-Descriptor}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{Gif\-Logical\-Screen\-Descriptor}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Gif\-Logical\-Screen\-Descriptor}  {\bf Gif\-Logical\-Screen\-Descriptor}}}\label{il__gif_8h_a243e9e104d50ce5c0495c518b8aca459}
+\hypertarget{il__gif_8h_aa27f9fba43ff99db123d783b9c513453}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Signature@{Gif\-Signature}}
+\index{Gif\-Signature@{Gif\-Signature}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{Gif\-Signature}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Gif\-Signature}  {\bf Gif\-Signature}}}\label{il__gif_8h_aa27f9fba43ff99db123d783b9c513453}
+\hypertarget{il__gif_8h_af9b6e7df41c43332eba3daddb347af9d}{\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!L\-Z\-W\-Input\-Stream@{L\-Z\-W\-Input\-Stream}}
+\index{L\-Z\-W\-Input\-Stream@{L\-Z\-W\-Input\-Stream}!il_gif.h@{il\-\_\-gif.\-h}}
+\subsubsection[{L\-Z\-W\-Input\-Stream}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf L\-Z\-W\-Input\-Stream}  {\bf L\-Z\-W\-Input\-Stream}}}\label{il__gif_8h_af9b6e7df41c43332eba3daddb347af9d}
+
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7}{\subsubsection[{anonymous enum}]{\setlength{\rightskip}{0pt plus 5cm}anonymous enum}}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7acfa228d737fcc8626fdcd160f6e17c28}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Global\-Color\-Table\-Size\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7acfa228d737fcc8626fdcd160f6e17c28}
+}]\index{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a47b4c9bbc18d5a9d0add08d8db0e81f6}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Sort}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a47b4c9bbc18d5a9d0add08d8db0e81f6}
+}]\index{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9aa42f80965cbcf905bbf55eba9cd76}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Color\-Resolution\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9aa42f80965cbcf905bbf55eba9cd76}
+}]\index{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table@{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aa168fbf855c35cfeb697327521a39ffa}{Gif\-Flag\-\_\-\-L\-S\-D\-\_\-\-Has\-Global\-Color\-Table}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aa168fbf855c35cfeb697327521a39ffa}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a74c4a29717ddb1e508807560fb6e101e}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Transparent\-Color}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a74c4a29717ddb1e508807560fb6e101e}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af136f9f55c5bbe18c6fe0b77c2f9e8bf}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-User\-Input}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af136f9f55c5bbe18c6fe0b77c2f9e8bf}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7afeb72a5acfc3d94ca0134a01cf406d16}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7afeb72a5acfc3d94ca0134a01cf406d16}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af98169934679146d5145d723c2342a36}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Disposal\-Method\-Shift}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7af98169934679146d5145d723c2342a36}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3d40560af1ac821f1b1afe573da7b1ef}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3d40560af1ac821f1b1afe573da7b1ef}
+}]\index{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift@{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a5c84220ef526221cbd054918977321fe}{Gif\-Flag\-\_\-\-G\-C\-E\-\_\-\-Reserved\-Shift}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a5c84220ef526221cbd054918977321fe}
+}]\index{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aab0f868ad4238186e3330ffaced386f8}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Local\-Color\-Table\-Size\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7aab0f868ad4238186e3330ffaced386f8}
+}]\index{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a263490ee40488f3052af57568baad170}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Reserved\-Mask}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a263490ee40488f3052af57568baad170}
+}]\index{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4b1419ca8698b2269374972eb2ca429e}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Sort}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4b1419ca8698b2269374972eb2ca429e}
+}]\index{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9df5b200fd4fcc44c688f1ec2fde6d1}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Interlaced}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ae9df5b200fd4fcc44c688f1ec2fde6d1}
+}]\index{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table@{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a7db27cafae7ef10fbf2f64f296e21c08}{Gif\-Flag\-\_\-\-I\-M\-G\-\_\-\-Has\-Local\-Color\-Table}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a7db27cafae7ef10fbf2f64f296e21c08}
+}]\index{Gif\-I\-D\-\_\-\-Terminator@{Gif\-I\-D\-\_\-\-Terminator}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-I\-D\-\_\-\-Terminator@{Gif\-I\-D\-\_\-\-Terminator}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7abd0efbe9aa3ec132b43f5e4a2220c920}{Gif\-I\-D\-\_\-\-Terminator}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7abd0efbe9aa3ec132b43f5e4a2220c920}
+}]\index{Gif\-I\-D\-\_\-\-Extension@{Gif\-I\-D\-\_\-\-Extension}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-I\-D\-\_\-\-Extension@{Gif\-I\-D\-\_\-\-Extension}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a386a55f6f8905a2a48118950a858659c}{Gif\-I\-D\-\_\-\-Extension}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a386a55f6f8905a2a48118950a858659c}
+}]\index{Gif\-I\-D\-\_\-\-Image@{Gif\-I\-D\-\_\-\-Image}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-I\-D\-\_\-\-Image@{Gif\-I\-D\-\_\-\-Image}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4d139e5846b3658ebff280750b16bd76}{Gif\-I\-D\-\_\-\-Image}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a4d139e5846b3658ebff280750b16bd76}
+}]\index{Gif\-I\-D\-\_\-\-End@{Gif\-I\-D\-\_\-\-End}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-I\-D\-\_\-\-End@{Gif\-I\-D\-\_\-\-End}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a012915a4c965978acaaf34e46a4d3730}{Gif\-I\-D\-\_\-\-End}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a012915a4c965978acaaf34e46a4d3730}
+}]\index{Gif\-Ext\-\_\-\-Plain\-Text@{Gif\-Ext\-\_\-\-Plain\-Text}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Ext\-\_\-\-Plain\-Text@{Gif\-Ext\-\_\-\-Plain\-Text}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ad73c2a9b4fc9e6b2cb766d47f011d75c}{Gif\-Ext\-\_\-\-Plain\-Text}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7ad73c2a9b4fc9e6b2cb766d47f011d75c}
+}]\index{Gif\-Ext\-\_\-\-Graphic\-Control@{Gif\-Ext\-\_\-\-Graphic\-Control}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Ext\-\_\-\-Graphic\-Control@{Gif\-Ext\-\_\-\-Graphic\-Control}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a0a55b80242009a58628d3ef561fdd0f8}{Gif\-Ext\-\_\-\-Graphic\-Control}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a0a55b80242009a58628d3ef561fdd0f8}
+}]\index{Gif\-Ext\-\_\-\-Comment@{Gif\-Ext\-\_\-\-Comment}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Ext\-\_\-\-Comment@{Gif\-Ext\-\_\-\-Comment}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a802d4fa1922b752e69f12131cd17e927}{Gif\-Ext\-\_\-\-Comment}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a802d4fa1922b752e69f12131cd17e927}
+}]\index{Gif\-Ext\-\_\-\-Application@{Gif\-Ext\-\_\-\-Application}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Ext\-\_\-\-Application@{Gif\-Ext\-\_\-\-Application}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a649cb1261bc1177208dfbfaa7ba4636a}{Gif\-Ext\-\_\-\-Application}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a649cb1261bc1177208dfbfaa7ba4636a}
+}]\index{Gif\-Disposal\-\_\-\-Dont\-Care@{Gif\-Disposal\-\_\-\-Dont\-Care}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Disposal\-\_\-\-Dont\-Care@{Gif\-Disposal\-\_\-\-Dont\-Care}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3329ebd34316735eaaaad681911c4d76}{Gif\-Disposal\-\_\-\-Dont\-Care}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a3329ebd34316735eaaaad681911c4d76}
+}]\index{Gif\-Disposal\-\_\-\-Overlay@{Gif\-Disposal\-\_\-\-Overlay}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Disposal\-\_\-\-Overlay@{Gif\-Disposal\-\_\-\-Overlay}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a723e8ee59304a2b2968b296146e6597d}{Gif\-Disposal\-\_\-\-Overlay}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a723e8ee59304a2b2968b296146e6597d}
+}]\index{Gif\-Disposal\-\_\-\-Clear@{Gif\-Disposal\-\_\-\-Clear}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Disposal\-\_\-\-Clear@{Gif\-Disposal\-\_\-\-Clear}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a57ac52611342ea8f7799602b0eba9dfd}{Gif\-Disposal\-\_\-\-Clear}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a57ac52611342ea8f7799602b0eba9dfd}
+}]\index{Gif\-Disposal\-\_\-\-Restore@{Gif\-Disposal\-\_\-\-Restore}!il\-\_\-gif.\-h@{il\-\_\-gif.\-h}}\index{il\-\_\-gif.\-h@{il\-\_\-gif.\-h}!Gif\-Disposal\-\_\-\-Restore@{Gif\-Disposal\-\_\-\-Restore}}\item[{\em 
+\hypertarget{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a56307fdde8d270120e6711f3afc986fd}{Gif\-Disposal\-\_\-\-Restore}\label{il__gif_8h_adf764cbdea00d65edcd07bb9953ad2b7a56307fdde8d270120e6711f3afc986fd}
+}]\end{description}
+\end{Desc}

@@ -1,0 +1,37 @@
+\hypertarget{il__lif_8c}{\section{src/\-I\-L/formats/il\-\_\-lif.c File Reference}
+\label{il__lif_8c}\index{src/\-I\-L/formats/il\-\_\-lif.\-c@{src/\-I\-L/formats/il\-\_\-lif.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-lif.\-h\char`\"{}}\\*
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__lif_8c_afc47fcb5000faf23eb08f4a1508c7216}{i\-Format\-Exts\-L\-I\-F} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__lif_8c_a1beab7667153502b43edabd5798f2ab8}{i\-Format\-L\-I\-F}
+\end{DoxyCompactItemize}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__lif_8c_afc47fcb5000faf23eb08f4a1508c7216}{\index{il\-\_\-lif.\-c@{il\-\_\-lif.\-c}!i\-Format\-Exts\-L\-I\-F@{i\-Format\-Exts\-L\-I\-F}}
+\index{i\-Format\-Exts\-L\-I\-F@{i\-Format\-Exts\-L\-I\-F}!il_lif.c@{il\-\_\-lif.\-c}}
+\subsubsection[{i\-Format\-Exts\-L\-I\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-L\-I\-F\mbox{[}$\,$\mbox{]}}}\label{il__lif_8c_afc47fcb5000faf23eb08f4a1508c7216}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"lif"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__lif_8c_a1beab7667153502b43edabd5798f2ab8}{\index{il\-\_\-lif.\-c@{il\-\_\-lif.\-c}!i\-Format\-L\-I\-F@{i\-Format\-L\-I\-F}}
+\index{i\-Format\-L\-I\-F@{i\-Format\-L\-I\-F}!il_lif.c@{il\-\_\-lif.\-c}}
+\subsubsection[{i\-Format\-L\-I\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-L\-I\-F}}\label{il__lif_8c_a1beab7667153502b43edabd5798f2ab8}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidLif, 
+  .Load     = iLoadLifInternal, 
+  .Save     = NULL, 
+  .Exts     = \hyperlink{il__lif_8c_afc47fcb5000faf23eb08f4a1508c7216}{iFormatExtsLIF}
+\}
+\end{DoxyCode}

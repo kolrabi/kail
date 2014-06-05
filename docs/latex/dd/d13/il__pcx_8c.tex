@@ -1,0 +1,55 @@
+\hypertarget{il__pcx_8c}{\section{src/\-I\-L/formats/il\-\_\-pcx.c File Reference}
+\label{il__pcx_8c}\index{src/\-I\-L/formats/il\-\_\-pcx.\-c@{src/\-I\-L/formats/il\-\_\-pcx.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-pcx.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-manip.\-h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il__pcx_8c_a5167a9ce6ecbd35b7a6eb3c328b5d3f8}{encput} (\hyperlink{struct_s_i_o}{S\-I\-O} $\ast$io, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} byt, \hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} cnt)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} \hyperlink{il__pcx_8c_a28fea434efbd2778ababd9c21884b7b4}{i\-Format\-Exts\-P\-C\-X} \mbox{[}$\,$\mbox{]}
+\item 
+\hyperlink{struct_i_lformat}{I\-Lformat} \hyperlink{il__pcx_8c_adeb0ba7c30b3c60bf975d2e839f112d7}{i\-Format\-P\-C\-X}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__pcx_8c_a5167a9ce6ecbd35b7a6eb3c328b5d3f8}{\index{il\-\_\-pcx.\-c@{il\-\_\-pcx.\-c}!encput@{encput}}
+\index{encput@{encput}!il_pcx.c@{il\-\_\-pcx.\-c}}
+\subsubsection[{encput}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} encput (
+\begin{DoxyParamCaption}
+\item[{{\bf S\-I\-O} $\ast$}]{io, }
+\item[{{\bf I\-Lubyte}}]{byt, }
+\item[{{\bf I\-Lubyte}}]{cnt}
+\end{DoxyParamCaption}
+)}}\label{il__pcx_8c_a5167a9ce6ecbd35b7a6eb3c328b5d3f8}
+
+
+\subsection{Variable Documentation}
+\hypertarget{il__pcx_8c_a28fea434efbd2778ababd9c21884b7b4}{\index{il\-\_\-pcx.\-c@{il\-\_\-pcx.\-c}!i\-Format\-Exts\-P\-C\-X@{i\-Format\-Exts\-P\-C\-X}}
+\index{i\-Format\-Exts\-P\-C\-X@{i\-Format\-Exts\-P\-C\-X}!il_pcx.c@{il\-\_\-pcx.\-c}}
+\subsubsection[{i\-Format\-Exts\-P\-C\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lconst\-\_\-string} i\-Format\-Exts\-P\-C\-X\mbox{[}$\,$\mbox{]}}}\label{il__pcx_8c_a28fea434efbd2778ababd9c21884b7b4}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  \hyperlink{il_8h_a2907c2129d2ba2ebbae6aa6a69b7f685}{IL\_TEXT}(\textcolor{stringliteral}{"pcx"}), 
+  NULL 
+\}
+\end{DoxyCode}
+\hypertarget{il__pcx_8c_adeb0ba7c30b3c60bf975d2e839f112d7}{\index{il\-\_\-pcx.\-c@{il\-\_\-pcx.\-c}!i\-Format\-P\-C\-X@{i\-Format\-P\-C\-X}}
+\index{i\-Format\-P\-C\-X@{i\-Format\-P\-C\-X}!il_pcx.c@{il\-\_\-pcx.\-c}}
+\subsubsection[{i\-Format\-P\-C\-X}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lformat} i\-Format\-P\-C\-X}}\label{il__pcx_8c_adeb0ba7c30b3c60bf975d2e839f112d7}
+{\bfseries Initial value\-:}
+\begin{DoxyCode}
+= \{ 
+  .Validate = iIsValidPcx, 
+  .Load     = iLoadPcxInternal, 
+  .Save     = iSavePcxInternal, 
+  .Exts     = \hyperlink{il__pcx_8c_a28fea434efbd2778ababd9c21884b7b4}{iFormatExtsPCX}
+\}
+\end{DoxyCode}

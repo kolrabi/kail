@@ -1,0 +1,110 @@
+\hypertarget{il__exr_8c}{\section{src/\-I\-L/formats/il\-\_\-exr.c File Reference}
+\label{il__exr_8c}\index{src/\-I\-L/formats/il\-\_\-exr.\-c@{src/\-I\-L/formats/il\-\_\-exr.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}il\-\_\-exr.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$Imf\-Rgba.\-h$>$}\\*
+{\ttfamily \#include $<$Imf\-Array.\-h$>$}\\*
+{\ttfamily \#include $<$Imf\-Rgba\-File.\-h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__exr_8c_a2d298d82bd1773e65781ff13264976d5}{H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_a20aff43e382f84df370237318a97d18b}{i\-Check\-Exr} (\hyperlink{struct_e_x_r_h_e_a_d}{E\-X\-R\-H\-E\-A\-D} $\ast$Header)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_ae13f097125f0af774b86360d9433fc85}{i\-Get\-Exr\-Head} (\hyperlink{struct_e_x_r_h_e_a_d}{E\-X\-R\-H\-E\-A\-D} $\ast$Header)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_af521af4ee869b28efe9d33ad2ef7c1f8}{i\-Is\-Valid\-Exr} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_acb0e8d850c04626a01d56f3e610136fb}{il\-Is\-Valid\-Exr} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\begin{DoxyCompactList}\small\item\em Checks if the file specified in File\-Name is a valid E\-X\-R file. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_ac6e77cdf7a907efdfc5ce5dbea1597eb}{il\-Is\-Valid\-Exr\-F} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} File)
+\begin{DoxyCompactList}\small\item\em Checks if the I\-L\-H\-A\-N\-D\-L\-E contains a valid E\-X\-R file at the current position. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_ad5a39c56ee98d1235affe4dcc8e7a902}{il\-Is\-Valid\-Exr\-L} (const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size)
+\begin{DoxyCompactList}\small\item\em Checks if Lump is a valid E\-X\-R lump. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_aebd1048039dfe5685f60d24c1aecd39e}{i\-Load\-Exr\-Internal} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il__exr_8c_a31c606445dca69934928a521055dc0b5}{i\-Save\-Exr\-Internal} ()
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__exr_8c_a2d298d82bd1773e65781ff13264976d5}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S@{H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S}}
+\index{H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S@{H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S}]{\setlength{\rightskip}{0pt plus 5cm}\#define H\-A\-L\-F\-\_\-\-E\-X\-P\-O\-R\-T\-S}}\label{il__exr_8c_a2d298d82bd1773e65781ff13264976d5}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__exr_8c_a20aff43e382f84df370237318a97d18b}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!i\-Check\-Exr@{i\-Check\-Exr}}
+\index{i\-Check\-Exr@{i\-Check\-Exr}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{i\-Check\-Exr}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Check\-Exr (
+\begin{DoxyParamCaption}
+\item[{{\bf E\-X\-R\-H\-E\-A\-D} $\ast$}]{Header}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_a20aff43e382f84df370237318a97d18b}
+\hypertarget{il__exr_8c_ae13f097125f0af774b86360d9433fc85}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!i\-Get\-Exr\-Head@{i\-Get\-Exr\-Head}}
+\index{i\-Get\-Exr\-Head@{i\-Get\-Exr\-Head}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{i\-Get\-Exr\-Head}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Get\-Exr\-Head (
+\begin{DoxyParamCaption}
+\item[{{\bf E\-X\-R\-H\-E\-A\-D} $\ast$}]{Header}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_ae13f097125f0af774b86360d9433fc85}
+\hypertarget{il__exr_8c_af521af4ee869b28efe9d33ad2ef7c1f8}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!i\-Is\-Valid\-Exr@{i\-Is\-Valid\-Exr}}
+\index{i\-Is\-Valid\-Exr@{i\-Is\-Valid\-Exr}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{i\-Is\-Valid\-Exr}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Is\-Valid\-Exr (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_af521af4ee869b28efe9d33ad2ef7c1f8}
+\hypertarget{il__exr_8c_acb0e8d850c04626a01d56f3e610136fb}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!il\-Is\-Valid\-Exr@{il\-Is\-Valid\-Exr}}
+\index{il\-Is\-Valid\-Exr@{il\-Is\-Valid\-Exr}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{il\-Is\-Valid\-Exr}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Is\-Valid\-Exr (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_acb0e8d850c04626a01d56f3e610136fb}
+
+
+Checks if the file specified in File\-Name is a valid E\-X\-R file. 
+
+\hypertarget{il__exr_8c_ac6e77cdf7a907efdfc5ce5dbea1597eb}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!il\-Is\-Valid\-Exr\-F@{il\-Is\-Valid\-Exr\-F}}
+\index{il\-Is\-Valid\-Exr\-F@{il\-Is\-Valid\-Exr\-F}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{il\-Is\-Valid\-Exr\-F}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Is\-Valid\-Exr\-F (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{File}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_ac6e77cdf7a907efdfc5ce5dbea1597eb}
+
+
+Checks if the I\-L\-H\-A\-N\-D\-L\-E contains a valid E\-X\-R file at the current position. 
+
+\hypertarget{il__exr_8c_ad5a39c56ee98d1235affe4dcc8e7a902}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!il\-Is\-Valid\-Exr\-L@{il\-Is\-Valid\-Exr\-L}}
+\index{il\-Is\-Valid\-Exr\-L@{il\-Is\-Valid\-Exr\-L}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{il\-Is\-Valid\-Exr\-L}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} il\-Is\-Valid\-Exr\-L (
+\begin{DoxyParamCaption}
+\item[{const {\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_ad5a39c56ee98d1235affe4dcc8e7a902}
+
+
+Checks if Lump is a valid E\-X\-R lump. 
+
+\hypertarget{il__exr_8c_aebd1048039dfe5685f60d24c1aecd39e}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!i\-Load\-Exr\-Internal@{i\-Load\-Exr\-Internal}}
+\index{i\-Load\-Exr\-Internal@{i\-Load\-Exr\-Internal}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{i\-Load\-Exr\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Load\-Exr\-Internal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_aebd1048039dfe5685f60d24c1aecd39e}
+\hypertarget{il__exr_8c_a31c606445dca69934928a521055dc0b5}{\index{il\-\_\-exr.\-c@{il\-\_\-exr.\-c}!i\-Save\-Exr\-Internal@{i\-Save\-Exr\-Internal}}
+\index{i\-Save\-Exr\-Internal@{i\-Save\-Exr\-Internal}!il_exr.c@{il\-\_\-exr.\-c}}
+\subsubsection[{i\-Save\-Exr\-Internal}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} i\-Save\-Exr\-Internal (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{il__exr_8c_a31c606445dca69934928a521055dc0b5}

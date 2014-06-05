@@ -16,45 +16,37 @@
 //#include "ilu_states.h"
 
 
-ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth)
-{
-	// ILuint	x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth) {
+  if (Parent == NULL) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	if (Parent->Width == 1 && Parent->Height == 1 && Parent->Depth == 1) {  // Already at the last mipmap
-		return IL_TRUE;
-	}
+  // Get rid of any existing mipmaps.
+  if (Parent->Mipmaps) {
+    ilCloseImage(Parent->Mipmaps);
+    Parent->Mipmaps = NULL;
+  }
 
-	if (Width == 0)
-		Width = 1;
-	if (Height == 0)
-		Height = 1;
-	if (Depth == 0)
-		Depth = 1;
+  if ( Parent->Width  == 1 
+    && Parent->Height == 1 
+    && Parent->Depth  == 1) {  
+    // Already at the last mipmap
+    return IL_TRUE;
+  }
 
-	Parent->Mipmaps = iluScale_(Parent, Width, Height, Depth);
-	if (Parent->Mipmaps == NULL)
-		return IL_FALSE;
+  if (Width == 0)
+    Width = 1;
+  if (Height == 0)
+    Height = 1;
+  if (Depth == 0)
+    Depth = 1;
 
-	iBuildMipmaps(Parent->Mipmaps, Parent->Mipmaps->Width >> 1, Parent->Mipmaps->Height >> 1, Parent->Mipmaps->Depth >> 1);
+  Parent->Mipmaps = iluScale_(Parent, Width, Height, Depth);
+  if (Parent->Mipmaps == NULL)
+    return IL_FALSE;
 
-	return IL_TRUE;
-}
+  iBuildMipmaps(Parent->Mipmaps, Parent->Mipmaps->Width >> 1, Parent->Mipmaps->Height >> 1, Parent->Mipmaps->Depth >> 1);
 
-
-// Note: No longer changes all textures to powers of 2.
-ILboolean ILAPIENTRY iluBuildMipmaps()
-{
-	ILimage *  Image = iGetCurImage();
-	if (Image == NULL) {
-		iSetError(ILU_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-
-	// Get rid of any existing mipmaps.
-	if (Image->Mipmaps) {
-		ilCloseImage(Image->Mipmaps);
-		Image->Mipmaps = NULL;
-	}
-
-	return iBuildMipmaps(Image, Image->Width >> 1, Image->Height >> 1, Image->Depth >> 1);
+  return IL_TRUE;
 }

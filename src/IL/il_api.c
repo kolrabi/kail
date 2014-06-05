@@ -13,6 +13,11 @@
  *
  * Just calls the internal versions of the functions for now.
  *
+ * @defgroup IL Image Library
+ *              Loading, saving and converting images.
+ * @ingroup IL 
+ * @{
+ * 
  * @defgroup state Global State
  * @defgroup setup Initialization / Deinitalization
  * @defgroup image_mgt Image Management
@@ -34,6 +39,7 @@
  * Sets the current face if the currently bound image is a cubemap.
  * @note The @a Number is the number of sub images down the chain, NOT the
  * absolute face index. To go back to the base image use ilBindImage.
+ * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
   return iActiveFace(Number);
@@ -977,7 +983,8 @@ ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, I
 }
 
 /**
- * Pops the last entry off the state stack into the current states
+ * Pops the last entry off the state stack into the current states.
+ * @ingroup state
  */
 void ILAPIENTRY ilPopAttrib(void) {
   iPopAttrib();
@@ -995,7 +1002,9 @@ void ILAPIENTRY ilPopAttrib(void) {
  * - IL_PAL_BIT
  * - IL_FORMAT_SPECIFIC_BIT
  *
- * @todo Create a version of ilPushAttrib and ilPopAttrib that behaves more like OpenGL
+ * @todo Create a version of ilPushAttrib() and ilPopAttrib() that behaves 
+ *       more like OpenGL
+ * @ingroup state
  */
 void ILAPIENTRY ilPushAttrib(ILuint Bits) {
   iPushAttrib(Bits);
@@ -1401,3 +1410,5 @@ ILenum ILAPIENTRY ilTypeFromExt(ILconst_string FileName) {
 ILboolean ILAPIENTRY ilTypeFunc(ILenum Mode) {
   return iTypeFunc(Mode);
 }
+
+/** @} */

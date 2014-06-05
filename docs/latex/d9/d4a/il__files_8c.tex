@@ -1,0 +1,412 @@
+\hypertarget{il__files_8c}{\section{src/\-I\-L/il\-\_\-files.c File Reference}
+\label{il__files_8c}\index{src/\-I\-L/il\-\_\-files.\-c@{src/\-I\-L/il\-\_\-files.\-c}}
+}
+{\ttfamily \#include \char`\"{}il\-\_\-internal.\-h\char`\"{}}\\*
+{\ttfamily \#include $<$stdarg.\-h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{il__files_8c_a6cf0909192ec0159735f15daebb116ca}{\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_abf7e7c573fef3a7982457f5244ce5f3c}{i\-Default\-Close} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a0d7a28fcfab8483eada998da1988dec4}{i\-Default\-Close\-W} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a5ab38f421e8d0f206fac6d1ab68d1458}{i\-Default\-Eof} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a84158690bc6ef68d531fcd4a096733cb}{i\-Default\-Getc} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a65d00265097c0c6ac51093cb00c6b744}{i\-Default\-Open\-R} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a25b0e81c5d4fcfdf779624018a95e35c}{i\-Default\-Open\-W} (\hyperlink{il_8h_a103ef32cc870d648d471aff6c7076747}{I\-Lconst\-\_\-string} File\-Name)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_ad0df5c50ec030b7c84be42c6a95a7c46}{i\-Default\-Putc} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Char, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a961dedfb6bc8937f64261b561162f99b}{i\-Default\-Read} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a4d21c7af2bd13d3da039ca1ff67719ea}{i\-Default\-Seek} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Offset, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mode)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_afcf4589012715c9509ea0e998433c59e}{i\-Default\-Tell} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a886a9b0cc0b995a082707cb0a2c4ce43}{i\-Default\-Write} (const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} Handle)
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_afe62c367ee2d0c94f71b3426d462e68f}{i\-Eof\-Lump} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a53172eb8b409632fd231a810e47c4de2}{i\-Getc\-Lump} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_aa33b96b79711d5cdf00317ce911f7c77}{I\-Luint64} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_ad3dba757768898d1833540d6c7a3686b}{il\-Get\-Lump\-Pos} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_aad6da45dcc526f0b4d05c488c504b77b}{il\-Reset\-Read} ()
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_ac1f4f4a66b6ff3ae5a986b24cf2cd626}{il\-Reset\-Write} ()
+\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a0da9f7a1b0cb90a147c1aad3f88f1278}{il\-Set\-Read} (f\-Open\-Proc a\-Open, f\-Close\-Proc a\-Close, f\-Eof\-Proc a\-Eof, f\-Getc\-Proc a\-Getc, f\-Read\-Proc a\-Read, f\-Seek\-Proc a\-Seek, f\-Tell\-Proc a\-Tell)
+\begin{DoxyCompactList}\small\item\em Allows you to override the default file-\/reading functions. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a8be80d75c2c636b9f2250fe10c2e7874}{I\-Lboolean} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a81425877b333b8d8b7c1cb29033cb4e3}{il\-Set\-Write} (f\-Open\-Proc Open, f\-Close\-Proc Close, f\-Putc\-Proc Putc, f\-Seek\-Proc Seek, f\-Tell\-Proc Tell, f\-Write\-Proc Write)
+\begin{DoxyCompactList}\small\item\em Allows you to override the default file-\/writing functions. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a362599fb8a07d685351a7903390213ba}{i\-Putc\-Lump} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Char, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_aa4ffbe031e6e83445049b9a68c96d918}{i\-Read\-Lump} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, const \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, const \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_ae14124b6ea5d15b621803eabafefeb34}{i\-Reset\-Read} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_ab487efdda3eae49aa1bc15a095a4ac00}{i\-Reset\-Write} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a735e313cad93d9973a83261b1317f219}{i\-Seek\-Lump} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Offset, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mode)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__files_8c_a8e3d28b9d3dfe1e72f083c38b183d5e3}{i\-Set\-Input\-File} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} File)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__files_8c_a0393f74e726db80a537a85acc51e819f}{i\-Set\-Input\-Lump} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__files_8c_a8cf6602c49649bd25947bd249dc501cc}{i\-Set\-Output\-Fake} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__files_8c_aa1c98e0df56f14e45109b7307b461418}{i\-Set\-Output\-File} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} File)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il__files_8c_ae7e7bb0621a3026bb30e8a6970f14056}{i\-Set\-Output\-Lump} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$image, \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Lump, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a6db2a196b56e52e063e36ebffd48343f}{i\-Set\-Read} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, f\-Open\-Proc a\-Open, f\-Close\-Proc a\-Close, f\-Eof\-Proc a\-Eof, f\-Getc\-Proc a\-Getc, f\-Read\-Proc a\-Read, f\-Seek\-Proc a\-Seek, f\-Tell\-Proc a\-Tell)
+\item 
+\hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_aaf71957fee124ff8d9df3ca2c13c961b}{i\-Set\-Write} (\hyperlink{struct_i_limage}{I\-Limage} $\ast$Image, f\-Open\-Proc Open, f\-Close\-Proc Close, f\-Putc\-Proc Putc, f\-Seek\-Proc Seek, f\-Tell\-Proc Tell, f\-Write\-Proc Write)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a8574d0ffec4e20c08e969a53e8510d48}{i\-Size\-Putc} (\hyperlink{il_8h_a8d2f04500100a86d1b00e98ab1b15a33}{I\-Lubyte} Char, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_afd39ebed1be77dbdba037ca43987a668}{i\-Size\-Seek} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h, \hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} Offset, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Mode)
+\begin{DoxyCompactList}\small\item\em Fake seek function. \end{DoxyCompactList}\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a71f926104a96908e5aa89855f5241696}{i\-Size\-Tell} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_aef0b19fc1c2ddec06b70fd475b7ff489}{i\-Size\-Write} (const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_a862acd640940d4588b2148d968bfc0b9}{i\-Tell\-Lump} (\hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\item 
+\hyperlink{il_8h_a288a97fb9e92e707a60b749d0039fafe}{I\-Lint} \hyperlink{il_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} \hyperlink{il__files_8c_aa239cdc3c50161cee4e0a05b0a847a60}{i\-Write\-Lump} (const \hyperlink{il_8h_a5530e04d947bcddd83639ea7940faf10}{void} $\ast$Buffer, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Size, \hyperlink{il_8h_ac6508d0e9c19e32f32e00d54b5b8cf30}{I\-Luint} Number, \hyperlink{il_8h_a2e3e6f3fab1fa3764f0802258f702d10}{I\-L\-H\-A\-N\-D\-L\-E} h)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{il__files_8c_a6cf0909192ec0159735f15daebb116ca}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C@{\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C}}
+\index{\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C@{\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{\-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C}]{\setlength{\rightskip}{0pt plus 5cm}\#define \-\_\-\-\_\-\-F\-I\-L\-E\-S\-\_\-\-C}}\label{il__files_8c_a6cf0909192ec0159735f15daebb116ca}
+
+
+\subsection{Function Documentation}
+\hypertarget{il__files_8c_abf7e7c573fef3a7982457f5244ce5f3c}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Close@{i\-Default\-Close}}
+\index{i\-Default\-Close@{i\-Default\-Close}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Close}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Close (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_abf7e7c573fef3a7982457f5244ce5f3c}
+\hypertarget{il__files_8c_a0d7a28fcfab8483eada998da1988dec4}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Close\-W@{i\-Default\-Close\-W}}
+\index{i\-Default\-Close\-W@{i\-Default\-Close\-W}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Close\-W}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Close\-W (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a0d7a28fcfab8483eada998da1988dec4}
+\hypertarget{il__files_8c_a5ab38f421e8d0f206fac6d1ab68d1458}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Eof@{i\-Default\-Eof}}
+\index{i\-Default\-Eof@{i\-Default\-Eof}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Eof}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Eof (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a5ab38f421e8d0f206fac6d1ab68d1458}
+\hypertarget{il__files_8c_a84158690bc6ef68d531fcd4a096733cb}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Getc@{i\-Default\-Getc}}
+\index{i\-Default\-Getc@{i\-Default\-Getc}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Getc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Getc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a84158690bc6ef68d531fcd4a096733cb}
+\hypertarget{il__files_8c_a65d00265097c0c6ac51093cb00c6b744}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Open\-R@{i\-Default\-Open\-R}}
+\index{i\-Default\-Open\-R@{i\-Default\-Open\-R}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Open\-R}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-H\-A\-N\-D\-L\-E} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Open\-R (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a65d00265097c0c6ac51093cb00c6b744}
+\hypertarget{il__files_8c_a25b0e81c5d4fcfdf779624018a95e35c}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Open\-W@{i\-Default\-Open\-W}}
+\index{i\-Default\-Open\-W@{i\-Default\-Open\-W}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Open\-W}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-L\-H\-A\-N\-D\-L\-E} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Open\-W (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lconst\-\_\-string}}]{File\-Name}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a25b0e81c5d4fcfdf779624018a95e35c}
+\hypertarget{il__files_8c_ad0df5c50ec030b7c84be42c6a95a7c46}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Putc@{i\-Default\-Putc}}
+\index{i\-Default\-Putc@{i\-Default\-Putc}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Putc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Putc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Char, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ad0df5c50ec030b7c84be42c6a95a7c46}
+\hypertarget{il__files_8c_a961dedfb6bc8937f64261b561162f99b}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Read@{i\-Default\-Read}}
+\index{i\-Default\-Read@{i\-Default\-Read}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Read (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle, }
+\item[{{\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a961dedfb6bc8937f64261b561162f99b}
+\hypertarget{il__files_8c_a4d21c7af2bd13d3da039ca1ff67719ea}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Seek@{i\-Default\-Seek}}
+\index{i\-Default\-Seek@{i\-Default\-Seek}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Seek}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Seek (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle, }
+\item[{{\bf I\-Lint}}]{Offset, }
+\item[{{\bf I\-Luint}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a4d21c7af2bd13d3da039ca1ff67719ea}
+\hypertarget{il__files_8c_afcf4589012715c9509ea0e998433c59e}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Tell@{i\-Default\-Tell}}
+\index{i\-Default\-Tell@{i\-Default\-Tell}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Tell}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Tell (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_afcf4589012715c9509ea0e998433c59e}
+\hypertarget{il__files_8c_a886a9b0cc0b995a082707cb0a2c4ce43}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Default\-Write@{i\-Default\-Write}}
+\index{i\-Default\-Write@{i\-Default\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Default\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Default\-Write (
+\begin{DoxyParamCaption}
+\item[{const {\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Number, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{Handle}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a886a9b0cc0b995a082707cb0a2c4ce43}
+\hypertarget{il__files_8c_afe62c367ee2d0c94f71b3426d462e68f}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Eof\-Lump@{i\-Eof\-Lump}}
+\index{i\-Eof\-Lump@{i\-Eof\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Eof\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Eof\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_afe62c367ee2d0c94f71b3426d462e68f}
+\hypertarget{il__files_8c_a53172eb8b409632fd231a810e47c4de2}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Getc\-Lump@{i\-Getc\-Lump}}
+\index{i\-Getc\-Lump@{i\-Getc\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Getc\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Getc\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a53172eb8b409632fd231a810e47c4de2}
+\hypertarget{il__files_8c_ad3dba757768898d1833540d6c7a3686b}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!il\-Get\-Lump\-Pos@{il\-Get\-Lump\-Pos}}
+\index{il\-Get\-Lump\-Pos@{il\-Get\-Lump\-Pos}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{il\-Get\-Lump\-Pos}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint64} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Get\-Lump\-Pos (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ad3dba757768898d1833540d6c7a3686b}
+\hypertarget{il__files_8c_aad6da45dcc526f0b4d05c488c504b77b}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!il\-Reset\-Read@{il\-Reset\-Read}}
+\index{il\-Reset\-Read@{il\-Reset\-Read}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{il\-Reset\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Reset\-Read (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aad6da45dcc526f0b4d05c488c504b77b}
+\hypertarget{il__files_8c_ac1f4f4a66b6ff3ae5a986b24cf2cd626}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!il\-Reset\-Write@{il\-Reset\-Write}}
+\index{il\-Reset\-Write@{il\-Reset\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{il\-Reset\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Reset\-Write (
+\begin{DoxyParamCaption}
+\item[{{\bf void}}]{}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ac1f4f4a66b6ff3ae5a986b24cf2cd626}
+\hypertarget{il__files_8c_a0da9f7a1b0cb90a147c1aad3f88f1278}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!il\-Set\-Read@{il\-Set\-Read}}
+\index{il\-Set\-Read@{il\-Set\-Read}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{il\-Set\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Set\-Read (
+\begin{DoxyParamCaption}
+\item[{f\-Open\-Proc}]{a\-Open, }
+\item[{f\-Close\-Proc}]{a\-Close, }
+\item[{f\-Eof\-Proc}]{a\-Eof, }
+\item[{f\-Getc\-Proc}]{a\-Getc, }
+\item[{f\-Read\-Proc}]{a\-Read, }
+\item[{f\-Seek\-Proc}]{a\-Seek, }
+\item[{f\-Tell\-Proc}]{a\-Tell}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a0da9f7a1b0cb90a147c1aad3f88f1278}
+
+
+Allows you to override the default file-\/reading functions. 
+
+\hypertarget{il__files_8c_a81425877b333b8d8b7c1cb29033cb4e3}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!il\-Set\-Write@{il\-Set\-Write}}
+\index{il\-Set\-Write@{il\-Set\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{il\-Set\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lboolean} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} il\-Set\-Write (
+\begin{DoxyParamCaption}
+\item[{f\-Open\-Proc}]{Open, }
+\item[{f\-Close\-Proc}]{Close, }
+\item[{f\-Putc\-Proc}]{Putc, }
+\item[{f\-Seek\-Proc}]{Seek, }
+\item[{f\-Tell\-Proc}]{Tell, }
+\item[{f\-Write\-Proc}]{Write}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a81425877b333b8d8b7c1cb29033cb4e3}
+
+
+Allows you to override the default file-\/writing functions. 
+
+\hypertarget{il__files_8c_a362599fb8a07d685351a7903390213ba}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Putc\-Lump@{i\-Putc\-Lump}}
+\index{i\-Putc\-Lump@{i\-Putc\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Putc\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Putc\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Char, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a362599fb8a07d685351a7903390213ba}
+\hypertarget{il__files_8c_aa4ffbe031e6e83445049b9a68c96d918}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Read\-Lump@{i\-Read\-Lump}}
+\index{i\-Read\-Lump@{i\-Read\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Read\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Read\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h, }
+\item[{{\bf void} $\ast$}]{Buffer, }
+\item[{const {\bf I\-Luint}}]{Size, }
+\item[{const {\bf I\-Luint}}]{Number}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aa4ffbe031e6e83445049b9a68c96d918}
+\hypertarget{il__files_8c_ae14124b6ea5d15b621803eabafefeb34}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Reset\-Read@{i\-Reset\-Read}}
+\index{i\-Reset\-Read@{i\-Reset\-Read}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Reset\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Reset\-Read (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ae14124b6ea5d15b621803eabafefeb34}
+\hypertarget{il__files_8c_ab487efdda3eae49aa1bc15a095a4ac00}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Reset\-Write@{i\-Reset\-Write}}
+\index{i\-Reset\-Write@{i\-Reset\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Reset\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Reset\-Write (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ab487efdda3eae49aa1bc15a095a4ac00}
+\hypertarget{il__files_8c_a735e313cad93d9973a83261b1317f219}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Seek\-Lump@{i\-Seek\-Lump}}
+\index{i\-Seek\-Lump@{i\-Seek\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Seek\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Seek\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h, }
+\item[{{\bf I\-Lint}}]{Offset, }
+\item[{{\bf I\-Luint}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a735e313cad93d9973a83261b1317f219}
+\hypertarget{il__files_8c_a8e3d28b9d3dfe1e72f083c38b183d5e3}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Input\-File@{i\-Set\-Input\-File}}
+\index{i\-Set\-Input\-File@{i\-Set\-Input\-File}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Input\-File}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Input\-File (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{File}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a8e3d28b9d3dfe1e72f083c38b183d5e3}
+\hypertarget{il__files_8c_a0393f74e726db80a537a85acc51e819f}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Input\-Lump@{i\-Set\-Input\-Lump}}
+\index{i\-Set\-Input\-Lump@{i\-Set\-Input\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Input\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Input\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{const {\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a0393f74e726db80a537a85acc51e819f}
+\hypertarget{il__files_8c_a8cf6602c49649bd25947bd249dc501cc}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Output\-Fake@{i\-Set\-Output\-Fake}}
+\index{i\-Set\-Output\-Fake@{i\-Set\-Output\-Fake}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Output\-Fake}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Output\-Fake (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a8cf6602c49649bd25947bd249dc501cc}
+\hypertarget{il__files_8c_aa1c98e0df56f14e45109b7307b461418}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Output\-File@{i\-Set\-Output\-File}}
+\index{i\-Set\-Output\-File@{i\-Set\-Output\-File}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Output\-File}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Output\-File (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{File}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aa1c98e0df56f14e45109b7307b461418}
+\hypertarget{il__files_8c_ae7e7bb0621a3026bb30e8a6970f14056}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Output\-Lump@{i\-Set\-Output\-Lump}}
+\index{i\-Set\-Output\-Lump@{i\-Set\-Output\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Output\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} i\-Set\-Output\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{image, }
+\item[{{\bf void} $\ast$}]{Lump, }
+\item[{{\bf I\-Luint}}]{Size}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_ae7e7bb0621a3026bb30e8a6970f14056}
+\hypertarget{il__files_8c_a6db2a196b56e52e063e36ebffd48343f}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Read@{i\-Set\-Read}}
+\index{i\-Set\-Read@{i\-Set\-Read}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Read}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Set\-Read (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{f\-Open\-Proc}]{a\-Open, }
+\item[{f\-Close\-Proc}]{a\-Close, }
+\item[{f\-Eof\-Proc}]{a\-Eof, }
+\item[{f\-Getc\-Proc}]{a\-Getc, }
+\item[{f\-Read\-Proc}]{a\-Read, }
+\item[{f\-Seek\-Proc}]{a\-Seek, }
+\item[{f\-Tell\-Proc}]{a\-Tell}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a6db2a196b56e52e063e36ebffd48343f}
+\hypertarget{il__files_8c_aaf71957fee124ff8d9df3ca2c13c961b}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Set\-Write@{i\-Set\-Write}}
+\index{i\-Set\-Write@{i\-Set\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Set\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf void} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Set\-Write (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Limage} $\ast$}]{Image, }
+\item[{f\-Open\-Proc}]{Open, }
+\item[{f\-Close\-Proc}]{Close, }
+\item[{f\-Putc\-Proc}]{Putc, }
+\item[{f\-Seek\-Proc}]{Seek, }
+\item[{f\-Tell\-Proc}]{Tell, }
+\item[{f\-Write\-Proc}]{Write}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aaf71957fee124ff8d9df3ca2c13c961b}
+\hypertarget{il__files_8c_a8574d0ffec4e20c08e969a53e8510d48}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Size\-Putc@{i\-Size\-Putc}}
+\index{i\-Size\-Putc@{i\-Size\-Putc}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Size\-Putc}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Size\-Putc (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-Lubyte}}]{Char, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a8574d0ffec4e20c08e969a53e8510d48}
+\hypertarget{il__files_8c_afd39ebed1be77dbdba037ca43987a668}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Size\-Seek@{i\-Size\-Seek}}
+\index{i\-Size\-Seek@{i\-Size\-Seek}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Size\-Seek}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Size\-Seek (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h, }
+\item[{{\bf I\-Lint}}]{Offset, }
+\item[{{\bf I\-Luint}}]{Mode}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_afd39ebed1be77dbdba037ca43987a668}
+
+
+Fake seek function. 
+
+\hypertarget{il__files_8c_a71f926104a96908e5aa89855f5241696}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Size\-Tell@{i\-Size\-Tell}}
+\index{i\-Size\-Tell@{i\-Size\-Tell}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Size\-Tell}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Size\-Tell (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a71f926104a96908e5aa89855f5241696}
+\hypertarget{il__files_8c_aef0b19fc1c2ddec06b70fd475b7ff489}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Size\-Write@{i\-Size\-Write}}
+\index{i\-Size\-Write@{i\-Size\-Write}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Size\-Write}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Size\-Write (
+\begin{DoxyParamCaption}
+\item[{const {\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Number, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aef0b19fc1c2ddec06b70fd475b7ff489}
+\hypertarget{il__files_8c_a862acd640940d4588b2148d968bfc0b9}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Tell\-Lump@{i\-Tell\-Lump}}
+\index{i\-Tell\-Lump@{i\-Tell\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Tell\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Luint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Tell\-Lump (
+\begin{DoxyParamCaption}
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_a862acd640940d4588b2148d968bfc0b9}
+\hypertarget{il__files_8c_aa239cdc3c50161cee4e0a05b0a847a60}{\index{il\-\_\-files.\-c@{il\-\_\-files.\-c}!i\-Write\-Lump@{i\-Write\-Lump}}
+\index{i\-Write\-Lump@{i\-Write\-Lump}!il_files.c@{il\-\_\-files.\-c}}
+\subsubsection[{i\-Write\-Lump}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\-Lint} {\bf I\-L\-A\-P\-I\-E\-N\-T\-R\-Y} i\-Write\-Lump (
+\begin{DoxyParamCaption}
+\item[{const {\bf void} $\ast$}]{Buffer, }
+\item[{{\bf I\-Luint}}]{Size, }
+\item[{{\bf I\-Luint}}]{Number, }
+\item[{{\bf I\-L\-H\-A\-N\-D\-L\-E}}]{h}
+\end{DoxyParamCaption}
+)}}\label{il__files_8c_aa239cdc3c50161cee4e0a05b0a847a60}
