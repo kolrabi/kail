@@ -7,6 +7,7 @@ var group__image__manip =
     [ "ilClampNTSC", "d0/d5a/group__image__manip.html#gab2c623d693bf0f5c2f046a64af7b22ba", null ],
     [ "ilClearImage", "d0/d5a/group__image__manip.html#gae48d76d54f6f00fe54b304c29224653f", null ],
     [ "ilConvertImage", "d0/d5a/group__image__manip.html#ga82b125402ed12ed399f181165374a7c1", null ],
+    [ "ilConvertPal", "d0/d5a/group__image__manip.html#gaf3e055a50d9dcc791b249bfd6152ba58", null ],
     [ "ilCopyPixels", "d0/d5a/group__image__manip.html#gaa1410977695d1633907ff371e5b9c77e", null ],
     [ "ilCreateSubImage", "d0/d5a/group__image__manip.html#gabc158c1aed9358ad456527f7cdb03446", null ],
     [ "ilDefaultImage", "d0/d5a/group__image__manip.html#ga3084506414c867df1f37234d996e2501", null ],

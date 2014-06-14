@@ -15,6 +15,7 @@ var il__api_8c =
     [ "ilCloneCurImage", "d2/da5/il__api_8c.html#gae0771d03e54685b692b1103a1b29f80c", null ],
     [ "ilCompressDXT", "d2/da5/il__api_8c.html#ga016b03ccbf86f6ba37d6c24b3357f9d1", null ],
     [ "ilConvertImage", "d2/da5/il__api_8c.html#ga82b125402ed12ed399f181165374a7c1", null ],
+    [ "ilConvertPal", "d2/da5/il__api_8c.html#gaf3e055a50d9dcc791b249bfd6152ba58", null ],
     [ "ilCopyImage", "d2/da5/il__api_8c.html#gaf0f3ef5b949468a12a4b49e0fb2cb3cb", null ],
     [ "ilCopyPixels", "d2/da5/il__api_8c.html#gaa1410977695d1633907ff371e5b9c77e", null ],
     [ "ilCreateSubImage", "d2/da5/il__api_8c.html#gabc158c1aed9358ad456527f7cdb03446", null ],

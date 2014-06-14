@@ -187,38 +187,35 @@ $(document).ready(function(){initNavTree('da/da5/ilu__internal_8h_source.html','
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;ILuint    iScaleAdvanced(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint Width, ILuint Height, ILenum Filter);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;ILubyte * iScanFill(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;ILboolean iBuildMipmaps(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Parent, ILuint Width, ILuint Height, ILuint Depth);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;ILuint    iColoursUsed(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;ILboolean iCompareImage(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> * Image, <a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> * Original);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;ILboolean iContrast(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Contrast);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;ILboolean iCrop(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;ILboolean iEnlargeCanvas(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Placement);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;ILboolean iEqualize(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;ILconst_string iErrorString(ILenum Error);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;ILboolean iFlipImage(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *image);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;ILboolean iGammaCorrect(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Gamma);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">void</span>      iInit(<span class="keywordtype">void</span>);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;ILboolean iInvertAlpha(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;ILboolean iNegative(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;ILboolean iNoisify(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILclampf Tolerance);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;ILboolean iReplaceColour(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, <span class="keyword">const</span> ILubyte *ClearCol);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;ILboolean iRotate(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Angle);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;ILboolean iScale(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint Width, ILuint Height, ILuint Depth);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;ILboolean iSetLanguage(ILenum Language);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;ILboolean iSwapColours(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *img);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;ILboolean iWave(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Angle);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;ILuint    iColoursUsed(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;ILboolean iCompareImage(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> * Image, <a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> * Original);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;ILboolean iContrast(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Contrast);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;ILboolean iCrop(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;ILboolean iEnlargeCanvas(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Placement);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;ILboolean iEqualize(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;ILconst_string iErrorString(ILenum Error);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;ILboolean iGammaCorrect(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Gamma);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keywordtype">void</span>      iInit(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;ILboolean iInvertAlpha(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;ILboolean iNegative(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;ILboolean iNoisify(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILclampf Tolerance);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;ILboolean iReplaceColour(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, <span class="keyword">const</span> ILubyte *ClearCol);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;ILboolean iRotate(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Angle);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;ILboolean iScale(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILuint Width, ILuint Height, ILuint Depth);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;ILboolean iSetLanguage(ILenum Language);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;ILboolean iWave(<a class="code" href="../../d8/d85/struct_i_limage.html" title="The Fundamental Image structure. ">ILimage</a> *Image, ILfloat Angle);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#define imemclear(x,y) memset(x,0,y);</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#define imemclear(x,y) memset(x,0,y);</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="preprocessor">#endif//INTERNAL_H</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif//INTERNAL_H</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="../../dir_6e8621e6ac465260eb0ccfa0678c4448.html">ILU</a></li><li class="navelem"><b>ilu_internal.h</b></li>
-    <li class="footer">Generated on Thu Jun 5 2014 16:07:53 for kolrabi's another Image Library by
+    <li class="footer">Generated on Sat Jun 14 2014 02:14:15 for kolrabi's another Image Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.4 </li>
   </ul>

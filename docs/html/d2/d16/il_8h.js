@@ -68,7 +68,7 @@ var il_8h =
     [ "ilCloneCurImage", "d2/d16/il_8h.html#gae0771d03e54685b692b1103a1b29f80c", null ],
     [ "ilCompressDXT", "d2/d16/il_8h.html#ga016b03ccbf86f6ba37d6c24b3357f9d1", null ],
     [ "ilConvertImage", "d2/d16/il_8h.html#ga82b125402ed12ed399f181165374a7c1", null ],
-    [ "ilConvertPal", "d2/d16/il_8h.html#a68c3c3922366108a9cbb30860c825f74", null ],
+    [ "ilConvertPal", "d2/d16/il_8h.html#gaf3e055a50d9dcc791b249bfd6152ba58", null ],
     [ "ilCopyImage", "d2/d16/il_8h.html#gaf0f3ef5b949468a12a4b49e0fb2cb3cb", null ],
     [ "ilCopyPixels", "d2/d16/il_8h.html#gaa1410977695d1633907ff371e5b9c77e", null ],
     [ "ilCreateSubImage", "d2/d16/il_8h.html#gabc158c1aed9358ad456527f7cdb03446", null ],
