@@ -540,19 +540,6 @@ ILboolean iSwapColours(ILimage *Image)
   return IL_TRUE;
 }
 
-// Swaps the colour order of the current image (rgb(a)->bgr(a) or vice-versa).
-//  Must be either an 8, 24 or 32-bit (coloured) image (or palette).
-ILboolean ilSwapColours()
-{
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-  return iSwapColours(Image);
-}
-
-
 ILboolean iAddAlpha(ILimage *Image)
 {
   if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
@@ -667,11 +654,10 @@ ILboolean iAddAlphaKey(ILimage *Image)
   ILuint    i = 0, j = 0, c, Size;
   ILboolean Same;
 
-  float KeyRed    = ilStates[ilCurrentPos].ilKeyColourRed;
-  float KeyGreen  = ilStates[ilCurrentPos].ilKeyColourGreen;
-  float KeyBlue   = ilStates[ilCurrentPos].ilKeyColourBlue;
-  float KeyAlpha  = ilStates[ilCurrentPos].ilKeyColourAlpha; 
+  float KeyRed, KeyGreen, KeyBlue, KeyAlpha;
  
+  iGetKeyColour(&KeyRed, &KeyGreen, &KeyBlue, &KeyAlpha);
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -844,13 +830,13 @@ ILboolean iAddAlphaKey(ILimage *Image)
       case IL_PAL_RGB24:
       case IL_PAL_RGB32:
       case IL_PAL_RGBA32:
-        if (!ilConvertPal(IL_PAL_RGBA32))
+        if (!iConvertImagePal(Image, IL_PAL_RGBA32))
           return IL_FALSE;
         break;
       case IL_PAL_BGR24:
       case IL_PAL_BGR32:
       case IL_PAL_BGRA32:
-        if (!ilConvertPal(IL_PAL_BGRA32))
+        if (!iConvertImagePal(Image, IL_PAL_BGRA32))
           return IL_FALSE;
         break;
       default:
@@ -966,19 +952,6 @@ ILboolean iRemoveAlpha(ILimage *Image)
   }
 
   return IL_TRUE;
-}
-
-
-// Removes alpha from a 32-bit image
-//  Should we maybe add an option that changes the image based on the alpha?
-ILboolean ilRemoveAlpha()
-{
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-  return iRemoveAlpha(Image);
 }
 
 ILboolean iFixImage(ILimage *Image) 

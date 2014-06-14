@@ -17,20 +17,106 @@
 #include "il_internal.h"
 #include "il_stack.h"
 
+#ifdef IL_THREAD_SAFE_PTHREAD
+#include <pthread.h>
+
+static pthread_key_t iTlsKey;
+pthread_mutex_t iStateMutex;
+#endif
+
 static void iSetImage0();
 
-// Global variables for il_stack.c
-ILuint    StackSize = 0;
-ILuint    LastUsed = 0;
-ILuint    CurName = 0;
-ILimage   **ImageStack = NULL;
-iFree   *FreeNames = NULL;
-ILboolean OnExit = IL_FALSE;
-ILboolean ParentImage = IL_TRUE;
-ILimage *iCurImage = NULL;
+// Global variables for il_stack.c shared among threads
+ILuint      StackSize     = 0;
+ILuint      LastUsed      = 0;
+ILimage **  ImageStack    = NULL;
+iFree   *   FreeNames     = NULL;
 
-void iGenImages(ILsizei Num, ILuint *Images)
-{
+static void iInitTlsData(IL_TLS_DATA *Data) {
+
+  imemclear(Data, sizeof(*Data)); 
+  Data->CurError.ilErrorPlace = -1;
+}
+
+// only called when thread safety is enabled and a thread stops
+static void iFreeTLSData(void *ptr) {
+  IL_TLS_DATA *Data = (IL_TLS_DATA*)ptr;
+  // TODO: clear set strings from state
+  ifree(Data);
+}
+
+IL_TLS_DATA * iGetTLSData() {
+#ifdef IL_THREAD_SAFE_PTHREAD
+  IL_TLS_DATA *iDataPtr = (IL_TLS_DATA*)pthread_getspecific(iTlsKey);
+  if (iDataPtr == NULL) {
+    iDataPtr = ioalloc(IL_TLS_DATA);
+    pthread_setspecific(iTlsKey, iDataPtr);
+    iInitTlsData(iDataPtr);
+  }
+
+  return iDataPtr;
+#else
+  static IL_TLS_DATA iData;
+  static IL_TLS_DATA *iDataPtr = NULL;
+
+  if (iDataPtr == NULL) {
+    iDataPtr = &iData;
+    iInitTlsData(iDataPtr);
+  }
+  return iDataPtr;
+#endif
+}
+
+static IL_IMAGE_SELECTION *iGetSelection() {
+  IL_TLS_DATA *iData = iGetTLSData();
+  return &iData->CurSel;
+}
+
+static void iSetSelection(ILuint Image, ILuint Frame, ILuint Face, ILuint Layer, ILuint Mipmap) {
+  iGetSelection()->CurName    = Image;
+  iGetSelection()->CurFrame   = Frame;
+  iGetSelection()->CurFace    = Face;
+  iGetSelection()->CurLayer   = Layer;
+  iGetSelection()->CurMipmap  = Mipmap;
+}
+
+static ILuint iGetCurName() {
+  return iGetSelection()->CurName;
+}
+
+ILimage * iGetImage(ILuint Image) {
+  if (ImageStack == NULL || StackSize == 0) {
+    return NULL;
+  }
+
+  // If the user requests a high image name.
+  if (Image >= StackSize) {
+    return NULL;
+  }
+
+  return ImageStack[Image];
+}
+
+ILimage * iGetSelectedImage(const IL_IMAGE_SELECTION *CurSel) {
+  if (CurSel == NULL) CurSel = iGetSelection();
+  ILimage *Image = iGetImage(CurSel->CurName);
+  ILuint i;
+  for (i=0; i<CurSel->CurFrame; i++) {
+    if (Image) Image = Image->Next;
+  }
+  for (i=0; i<CurSel->CurFace; i++) {
+    if (Image) Image = Image->Faces;
+  }
+  for (i=0; i<CurSel->CurLayer; i++) {
+    if (Image) Image = Image->Layers;
+  }
+  for (i=0; i<CurSel->CurMipmap; i++) {
+    if (Image) Image = Image->Mipmaps;
+  }
+  return Image;
+}
+
+void iGenImages(ILsizei Num, ILuint *Images) {
   ILsizei Index = 0;
   iFree *TempFree = FreeNames;
 
@@ -63,22 +149,7 @@ void iGenImages(ILsizei Num, ILuint *Images)
   } while (++Index < Num);
 }
 
-ILimage * ILAPIENTRY iGetImage(ILuint Image)
-{
-  if (ImageStack == NULL || StackSize == 0) {
-    return NULL;
-  }
-
-  // If the user requests a high image name.
-  if (Image >= StackSize) {
-    return NULL;
-  }
-
-  return ImageStack[Image];
-}
-
-void iBindImage(ILuint Image)
-{
+void iBindImage(ILuint Image) {
   if (ImageStack == NULL || StackSize == 0) {
     if (!iEnlargeStack()) {
       return;
@@ -98,17 +169,11 @@ void iBindImage(ILuint Image)
       LastUsed = Image + 1;
   }
 
-  iCurImage = ImageStack[Image];
-  CurName = Image;
-
-  ParentImage = IL_TRUE;
-
-  return;
+  iSetSelection(Image, 0, 0, 0, 0);
 }
 
 
-void iDeleteImages(ILsizei Num, const ILuint *Images)
-{
+void iDeleteImages(ILsizei Num, const ILuint *Images) {
   iFree *Temp = FreeNames;
   ILuint  Index = 0;
 
@@ -135,9 +200,8 @@ void iDeleteImages(ILsizei Num, const ILuint *Images)
         continue;
 
       // Find out if current image - if so, set to default image zero.
-      if (Images[Index] == CurName || Images[Index] == 0) {
-        iCurImage = ImageStack[0];
-        CurName = 0;
+      if (Images[Index] == iGetCurName() || Images[Index] == 0) {
+        iSetSelection(0, 0, 0, 0, 0);
       }
       
       // Should *NOT* be NULL here!
@@ -264,47 +328,23 @@ ILAPI void ILAPIENTRY ilClosePal(ILpal *Palette)
   return;
 }
 
-
-ILAPI ILimage * ILAPIENTRY iGetBaseImage()
-{
+ILAPI ILimage * ILAPIENTRY iGetBaseImage() {
   return ImageStack[ilGetCurName()];
 }
 
-
 //! Sets the current mipmap level
-ILboolean iActiveMipmap(ILuint Number)
-{
-  if (iCurImage == NULL) {
+ILboolean iActiveMipmap(ILuint Number) {
+  IL_IMAGE_SELECTION CurSel = *iGetSelection();
+
+  CurSel.CurMipmap += Number; // FIXME: this is for compatibility
+  
+  ILimage *Image = iGetSelectedImage(&CurSel);
+  if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Number == 0) {
-    return IL_TRUE;
-  }
-
-   ILimage * iTempImage = iCurImage;
-  iCurImage->Mipmaps->io = iCurImage->io;
-  iCurImage = iCurImage->Mipmaps;
-  if (iCurImage == NULL) {
-    iCurImage = iTempImage;
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  ILuint Current;
-  for (Current = 1; Current < Number; Current++) {
-    iCurImage->Mipmaps->io = iCurImage->io;
-    iCurImage = iCurImage->Mipmaps;
-    if (iCurImage == NULL) {
-      iSetError(IL_ILLEGAL_OPERATION);
-      iCurImage = iTempImage;
-      return IL_FALSE;
-    }
-  }
-
-  ParentImage = IL_FALSE;
-
+  *iGetSelection() = CurSel;
   return IL_TRUE;
 }
 
@@ -340,38 +380,17 @@ ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
 //! Used for setting the current image if it is an animation.
 ILboolean iActiveImage(ILuint Number)
 {
-  ILuint Current;
-  ILimage *iTempImage;
-    
-  if (iCurImage == NULL) {
+  IL_IMAGE_SELECTION CurSel = *iGetSelection();
+
+  CurSel.CurFrame += Number; // FIXME: this is for compatibility
+  
+  ILimage *Image = iGetSelectedImage(&CurSel);
+  if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Number == 0) {
-    return IL_TRUE;
-  }
-
-    iTempImage = iCurImage;
-  iCurImage = iCurImage->Next;
-  if (iCurImage == NULL) {
-    iCurImage = iTempImage;
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  Number--;  // Skip 0 (parent image)
-  for (Current = 0; Current < Number; Current++) {
-    iCurImage = iCurImage->Next;
-    if (iCurImage == NULL) {
-      iSetError(IL_ILLEGAL_OPERATION);
-      iCurImage = iTempImage;
-      return IL_FALSE;
-    }
-  }
-
-  ParentImage = IL_FALSE;
-
+  *iGetSelection() = CurSel;
   return IL_TRUE;
 }
 
@@ -401,85 +420,39 @@ ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
   return Image;
 }
 
-
 ILboolean iActiveFace(ILuint Number) {
-  ILuint Current;
-  ILimage *iTempImage;
+  IL_IMAGE_SELECTION CurSel = *iGetSelection();
 
-  if (iCurImage == NULL) {
+  CurSel.CurFace += Number; // FIXME: this is for compatibility
+  
+  ILimage *Image = iGetSelectedImage(&CurSel);
+  if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Number == 0) {
-    return IL_TRUE;
-  }
-
-  iTempImage = iCurImage;
-  iCurImage = iCurImage->Faces;
-  if (iCurImage == NULL) {
-    iCurImage = iTempImage;
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  for (Current = 1; Current < Number; Current++) {
-    iCurImage = iCurImage->Faces;
-    if (iCurImage == NULL) {
-      iSetError(IL_ILLEGAL_OPERATION);
-      iCurImage = iTempImage;
-      return IL_FALSE;
-    }
-  }
-
-  ParentImage = IL_FALSE;
-
+  *iGetSelection() = CurSel;
   return IL_TRUE;
 }
-
-
 
 //! Used for setting the current layer if layers exist.
 ILboolean iActiveLayer(ILuint Number)
 {
-  ILuint Current;
-    ILimage *iTempImage;
+  IL_IMAGE_SELECTION CurSel = *iGetSelection();
 
-  if (iCurImage == NULL) {
+  CurSel.CurLayer += Number; // FIXME: this is for compatibility
+  
+  ILimage *Image = iGetSelectedImage(&CurSel);
+  if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Number == 0) {
-    return IL_TRUE;
-  }
-
-    iTempImage = iCurImage;
-  iCurImage = iCurImage->Layers;
-  if (iCurImage == NULL) {
-    iCurImage = iTempImage;
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  //Number--;  // Skip 0 (parent image)
-  for (Current = 1; Current < Number; Current++) {
-    iCurImage = iCurImage->Layers;
-    if (iCurImage == NULL) {
-      iSetError(IL_ILLEGAL_OPERATION);
-      iCurImage = iTempImage;
-      return IL_FALSE;
-    }
-  }
-
-  ParentImage = IL_FALSE;
-
-  return IL_TRUE;
+  *iGetSelection() = CurSel;
+  return IL_TRUE;  
 }
 
-
-ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num)
-{
+ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num) {
   ILimage *SubImage;
   ILuint  Count ;  // Create one before we go in the loop.
 
@@ -538,43 +511,15 @@ ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num)
   return Count;
 }
 
-
 // Returns the current index.
-ILAPI ILuint ILAPIENTRY ilGetCurName()
-{
-  if (iCurImage == NULL || ImageStack == NULL || StackSize == 0)
-    return 0;
-  return CurName;
+ILAPI ILuint ILAPIENTRY ilGetCurName() {
+  return iGetSelection()->CurName;
 }
-
 
 // Returns the current image.
-ILAPI ILimage* ILAPIENTRY iGetCurImage()
-{
-  return iCurImage;
+static ILimage* iGetCurImage() {
+  return iGetSelectedImage(iGetSelection());
 }
-
-
-// To be only used when the original image is going to be set back almost immediately.
-ILAPI void ILAPIENTRY ilSetCurImage(ILimage *Image)
-{
-  iCurImage = Image;
-  return;
-}
-
-// Completely replaces the current image and the version in the image stack.
-ILAPI void ILAPIENTRY ilReplaceCurImage(ILimage *Image)
-{
-  if (iCurImage) {
-    ilActiveImage(0);
-    ilCloseImage(iCurImage);
-  }
-  ImageStack[ilGetCurName()] = Image;
-  iCurImage = Image;
-  ParentImage = IL_TRUE;
-  return;
-}
-
 
 // Like realloc but sets new memory to 0.
 void* ILAPIENTRY ilRecalloc(void *Ptr, ILuint OldSize, ILuint NewSize)
@@ -623,14 +568,16 @@ void iInitIL()
 
   if (IL_TRACE_FILE_ENV)          iTraceOut = fopen(IL_TRACE_FILE_ENV, "w+b");
   if (IL_TRACE_ENV && !iTraceOut) iTraceOut = stderr;
+
+  #ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_init(&iStateMutex, NULL);
+  pthread_key_create(&iTlsKey, &iFreeTLSData);
+  #endif
   
-  //ilSetMemory(NULL, NULL);  Now useless 3/4/2006 (due to modification in il_alloc.c)
   iSetError(IL_NO_ERROR);
-  ilDefaultStates();  // Set states to their defaults.
-  iSetImage0();  // Beware!  Clears all existing textures!
-
-  iBindImageTemp();  // Go ahead and create the temporary image.
-
+  ilDefaultStates();      // Set states to their defaults.
+  iSetImage0();           // Beware!  Clears all existing textures!
+  iBindImageTemp();       // Go ahead and create the temporary image.
   iInitFormats();
 
   IsInit = IL_TRUE;
@@ -688,29 +635,80 @@ static void iSetImage0() {
       return;
 
   LastUsed = 1;
-  CurName = 0;
-  ParentImage = IL_TRUE;
+  iSetSelection(0, 0,0,0,0);
   if (!ImageStack[0])
     ImageStack[0] = ilNewImage(1, 1, 1, 1, 1);
-  iCurImage = ImageStack[0];
   ilDefaultImage();
 }
 
-
-ILAPI void ILAPIENTRY iBindImageTemp()
-{
+ILAPI void ILAPIENTRY iBindImageTemp() {
   if (ImageStack == NULL || StackSize <= 1)
     if (!iEnlargeStack())
       return;
 
-  ILimage *lastImage = iCurImage;
+  ILimage *lastImage = iGetSelectedImage(iGetSelection());
 
   if (LastUsed < 2)
     LastUsed = 2;
-  CurName = 1;
-  ParentImage = IL_TRUE;
+
+  iSetSelection(1, 0,0,0,0);
+
   if (!ImageStack[1])
     ImageStack[1] = ilNewImage(1, 1, 1, 1, 1);
-  iCurImage = ImageStack[1];
-  iCurImage->io = lastImage->io;
+
+  if (lastImage)
+    iGetSelectedImage(iGetSelection())->io = lastImage->io;
+}
+
+ILAPI void ILAPIENTRY iLockState() {
+#ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_lock(&iStateMutex);
+  iTrace("---- Locking state");
+#endif
+}
+
+ILAPI void ILAPIENTRY iUnlockState() {
+#ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_unlock(&iStateMutex);
+  iTrace("---- Unlocking state");
+#endif
+} 
+
+ILAPI ILimage * ILAPIENTRY iLockCurImage() {
+  ILimage *Image = iGetCurImage();
+  if (!Image) {
+    return NULL;
+  }
+
+  iTrace("---- Locking current image %p", Image);
+
+#ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_lock(&Image->Mutex);
+#endif
+  return Image;
+}
+
+ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
+  ILimage *Image = iGetImage(Name);
+  if (!Image) {
+    return NULL;
+  }
+
+  iTrace("---- Locking image %p", Image);
+
+#ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_lock(&Image->Mutex);
+#endif
+
+  return Image;
+}
+
+ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
+  if (!Image) return;
+
+  iTrace("---- Unlocking image %p", Image);
+
+#ifdef IL_THREAD_SAFE_PTHREAD
+  pthread_mutex_unlock(&Image->Mutex);
+#endif
 }

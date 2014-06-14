@@ -6,7 +6,7 @@
 //
 // Filename: src-IL/src/il_states.c
 //
-// Description: State machine
+// Description: IL_STATE_STRUCT machine
 //
 //
 // 20040223 XIX : now has a ilPngAlphaIndex member, so we can spit out png files with a transparent index, set to -1 for none
@@ -20,22 +20,23 @@
 //#include <malloc.h>
 #include <stdlib.h>
 
-#define _strdup strdup
-
 // Global variables
-ILconst_string _ilVendor    = IL_TEXT("kolrabi");
-ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.8.3");
+static ILconst_string _ilVendor    = IL_TEXT("kolrabi");
+static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.8.3");
 
-ILuint ilCurrentPos = 0;  // Which position on the stack
-IL_STATES ilStates[IL_ATTRIB_STACK_MAX];
-IL_HINTS ilHints;
+static IL_STATE_STRUCT *iGetStateStruct() {
+  return &iGetTLSData()->CurState;
+}
 
 extern ILchar *_ilLoadExt;
 extern ILchar *_ilSaveExt;
 
 //! Set all states to their defaults.
-void ilDefaultStates()
-{
+void ilDefaultStates() {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   ilStates[ilCurrentPos].ilOriginSet = IL_FALSE;
   ilStates[ilCurrentPos].ilOriginMode = IL_ORIGIN_LOWER_LEFT;
   ilStates[ilCurrentPos].ilFormatSet = IL_FALSE;
@@ -89,23 +90,24 @@ void ilDefaultStates()
   ilStates[ilCurrentPos].ilUseNVidiaDXT = IL_FALSE;
   ilStates[ilCurrentPos].ilUseSquishDXT = IL_FALSE;
 
+  StateStruct->ilHints.MemVsSpeedHint = IL_FASTEST;
+  StateStruct->ilHints.CompressHint   = IL_USE_COMPRESSION;
 
-
-
-  ilHints.MemVsSpeedHint = IL_FASTEST;
-  ilHints.CompressHint = IL_USE_COMPRESSION;
-
-  while (ilGetError() != IL_NO_ERROR);
+  // clear errors
+  while (ilGetError() != IL_NO_ERROR)
+    ;
 
   return;
 }
 
 
 //! Returns a constant string detailing aspects about this library.
-ILconst_string iGetILString(ILenum StringName)
-{
-  switch (StringName)
-  {
+ILconst_string iGetILString(ILenum StringName) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  switch (StringName) {
     case IL_VENDOR:
       return (ILconst_string)_ilVendor;
     case IL_VERSION_NUM: //changed 2003-08-30: IL_VERSION changes                 //switch define ;-)
@@ -146,8 +148,7 @@ ILconst_string iGetILString(ILenum StringName)
 
 
 // Clips a string to a certain length and returns a new string.
-char *iClipString(ILconst_string String_, ILuint MaxLen)
-{
+char *iClipString(ILconst_string String_, ILuint MaxLen) {
   ILuint  Length;
 
 #ifdef _UNICODE
@@ -166,11 +167,13 @@ char *iClipString(ILconst_string String_, ILuint MaxLen)
 }
 
 
-// Returns format-specific strings, truncated to MaxLen (not counting the terminating NULL).
-char *iGetString(ILenum StringName)
-{
-  switch (StringName)
-  {
+// Returns format-specific strings, converted to UTF8 truncated to MaxLen (not counting the terminating NUL).
+char *iGetString(ILenum StringName) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  switch (StringName)   {
     case IL_TGA_ID_STRING:
       return iClipString(ilStates[ilCurrentPos].ilTgaId, 254);
     case IL_TGA_AUTHNAME_STRING:
@@ -201,12 +204,13 @@ char *iGetString(ILenum StringName)
   return NULL;
 }
 
-
 // Internal function that sets the Mode equal to Flag
-ILboolean iAble(ILenum Mode, ILboolean Flag)
-{
-  switch (Mode)
-  {
+ILboolean iAble(ILenum Mode, ILboolean Flag) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  switch (Mode) {
     case IL_ORIGIN_SET:
       ilStates[ilCurrentPos].ilOriginSet = Flag;
       break;
@@ -254,10 +258,12 @@ ILboolean iAble(ILenum Mode, ILboolean Flag)
 
 
 //! Checks whether the mode is enabled.
-ILboolean iIsEnabled(ILenum Mode)
-{
-  switch (Mode)
-  {
+ILboolean iIsEnabled(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  switch (Mode)   {
     case IL_ORIGIN_SET:
       return ilStates[ilCurrentPos].ilOriginSet;
     case IL_FORMAT_SET:
@@ -293,62 +299,22 @@ ILboolean iIsEnabled(ILenum Mode)
 
 //! Internal function to figure out where we are in an image chain.
 //@TODO: This may get much more complex with mipmaps under faces, etc.
-ILuint iGetActiveNum(ILenum Type)
-{
-  ILuint Num = 0;
-  ILimage *BaseImage = iGetImage(ilGetCurName());
-  ILimage *CurImage = iGetCurImage();
+// FIXME: store current layer/frame/mipmap/face seperately
+ILuint iGetActiveNum(ILenum Type) {
+  IL_TLS_DATA *TLSData = iGetTLSData();
 
-  if (BaseImage == NULL || CurImage == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return 0;
-  }
-
-  if (BaseImage == CurImage)
-    return 0;
-
-  switch (Type)
-  {
+  switch (Type) {
     case IL_ACTIVE_IMAGE:
-      BaseImage = BaseImage->Next;
-      do {
-        if (BaseImage == NULL)
-          return 0;
-        Num++;
-        if (BaseImage == CurImage)
-          return Num;
-      } while ((BaseImage = BaseImage->Next));
-      break;
+      return TLSData->CurSel.CurFrame;
+
     case IL_ACTIVE_MIPMAP:
-      BaseImage = BaseImage->Mipmaps;
-      do {
-        if (BaseImage == NULL)
-          return 0;
-        Num++;
-        if (BaseImage == CurImage)
-          return Num;
-      } while ((BaseImage = BaseImage->Mipmaps));
-      break;
+      return TLSData->CurSel.CurMipmap;
+
     case IL_ACTIVE_LAYER:
-      BaseImage = BaseImage->Layers;
-      do {
-        if (BaseImage == NULL)
-          return 0;
-        Num++;
-        if (BaseImage == CurImage)
-          return Num;
-      } while ((BaseImage = BaseImage->Layers));
-      break;
+      return TLSData->CurSel.CurLayer;
+
     case IL_ACTIVE_FACE:
-      BaseImage = BaseImage->Faces;
-      do {
-        if (BaseImage == NULL)
-          return 0;
-        Num++;
-        if (BaseImage == CurImage)
-          return Num;
-      } while ((BaseImage = BaseImage->Faces));
-      break;
+      return TLSData->CurSel.CurFace;
   }
 
   //@TODO: Any error needed here?
@@ -488,19 +454,24 @@ ILint ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode)
 }
 
 
-ILint iGetInteger(ILenum Mode)
-{
+ILint iGetInteger(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_IMAGE_SELECTION *Selection = &iGetTLSData()->CurSel;
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+  ILimage *CurImage = iGetSelectedImage(Selection);
+
   switch (Mode) {
     // Integer values
     case IL_COMPRESS_MODE:
       return ilStates[ilCurrentPos].ilCompression;
 
     case IL_CUR_IMAGE:
-      if (iGetCurImage() == NULL) {
+      if (CurImage == NULL) {
         iSetError(IL_ILLEGAL_OPERATION);
         return 0;
       }
-      return ilGetCurName();
+      return Selection->CurName;
 
     case IL_FORMAT_MODE:
       return ilStates[ilCurrentPos].ilFormatMode;
@@ -606,10 +577,14 @@ ILint iGetInteger(ILenum Mode)
 
   }
 
-  return iGetIntegerImage(iGetCurImage(), Mode);
+  return iGetIntegerImage(CurImage, Mode);
 }
 
 ILboolean iOriginFunc(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   switch (Mode) {
     case IL_ORIGIN_LOWER_LEFT:
     case IL_ORIGIN_UPPER_LEFT:
@@ -624,6 +599,10 @@ ILboolean iOriginFunc(ILenum Mode) {
 
 
 ILboolean iFormatFunc(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   switch (Mode)
   {
     //case IL_COLOUR_INDEX:
@@ -643,6 +622,10 @@ ILboolean iFormatFunc(ILenum Mode) {
 }
 
 ILboolean iTypeFunc(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   switch (Mode) {
     case IL_BYTE:
     case IL_UNSIGNED_BYTE:
@@ -663,6 +646,10 @@ ILboolean iTypeFunc(ILenum Mode) {
 
 
 ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   switch (Mode)
   {
     case IL_COMPRESS_NONE:
@@ -679,21 +666,26 @@ ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode) {
 }
 
 void iPushAttrib(ILuint Bits) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+
   // Should we check here to see if ilCurrentPos is negative?
 
-  if (ilCurrentPos >= IL_ATTRIB_STACK_MAX - 1) {
-    ilCurrentPos = IL_ATTRIB_STACK_MAX - 1;
+  if (StateStruct->ilCurrentPos >= IL_ATTRIB_STACK_MAX - 1) {
+    StateStruct->ilCurrentPos = IL_ATTRIB_STACK_MAX - 1;
     iSetError(IL_STACK_OVERFLOW);
     return;
   }
 
-  ilCurrentPos++;
+  StateStruct->ilCurrentPos++;
 
   //  memcpy(&ilStates[ilCurrentPos], &ilStates[ilCurrentPos - 1], sizeof(IL_STATES));
 
   ilDefaultStates();
 
   // FIXME: colour key data
+
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
   if (Bits & IL_ORIGIN_BIT) {
     ilStates[ilCurrentPos].ilOriginMode = ilStates[ilCurrentPos-1].ilOriginMode;
@@ -781,6 +773,9 @@ void iPushAttrib(ILuint Bits) {
 
 // @TODO:  Find out how this affects strings!!!
 void iPopAttrib() {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   if (ilCurrentPos <= 0) {
     ilCurrentPos = 0;
     iSetError(IL_STACK_UNDERFLOW);
@@ -788,28 +783,26 @@ void iPopAttrib() {
   }
 
   // Should we check here to see if ilCurrentPos is too large?
-  ilCurrentPos--;
+  StateStruct->ilCurrentPos--;
 
   return;
 }
 
 
 //! Specifies implementation-dependent performance hints
-void iHint(ILenum Target, ILenum Mode)
-{
-  switch (Target)
-  {
+void iHint(ILenum Target, ILenum Mode) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  switch (Target)   {
     case IL_MEM_SPEED_HINT:
-      switch (Mode)
-      {
+      switch (Mode) {
         case IL_FASTEST:
-          ilHints.MemVsSpeedHint = Mode;
+          StateStruct->ilHints.MemVsSpeedHint = Mode;
           break;
         case IL_LESS_MEM:
-          ilHints.MemVsSpeedHint = Mode;
+          StateStruct->ilHints.MemVsSpeedHint = Mode;
           break;
         case IL_DONT_CARE:
-          ilHints.MemVsSpeedHint = IL_FASTEST;
+          StateStruct->ilHints.MemVsSpeedHint = IL_FASTEST;
           break;
         default:
           iSetError(IL_INVALID_ENUM);
@@ -821,13 +814,13 @@ void iHint(ILenum Target, ILenum Mode)
       switch (Mode)
       {
         case IL_USE_COMPRESSION:
-          ilHints.CompressHint = Mode;
+          StateStruct->ilHints.CompressHint = Mode;
           break;
         case IL_NO_COMPRESSION:
-          ilHints.CompressHint = Mode;
+          StateStruct->ilHints.CompressHint = Mode;
           break;
         case IL_DONT_CARE:
-          ilHints.CompressHint = IL_NO_COMPRESSION;
+          StateStruct->ilHints.CompressHint = IL_NO_COMPRESSION;
           break;
         default:
           iSetError(IL_INVALID_ENUM);
@@ -845,14 +838,15 @@ void iHint(ILenum Target, ILenum Mode)
 }
 
 
-ILenum iGetHint(ILenum Target)
-{
+ILenum iGetHint(ILenum Target) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+
   switch (Target)
   {
     case IL_MEM_SPEED_HINT:
-      return ilHints.MemVsSpeedHint;
+      return StateStruct->ilHints.MemVsSpeedHint;
     case IL_COMPRESSION_HINT:
-      return ilHints.CompressHint;
+      return StateStruct->ilHints.CompressHint;
     default:
       iSetError(IL_INTERNAL_ERROR);
       return 0;
@@ -860,8 +854,11 @@ ILenum iGetHint(ILenum Target)
 }
 
 
-void iSetString(ILenum Mode, const char *String_)
-{
+void iSetString(ILenum Mode, const char *String_) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   if (String_ == NULL) {
     iSetError(IL_INVALID_PARAM);
     return;
@@ -948,9 +945,11 @@ void iSetString(ILenum Mode, const char *String_)
 }
 
 
-void iSetInteger(ILenum Mode, ILint Param)
-{
-  ILimage *CurImage = iGetCurImage();
+void iSetInteger(ILimage *CurImage , ILenum Mode, ILint Param) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   switch (Mode)
   {
     // Integer values
@@ -1097,8 +1096,7 @@ void iSetInteger(ILenum Mode, ILint Param)
 
 
 
-ILint iGetInt(ILenum Mode)
-{
+ILint iGetInt(ILenum Mode) {
   //like ilGetInteger(), but sets another error on failure
 
   //call ilGetIntegerv() for more robust code
@@ -1118,8 +1116,24 @@ ILint iGetInt(ILenum Mode)
 }
 
 void iKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
   ilStates[ilCurrentPos].ilKeyColourRed = Red;
   ilStates[ilCurrentPos].ilKeyColourGreen = Green;
   ilStates[ilCurrentPos].ilKeyColourBlue = Blue;
   ilStates[ilCurrentPos].ilKeyColourAlpha = Alpha; 
+}
+
+
+void iGetKeyColour(ILclampf *Red, ILclampf *Green, ILclampf *Blue, ILclampf *Alpha) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  *Red = ilStates[ilCurrentPos].ilKeyColourRed;
+  *Green = ilStates[ilCurrentPos].ilKeyColourGreen;
+  *Blue = ilStates[ilCurrentPos].ilKeyColourBlue;
+  *Alpha = ilStates[ilCurrentPos].ilKeyColourAlpha; 
 }

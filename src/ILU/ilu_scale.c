@@ -114,13 +114,11 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
 
 ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth)
 {
-  ILimage *Scaled, *CurImage, *ToScale;
+  ILimage *Scaled, *ToScale;
   ILenum  Format; // , PalType;
 
-  CurImage = iGetCurImage();
   Format = Image->Format;
   if (Format == IL_COLOUR_INDEX) {
-    ilSetCurImage(Image);
     // PalType = Image->Pal.PalType;
     ToScale = iConvertImage(Image, ilGetPalBaseType(Image->Pal.PalType), Image->Type);
   }
@@ -134,14 +132,12 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
     ilCloseImage(Scaled);
     if (ToScale != Image)
       ilCloseImage(ToScale);
-    ilSetCurImage(CurImage);
     return NULL;
   }
   if (ilResizeImage(Scaled, Width, Height, Depth, ToScale->Bpp, ToScale->Bpc) == IL_FALSE) {
     ilCloseImage(Scaled);
     if (ToScale != Image)
       ilCloseImage(ToScale);
-    ilSetCurImage(CurImage);
     return NULL;
   }
   
@@ -158,7 +154,6 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
   if (Format == IL_COLOUR_INDEX) {
     //ilSetCurImage(Scaled);
     //ilConvertImage(IL_COLOUR_INDEX);
-    ilSetCurImage(CurImage);
     ilCloseImage(ToScale);
   }
 

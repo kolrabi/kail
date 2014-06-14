@@ -54,7 +54,7 @@ static ILboolean iCheckTarga(TARGAHEAD *Header) {
 	if ( Header->Bpp != 8 && Header->Bpp != 15 && Header->Bpp != 16 
     && Header->Bpp != 24 && Header->Bpp != 32 )
 		return IL_FALSE;
-	if (Header->ImageDesc & BIT_4)	// Supposed to be set to 0
+	if (Header->ImageDesc & BIT(4))	// Supposed to be set to 0
 		return IL_FALSE;
 	
 	// check type (added 20040218)
@@ -337,8 +337,8 @@ static ILboolean iUncompressTgaData(ILimage *image) {
 	
 	while (BytesRead < Size) {
 		Header = (ILubyte)image->io.getchar(image->io.handle);
-		if (Header & BIT_7) {
-			Header &= ~BIT_7;
+		if (Header & BIT(7)) {
+			Header &= ~BIT(7);
 			if (SIOread(io, Color, 1, image->Bpp) != image->Bpp) {
 				return IL_FALSE;
 			}
@@ -391,21 +391,6 @@ static ILboolean i16BitTarga(ILimage *image) {
 		*Temp2++ = (*Temp1 & 0x7C00) >> 7;	// Red
 		
 		Temp1++;
-		
-		
-		/*s = *Temp;
-		s = SwapShort(s);
-		a = !!(s & BIT_15);
-		
-		s = s << 1;
-		
-		//if (a) {
-		SetBits(s, BIT_0);
-		//}
-		
-		//SetBits(s, BIT_15);
-		
-		*Temp++ = s;*/
 	}
 	
 	if (!iTexImage(image, image->Width, image->Height, 1, 3, IL_BGR, IL_UNSIGNED_BYTE, Data)) {

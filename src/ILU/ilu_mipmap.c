@@ -16,7 +16,7 @@
 //#include "ilu_states.h"
 
 
-ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth) {
+ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth) {
   if (Parent == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;

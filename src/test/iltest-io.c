@@ -13,7 +13,7 @@ static ILuint image;
 
 static int test_open_read(char **argv) {
   ilBindImage(image);
-  ILimage *ilimage = iGetCurImage();
+  ILimage *ilimage = iLockCurImage();
 
   printf("!!! %p\n", ilimage);
 

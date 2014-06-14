@@ -212,7 +212,7 @@ ILboolean ILAPIENTRY iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height,
   return IL_TRUE;
 }
 
-ILboolean iFlipImage(ILimage *image) {
+ILboolean ILAPIENTRY iFlipImage(ILimage *image) {
   if( image == NULL ) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -424,7 +424,7 @@ ILboolean iWave(ILimage *Image, ILfloat Angle) {
   return IL_TRUE;
 }
 
-ILboolean iSwapColours(ILimage *img) { 
+ILboolean ILAPIENTRY iSwapColours(ILimage *img) { 
   if( img == NULL ) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;

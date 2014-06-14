@@ -962,9 +962,8 @@ ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
 }
 
 
-ILuint iDuplicateImage(ILuint SrcName) {
+ILuint iDuplicateImage(ILimage *SrcImage) {
   ILuint  DestName;
-  ILimage *SrcImage = iGetImage(SrcName);
   ILimage *DestImage;
   
   if (SrcImage == NULL) {
@@ -976,11 +975,10 @@ ILuint iDuplicateImage(ILuint SrcName) {
   if (DestName == 0)
     return 0;
   
-  DestImage = iGetImage(DestName);
-
+  DestImage = iLockImage(DestName);
   iTexImage(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
   ilCopyImageAttr(DestImage, SrcImage);
-  
+  iUnlockImage(DestImage);
   return DestName;
 }
 

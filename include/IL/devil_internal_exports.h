@@ -29,6 +29,10 @@
 
 #include <wchar.h>
 
+#ifdef IL_THREAD_SAFE_PTHREAD
+#include <pthread.h>
+#endif
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // Compiler specific definitions
@@ -125,6 +129,10 @@ typedef struct ILimage
     ILenum          DxtcFormat;  //!< compressed data format
     ILuint          DxtcSize;    //!< compressed data size
     SIO                     io;
+
+#ifdef IL_THREAD_SAFE_PTHREAD
+    pthread_mutex_t Mutex;
+#endif
 } ILimage;
 
 // Memory functions
@@ -142,12 +150,21 @@ ILAPI void*         ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size
 #define                    ioalloc(T)    iaalloc(T, 1)
 
 // Internal library functions in IL
-ILAPI ILimage*  ILAPIENTRY iGetImage(ILuint Image);
-ILAPI ILimage*  ILAPIENTRY iGetCurImage(void);
-ILAPI void      ILAPIENTRY ilSetCurImage(ILimage *Image);
-ILAPI ILimage * ILAPIENTRY iGetBaseImage(void);
 ILAPI void      ILAPIENTRY iSetError(ILenum Error);
 ILAPI void      ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal);
+
+ILAPI ILimage * ILAPIENTRY iLockCurImage(void);
+ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name);
+
+#ifdef IL_THREAD_SAFE
+ILAPI void      ILAPIENTRY iLockState(void);
+ILAPI void      ILAPIENTRY iUnlockState(void); 
+ILAPI void      ILAPIENTRY iUnlockImage(ILimage *Image);
+#else
+#define                    iLockState() 
+#define                    iUnlockState() 
+#define                    iUnlockImage(x)
+#endif
 
 //
 // Utility functions
@@ -160,11 +177,13 @@ ILAPI ILubyte ILAPIENTRY ilGetBppPal(ILenum PalType);
 ILAPI ILenum  ILAPIENTRY ilGetPalBaseType(ILenum PalType);
 ILAPI ILuint  ILAPIENTRY ilNextPower2(ILuint Num);
 ILAPI ILenum  ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
-ILAPI void    ILAPIENTRY ilReplaceCurImage(ILimage *Image);
 ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
 ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
 ILAPI char *        ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
+
+ILAPI ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
+ILAPI ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName);
 
 //
 // Image functions
@@ -203,10 +222,8 @@ ILAPI void      ILAPIENTRY iResetRead(ILimage *image);
 ILAPI void      ILAPIENTRY iResetWrite(ILimage *image);
 ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
 
-// Internal library functions in ILU
-ILAPI ILimage*  ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
-ILAPI ILimage*  ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
-ILAPI ILimage*  ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
+ILAPI ILuint    ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
+
 
 #ifdef _UNICODE
   #ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.
@@ -240,6 +257,16 @@ ILAPI ILstring  ILAPIENTRY iStrDup(ILconst_string Str);
 ILAPI char *    ILAPIENTRY iCharStrDup(const char *Str);
 ILAPI ILstring  ILAPIENTRY iGetExtension(ILconst_string FileName);
 ILAPI ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext);
+
+//
+// ILU functions
+//
+ILAPI ILboolean ILAPIENTRY iSwapColours(ILimage *img);
+ILAPI ILboolean ILAPIENTRY iFlipImage(ILimage *image);
+ILAPI ILimage*  ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
+ILAPI ILimage*  ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
+ILAPI ILimage*  ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
+ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth);
 
 #ifdef __cplusplus
 }

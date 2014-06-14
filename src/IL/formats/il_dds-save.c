@@ -268,7 +268,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 #endif//IL_NO_DDS
 
 
-ILuint iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
+ILuint ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
   ILubyte *CurData = NULL;
   ILuint  retVal;
   ILint BlockNum;

@@ -117,6 +117,7 @@ ELSE                    ()
   ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
 ENDIF                   ()
 
+INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )
 TARGET_LINK_LIBRARIES   ( ${LIBNAME}
                           ${JASPER_LIBRARIES}
                           ${MNG_LIBRARIES}
@@ -128,6 +129,7 @@ TARGET_LINK_LIBRARIES   ( ${LIBNAME}
                           ${OPENGL_LIBRARIES}
                           ${SDL_LIBRARIES}
                           ${X11_LIBRARIES}
+                          ${CMAKE_THREAD_LIBS_INIT}
                           m
                           z
                         )

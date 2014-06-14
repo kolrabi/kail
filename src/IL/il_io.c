@@ -146,7 +146,7 @@ ILboolean iIsValidIO(ILenum Type, SIO* io) {
   return IL_FALSE;
 }
 
-ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName) {
+ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName) {
   if (FileName == NULL || iStrLen(FileName) < 1) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
@@ -160,7 +160,10 @@ ILboolean iLoad(ILimage *Image, ILenum Type, ILconst_string FileName) {
 
   Image->io.handle = Image->io.openReadOnly(FileName);
   if (Image->io.handle != NULL) {
-    ILboolean bRet = ilLoadFuncs(Type);
+    if (Type == IL_TYPE_UNKNOWN)
+      Type = iDetermineTypeFuncs(Image);
+
+    ILboolean bRet = iLoadFuncs2(Image, Type);
     if (Image->io.close != NULL)
       Image->io.close(Image->io.handle);
     Image->io.handle = NULL;
@@ -220,7 +223,7 @@ ILboolean iSaveFuncs2(ILimage* image, ILenum type) {
   return bRet;
 }
 
-ILboolean iSave(ILimage *Image, ILenum type, ILconst_string FileName) {
+ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;

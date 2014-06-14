@@ -36,6 +36,21 @@
 #include "ilu_states.h"
 #include "ilu_region.h"
 
+#define SIMPLE_PROC(img, f) \
+  iLockState(); \
+  ILimage *img = iLockCurImage(); \
+  iUnlockState(); \
+  f; \
+  iUnlockImage(img); \
+
+#define SIMPLE_FUNC(img, r, f) \
+  iLockState(); \
+  ILimage *img = iLockCurImage(); \
+  iUnlockState(); \
+  r Result = f; \
+  iUnlockImage(img); \
+  return Result;
+
 /**
  * Funny as hell filter that I stumbled upon accidentally.
  * @bug Only works with IL_UNSIGNED_BYTE typed non paletted images.
@@ -43,7 +58,7 @@
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluAlienify(void) {
-  return iAlienify(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iAlienify(Image));
 }
 
 /**
@@ -63,7 +78,7 @@ ILboolean ILAPIENTRY iluAlienify(void) {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluBlurAvg(ILuint Iter) {
-  return iApplyFilter(iGetCurImage(), Iter, filter_average, filter_average_scale, filter_average_bias);
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter(Image, Iter, filter_average, filter_average_scale, filter_average_bias));
 }
 
 /**
@@ -84,7 +99,7 @@ ILboolean ILAPIENTRY iluBlurAvg(ILuint Iter) {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluBlurGaussian(ILuint Iter) {
-  return iApplyFilter(iGetCurImage(), Iter, filter_gaussian, filter_gaussian_scale, filter_gaussian_bias);
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter(Image, Iter, filter_gaussian, filter_gaussian_scale, filter_gaussian_bias));
 }
 
 /**
@@ -93,8 +108,7 @@ ILboolean ILAPIENTRY iluBlurGaussian(ILuint Iter) {
  * @ingroup ilu_util
  */ 
 ILboolean ILAPIENTRY iluBuildMipmaps() {
-  ILimage *  Image = iGetCurImage();
-  return iBuildMipmaps(Image, Image->Width >> 1, Image->Height >> 1, Image->Depth >> 1);
+  SIMPLE_FUNC(Image, ILboolean, iBuildMipmaps(Image, Image->Width >> 1, Image->Height >> 1, Image->Depth >> 1));
 }
 
 /**
@@ -106,7 +120,7 @@ ILboolean ILAPIENTRY iluBuildMipmaps() {
  * @ingroup ilu_colour
  */
 ILuint ILAPIENTRY iluColoursUsed() {
-  return iColoursUsed(iGetCurImage());
+  SIMPLE_FUNC(Image, ILuint, iColoursUsed(Image));
 }
 
 /** 
@@ -117,10 +131,15 @@ ILuint ILAPIENTRY iluColoursUsed() {
  * @ingroup ilu_util
  */
 ILboolean ILAPIENTRY iluCompareImage(ILuint Comp) {
-  ILimage * Image     = iGetCurImage();
-  ILimage * Original  = iGetImage(Comp);
+  iLockState();
+  ILimage * Image     = iLockCurImage();
+  ILimage * Original  = iLockImage(Comp);
+  iUnlockState();
 
-  return iCompareImage(Image, Original);
+  ILboolean Result    = iCompareImage(Image, Original);
+  iUnlockImage(Image);
+  iUnlockImage(Original);
+  return Result;
 }
 
 /**
@@ -134,7 +153,7 @@ ILboolean ILAPIENTRY iluCompareImage(ILuint Comp) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluContrast(ILfloat Contrast) {
-  return iContrast(iGetCurImage(), Contrast);
+  SIMPLE_FUNC(Image, ILboolean, iContrast(Image, Contrast));
 }
 
 /**
@@ -144,7 +163,7 @@ ILboolean ILAPIENTRY iluContrast(ILfloat Contrast) {
  * @todo Honour set region
  */
 ILAPI ILboolean ILAPIENTRY iluConvolution(ILint *matrix, ILint scale, ILint bias) {
-  return iApplyFilter(iGetCurImage(), 1, matrix, scale, bias);
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter(Image, 1, matrix, scale, bias));
 }
 
 /**
@@ -156,7 +175,7 @@ ILAPI ILboolean ILAPIENTRY iluConvolution(ILint *matrix, ILint scale, ILint bias
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluCrop(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth) {
-  return iCrop(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth);
+  SIMPLE_FUNC(Image, ILboolean, iCrop(Image, XOff, YOff, ZOff, Width, Height, Depth));
 }
 
 /**
@@ -184,7 +203,7 @@ void ILAPIENTRY iluDeleteImage(ILuint Id) {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluEdgeDetectE() {
-  return iApplyFilter(iGetCurImage(), 1, filter_embossedge, filter_embossedge_scale, filter_embossedge_bias);
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter(Image, 1, filter_embossedge, filter_embossedge_scale, filter_embossedge_bias));
 }
 
 /**
@@ -210,10 +229,10 @@ ILboolean ILAPIENTRY iluEdgeDetectE() {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluEdgeDetectP() {
-  return iApplyFilter2(iGetCurImage(), 1, 
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter2(Image, 1, 
     filter_h_prewitt, filter_h_prewitt_scale, filter_h_prewitt_bias,
     filter_v_prewitt, filter_v_prewitt_scale, filter_v_prewitt_bias
-  );
+  ));
 }
 
 /**
@@ -239,10 +258,10 @@ ILboolean ILAPIENTRY iluEdgeDetectP() {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluEdgeDetectS() {
-  return iApplyFilter2(iGetCurImage(), 1, 
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter2(Image, 1, 
     filter_h_sobel, filter_h_sobel_scale, filter_h_sobel_bias,
     filter_v_sobel, filter_v_sobel_scale, filter_v_sobel_bias
-  );
+  ));
 }
 
 /** 
@@ -262,7 +281,7 @@ ILboolean ILAPIENTRY iluEdgeDetectS() {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluEmboss() {
-  return iApplyFilter(iGetCurImage(), 1, filter_emboss, filter_emboss_scale, filter_emboss_bias);
+  SIMPLE_FUNC(Image, ILboolean, iApplyFilter(Image, 1, filter_emboss, filter_emboss_scale, filter_emboss_bias));
 }
 
 /**
@@ -272,7 +291,7 @@ ILboolean ILAPIENTRY iluEmboss() {
  * @ingroup ilu_geometry
  */ 
 ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth) {
-  return iEnlargeCanvas(iGetCurImage(), Width, Height, Depth, iluPlacement);
+  SIMPLE_FUNC(Image, ILboolean, iEnlargeCanvas(Image, Width, Height, Depth, iluPlacement));
 }
 
 /**
@@ -287,11 +306,9 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
     return IL_FALSE;
   }
 
-  ILimage *  Image = iGetCurImage();
-  return iluScale((ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
-          (ILuint)(Image->Depth * ZDim));
-// TODO:  return iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
-//          (ILuint)(Image->Depth * ZDim));
+
+  SIMPLE_FUNC(Image, ILboolean, iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
+          (ILuint)(Image->Depth * ZDim)));
 }
 
 /**
@@ -300,7 +317,7 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluEqualize() {
-  return iEqualize(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iEqualize(Image));
 }
 
 /**
@@ -319,7 +336,7 @@ ILconst_string ILAPIENTRY iluErrorString(ILenum Error) {
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluFlipImage() {
-  return iFlipImage(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iFlipImage(Image));
 }
 
 /**
@@ -329,7 +346,7 @@ ILboolean ILAPIENTRY iluFlipImage() {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluGammaCorrect(ILfloat Gamma) {
-  return iGammaCorrect(iGetCurImage(), Gamma);
+  SIMPLE_FUNC(Image, ILboolean, iGammaCorrect(Image, Gamma));
 }
 
 /** 
@@ -349,14 +366,23 @@ ILuint ILAPIENTRY iluGenImage() {
  * @ingroup ilu_util
  */
 void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
-  ILimage *  Image = iGetCurImage();
-  if (Image == NULL || Info == NULL) {
+  if (Info == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return;
   }
 
-  Info->Id          = ilGetCurName();
-  Info->Data        = ilGetData();
+  iLockState();
+  ILimage *  Image = iLockCurImage();
+  ILuint     Id    = ilGetCurName();
+  iUnlockState();
+
+  if (Image == NULL) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return;
+  }
+
+  Info->Id          = Id;
+  Info->Data        = Image->Data;
   Info->Width       = Image->Width;
   Info->Height      = Image->Height;
   Info->Depth       = Image->Depth;
@@ -372,6 +398,7 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
   Info->NumMips     = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
   Info->NumLayers   = iGetIntegerImage(Image, IL_NUM_LAYERS);
 
+  iUnlockImage(Image);
 }
 
 /**
@@ -389,7 +416,9 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
 ILint ILAPIENTRY iluGetInteger(ILenum Mode) {
   ILint Temp;
   Temp = 0;
+  iLockState();
   iluGetIntegerv(Mode, &Temp);
+  iUnlockState();
   return Temp;
 }
 
@@ -398,7 +427,9 @@ ILint ILAPIENTRY iluGetInteger(ILenum Mode) {
  * @ingroup ilu_state
  */
 void ILAPIENTRY iluGetIntegerv(ILenum Mode, ILint *Param) {
-  return iGetIntegerv(Mode, Param);
+  iLockState();
+  iGetIntegerv(Mode, Param);
+  iUnlockState();
 }
 
 /**
@@ -415,7 +446,10 @@ void ILAPIENTRY iluGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup ilu_state
  */
 ILconst_string ILAPIENTRY iluGetString(ILenum StringName) {
-  return iGetString(StringName);
+  iLockState();
+  ILconst_string Result = iGetString(StringName);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -431,7 +465,9 @@ ILconst_string ILAPIENTRY iluGetString(ILenum StringName) {
  * @ingroup ilu_state
  */
 void ILAPIENTRY iluImageParameter(ILenum PName, ILenum Param) {
+  iLockState();
   iImageParameter(PName, Param);
+  iUnlockState();
 }
 
 /** 
@@ -449,7 +485,7 @@ void ILAPIENTRY iluInit() {
  * @todo Honour set region
  */
 ILboolean ILAPIENTRY iluInvertAlpha() {
-  return iInvertAlpha(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iInvertAlpha(Image));
 }
 
 /**
@@ -474,7 +510,7 @@ ILuint ILAPIENTRY iluLoadImage(ILconst_string FileName) {
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluMirror() {
-  return iMirrorImage(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iMirrorImage(Image));
 }
 
 
@@ -483,7 +519,7 @@ ILboolean ILAPIENTRY iluMirror() {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluNegative() {
-  return iNegative(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iNegative(Image));
 }
 
 /**
@@ -493,7 +529,7 @@ ILboolean ILAPIENTRY iluNegative() {
  * @ingroup ilu_filter
  */
 ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance) {
-  return iNoisify(iGetCurImage(), Tolerance);
+  SIMPLE_FUNC(Image, ILboolean, iNoisify(Image, Tolerance));
 }
 
 /**
@@ -503,7 +539,7 @@ ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance) {
  * @ingroup ilu_filter
  */
 ILboolean ILAPIENTRY iluPixelize(ILuint PixSize) {
-  return iPixelize(iGetCurImage(), PixSize);
+  SIMPLE_FUNC(Image, ILboolean, iPixelize(Image, PixSize));
 }
 
 /**
@@ -517,7 +553,9 @@ ILboolean ILAPIENTRY iluPixelize(ILuint PixSize) {
  * @ingroup ilu_state
  */
 void ILAPIENTRY iluRegionfv(ILUpointf *Points, ILuint n) {
+  iLockState();
   iRegionfv(Points, n);
+  iUnlockState();
 }
 
 /**
@@ -530,7 +568,9 @@ void ILAPIENTRY iluRegionfv(ILUpointf *Points, ILuint n) {
  * @ingroup ilu_state
  */
 void ILAPIENTRY iluRegioniv(ILUpointi *Points, ILuint n) {
+  iLockState();
   iRegioniv(Points, n);
+  iUnlockState();
 }
 
 /**
@@ -543,7 +583,7 @@ void ILAPIENTRY iluRegioniv(ILUpointi *Points, ILuint n) {
 ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance) {
   ILubyte ClearCol[4];
   ilGetClear(ClearCol, IL_RGBA, IL_UNSIGNED_BYTE);
-  return iReplaceColour(iGetCurImage(), Red, Green, Blue, Tolerance, ClearCol);
+  SIMPLE_FUNC(Image, ILboolean, iReplaceColour(Image, Red, Green, Blue, Tolerance, ClearCol));
 }
 
 /**
@@ -553,7 +593,7 @@ ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, 
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluRotate(ILfloat Angle) {
-  return iRotate(iGetCurImage(), Angle);
+  SIMPLE_FUNC(Image, ILboolean, iRotate(Image, Angle));
 }
 
 /**
@@ -579,7 +619,7 @@ ILboolean ILAPIENTRY iluRotate3D(ILfloat x, ILfloat y, ILfloat z, ILfloat Angle)
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluSaturate1f(ILfloat Saturation) {
-  return iSaturate4f(iGetCurImage(), 0.3086f, 0.6094f, 0.0820f, Saturation);
+  SIMPLE_FUNC(Image, ILboolean, iSaturate4f(Image, 0.3086f, 0.6094f, 0.0820f, Saturation));
 }
 
 /**
@@ -589,7 +629,7 @@ ILboolean ILAPIENTRY iluSaturate1f(ILfloat Saturation) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Saturation) {
-  return iSaturate4f(iGetCurImage(), r,g,b, Saturation);
+  SIMPLE_FUNC(Image, ILboolean, iSaturate4f(Image, r,g,b, Saturation));
 }
 
 /**
@@ -600,7 +640,7 @@ ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Satu
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth) {
-  return iScale(iGetCurImage(), Width, Height, Depth);
+  SIMPLE_FUNC(Image, ILboolean, iScale(Image, Width, Height, Depth));
 }
 
 /**
@@ -609,7 +649,7 @@ ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluScaleAlpha(ILfloat scale) {
-  return iScaleAlpha(iGetCurImage(), scale);
+  SIMPLE_FUNC(Image, ILboolean, iScaleAlpha(Image, scale));
 }
 
 /**
@@ -618,7 +658,7 @@ ILboolean ILAPIENTRY iluScaleAlpha(ILfloat scale) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluScaleColours(ILfloat r, ILfloat g, ILfloat b) {
-  return iScaleColours(iGetCurImage(), r,g,b);
+  SIMPLE_FUNC(Image, ILboolean, iScaleColours(Image, r,g,b));
 }
 
 /**
@@ -629,7 +669,10 @@ ILboolean ILAPIENTRY iluScaleColours(ILfloat r, ILfloat g, ILfloat b) {
  * @ingroup ilu_state
  */
 ILboolean ILAPIENTRY iluSetLanguage(ILenum Language) {
-  return iSetLanguage(Language);
+  iLockState();
+  ILboolean Result = iSetLanguage(Language);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -644,7 +687,7 @@ ILboolean ILAPIENTRY iluSetLanguage(ILenum Language) {
  * @todo Honour set region.
  */
 ILboolean ILAPIENTRY iluSharpen(ILfloat Factor, ILuint Iter) {
-  return iSharpen(iGetCurImage(), Factor, Iter); 
+  SIMPLE_FUNC(Image, ILboolean, iSharpen(Image, Factor, Iter)); 
 }
 
 /** 
@@ -656,12 +699,12 @@ ILboolean ILAPIENTRY iluSharpen(ILfloat Factor, ILuint Iter) {
  * @ingroup ilu_colour
  */
 ILboolean ILAPIENTRY iluSwapColours() {
-  return iSwapColours(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iSwapColours(Image));
 } 
 
 
 ILboolean ILAPIENTRY iluWave(ILfloat Angle) {
-  return iWave(iGetCurImage(), Angle);
+  SIMPLE_FUNC(Image, ILboolean, iWave(Image, Angle));
 }
 
 /** @} */

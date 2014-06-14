@@ -40,5 +40,5 @@ ILboolean iActiveLayer(ILuint Number);
 ILboolean iActiveMipmap(ILuint Number);
 void iDeleteImages(ILsizei Num, const ILuint *Images);
 void iGenImages(ILsizei Num, ILuint *Images);
-
+ILimage * iGetSelectedImage(const IL_IMAGE_SELECTION *CurSel);
 #endif//IMAGESTACK_H

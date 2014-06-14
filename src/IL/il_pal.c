@@ -381,15 +381,6 @@ ILboolean ILAPIENTRY iConvertImagePal(ILimage *Image, ILenum DestFormat)
   return IL_TRUE;
 }
 
-
-//! Converts the current image to the DestFormat format.
-ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat)
-{
-  ILimage *Image = iGetCurImage();
-  return iConvertImagePal(Image, DestFormat);
-}
-
-
 // Sets the current palette.
 ILAPI void ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal) 
 {

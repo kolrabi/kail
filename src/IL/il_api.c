@@ -34,6 +34,20 @@
 #include "il_manip.h"
 #include "il_register.h" 
 
+#define SIMPLE_PROC(img, f) \
+  iLockState(); \
+  ILimage *img = iLockCurImage(); \
+  iUnlockState(); \
+  f; \
+  iUnlockImage(img); \
+
+#define SIMPLE_FUNC(img, r, f) \
+  iLockState(); \
+  ILimage *img = iLockCurImage(); \
+  iUnlockState(); \
+  r Result = f; \
+  iUnlockImage(img); \
+  return Result;
 
 /**
  * Sets the current face if the currently bound image is a cubemap.
@@ -42,6 +56,7 @@
  * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
+  // image selection is thread local, no lock necessary
   return iActiveFace(Number);
 }
 
@@ -52,6 +67,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
  * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilActiveImage(ILuint Number) {
+  // image selection is thread local, no lock necessary
   return iActiveImage(Number);
 }
 
@@ -62,6 +78,7 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number) {
  * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilActiveLayer(ILuint Number) {
+  // image selection is thread local, no lock necessary
   return iActiveLayer(Number);
 }
 
@@ -72,6 +89,7 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number) {
  * @ingroup image_mgt
  */
 ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number) {
+  // image selection is thread local, no lock necessary
   return iActiveMipmap(Number);
 }
 /**
@@ -81,12 +99,7 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilAddAlpha() {
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-  return iAddAlpha(Image);
+  SIMPLE_FUNC(Image, ILboolean, iAddAlpha(Image));
 }
 
 /**
@@ -94,7 +107,7 @@ ILboolean ILAPIENTRY ilAddAlpha() {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName) {
-  return iApplyPal(iGetCurImage(), FileName);
+  SIMPLE_FUNC(Image, ILboolean, iApplyPal(Image, FileName));  
 }
 
 /**
@@ -107,7 +120,7 @@ ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile) {
-  return iApplyProfile(iGetCurImage(), InProfile, OutProfile);
+  SIMPLE_FUNC(Image, ILboolean, iApplyProfile(Image, InProfile, OutProfile));  
 }
 
 /** 
@@ -120,6 +133,7 @@ ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile) {
  * @ingroup state
  */
 void ILAPIENTRY ilBindImage(ILuint Image) {
+  // image selection is thread local, no lock necessary
   iBindImage(Image);
 }
 
@@ -131,8 +145,17 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
-  ILimage *Image = iGetCurImage();
-  return iBlit(Image, iGetImage(Source), DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
+  iLockState();
+  ILimage * Image       = iLockCurImage();
+  ILimage * SourceImage = iLockImage(Source);
+  iUnlockState();
+
+  ILboolean Result      = iBlit(Image, SourceImage, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
+  
+  iUnlockImage(Image);
+  iUnlockImage(SourceImage);
+
+  return Result;
 }
 
 /**
@@ -142,7 +165,7 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilClampNTSC(void) {
-  return iClampNTSC(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iClampNTSC(Image)); 
 }
 
 /** 
@@ -150,6 +173,7 @@ ILboolean ILAPIENTRY ilClampNTSC(void) {
  * @ingroup state
  */
 void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  // state is thread local, no lock necessary
   iClearColour(Red, Green, Blue, Alpha);
 }
 
@@ -158,7 +182,7 @@ void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILcla
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilClearImage() {
-  return iClearImage(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iClearImage(Image)); 
 }
 
 /**
@@ -166,7 +190,12 @@ ILboolean ILAPIENTRY ilClearImage() {
  * @ingroup image_mgt
  */
 ILuint ILAPIENTRY ilCloneCurImage() {
-  return iDuplicateImage(ilGetCurName());
+  iLockState();
+  ILimage *SrcImage = iLockCurImage();
+  ILuint Result = iDuplicateImage(SrcImage);
+  iUnlockImage(SrcImage);
+  iUnlockState();
+  return Result;
 }
 
 
@@ -176,6 +205,7 @@ ILuint ILAPIENTRY ilCloneCurImage() {
  * @ingroup data
  */
 ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize) {
+  // doesn't change any global state, no lock
   return iCompressDXT(Data, Width, Height, Depth, DXTCFormat, DXTCSize);
 }
 
@@ -189,10 +219,16 @@ ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Heig
  * @return Boolean value of failure or success
  * @ingroup image_manip
  */
-ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
-{
-  ILimage *Image = iGetCurImage();
-  return iConvertImages(Image, DestFormat, DestType);
+ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType) {
+  SIMPLE_FUNC(Image, ILboolean, iConvertImages(Image, DestFormat, DestType)); 
+}
+
+/**
+ * Converts the palette of current image to the DestFormat format.
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilConvertPal(ILenum DestFormat) {
+  SIMPLE_FUNC(Image, ILboolean, iConvertImagePal(Image, DestFormat));
 }
 
 /**
@@ -209,7 +245,7 @@ ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType)
  * @ingroup image_manip
  */
 ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data) {
-  return iCopyPixels(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data);
+  SIMPLE_FUNC(Image, ILuint, iCopyPixels(Image, XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data));
 }
 
 /**
@@ -219,9 +255,15 @@ ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wid
  */
 ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
 {
-  ILimage *DestImage = iGetCurImage();
-  ILimage *SrcImage  = iGetImage(Src);
-  return iCopyImage(DestImage, SrcImage);
+  iLockState();
+  ILimage * DestImage = iLockCurImage();
+  ILimage * SrcImage  = iLockImage(Src);
+  iUnlockState();
+
+  ILboolean Result    = iCopyImage(DestImage, SrcImage);
+  iUnlockImage(DestImage);
+  iUnlockImage(SrcImage);
+  return Result;
 }
 
 /**
@@ -240,7 +282,7 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
  * @ingroup image_manip
  */
 ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num) {
-  return iCreateSubImage(iGetCurImage(), Type, Num);
+  SIMPLE_FUNC(Image, ILuint, iCreateSubImage(Image, Type, Num));
 }
 
 /**
@@ -248,7 +290,7 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num) {
  * @ingroup image_manip 
  */
 ILboolean ILAPIENTRY ilDefaultImage() {
-  return iDefaultImage(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iDefaultImage(Image));
 }
 
 /**
@@ -264,7 +306,9 @@ void ILAPIENTRY ilDeleteImage(const ILuint Num) {
  * @ingroup image_mgt
  */
 void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images) {
+  iLockState();
   iDeleteImages(Num, Images);
+  iUnlockState();
 }
 
 /**
@@ -273,7 +317,7 @@ void ILAPIENTRY ilDeleteImages(ILsizei Num, const ILuint *Images) {
  * @ingroup file
  */
 ILAPI ILuint ILAPIENTRY ilDetermineSize(ILenum Type) {
-  return iDetermineSize(iGetCurImage(), Type);
+  SIMPLE_FUNC(Image, ILuint, iDetermineSize(Image, Type));
 }
 
 /**
@@ -282,7 +326,7 @@ ILAPI ILuint ILAPIENTRY ilDetermineSize(ILenum Type) {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName) {
-  return iDetermineType(iGetCurImage(), FileName);
+  SIMPLE_FUNC(Image, ILenum, iDetermineType(Image, FileName));
 }
 
 /**
@@ -291,9 +335,14 @@ ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName) {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   iSetInputFile(Image, File);
-  return iDetermineTypeFuncs(Image);
+  ILenum Result = iDetermineTypeFuncs(Image);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -303,7 +352,7 @@ ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File) {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineTypeFuncs() {
-  return iDetermineTypeFuncs(iGetCurImage());
+  SIMPLE_FUNC(Image, ILenum, iDetermineTypeFuncs(Image));
 }
 
 /**
@@ -312,9 +361,14 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs() {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   iSetInputLump(Image, Lump, Size);
-  return iDetermineTypeFuncs(Image);
+  ILenum Result = iDetermineTypeFuncs(Image);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -335,7 +389,7 @@ ILboolean ILAPIENTRY ilDisable(ILenum Mode)
  * @ingroup data
  */
 ILAPI ILboolean ILAPIENTRY ilDxtcDataToImage() {
-  return iDxtcDataToImage(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iDxtcDataToImage(Image));
 }
 
 /**
@@ -343,7 +397,7 @@ ILAPI ILboolean ILAPIENTRY ilDxtcDataToImage() {
  * @ingroup data
  */
 ILAPI ILboolean ILAPIENTRY ilDxtcDataToSurface() {
-  return iDxtcDataToSurface(iGetCurImage());
+  SIMPLE_FUNC(Image, ILboolean, iDxtcDataToSurface(Image));
 }
 
 /**
@@ -374,7 +428,7 @@ ILboolean ILAPIENTRY ilEnable(ILenum Mode) {
  * @ingroup data
  */
 void ILAPIENTRY ilFlipSurfaceDxtcData() {
-  iFlipSurfaceDxtcData(iGetCurImage());
+  SIMPLE_PROC(Image, iFlipSurfaceDxtcData(Image));
 }
 
 /**
@@ -415,7 +469,7 @@ void ILAPIENTRY ilGenImages(ILsizei Num, ILuint *Images) {
  * @ingroup data
  */
 ILubyte* ILAPIENTRY ilGetAlpha(ILenum Type) {
-  return iGetAlpha(iGetCurImage(), Type);
+  SIMPLE_FUNC(Image, ILubyte *, iGetAlpha(Image, Type));
 }
 
 /**
@@ -451,7 +505,7 @@ ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
  * @ingroup data
  */
 ILubyte* ILAPIENTRY ilGetData(void) {
-  return iGetData(iGetCurImage());
+  SIMPLE_FUNC(Image, ILubyte *, iGetData(Image));
 }
 
 
@@ -463,7 +517,7 @@ ILubyte* ILAPIENTRY ilGetData(void) {
  * @ingroup data
  */
 ILuint ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
-  return iGetDXTCData(iGetCurImage(), Buffer, BufferSize, DXTCFormat);
+  SIMPLE_FUNC(Image, ILuint, iGetDXTCData(Image, Buffer, BufferSize, DXTCFormat));
 }
 
 
@@ -486,7 +540,10 @@ void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
     iSetError(IL_INVALID_PARAM);
     return;
   }
+
+  iLockState();
   *Param = iGetInteger(Mode);
+  iUnlockState();
 }
 
 /**
@@ -523,7 +580,10 @@ void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup state
  */
 ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
-  return iGetInteger(Mode);
+  iLockState();  
+  ILint Result = iGetInteger(Mode);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -564,13 +624,18 @@ ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
  * @ingroup image_mgt
  */
 ILint ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode) {
-  ILimage *image = iGetImage(Image);
+  iLockState();
+  ILimage *image = iLockImage(Image);
+  iUnlockState();
+
   if (!image) {
     iSetError(IL_INVALID_PARAM);
     return 0;
   }
 
-  return iGetIntegerImage(image, Mode);
+  ILint Result = iGetIntegerImage(image, Mode);
+  iUnlockImage(image);
+  return Result;
 }
 
 /**
@@ -579,7 +644,7 @@ ILint ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode) {
  * @ingroup file
  */
 ILuint64 ILAPIENTRY ilGetLumpPos() {
-  return iGetLumpPos(iGetCurImage());
+  SIMPLE_FUNC(Image, ILuint64, iGetLumpPos(Image));
 }
 
 /**
@@ -592,7 +657,7 @@ ILuint64 ILAPIENTRY ilGetLumpPos() {
  * @ingroup data
  */
 ILubyte* ILAPIENTRY ilGetPalette(void) {
-  return iGetPalette(iGetCurImage());
+  SIMPLE_FUNC(Image, ILubyte*, iGetPalette(Image));
 }
 
 /**
@@ -648,9 +713,8 @@ void ILAPIENTRY ilHint(ILenum Target, ILenum Mode) {
  * mipmaps into image data.
  * @ingroup data
  */
-ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format)
-{
-  return iImageToDxtcData(iGetCurImage(), Format);
+ILboolean ILAPIENTRY ilImageToDxtcData(ILenum Format) {
+  SIMPLE_FUNC(Image, ILboolean, iImageToDxtcData(Image, Format));
 }
 
 /**
@@ -667,9 +731,8 @@ void ILAPIENTRY ilInit(void) {
  * Invert the alpha channel in the DXTC data of the currently bound image.
  * @ingroup data
  */
-ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha()
-{
-  return iInvertSurfaceDxtcDataAlpha(iGetCurImage());
+ILAPI ILboolean ILAPIENTRY ilInvertSurfaceDxtcDataAlpha() {
+  SIMPLE_FUNC(Image, ILboolean, iInvertSurfaceDxtcDataAlpha(Image));
 }
 
 /**
@@ -710,23 +773,26 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   SIO io = Image->io;
 
   // If we can open the file, determine file type from contents
   // This is more reliable than the file name extension 
-  ILboolean result = IL_FALSE;
+  ILboolean Result = IL_FALSE;
   if (io.openReadOnly != NULL) {
     io.handle = io.openReadOnly(FileName);
     if (io.handle != NULL) {
-      result = iIsValidIO(Type, &io);
+      Result = iIsValidIO(Type, &io);
       if (io.close != NULL)
         io.close(io.handle);
       io.handle = NULL;
     }
   }
-
-  return result;
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -739,11 +805,16 @@ ILboolean ILAPIENTRY ilIsValidF(ILenum Type, ILHANDLE File) {
     return IL_FALSE;
   }
 
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   SIO io = Image->io;
 
   io.handle = File;
-  return iIsValidIO(Type, &io);
+  ILboolean Result = iIsValidIO(Type, &io);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -786,7 +857,7 @@ void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclamp
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName) {
-  return iLoad(iGetCurImage(), Type, FileName);
+  SIMPLE_FUNC(Image, ILboolean, iLoad(Image, Type, FileName));
 }
 
 
@@ -795,8 +866,7 @@ ILboolean ILAPIENTRY ilLoad(ILenum Type, ILconst_string FileName) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
-  ILimage *Image = iGetCurImage();
-  return iLoadData(Image, FileName, Width, Height, Depth, Bpp);
+  SIMPLE_FUNC(Image, ILboolean, iLoadData(Image, FileName, Width, Height, Depth, Bpp));
 }
 
 /**
@@ -804,8 +874,7 @@ ILboolean ILAPIENTRY ilLoadData(ILconst_string FileName, ILuint Width, ILuint He
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
-  ILimage *Image = iGetCurImage();
-  return iLoadDataF(Image, File, Width, Height, Depth, Bpp);
+  SIMPLE_FUNC(Image, ILboolean, iLoadDataF(Image, File, Width, Height, Depth, Bpp));
 }
 
 /**
@@ -813,9 +882,14 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   iSetInputLump(Image, Lump, Size);
-  return iLoadDataInternal(Image, Width, Height, Depth, Bpp);
+  ILboolean Result = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
+  iUnlockImage(Image);
+  return Result;
 }
 
 
@@ -833,15 +907,17 @@ ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint H
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
-  ILimage *Image = iGetCurImage();
-
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
+  if (File == NULL) {
+    iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
-  if (File == NULL) {
-    iSetError(IL_INVALID_PARAM);
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
@@ -851,7 +927,10 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
   if (Type == IL_TYPE_UNKNOWN)
     Type = iDetermineTypeFuncs(Image);
  
-  return iLoadFuncs2(Image, Type);
+  ILboolean Result = iLoadFuncs2(Image, Type);
+  iUnlockImage(Image);
+
+  return Result;
 }
 
 /**
@@ -868,11 +947,22 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
   if (type == IL_TYPE_UNKNOWN)
     type = iDetermineTypeFuncs(Image);
 
-  return iLoadFuncs2(Image, type);
+  ILboolean Result = iLoadFuncs2(Image, type);
+  iUnlockImage(Image);
+
+  return Result;
 }
 
 
@@ -897,21 +987,32 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  ILimage *Image = iGetCurImage();
-  if (Image == NULL || Image->io.openReadOnly == NULL) {
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
+  if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  ILenum type = iDetermineType(Image, FileName);
-
-  if (type != IL_TYPE_UNKNOWN) {
-    return iLoad(Image, type, FileName);
-  } else if (!iLoadRegistered(FileName)) {
-    iSetError(IL_INVALID_EXTENSION);
+  if (Image->io.openReadOnly == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    iUnlockImage(Image);
     return IL_FALSE;
   }
-  return IL_TRUE;
+ 
+  ILenum type = iDetermineType(Image, FileName);
+  ILboolean Result = IL_FALSE;
+
+  if (type != IL_TYPE_UNKNOWN) {
+    Result = iLoad(Image, type, FileName);
+  } else if (!iLoadRegistered(FileName)) {
+    iSetError(IL_INVALID_EXTENSION);
+    Result = IL_FALSE;
+  }
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -933,7 +1034,9 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
     return IL_FALSE;
   }
 
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -941,7 +1044,9 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
   }
 
   iSetInputLump(Image, Lump, Size);
-  return iLoadFuncs2(Image, Type); 
+  ILboolean Result = iLoadFuncs2(Image, Type); 
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -949,7 +1054,7 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName) {
-  return iLoadPal(iGetCurImage(), FileName);
+  SIMPLE_FUNC(Image, ILboolean, iLoadPal(Image, FileName));
 } 
 
 /**
@@ -958,8 +1063,7 @@ ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName) {
  * @note this is the same as ilSetAlpha
  */
 void ILAPIENTRY ilModAlpha(ILdouble AlphaValue) {
-  ILimage *Image = iGetCurImage();
-  iSetAlpha(Image, AlphaValue);
+  SIMPLE_PROC(Image, iSetAlpha(Image, AlphaValue));
 }
 
 /** 
@@ -979,7 +1083,15 @@ ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord) {
-  return iOverlayImage(iGetCurImage(), iGetImage(Source), XCoord, YCoord, ZCoord);
+  iLockState();
+  ILimage * DestImage = iLockCurImage();
+  ILimage * SrcImage  = iLockImage(Source);
+  iUnlockState();
+
+  ILboolean Result    = iOverlayImage(DestImage, SrcImage, XCoord, YCoord, ZCoord);
+  iUnlockImage(DestImage);
+  iUnlockImage(SrcImage);
+  return Result;
 }
 
 /**
@@ -1024,7 +1136,7 @@ void ILAPIENTRY ilPushAttrib(ILuint Bits) {
  * @ingroup register
  */
 void ILAPIENTRY ilRegisterFormat(ILenum Format) {
-  iRegisterFormat(iGetCurImage(), Format);
+  SIMPLE_PROC(Image, iRegisterFormat(Image, Format));
 }
 
 /**
@@ -1032,7 +1144,10 @@ void ILAPIENTRY ilRegisterFormat(ILenum Format) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
-  return iRegisterLoad(Ext, Load);
+  iLockState();
+  ILboolean Result = iRegisterLoad(Ext, Load);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -1040,7 +1155,7 @@ ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num) {
-  return iRegisterMipNum(iGetCurImage(), Num);
+  SIMPLE_FUNC(Image, ILboolean, iRegisterMipNum(Image, Num));
 }
 
 /**
@@ -1048,7 +1163,7 @@ ILboolean ILAPIENTRY ilRegisterMipNum(ILuint Num) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num) {
-  return iRegisterNumFaces(iGetCurImage(), Num);
+  SIMPLE_FUNC(Image, ILboolean, iRegisterNumFaces(Image, Num));
 }
 
 /**
@@ -1056,7 +1171,7 @@ ILboolean ILAPIENTRY ilRegisterNumFaces(ILuint Num) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num) {
-  return iRegisterNumImages(iGetCurImage(), Num);
+  SIMPLE_FUNC(Image, ILboolean, iRegisterNumImages(Image, Num));
 }
 
 /**
@@ -1067,7 +1182,7 @@ ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num) {
  * @ingroup register
  */
 void ILAPIENTRY ilRegisterOrigin(ILenum Origin) {
-  iRegisterOrigin(iGetCurImage(), Origin);
+  SIMPLE_PROC(Image, iRegisterOrigin(Image, Origin));
 }
 
 /**
@@ -1075,7 +1190,7 @@ void ILAPIENTRY ilRegisterOrigin(ILenum Origin) {
  * @ingroup register
  */
 void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
-  iRegisterPal(iGetCurImage(), Pal, Size, Type);
+  SIMPLE_PROC(Image, iRegisterPal(Image, Pal, Size, Type));
 }
 
 /**
@@ -1083,7 +1198,10 @@ void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
-  return iRegisterSave(Ext, Save);
+  iLockState();
+  ILboolean Result = iRegisterSave(Ext, Save);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -1100,7 +1218,7 @@ ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
  * @ingroup register
  */
 void ILAPIENTRY ilRegisterType(ILenum Type) {
-  iRegisterType(iGetCurImage(), Type);
+  SIMPLE_PROC(Image, iRegisterType(Image, Type));
 }
 
 /**
@@ -1108,7 +1226,10 @@ void ILAPIENTRY ilRegisterType(ILenum Type) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext) {
-  return iRemoveLoad(Ext);
+  iLockState();
+  ILboolean Result = iRemoveLoad(Ext);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -1116,7 +1237,10 @@ ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext) {
-  return iRemoveSave(Ext);
+  iLockState();
+  ILboolean Result = iRemoveSave(Ext);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -1125,7 +1249,7 @@ ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext) {
  * @ingroup file
  */
 void ILAPIENTRY ilResetRead() {
-  iResetRead(iGetCurImage());
+  SIMPLE_PROC(Image, iResetRead(Image));
 }
 
 /**
@@ -1134,7 +1258,7 @@ void ILAPIENTRY ilResetRead() {
  * @ingroup file
  */
 void ILAPIENTRY ilResetWrite() {
-  iResetWrite(iGetCurImage());
+  SIMPLE_PROC(Image, iResetWrite(Image));
 }
 
 
@@ -1149,7 +1273,7 @@ void ILAPIENTRY ilResetWrite() {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName) {
-  return iSave(iGetCurImage(), type, FileName);
+  SIMPLE_FUNC(Image, ILboolean, iSave(Image, type, FileName));
 }
 
 /**
@@ -1157,8 +1281,7 @@ ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
-  ILimage *Image = iGetCurImage();
-  return iSaveData(Image, FileName);
+  SIMPLE_FUNC(Image, ILboolean, iSaveData(Image, FileName));  
 }
 
 /**
@@ -1171,9 +1294,14 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
  * @ingroup file
  */
 ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   iSetOutputFile(Image, File);
-  return iSaveFuncs2(Image, type);
+  ILboolean Result = iSaveFuncs2(Image, type);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -1182,8 +1310,7 @@ ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
  * @ingroup file
  */
 ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type) {
-  ILimage *Image = iGetCurImage();
-  return iSaveFuncs2(Image, type);
+  SIMPLE_FUNC(Image, ILboolean, iSaveFuncs2(Image, type));
 }
 
 /**
@@ -1194,7 +1321,7 @@ ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName) {
-  return iSaveImage(iGetCurImage(), FileName);
+  SIMPLE_FUNC(Image, ILboolean, iSaveImage(Image, FileName)); 
 }
 
 /**
@@ -1209,11 +1336,16 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName) {
  * @ingroup file
  */
 ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size) {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   iSetOutputLump(Image, Lump, Size);
   ILint64 pos1 = SIOtell(&Image->io);
   ILboolean bRet = iSaveFuncs2(Image, Type);
   ILint64 pos2 = SIOtell(&Image->io);
+
+  iUnlockImage(Image);
 
   if (bRet)
     return pos2-pos1;  // Return the number of bytes written.
@@ -1226,7 +1358,7 @@ ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName) {
-  return iSavePal(iGetCurImage(), FileName);
+  SIMPLE_FUNC(Image, ILboolean, iSavePal(Image, FileName));
 } 
 
 /**
@@ -1235,8 +1367,7 @@ ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName) {
  * @note this is the same as ilModAlpha
  */
 ILboolean ILAPIENTRY ilSetAlpha(ILdouble AlphaValue) {
-  ILimage *Image = iGetCurImage();
-  return iSetAlpha(Image, AlphaValue);
+  SIMPLE_FUNC(Image, ILboolean, iSetAlpha(Image, AlphaValue));
 }
 
 /**
@@ -1248,7 +1379,7 @@ ILboolean ILAPIENTRY ilSetAlpha(ILdouble AlphaValue) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilSetData(void *Data) {
-  return iSetData(iGetCurImage(), Data);
+  SIMPLE_FUNC(Image, ILboolean, iSetData(Image, Data));
 }
 
 /** 
@@ -1257,7 +1388,7 @@ ILboolean ILAPIENTRY ilSetData(void *Data) {
  * @ingroup data
  */
 ILboolean ILAPIENTRY ilSetDuration(ILuint Duration) {
-  return iSetDuration(iGetCurImage(), Duration);
+  SIMPLE_FUNC(Image, ILboolean, iSetDuration(Image, Duration));
 }
 
 /**
@@ -1266,7 +1397,11 @@ ILboolean ILAPIENTRY ilSetDuration(ILuint Duration) {
  * @ingroup state
  */
 void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
-  iSetInteger(Mode, Param);
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iSetInteger(Image, Mode, Param);
+  iUnlockImage(Image);
+  iUnlockState();
 }
 
 /**
@@ -1282,7 +1417,9 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
  * @ingroup setup
  */
 void ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc) {
+  iLockState();
   iSetMemory(mallocFunc, freeFunc);
+  iUnlockState();
 }
 
 /**
@@ -1290,7 +1427,7 @@ void ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc) {
  * @ingroup image_manip
  */
 void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data) {
-  iSetPixels(iGetCurImage(), XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data);
+  SIMPLE_PROC(Image, iSetPixels(Image, XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data));
 }
 
 /** 
@@ -1300,7 +1437,10 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
 ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
 {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -1308,10 +1448,12 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
 
   if (!aEof || !aGetc || !aRead || !aSeek || !aTell) {
     iSetError(IL_INVALID_VALUE);
+    iUnlockImage(Image);
     return IL_FALSE;
   }
 
   iSetRead(Image, aOpen, aClose, aEof, aGetc, aRead, aSeek, aTell);
+  iUnlockImage(Image);
   return IL_TRUE;
 }
 
@@ -1333,7 +1475,9 @@ void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
 ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
   fTellProc Tell, fWriteProc Write)
 {
-  ILimage *Image = iGetCurImage();
+  iLockState();
+  ILimage *Image = iLockCurImage();
+  iUnlockState();
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -1342,10 +1486,12 @@ ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc
 
   if (!Putc || !Write || !Seek || !Tell) {
     iSetError(IL_INVALID_VALUE);
+    iUnlockImage(Image);
     return IL_FALSE;
   }
 
   iSetWrite(Image, Open, Close, Putc, Seek, Tell, Write);
+  iUnlockImage(Image);
   return IL_TRUE;
 }
 
@@ -1362,9 +1508,8 @@ void ILAPIENTRY ilShutDown(void) {
  * result in its internal DXTC data buffer.
  * @ingroup data
  */
-ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format)
-{
-  return iSurfaceToDxtcData(iGetCurImage(), Format);
+ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format) {
+  SIMPLE_FUNC(Image, ILboolean, iSurfaceToDxtcData(Image, Format));
 }
 
 /**
@@ -1383,7 +1528,7 @@ ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format)
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data) {
-  return iTexImage(iGetCurImage(), Width, Height, Depth, Bpp, Format, Type, Data);
+  SIMPLE_FUNC(Image, ILboolean, iTexImage(Image, Width, Height, Depth, Bpp, Format, Type, Data));
 }
 
 /**
@@ -1392,7 +1537,7 @@ ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILuby
  * @ingroup image_manip
  */
 ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) {
-  return iTexImageDxtc(iGetCurImage(), w, h, d, DxtFormat, data);
+  SIMPLE_FUNC(Image, ILboolean, iTexImageDxtc(Image, w, h, d, DxtFormat, data));
 }
 
 /**

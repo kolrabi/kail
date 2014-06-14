@@ -77,7 +77,6 @@ ILint ilRound(ILfloat Num);
 
 ILuint    iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter);
 ILubyte * iScanFill(ILimage *Image);
-ILboolean iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth);
 ILuint    iColoursUsed(ILimage *Image);
 ILboolean iCompareImage(ILimage * Image, ILimage * Original);
 ILboolean iContrast(ILimage *Image, ILfloat Contrast);
@@ -85,7 +84,6 @@ ILboolean iCrop(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wi
 ILboolean iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Placement);
 ILboolean iEqualize(ILimage *Image);
 ILconst_string iErrorString(ILenum Error);
-ILboolean iFlipImage(ILimage *image);
 ILboolean iGammaCorrect(ILimage *Image, ILfloat Gamma);
 void      iInit(void);
 ILboolean iInvertAlpha(ILimage *Image);
@@ -95,7 +93,6 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
 ILboolean iRotate(ILimage *Image, ILfloat Angle);
 ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
 ILboolean iSetLanguage(ILenum Language);
-ILboolean iSwapColours(ILimage *img);
 ILboolean iWave(ILimage *Image, ILfloat Angle);
 
 #define imemclear(x,y) memset(x,0,y);

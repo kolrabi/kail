@@ -37,6 +37,8 @@
 /* Define if you have POSIX threads libraries and header files. */
 #cmakedefine HAVE_PTHREAD 1
 
+#cmakedefine HAVE_WIN32THREAD 1
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
 
@@ -64,40 +66,15 @@
 /* Define to 1 if you have the <windows.h> header file. */
 #cmakedefine HAVE_WINDOWS_H 1
 
-/* Support Allegro API */
-#cmakedefine ILUT_USE_ALLEGRO 1
-
-/* Support DirectX8 API */
-#cmakedefine ILUT_USE_DIRECTX8 1
-
-/* Support DirectX9 API */
-#cmakedefine ILUT_USE_DIRECTX9 1
-
-/* There can be only one. */
-#ifdef ILUT_USE_DIRECTX9
-  #undef ILUT_USE_DIRECTX8
-#endif
-
-/* Define if system supports OpenGL API */
-#cmakedefine ILUT_USE_OPENGL 1
-
-/* Support SDL API */
-#cmakedefine ILUT_USE_SDL 1
-
-/* Support X11 API */
-#cmakedefine ILUT_USE_X11 1
-
-/* Support X11 XRender extension */
-#cmakedefine ILUT_USE_XRENDER 1
-
-/* Support X11 XShm extension */
-#cmakedefine ILUT_USE_XSHM 1
-
 /* Define if you want to build ILU part of DevIL (used in DevIL
    examples/tests) */
 #cmakedefine ILU_ENABLED 1
 
 #cmakedefine IL_STATIC_LIB 1
+#cmakedefine IL_THREAD_SAFE 1
+
+#define IL_THREAD_SAFE_PTHREAD (defined(IL_THREAD_SAFE) && defined(HAVE_PTHREAD))
+#define IL_THREAD_SAFE_WIN32   (defined(IL_THREAD_SAFE) && defined(HAVE_WIN32THREAD))
 
 // Formats
 

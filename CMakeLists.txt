@@ -61,21 +61,30 @@ SET                     ( HAVE_GL_GLUT_H    ${GLUT_FOUND})
 
 FIND_PACKAGE            ( Threads )
 SET                     ( HAVE_PTHREAD      ${CMAKE_USE_PTHREADS_INIT} )
+SET                     ( HAVE_WIN32THREADS ${CMAKE_USE_WIN32_THREADS_INIT} )
+
+IF                      ( DEFINED CMAKE_USE_PTHREADS_INIT OR DEFINED CMAKE_USE_WIN32_THREADS_INIT )
+SET                     ( HAVE_THREADS      TRUE )
+ELSE                    ()
+SET                     ( HAVE_THREADS      FALSE )
+ENDIF                   ()
 
 SET                     ( HAVE_LIBM         TRUE )
 SET                     ( HAVE_LIBZ         TRUE )
 
 SET                     ( DEBUG             ${CMAKE_BUILD_TYPE} == Debug )
 
-PKG_SEARCH_MODULE       ( Allegro           Allegro>=3.0)
+PKG_SEARCH_MODULE       ( Allegro           Allegro )
 CHECK_INCLUDE_FILE      ( "d3d9.h"          HAVE_D3D9_H )
 CHECK_INCLUDE_FILE      ( "d3d8.h"          HAVE_D3D8_H )
 
 FIND_PACKAGE            ( SDL )
 FIND_PACKAGE            ( X11 )
+FIND_PACKAGE            ( Allegro )
 
 OPTION                  ( IL_STATIC_LIB          "Build static libraries"         FALSE )
 OPTION                  ( ILU_ENABLED            "Build ILU"                      TRUE )
+OPTION                  ( IL_THREAD_SAFE         "Build thread safe libraries"    ${HAVE_THREADS} )
 
 OPTION                  ( ILUT_USE_ALLEGRO       "Enable support for Allegro"     ${ALLEGRO_FOUND} )
 OPTION                  ( ILUT_USE_DIRECTX8      "Enable support for DirectX 8"   ${HAVE_D3D8_H} )
