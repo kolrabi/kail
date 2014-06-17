@@ -180,10 +180,17 @@ ILAPI ILenum  ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
 ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
 ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
-ILAPI char *        ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
+ILAPI char *    ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
 
 ILAPI ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
+ILAPI void      ILAPIENTRY iSetInputLump(ILimage *, const void *Lump, ILuint Size);
+ILAPI void      ILAPIENTRY iSetInputFile(ILimage *, ILHANDLE File);
+ILAPI ILboolean ILAPIENTRY iLoadFuncs2(ILimage *Image, ILenum Type);
+
 ILAPI ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName);
+ILAPI void      ILAPIENTRY iSetOutputLump(ILimage *, void *Lump, ILuint Size);
+ILAPI ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type);
+ILAPI void      ILAPIENTRY iSetOutputFile(ILimage *, ILHANDLE File);
 
 //
 // Image functions
@@ -213,13 +220,10 @@ ILAPI ILboolean ILAPIENTRY iConvertImagePal (ILimage *Image, ILenum DestFormat);
 ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
-ILAPI void      ILAPIENTRY iBindImageTemp  (void);
 ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
 ILAPI void      ILAPIENTRY ilCloseImage    (ILimage *Image);
 ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
 ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
-ILAPI void      ILAPIENTRY iResetRead(ILimage *image);
-ILAPI void      ILAPIENTRY iResetWrite(ILimage *image);
 ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
 
 ILAPI ILuint    ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);

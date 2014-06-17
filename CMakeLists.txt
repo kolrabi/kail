@@ -80,7 +80,7 @@ CHECK_INCLUDE_FILE      ( "d3d8.h"          HAVE_D3D8_H )
 
 FIND_PACKAGE            ( SDL )
 FIND_PACKAGE            ( X11 )
-FIND_PACKAGE            ( Allegro )
+# FIND_PACKAGE            ( Allegro )
 
 OPTION                  ( IL_STATIC_LIB          "Build static libraries"         FALSE )
 OPTION                  ( ILU_ENABLED            "Build ILU"                      TRUE )

@@ -190,9 +190,7 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
     return IL_FALSE;
 }
 
-
-
-ILboolean iLoadFuncs2(ILimage* image, ILenum type) {
+ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
   if (type == IL_TYPE_UNKNOWN)
     return IL_FALSE;
 
@@ -205,7 +203,7 @@ ILboolean iLoadFuncs2(ILimage* image, ILenum type) {
   return IL_FALSE;
 }
 
-ILboolean iSaveFuncs2(ILimage* image, ILenum type) {
+ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
   ILboolean bRet = IL_FALSE;
 
   const ILformat *format = iGetFormat(type);

@@ -79,13 +79,16 @@
 	#include <windows.h>
 #endif
 
-#ifdef ILUT_USE_DIRECTX8
-	#include <d3d8.h>
-#endif//ILUT_USE_DIRECTX8
-
 #ifdef ILUT_USE_DIRECTX9
-	#include <d3d9.h>
+  struct IDirect3DDevice9;
+  struct IDirect3DSurface9;
 #endif//ILUT_USE_DIRECTX9
+
+#ifdef ILUT_USE_DIRECTX8
+//  #include <d3d8types.h>
+  struct IDirect3DDevice8;
+  struct IDirect3DSurface8;
+#endif//ILUT_USE_DIRECTX8
 
 #ifdef ILUT_USE_DIRECTX10
   #ifdef _MSC_VER

@@ -32,10 +32,6 @@ __FILES_EXTERN ILint      ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle)
 __FILES_EXTERN ILint      ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle);
 
 // Functions to set file or lump for reading/writing
-__FILES_EXTERN void       iSetInputFile(ILimage *, ILHANDLE File);
-__FILES_EXTERN void       iSetInputLump(ILimage *, const void *Lump, ILuint Size);
-__FILES_EXTERN void       iSetOutputFile(ILimage *, ILHANDLE File);
-__FILES_EXTERN void       iSetOutputLump(ILimage *, void *Lump, ILuint Size);
 __FILES_EXTERN void       iSetOutputFake(ILimage *);
 
 #endif//FILES_H

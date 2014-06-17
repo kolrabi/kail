@@ -25,6 +25,7 @@ pthread_mutex_t iStateMutex;
 #endif
 
 static void iSetImage0();
+static void iBindImageTemp();
 
 // Global variables for il_stack.c shared among threads
 ILuint      StackSize     = 0;
@@ -641,7 +642,7 @@ static void iSetImage0() {
   ilDefaultImage();
 }
 
-ILAPI void ILAPIENTRY iBindImageTemp() {
+static void iBindImageTemp() {
   if (ImageStack == NULL || StackSize <= 1)
     if (!iEnlargeStack())
       return;

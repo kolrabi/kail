@@ -812,9 +812,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
     return IL_FALSE;
   }
 
-  iLockState();
-  ILimage *Temp = iLockImage(1); // 1 is the reserved name for temp image
-  iUnlockState();
+  ILimage *Temp = ilNewImage(1,1,1, 1,1);
 
   if (!ilutGLScreen_(Temp)) {
     ReturnVal = IL_FALSE;
@@ -823,7 +821,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
   if (ReturnVal)
     iSave(Temp, IL_TGA, Buff);
 
-  iUnlockImage(Temp);
+  ilCloseImage(Temp);
   return ReturnVal;
 }
 #endif//_WIN32_WCE

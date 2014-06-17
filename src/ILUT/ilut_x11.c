@@ -248,20 +248,21 @@ XImage * ILAPIENTRY ilutXLoadImage( Display * dpy, char * filename_ )
 
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage *Temp = iLockImage(1);
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
     ifree(filename);
-    iUnlockImage(Temp);
+    ilCloseImage(Temp);
     return NULL;
   }
 
   ifree(filename);
   XImage *Result = ilutXCreateImage_( Temp, dpy );
-  iUnlockImage(Temp);
+  ilCloseImage(Temp);
 
   return Result;
 }
@@ -275,20 +276,21 @@ Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename
 
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage *Temp = iLockImage(1);
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
     ifree(filename);
-    iUnlockImage(Temp);
+    ilCloseImage(Temp);
     return None;
   }
 
   ifree(filename);
   Pixmap Result = ilutXCreatePixmap_( Temp, dpy, draw );
-  iUnlockImage(Temp);
+  ilCloseImage(Temp);
 
   return Result;
 }

@@ -1928,7 +1928,7 @@ void ilFreeImageDxtcData(ILimage* image)
 /*
  * This assumes DxtcData, DxtcFormat, width, height, and depth are valid
  */
-ILAPI ILboolean ILAPIENTRY iDxtcDataToSurface(ILimage* image)
+ILboolean iDxtcDataToSurface(ILimage* image)
 {
 	ILuint CompFormat;
 

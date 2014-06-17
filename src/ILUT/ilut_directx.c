@@ -22,10 +22,12 @@
   #endif
 #endif
 
-ILimage*  MakeD3D8Compliant(IDirect3DDevice8 *Device, D3DFORMAT *DestFormat);
+static ILimage*  MakeD3D8Compliant(ILimage *Image, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat);
 ILenum    GetD3D8Compat(ILenum Format);
 D3DFORMAT GetD3DFormat(ILenum Format);
 ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image);
+static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device);
+static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device);
 
 ILboolean FormatsDX8Checked = IL_FALSE;
 ILboolean FormatsDX8supported[6] =
@@ -41,8 +43,7 @@ ILboolean ilutD3D8Init()
 }
 
 
-ILvoid CheckFormatsDX8(IDirect3DDevice8 *Device)
-{
+static void CheckFormatsDX8(IDirect3DDevice8 *Device) {
   D3DDISPLAYMODE  DispMode;
   HRESULT     hr;
   IDirect3D8    *TestD3D8;
@@ -59,19 +60,27 @@ ILvoid CheckFormatsDX8(IDirect3DDevice8 *Device)
 
   IDirect3D8_Release(TestD3D8);
   FormatsDX8Checked = IL_TRUE;
-
-  return;
 }
 
 
 #ifndef _WIN32_WCE
 ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadImage(FileName))
-    return IL_FALSE;
+  iLockState();
+  ILimage *ilutCurImage = iLockCurImage();
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
 
-  *Texture = ilutD3D8Texture(Device);
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
+    ilCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D8Texture(Temp, Device);
+  ilCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -81,38 +90,58 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileNam
 #ifndef _WIN32_WCE
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DVolumeTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadImage(FileName))
+  iLockState();
+  ILimage *ilutCurImage = iLockCurImage();
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
-  *Texture = ilutD3D8VolumeTexture(Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device);
+  ilCloseImage(Temp);
 
-  return IL_TRUE;
+  return IL_TRUE;  
 }
 #endif//_WIN32_WCE
 
 
-ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, ILvoid *Lump, ILuint Size, IDirect3DTexture8 **Texture)
+ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadL(IL_TYPE_UNKNOWN, Lump, Size))
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+
+  iSetInputLump(Temp, Lump, Size);
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
-  *Texture = ilutD3D8Texture(Device);
+  *Texture = iD3D8Texture(Temp, Device);
+  ilCloseImage(Temp);
 
-  return IL_TRUE;
+  return IL_TRUE;  
 }
 
 
-ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, ILvoid *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture)
+ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadL(IL_TYPE_UNKNOWN, Lump, Size))
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+
+  iSetInputLump(Temp, Lump, Size);
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
-  *Texture = ilutD3D8VolumeTexture(Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device);
+  ilCloseImage(Temp);
 
-  return IL_TRUE;
+  return IL_TRUE;   
 }
 
 
@@ -121,14 +150,19 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
   HRSRC Resource;
   ILubyte *Data;
 
-  iBindImageTemp();
-
   Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
   Data = (ILubyte*)LockResource(Resource);
-  if (!ilLoadL(IL_TYPE_UNKNOWN, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP))))
+
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+
+  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
   *Texture = ilutD3D8Texture(Device);
+  ilCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -139,14 +173,19 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
   HRSRC Resource;
   ILubyte *Data;
 
-  iBindImageTemp();
-
   Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
   Data = (ILubyte*)LockResource(Resource);
-  if (!ilLoadL(IL_TYPE_UNKNOWN, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP))))
+
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+
+  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
   *Texture = ilutD3D8VolumeTexture(Device);
+  ilCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -154,24 +193,42 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
 
 ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadF(IL_TYPE_UNKNOWN, File))
+  iLockState();
+  ILimage *ilutCurImage = iLockCurImage();
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = File;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
+  
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
   *Texture = ilutD3D8Texture(Device);
-
+  ilCloseImage(Temp);
   return IL_TRUE;
 }
 
 
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DVolumeTexture8 **Texture)
 {
-  iBindImageTemp();
-  if (!ilLoadF(IL_TYPE_UNKNOWN, File))
+  iLockState();
+  ILimage *ilutCurImage = iLockCurImage();
+  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = File;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
+
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    ilCloseImage(Temp);
     return IL_FALSE;
+  }
 
   *Texture = ilutD3D8VolumeTexture(Device);
-
+  ilCloseImage(Temp);
   return IL_TRUE;
 }
 
@@ -191,9 +248,7 @@ D3DFORMAT D3DGetDXTCNumDX8(ILenum DXTCFormat)
   return D3DFMT_UNKNOWN;
 }
 
-
-IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
-{
+static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device) {
   IDirect3DTexture8 *Texture;
   D3DLOCKED_RECT Rect;
   D3DFORMAT Format;
@@ -201,10 +256,6 @@ IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
   ILenum  DXTCFormat;
   ILuint  Size;
   ILubyte *Buffer;
-
-  iLockState();
-  ILimage *ilutCurImage = iLockCurImage();
-  iUnlockState();
 
   Image = ilutCurImage;
   if (ilutCurImage == NULL) {
@@ -296,16 +347,24 @@ failure:
 }
 
 
-IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Device)
+IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
+{
+  iLockState();
+  ILimage * Image     = iLockCurImage();
+  iUnlockState();
+
+  IDirect3DTexture8 * Result = iD3D8Texture(Image, Device);
+  iUnlockImage(Image);
+
+  return Result;
+}
+
+static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device)
 {
   IDirect3DVolumeTexture8 *Texture;
   D3DLOCKED_BOX Box;
   D3DFORMAT   Format;
   ILimage     *Image;
-
-  iLockState();
-  ILimage *ilutCurImage = iLockCurImage();
-  iUnlockState();
 
   if (ilutCurImage == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
@@ -333,18 +392,33 @@ IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Devi
   if (Image != ilutCurImage)
     ilCloseImage(Image);
 
-  iUnlockImage(ilutCurImage);
   return Texture;
 
 failure:
 
-  iUnlockImage(ilutCurImage);
+  if (Image != ilutCurImage)
+    ilCloseImage(Image);
+
   return NULL;  
 }
 
+IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Device)
+{
+  iLockState();
+  ILimage * Image     = iLockCurImage();
+  iUnlockState();
 
-ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat) {
-  ILimage *Converted, *Scaled, *CurImage;
+  IDirect3DVolumeTexture8 * Result = iD3D8VolumeTexture(Image, Device);
+  iUnlockImage(Image);
+
+  return Result;
+}
+
+
+static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat) {
+  ILimage *Converted, *Scaled;
+
+  (void)Device;
 
   *DestFormat = D3DFMT_A8R8G8B8;
 
@@ -361,7 +435,6 @@ ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Device, D3DF
 
   // Images must have their origin in the upper left.
   if (Converted->Origin != IL_ORIGIN_UPPER_LEFT) {
-    CurImage = ilutCurImage;
     iFlipImage(Converted);
   }
 
@@ -400,7 +473,7 @@ ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image)
 
   MipImage = ilCopyImage_(Image);
 
-  if (!iBuildMipmaps(MipImage)) {
+  if (!iBuildMipmaps(MipImage, MipImage->Width >> 1, MipImage->Height >> 1, MipImage->Depth >> 1)) {
     ilCloseImage(MipImage);
     return IL_FALSE;
   }

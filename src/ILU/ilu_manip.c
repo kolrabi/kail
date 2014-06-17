@@ -105,7 +105,7 @@ ILboolean iCrop(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wi
 }
 
 
-ILboolean ILAPIENTRY iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Placement) {
+ILboolean iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Placement) {
   ILubyte *Data/*, Clear[4]*/;
   ILuint  x, y, z, OldBps, OldH, OldD, OldPlane, AddX, AddY;
   ILenum  Origin;

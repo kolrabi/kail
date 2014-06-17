@@ -42,7 +42,7 @@ void iRegionfv(ILUpointf *Points, ILuint n) {
 }
 
 
-void uRegioniv(ILUpointi *Points, ILuint n) {
+void iRegioniv(ILUpointi *Points, ILuint n) {
   if (Points == NULL || n == 0) {
     ifree(RegionPointsi);
     ifree(RegionPointsf);

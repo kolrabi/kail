@@ -174,7 +174,7 @@ ILboolean iSetData(ILimage *Image, void *Data) {
 }
 
 
-ILubyte* ILAPIENTRY iGetData(ILimage *Image) {
+ILubyte* iGetData(ILimage *Image) {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
@@ -496,7 +496,7 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
   return;
 }
 
-ILboolean iClearImage(ILimage *Image)
+ILboolean ILAPIENTRY iClearImage(ILimage *Image)
 {
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -588,7 +588,7 @@ ILboolean iClearImage(ILimage *Image)
   return IL_TRUE;
 }
 
-ILboolean ILAPIENTRY iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
+ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {

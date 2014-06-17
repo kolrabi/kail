@@ -16,7 +16,7 @@
 
 #ifdef ILUT_USE_DIRECTX9
 // allow only one directx
-#undef ILUT_USE_DIRECTX8
+// #undef ILUT_USE_DIRECTX8
 #endif
 
 #endif//__ILUT_CONFIG_H__

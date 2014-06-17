@@ -239,12 +239,11 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 }
 #endif //NOINLINE
 
-ILuint    iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 ILboolean iDefaultImage(ILimage *Image);
 ILboolean iClampNTSC(ILimage *Image);
 ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue);
-ILubyte* iGetAlpha(ILimage *Image, ILenum Type);
-void iSetPixels(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
+ILubyte* 	iGetAlpha(ILimage *Image, ILenum Type);
+void 			iSetPixels(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 
 #ifdef _cplusplus
 }

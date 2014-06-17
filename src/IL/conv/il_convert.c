@@ -423,7 +423,7 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
 
 
 
-ILboolean iSwapColours(ILimage *Image)
+ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 {
   ILuint    i = 0, Size = Image->Bpp * Image->Width * Image->Height;
   ILbyte    PalBpp = ilGetBppPal(Image->Pal.PalType);

@@ -137,38 +137,37 @@ IL_TLS_DATA * iGetTLSData(void);
 ILboolean ilRleCompressLine(ILubyte *ScanLine, ILuint Width, ILubyte Bpp, ILubyte *Dest, ILuint *DestWidth, ILenum CompressMode);
 ILuint    ilRleCompress(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte *Dest, ILenum CompressMode, ILuint *ScanTable);
 
+//
 // DXTC compression
+//
 
-ILuint            ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
+ILuint    ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
 ILubyte*  iNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
 ILubyte*  iSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
-ILubyte*    iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize);
+ILubyte*  iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize);
 ILboolean iDxtcDataToImage(ILimage* image);
 ILboolean iDxtcDataToSurface(ILimage* image);
 ILboolean iSurfaceToDxtcData(ILimage* image, ILenum Format);
-void iFlipSurfaceDxtcData(ILimage* image);
+void      iFlipSurfaceDxtcData(ILimage* image);
 
 // Conversion functions
-// ILboolean  ilAddAlpha(void);
 ILboolean iAddAlpha(ILimage *Image);
 ILboolean iRemoveAlpha(ILimage *Image);
 ILboolean iAddAlphaKey(ILimage *Image);
 ILboolean iFastConvert(ILimage *Image, ILenum DestFormat);
-ILboolean iSwapColours(ILimage *Image);
 ILboolean iFixImages(ILimage *Image);
 ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile);
 
 // Miscellaneous functions
-char*   iGetString(ILenum StringName);  // Internal version of ilGetString
-ILuint iDuplicateImage(ILimage *Image);
+char*     iGetString(ILenum StringName);  // Internal version of ilGetString
+ILuint    iDuplicateImage(ILimage *Image);
 ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth);
-void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+void      iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
 ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord);
-ILubyte* iGetData(ILimage *Image);
-ILuint iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
-ILubyte *iGetPalette(ILimage *Image);
+ILubyte * iGetData(ILimage *Image);
+ILubyte * iGetPalette(ILimage *Image);
 ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image);
 ILboolean iImageToDxtcData(ILimage *image, ILenum Format);
 ILboolean iSetData(ILimage *Image, void *Data);
@@ -182,25 +181,20 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 //
 #include "il_formats.h"
 
-void iSetOutputFake(ILimage *image);
-void iSetOutputLump(ILimage *image, void *Lump, ILuint Size);
-ILuint iDetermineSize(ILimage *Image, ILenum Type);
-ILenum iDetermineType(ILimage *Image, ILconst_string FileName);
-ILenum iDetermineTypeFuncs(ILimage *Image);
-ILuint64 iGetLumpPos(ILimage *Image) ;
+void      iSetOutputFake(ILimage *image);
+ILuint    iDetermineSize(ILimage *Image, ILenum Type);
+ILenum    iDetermineType(ILimage *Image, ILconst_string FileName);
+ILenum    iDetermineTypeFuncs(ILimage *Image);
+ILuint64  iGetLumpPos(ILimage *Image) ;
 ILboolean iIsValidIO(ILenum Type, SIO* io);
-void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
-ILboolean iLoadFuncs2(ILimage* image, ILenum type);
-ILboolean iSaveFuncs2(ILimage* image, ILenum type);
+void      iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
 ILboolean iSaveImage(ILimage *Image, ILconst_string FileName);
-void iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
-  fReadProc aRead, fSeekProc aSeek, fTellProc aTell);
-void iResetRead(ILimage *image);
-void iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
-  fTellProc Tell, fWriteProc Write);
-void iResetWrite(ILimage *image);
+void      iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, fReadProc aRead, fSeekProc  aSeek, fTellProc aTell);
+void      iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek,  fTellProc Tell,  fWriteProc Write);
+void      iResetRead(ILimage *image);
+void      iResetWrite(ILimage *image);
 
-ILenum iTypeFromExt(ILconst_string FileName);
+ILenum    iTypeFromExt(ILconst_string FileName);
 
 ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILboolean iLoadDataF(ILimage *Image, ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
@@ -227,19 +221,6 @@ ILboolean ilLoadWdp(ILconst_string FileName);
 ILboolean ilLoadWdpF(ILHANDLE File);
 ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 */
-
-// OpenEXR is written in C++, so we have to wrap this to avoid linker errors.
-/*#ifndef IL_NO_EXR
-  #ifdef __cplusplus
-  extern "C" {
-  #endif
-    ILboolean ilLoadExr(ILconst_string FileName);
-  #ifdef __cplusplus
-  }
-  #endif
-#endif*/
-
-//ILboolean ilLoadExr(ILconst_string FileName);
 
 #define imemclear(x,y) memset(x,0,y);
 

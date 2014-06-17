@@ -174,7 +174,7 @@ void iResetWrite(ILimage *image) {
 }
 
 // Tells DevIL that we're reading from a file, not a lump
-void iSetInputFile(ILimage *image, ILHANDLE File)
+void ILAPIENTRY iSetInputFile(ILimage *image, ILHANDLE File)
 {
   if (image != NULL) {
     if (image->io.handle != NULL) {
@@ -205,7 +205,7 @@ void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size) {
 }
 
 // Tells DevIL that we're reading from a lump, not a file
-void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
+void ILAPIENTRY iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 {
   if (image != NULL) {
     if (image->io.handle != NULL) {
@@ -223,7 +223,7 @@ void iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 
 
 // Tells DevIL that we're writing to a file, not a lump
-void iSetOutputFile(ILimage *image, ILHANDLE File) {
+void ILAPIENTRY iSetOutputFile(ILimage *image, ILHANDLE File) {
   if (image != NULL) {
     if (image->io.handle != NULL) {
       if (image->io.close == NULL) {
@@ -265,7 +265,7 @@ void iSetOutputFake(ILimage *image)
 
 
 // Tells DevIL that we're writing to a lump, not a file
-void iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
+void ILAPIENTRY iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
 {
   // In this case, ilDetermineSize is currently trying to determine the
   //  output buffer size.  It already has the write functions it needs.
