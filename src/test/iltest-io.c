@@ -27,7 +27,7 @@ static int test_open_read(char **argv) {
   const char *file = *argv;
 #endif
 
-  ilimage->io.handle = ilimage->io.openReadOnly(file);
+  SIOopenRO(&ilimage->io, file);
 
   CHECK(ilimage->io.handle != NULL);
 
@@ -71,67 +71,11 @@ static int test_open_read(char **argv) {
 
   CHECK_EQ( SIOeof(&ilimage->io), IL_TRUE );
 
-  ilimage->io.close(ilimage->io.handle);
+  SIOclose(&ilimage->io);
 
   return 0;
 }
-/*
-static int test_open_read_lump(char **argv) {
-  ilBindImage(image);
-  ILimage *ilimage = ilGetCurImage();
 
-  CHECK(ilimage != NULL);
-
-  iSetInputLump(ilimage, *argv, strlen(*argv));
-  ilimage->io.handle = ilimage->io.openReadOnly(*argv);
-
-  CHECK(ilimage->io.handle != NULL);
-
-  ILint res;
-  ILuint pos = SIOtell(&ilimage->io);
-  CHECK(pos == 0);
-
-  // test seek set
-  res = SIOseek(&ilimage->io, 0, IL_SEEK_SET);
-  CHECK(res == 0);
-  pos = SIOtell(&ilimage->io);
-  CHECK(pos == 0);
-
-  // test seek end
-  res = SIOseek(&ilimage->io, 0, IL_SEEK_END);
-  CHECK(res == 0);
-  pos = SIOtell(&ilimage->io);
-  CHECK_EQ(pos, 11);
-
-  // test seek cur
-  res = SIOseek(&ilimage->io, -8, IL_SEEK_CUR);
-  CHECK(res == 0);
-  pos = SIOtell(&ilimage->io);
-  CHECK_EQ(pos, 3);
-
-  // test getc
-  ILubyte b = SIOgetc(&ilimage->io);
-  CHECK_EQ(b, 'D');
-
-  ILubyte bb[6];
-  ILuint r = SIOread(&ilimage->io, bb, 1, 6);
-  CHECK_EQ(r, 6);
-
-  CHECK(memcmp(bb, "efghij", 6) == 0);
-  
-  r = SIOread(&ilimage->io, bb, 1, 6);
-  CHECK_EQ(r, 1);
-  CHECK_EQ(bb[0], 'k');
-
-  CHECK_EQ( SIOgetc(&ilimage->io), IL_EOF );
-
-  CHECK_EQ( SIOeof(&ilimage->io), IL_TRUE );
-
-  ilimage->io.close(ilimage->io.handle);
-
-  return 0;
-}
-*/
 int main(int argc, char **argv) {
   int result = 1;
 

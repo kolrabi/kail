@@ -36,20 +36,20 @@ ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Numbe
 ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
 #ifndef _UNICODE
   ILHANDLE File = (ILHANDLE)fopen((char*)FileName, "rb");
-  return File;
 #else
   // Windows has a different function, _wfopen, to open UTF16 files,
   //  whereas Linux just uses fopen for its UTF8 files.
   #ifdef _WIN32
-    return (ILHANDLE)_wfopen(FileName, L"rb");
+    ILHANDLE File = (ILHANDLE)_wfopen(FileName, L"rb");
   #else
     size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
     length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
-    return (ILHANDLE)fopen(tmp, "rb");
+    ILHANDLE File = (ILHANDLE)fopen(tmp, "rb");
   #endif
 #endif//UNICODE
+  return File;
 }
 
 
@@ -60,6 +60,11 @@ void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
 
 
 ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
+  if (feof(Handle)) {
+    clearerr((FILE*)Handle);
+    return IL_TRUE;
+  }
+
   // Find out the filesize for checking for the end of file
   ILuint OrigPos = iDefaultTell(Handle);
   iDefaultSeek(Handle, 0, SEEK_END);
@@ -76,13 +81,10 @@ ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
 
 
 ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
-  ILubyte Val;
+  if (!Handle) return IL_EOF;
+  ILint Val = fgetc(Handle);
 
-  Val = 0;
-  if (iDefaultRead(Handle, &Val, 1, 1) != 1) {
-    return IL_EOF;
-  }
-
+  if (Val == EOF) return IL_EOF;
   return Val;
 }
 

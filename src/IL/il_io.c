@@ -101,15 +101,9 @@ ILenum iDetermineType(ILimage *Image, ILconst_string FileName) {
     // If we can open the file, determine file type from contents
     // This is more reliable than the file name extension 
 
-    if (Image->io.openReadOnly != NULL) {
-      Image->io.handle = Image->io.openReadOnly(FileName);
-
-      if (Image->io.handle != NULL) {
-        Type = iDetermineTypeFuncs(Image);
-        if (Image->io.close != NULL)
-          Image->io.close(Image->io.handle);
-        Image->io.handle = NULL;
-      }
+    if (SIOopenRO(&Image->io, FileName)) {
+      Type = iDetermineTypeFuncs(Image);
+      SIOclose(&Image->io);
     }
 
     if (Type == IL_TYPE_UNKNOWN)
@@ -158,15 +152,11 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
     return IL_FALSE;
   }
 
-  Image->io.handle = Image->io.openReadOnly(FileName);
-  if (Image->io.handle != NULL) {
+  if (SIOopenRO(&Image->io, FileName)) {
     if (Type == IL_TYPE_UNKNOWN)
       Type = iDetermineTypeFuncs(Image);
-
     ILboolean bRet = iLoadFuncs2(Image, Type);
-    if (Image->io.close != NULL)
-      Image->io.close(Image->io.handle);
-    Image->io.handle = NULL;
+    SIOclose(&Image->io);
 
     if (Type == IL_CUT) {
       // Attempt to load the palette
@@ -179,7 +169,7 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
           ILchar* palFN = (ILchar*) ialloc(sizeof(ILchar)*fnLen+2);
           iStrCpy(palFN, FileName);
           iStrCpy(&palFN[fnLen-3], IL_TEXT("pal"));
-          ilLoad(IL_HALO_PAL, palFN);
+          iLoad(Image, IL_HALO_PAL, palFN);
           ifree(palFN);
         }
       }

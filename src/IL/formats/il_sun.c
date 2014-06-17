@@ -150,19 +150,31 @@ static void writeSunPixels(ILimage* image, ILuint *dataOffset, ILubyte value, in
   }
 }
 
+static void writeSunPixel(ILimage* image, ILuint *dataOffset, ILubyte value) {
+  if (*dataOffset < image->SizeOfData) {
+    if (*dataOffset + 1 > image->SizeOfData)
+      return;
+    image->Data[*dataOffset] = value;
+    (*dataOffset)++;
+  }
+}
+
 // iSunGetRle assumes that data runs do not cross scanlines, but samples and documentation
 // indicate otherwise
 static void iSunDecodeRle(ILimage* image) {
   ILuint dataOffset = 0;
   SIO *io = &image->io;
 
-  while (dataOffset < image->SizeOfData && !SIOeof(io)) {
-    ILubyte Flag = SIOgetc(io);
+  while (dataOffset < image->SizeOfData) {
+    ILint res = SIOgetc(io);
+    if (res == IL_EOF) break;
+    
+    ILubyte Flag = res;
     if (Flag == 0x80) {
       ILuint count = SIOgetc(io);
       if (count == 0) {
         // Output 0x80 once (input values of 0x80 are encoded as 0x8000)
-        writeSunPixels(image, &dataOffset, 0x80, 1);
+        writeSunPixel(image, &dataOffset, 0x80);
       } else {
         // Here we have a run.
         ILubyte value = SIOgetc(io);
@@ -170,7 +182,7 @@ static void iSunDecodeRle(ILimage* image) {
       }
     } else {
       // Copy 1 byte to output
-      writeSunPixels(image, &dataOffset, Flag, 1);
+      writeSunPixel(image, &dataOffset, Flag);
     }
   }
 }

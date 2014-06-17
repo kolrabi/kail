@@ -80,12 +80,10 @@ typedef struct SIO {
     ILuint          lumpSize, ReadFileStart, WriteFileStart;
 } SIO;
 
-#define SIOopenRO(io,       f) ((io)->openReadOnly ? (io)->openReadOnly((io)->handle) : NULL)
 #define SIOopenWR(io,       f) ((io)->openWrite    ? (io)->openWrite   ((io)->handle) : NULL)
 #define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle); (io)->handle = NULL; }
 #define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
 #define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
-#define SIOeof(   io         ) (io)->eof    ((io)->handle               )
 #define SIOgetc(  io         ) (io)->getchar((io)->handle               )
 #define SIOtell(  io         ) (io)->tell   ((io)->handle               )
 #define SIOputc(  io,       c) (io)->putchar((c), (io)->handle          )
@@ -93,8 +91,44 @@ typedef struct SIO {
 #define SIOputs(  io,       s) SIOwrite(io, s, strlen(s), 1)
 #define SIOpad(   io,       n) for (ILuint i=0; i<n; i++) SIOputc((io), 0);
 
+/**
+ * Open a file using the set functions.
+ */
+INLINE ILHANDLE SIOopenRO(SIO *io, ILconst_string FileName) {
+  if (!io || !FileName)   return NULL;
+  if (!io->openReadOnly)  return NULL;
+
+  io->handle = io->openReadOnly(FileName);
+  if (io->handle && io->tell && io->seek) {
+    ILuint OrigPos = SIOtell(io);
+    SIOseek(io, 0, SEEK_END);
+    io->lumpSize = SIOtell(io);
+    SIOseek(io, OrigPos, SEEK_SET);
+  } else {
+    io->lumpSize = ~0;
+  }
+  return io->handle;
+}
+
+/**
+ * Check whether the file pointer is beyond the end of file.
+ */
+INLINE ILboolean SIOeof(SIO *io) {
+  if (!io) return IL_TRUE;
+
+  if (io->lumpSize != (ILuint)~0 && io->tell) {
+    return SIOtell(io) >= io->lumpSize;
+  }
+
+  if (io->eof) {
+    return io->eof(io->handle);
+  }
+
+  return IL_TRUE;
+}
+
 ILAPI char *    ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen);
-ILAPI char *        ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
+ILAPI char *    ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
 
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.

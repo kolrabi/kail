@@ -26,17 +26,15 @@ ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuin
     return IL_FALSE;
   }
 
-  ILHANDLE File = Image->io.openReadOnly(FileName);
-  if (File == NULL) {
+  if (!SIOopenRO(&Image->io, FileName)) {
     iSetError(IL_COULD_NOT_OPEN_FILE);
     return IL_FALSE;
   }
 
-  iSetInputFile(Image, File);
+  // iSetInputFile(Image, File);
   ILboolean bRet = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
 
   SIOclose(&Image->io);
-  Image->io.handle = NULL;
 
   return bRet;
 }

@@ -782,14 +782,9 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
   // If we can open the file, determine file type from contents
   // This is more reliable than the file name extension 
   ILboolean Result = IL_FALSE;
-  if (io.openReadOnly != NULL) {
-    io.handle = io.openReadOnly(FileName);
-    if (io.handle != NULL) {
-      Result = iIsValidIO(Type, &io);
-      if (io.close != NULL)
-        io.close(io.handle);
-      io.handle = NULL;
-    }
+  if (SIOopenRO(&io, FileName)) {
+    Result = iIsValidIO(Type, &io);
+    SIOclose(&io);
   }
   iUnlockImage(Image);
   return Result;
