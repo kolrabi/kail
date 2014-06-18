@@ -16,9 +16,10 @@ static int load(const char *file_, int w, int h, int d, int f) {
 #else
   const char *file = file_;
 #endif
+  ILboolean loaded;
 
   ilBindImage(image);
-  ILboolean loaded = ilLoad(IL_TYPE_UNKNOWN, file);
+  loaded = ilLoad(IL_TYPE_UNKNOWN, file);
   CHECK_EQ(loaded, IL_TRUE);
   CHECK_EQ(ilGetInteger(IL_IMAGE_WIDTH), w);
   CHECK_EQ(ilGetInteger(IL_IMAGE_HEIGHT), h);
@@ -28,6 +29,8 @@ static int load(const char *file_, int w, int h, int d, int f) {
 }
 
 int main(int argc, char **argv) {
+  int result;
+
   // test file w h d frames
   if (argc < 6) {
     return -1;
@@ -38,7 +41,7 @@ int main(int argc, char **argv) {
 
   CHECK(image != 0);
 
-  int result = load(argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+  result = load(argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
  
   ilDeleteImages(1, &image);  
   ilShutDown();

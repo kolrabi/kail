@@ -1,10 +1,9 @@
 var searchData=
 [
-  ['k',['K',['../dc/d91/il__quantizer_8c.html#a7126c675dcfa9490bce5ce28ca26b475',1,'il_quantizer.c']]],
-  ['key',['Key',['../d5/d22/struct_d_p_x___f_i_l_e___i_n_f_o.html#a7ff9fd2e1d2c9d01aed719d449923b2c',1,'DPX_FILE_INFO']]],
-  ['keyalpha',['KeyAlpha',['../d0/d54/il__convert_8c.html#a37776d74ca9de3580b2851d6b6340a25',1,'il_convert.c']]],
-  ['keyblue',['KeyBlue',['../d0/d54/il__convert_8c.html#afcd32fd766fbecf4e4b6783793879f3f',1,'il_convert.c']]],
-  ['keycolor',['KeyColor',['../db/d07/struct_t_a_r_g_a_e_x_t.html#adb4cefeb26e7a48cc022efe51ca1f919',1,'TARGAEXT']]],
-  ['keygreen',['KeyGreen',['../d0/d54/il__convert_8c.html#aa92cc8d468c0696611b097bc0ad6aeb8',1,'il_convert.c']]],
-  ['keyred',['KeyRed',['../d0/d54/il__convert_8c.html#aac8eac451a23afd5800bd17071a7674e',1,'il_convert.c']]]
+  ['pal',['Pal',['../d8/d85/struct_i_limage.html#a689bdcea4bd95419044f5d0bd992dc3b',1,'ILimage']]],
+  ['palette',['Palette',['../d0/d08/struct_i_lpal.html#ab520cff305ed9ee13d2eac7a87ac1d92',1,'ILpal::Palette()'],['../d4/df3/struct_i_l_uinfo.html#ab520cff305ed9ee13d2eac7a87ac1d92',1,'ILUinfo::Palette()']]],
+  ['palsize',['PalSize',['../d0/d08/struct_i_lpal.html#a728a63d4c8b857a800a4d19e250a8c4b',1,'ILpal::PalSize()'],['../d4/df3/struct_i_l_uinfo.html#a728a63d4c8b857a800a4d19e250a8c4b',1,'ILUinfo::PalSize()']]],
+  ['paltype',['PalType',['../d0/d08/struct_i_lpal.html#ab091aab8d79003031a4e9957e85f43ca',1,'ILpal::PalType()'],['../d4/df3/struct_i_l_uinfo.html#ab091aab8d79003031a4e9957e85f43ca',1,'ILUinfo::PalType()']]],
+  ['profile',['Profile',['../d8/d85/struct_i_limage.html#a600ef5a56ced202093cd70df3256bf16',1,'ILimage']]],
+  ['profilesize',['ProfileSize',['../d8/d85/struct_i_limage.html#a05f25f2e1b5f2eb1beb3fd4440d852a1',1,'ILimage']]]
 ];

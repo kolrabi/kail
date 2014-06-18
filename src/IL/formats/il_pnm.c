@@ -395,13 +395,15 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 	ILboolean	Binary;
 	ILimage		*TempImage;
 	ILubyte		*TempData;
+	char tmp[512];
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 
 	if (iCheckExtension(FName, IL_TEXT("pbm")))
 		Type = IL_PBM_ASCII;
@@ -498,7 +500,6 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		TempData = TempImage->Data;
 	}
 
-	char tmp[512];
 	snprintf(tmp, sizeof(tmp), "%d %d\n", TempImage->Width, TempImage->Height);
 	SIOputs(io, tmp);
 
@@ -576,10 +577,10 @@ ILconst_string iFormatExtsPNM[] = {
 };
 
 ILformat iFormatPNM = { 
-  .Validate = iIsValidPnm, 
-  .Load     = iLoadPnmInternal, 
-  .Save     = iSavePnmInternal, 
-  .Exts     = iFormatExtsPNM
+  /* .Validate = */ iIsValidPnm, 
+  /* .Load     = */ iLoadPnmInternal, 
+  /* .Save     = */ iSavePnmInternal, 
+  /* .Exts     = */ iFormatExtsPNM
 };
 
 #endif//IL_NO_PNM

@@ -59,7 +59,7 @@ static ILuint iGetPixHead(SIO* io, PIXHEAD *Header)
 // Internal function to get the header and check it.
 static ILboolean iIsValidPix(SIO* io) {
 	PIXHEAD	Head;
-	ILuint read = iGetPixHead(io, &Head);
+	ILint read = iGetPixHead(io, &Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);
 
 	if (read == sizeof(Head))
@@ -112,10 +112,10 @@ ILconst_string iFormatExtsPIX[] = {
 };
 
 ILformat iFormatPIX = { 
-  .Validate = iIsValidPix, 
-  .Load     = iLoadPixInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsPIX
+  /* .Validate = */ iIsValidPix, 
+  /* .Load     = */ iLoadPixInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsPIX
 };
 
 #endif//IL_NO_PIX

@@ -34,20 +34,22 @@
 #include "il_manip.h"
 #include "il_register.h" 
 
-#define SIMPLE_PROC(img, f) \
+#define SIMPLE_PROC(img, f) { \
+  ILimage *img; \
   iLockState(); \
-  ILimage *img = iLockCurImage(); \
+  img = iLockCurImage(); \
   iUnlockState(); \
   f; \
-  iUnlockImage(img); \
+  iUnlockImage(img); }
 
-#define SIMPLE_FUNC(img, r, f) \
+#define SIMPLE_FUNC(img, r, f) { \
+  ILimage *img; r Result; \
   iLockState(); \
-  ILimage *img = iLockCurImage(); \
+  img = iLockCurImage(); \
   iUnlockState(); \
-  r Result = f; \
+  Result = f; \
   iUnlockImage(img); \
-  return Result;
+  return Result; }
 
 /**
  * Sets the current face if the currently bound image is a cubemap.
@@ -145,12 +147,16 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
+  ILboolean Result;
+  ILimage * Image;
+  ILimage * SourceImage;
+  
   iLockState();
-  ILimage * Image       = iLockCurImage();
-  ILimage * SourceImage = iLockImage(Source);
+  Image       = iLockCurImage();
+  SourceImage = iLockImage(Source);
   iUnlockState();
 
-  ILboolean Result      = iBlit(Image, SourceImage, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
+  Result      = iBlit(Image, SourceImage, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
   
   iUnlockImage(Image);
   iUnlockImage(SourceImage);
@@ -190,9 +196,12 @@ ILboolean ILAPIENTRY ilClearImage() {
  * @ingroup image_mgt
  */
 ILuint ILAPIENTRY ilCloneCurImage() {
+  ILimage *SrcImage;
+  ILuint Result;
+
   iLockState();
-  ILimage *SrcImage = iLockCurImage();
-  ILuint Result = iDuplicateImage(SrcImage);
+  SrcImage = iLockCurImage();
+  Result = iDuplicateImage(SrcImage);
   iUnlockImage(SrcImage);
   iUnlockState();
   return Result;
@@ -255,12 +264,16 @@ ILuint ILAPIENTRY ilCopyPixels(ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Wid
  */
 ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
 {
+  ILimage * DestImage;
+  ILimage * SrcImage;
+  ILboolean Result;
+
   iLockState();
-  ILimage * DestImage = iLockCurImage();
-  ILimage * SrcImage  = iLockImage(Src);
+  DestImage = iLockCurImage();
+  SrcImage  = iLockImage(Src);
   iUnlockState();
 
-  ILboolean Result    = iCopyImage(DestImage, SrcImage);
+  Result    = iCopyImage(DestImage, SrcImage);
   iUnlockImage(DestImage);
   iUnlockImage(SrcImage);
   return Result;
@@ -335,12 +348,15 @@ ILenum ILAPIENTRY ilDetermineType(ILconst_string FileName) {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineTypeF(ILHANDLE File) {
+  ILimage *Image;
+  ILenum Result;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   iSetInputFile(Image, File);
-  ILenum Result = iDetermineTypeFuncs(Image);
+  Result = iDetermineTypeFuncs(Image);
   iUnlockImage(Image);
   return Result;
 }
@@ -361,12 +377,15 @@ ILenum ILAPIENTRY ilDetermineTypeFuncs() {
  * @ingroup file
  */
 ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size) {
+  ILimage *Image;
+  ILenum Result;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   iSetInputLump(Image, Lump, Size);
-  ILenum Result = iDetermineTypeFuncs(Image);
+  Result = iDetermineTypeFuncs(Image);
   iUnlockImage(Image);
   return Result;
 }
@@ -580,8 +599,10 @@ void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup state
  */
 ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
+  ILint Result;
+
   iLockState();  
-  ILint Result = iGetInteger(Mode);
+  Result = iGetInteger(Mode);
   iUnlockState();
   return Result;
 }
@@ -623,18 +644,21 @@ ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
  *
  * @ingroup image_mgt
  */
-ILint ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode) {
+ILint ILAPIENTRY ilGetIntegerImage(ILuint ImageName, ILenum Mode) {
+  ILimage *Image;
+  ILint Result;
+
   iLockState();
-  ILimage *image = iLockImage(Image);
+  Image = iLockImage(ImageName);
   iUnlockState();
 
-  if (!image) {
+  if (!Image) {
     iSetError(IL_INVALID_PARAM);
     return 0;
   }
 
-  ILint Result = iGetIntegerImage(image, Mode);
-  iUnlockImage(image);
+  Result = iGetIntegerImage(Image, Mode);
+  iUnlockImage(Image);
   return Result;
 }
 
@@ -768,20 +792,23 @@ ILboolean ILAPIENTRY ilIsImage(ILuint Image) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
+  ILimage *Image;
+  ILboolean Result = IL_FALSE;
+  SIO io;
+
   if (FileName == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
-  SIO io = Image->io;
+  io = Image->io;
 
   // If we can open the file, determine file type from contents
   // This is more reliable than the file name extension 
-  ILboolean Result = IL_FALSE;
   if (SIOopenRO(&io, FileName)) {
     Result = iIsValidIO(Type, &io);
     SIOclose(&io);
@@ -795,19 +822,23 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilIsValidF(ILenum Type, ILHANDLE File) {
+  ILimage *Image;
+  ILboolean Result = IL_FALSE;
+  SIO io;
+
   if (File == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
-  SIO io = Image->io;
+  io = Image->io;
 
   io.handle = File;
-  ILboolean Result = iIsValidIO(Type, &io);
+  Result = iIsValidIO(Type, &io);
   iUnlockImage(Image);
   return Result;
 }
@@ -817,12 +848,12 @@ ILboolean ILAPIENTRY ilIsValidF(ILenum Type, ILHANDLE File) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilIsValidL(ILenum Type, void *Lump, ILuint Size) {
+  SIO io;
+
   if (Lump == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
-
-  SIO io;
 
   iSetInputLumpIO(&io, Lump, Size);
   return iIsValidIO(Type, &io);
@@ -877,12 +908,15 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  ILimage *Image;
+  ILboolean Result = IL_FALSE;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   iSetInputLump(Image, Lump, Size);
-  ILboolean Result = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
+  Result = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
   iUnlockImage(Image);
   return Result;
 }
@@ -902,13 +936,16 @@ ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint H
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
+  ILimage *Image;
+  ILboolean Result;
+
   if (File == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {
@@ -922,7 +959,7 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
   if (Type == IL_TYPE_UNKNOWN)
     Type = iDetermineTypeFuncs(Image);
  
-  ILboolean Result = iLoadFuncs2(Image, Type);
+  Result = iLoadFuncs2(Image, Type);
   iUnlockImage(Image);
 
   return Result;
@@ -942,8 +979,11 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
+  ILimage *Image;
+  ILboolean Result;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {
@@ -954,7 +994,7 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
   if (type == IL_TYPE_UNKNOWN)
     type = iDetermineTypeFuncs(Image);
 
-  ILboolean Result = iLoadFuncs2(Image, type);
+  Result = iLoadFuncs2(Image, type);
   iUnlockImage(Image);
 
   return Result;
@@ -977,13 +1017,17 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
+  ILimage *Image;
+  ILenum type;
+  ILboolean Result;
+
   if (FileName == NULL || iStrLen(FileName) < 1) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {
@@ -997,8 +1041,8 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
     return IL_FALSE;
   }
  
-  ILenum type = iDetermineType(Image, FileName);
-  ILboolean Result = IL_FALSE;
+  type = iDetermineType(Image, FileName);
+  Result = IL_FALSE;
 
   if (type != IL_TYPE_UNKNOWN) {
     Result = iLoad(Image, type, FileName);
@@ -1024,13 +1068,16 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
+  ILimage *Image;
+  ILboolean Result;
+
   if (Lump == NULL || Size == 0) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
 
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {
@@ -1039,7 +1086,7 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
   }
 
   iSetInputLump(Image, Lump, Size);
-  ILboolean Result = iLoadFuncs2(Image, Type); 
+  Result = iLoadFuncs2(Image, Type); 
   iUnlockImage(Image);
   return Result;
 }
@@ -1078,12 +1125,16 @@ ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, ILint ZCoord) {
+  ILimage * DestImage;
+  ILimage * SrcImage;
+  ILboolean Result;
+
   iLockState();
-  ILimage * DestImage = iLockCurImage();
-  ILimage * SrcImage  = iLockImage(Source);
+  DestImage = iLockCurImage();
+  SrcImage  = iLockImage(Source);
   iUnlockState();
 
-  ILboolean Result    = iOverlayImage(DestImage, SrcImage, XCoord, YCoord, ZCoord);
+  Result    = iOverlayImage(DestImage, SrcImage, XCoord, YCoord, ZCoord);
   iUnlockImage(DestImage);
   iUnlockImage(SrcImage);
   return Result;
@@ -1139,8 +1190,10 @@ void ILAPIENTRY ilRegisterFormat(ILenum Format) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
+  ILboolean Result;
+
   iLockState();
-  ILboolean Result = iRegisterLoad(Ext, Load);
+  Result = iRegisterLoad(Ext, Load);
   iUnlockState();
   return Result;
 }
@@ -1193,8 +1246,10 @@ void ILAPIENTRY ilRegisterPal(void *Pal, ILuint Size, ILenum Type) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
+  ILboolean Result;
+
   iLockState();
-  ILboolean Result = iRegisterSave(Ext, Save);
+  Result = iRegisterSave(Ext, Save);
   iUnlockState();
   return Result;
 }
@@ -1221,8 +1276,10 @@ void ILAPIENTRY ilRegisterType(ILenum Type) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext) {
+  ILboolean Result;
+
   iLockState();
-  ILboolean Result = iRemoveLoad(Ext);
+  Result = iRemoveLoad(Ext);
   iUnlockState();
   return Result;
 }
@@ -1232,8 +1289,10 @@ ILboolean ILAPIENTRY ilRemoveLoad(ILconst_string Ext) {
  * @ingroup register
  */
 ILboolean ILAPIENTRY ilRemoveSave(ILconst_string Ext) {
+  ILboolean Result;
+
   iLockState();
-  ILboolean Result = iRemoveSave(Ext);
+  Result = iRemoveSave(Ext);
   iUnlockState();
   return Result;
 }
@@ -1289,12 +1348,15 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
  * @ingroup file
  */
 ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
+  ILboolean Result;
+  ILimage *Image;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   iSetOutputFile(Image, File);
-  ILboolean Result = iSaveFuncs2(Image, type);
+  Result = iSaveFuncs2(Image, type);
   iUnlockImage(Image);
   return Result;
 }
@@ -1331,19 +1393,23 @@ ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName) {
  * @ingroup file
  */
 ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size) {
+  ILimage *Image;
+  ILint64 pos1, pos2;
+  ILboolean bRet;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   iSetOutputLump(Image, Lump, Size);
-  ILint64 pos1 = SIOtell(&Image->io);
-  ILboolean bRet = iSaveFuncs2(Image, Type);
-  ILint64 pos2 = SIOtell(&Image->io);
+  pos1 = SIOtell(&Image->io);
+  bRet = iSaveFuncs2(Image, Type);
+  pos2 = SIOtell(&Image->io);
 
   iUnlockImage(Image);
 
   if (bRet)
-    return pos2-pos1;  // Return the number of bytes written.
+    return (ILuint)(pos2-pos1);  // Return the number of bytes written.
   else
     return 0;  // Error occurred
 }
@@ -1392,8 +1458,10 @@ ILboolean ILAPIENTRY ilSetDuration(ILuint Duration) {
  * @ingroup state
  */
 void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
+  ILimage *Image;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iSetInteger(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
@@ -1432,8 +1500,10 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
 ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
 {
+  ILimage *Image;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {
@@ -1460,7 +1530,7 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
  * @ingroup state
  */
 void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
-  return iSetString(StringName, String);
+  iSetString(StringName, String);
 }
 
 /**
@@ -1470,8 +1540,10 @@ void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
 ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
   fTellProc Tell, fWriteProc Write)
 {
+  ILimage *Image;
+
   iLockState();
-  ILimage *Image = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
   if (Image == NULL) {

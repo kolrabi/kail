@@ -70,6 +70,10 @@ extern "C" {
   #endif
 #endif
 
+#ifndef __PRETTY_FUNCTION__
+#define __PRETTY_FUNCTION__ ""
+#endif
+
 #define BIT(n) (1<<n)
 #define NUL '\0'  // Easier to type and ?portable?
 #define IL_ATTRIB_STACK_MAX         32

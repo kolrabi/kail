@@ -10,6 +10,15 @@
 //
 //-----------------------------------------------------------------------------
 
+/**
+ * @file
+ * @brief DirectX 8 functions.
+ * @defgroup ILUT
+ * @ingroup ILUT
+ * @{
+ * @defgroup ilut_dx8 DirectX 8 functionality.
+ */
+
 #include "ilut_internal.h"
 #ifdef ILUT_USE_DIRECTX8
 
@@ -22,26 +31,39 @@
   #endif
 #endif
 
-static ILimage*  MakeD3D8Compliant(ILimage *Image, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat);
-ILenum    GetD3D8Compat(ILenum Format);
-D3DFORMAT GetD3DFormat(ILenum Format);
-ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image);
-static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device);
-static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device);
+typedef struct {
+  ILboolean UseDXTC;
+  ILuint    MipLevels;
+  D3DPOOL   Pool;
+  ILboolean GenDXTC;
+  ILenum    DXTCFormat;
+  ILenum    Filter;
+} ILUT_TEXTURE_SETTINGS_DX8;
 
-ILboolean FormatsDX8Checked = IL_FALSE;
-ILboolean FormatsDX8supported[6] =
+static ILimage*  MakeD3D8Compliant(ILimage *Image, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat, ILUT_TEXTURE_SETTINGS_DX8 *Settings);
+static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image);
+static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device, ILUT_TEXTURE_SETTINGS_DX8 *Settings);
+static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device, ILUT_TEXTURE_SETTINGS_DX8 *Settings);
+
+static ILboolean FormatsDX8Checked = IL_FALSE;
+static ILboolean FormatsDX8supported[6] =
   { IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE };
-D3DFORMAT FormatsDX8[6] =
+static D3DFORMAT FormatsDX8[6] =
   { D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_L8, D3DFMT_DXT1, D3DFMT_DXT3, D3DFMT_DXT5 };
 
-
-ILboolean ilutD3D8Init()
-{
-
+// called by ilutInit()
+ILboolean ilutD3D8Init() {
   return IL_TRUE;
 }
 
+static void GetSettings(ILUT_TEXTURE_SETTINGS_DX8 *settings) {
+  settings->UseDXTC     = ilutGetBoolean(ILUT_D3D_USE_DXTC);
+  settings->MipLevels   = ilutGetInteger(ILUT_D3D_MIPLEVELS);
+  settings->Pool        = (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL);
+  settings->GenDXTC     = ilutGetBoolean(ILUT_D3D_GEN_DXTC);
+  settings->DXTCFormat  = ilutGetInteger(ILUT_DXTC_FORMAT);
+  settings->Filter      = iluGetInteger(ILU_FILTER);
+}
 
 static void CheckFormatsDX8(IDirect3DDevice8 *Device) {
   D3DDISPLAYMODE  DispMode;
@@ -64,14 +86,26 @@ static void CheckFormatsDX8(IDirect3DDevice8 *Device) {
 
 
 #ifndef _WIN32_WCE
-ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DTexture8 **Texture)
-{
+/**
+ * Load an image from a file and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_USE_DXTC
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * - ILUT_D3D_GEN_DXTC
+ * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
+
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
@@ -79,7 +113,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileNam
     return IL_FALSE;
   }
 
-  *Texture = iD3D8Texture(Temp, Device);
+  *Texture = iD3D8Texture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;
@@ -88,14 +122,21 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileNam
 
 
 #ifndef _WIN32_WCE
-ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DVolumeTexture8 **Texture)
-{
+/**
+ * Load a volumetric (3d) image from a file and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
@@ -103,16 +144,29 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, char *File
     return IL_FALSE;
   }
 
-  *Texture = iD3D8VolumeTexture(Temp, Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;  
 }
 #endif//_WIN32_WCE
 
+/**
+ * Load an image from memory and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_USE_DXTC
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * - ILUT_D3D_GEN_DXTC
+ * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DTexture8 **Texture) {
+  iLockState();
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
+  iUnlockState();
 
-ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DTexture8 **Texture)
-{
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
 
   iSetInputLump(Temp, Lump, Size);
@@ -121,16 +175,24 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void 
     return IL_FALSE;
   }
 
-  *Texture = iD3D8Texture(Temp, Device);
+  *Texture = iD3D8Texture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;  
 }
 
-
-ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture)
-{
+/**
+ * Load a volumetric (3d) image from memory and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture) {
+  iLockState();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
+  iUnlockState();
 
   iSetInputLump(Temp, Lump, Size);
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -138,22 +200,34 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, vo
     return IL_FALSE;
   }
 
-  *Texture = iD3D8VolumeTexture(Temp, Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;   
 }
 
-
-ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DTexture8 **Texture)
-{
+/**
+ * Load an image from a resource and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_USE_DXTC
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * - ILUT_D3D_GEN_DXTC
+ * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DTexture8 **Texture) {
   HRSRC Resource;
   ILubyte *Data;
 
   Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
   Data = (ILubyte*)LockResource(Resource);
 
+  iLockState();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
+  iUnlockState();
 
   iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -161,22 +235,31 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
     return IL_FALSE;
   }
 
-  *Texture = ilutD3D8Texture(Device);
+  *Texture = iD3D8Texture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;
 }
 
 
-ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DVolumeTexture8 **Texture)
-{
+/**
+ * Load a volumetric (3d) image from a resource and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DVolumeTexture8 **Texture) {
   HRSRC Resource;
   ILubyte *Data;
 
   Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
   Data = (ILubyte*)LockResource(Resource);
 
+  iLockState();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
+  iUnlockState();
 
   iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -184,21 +267,32 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
     return IL_FALSE;
   }
 
-  *Texture = ilutD3D8VolumeTexture(Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
   ilCloseImage(Temp);
 
   return IL_TRUE;
 }
 
-
-ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DTexture8 **Texture)
-{
+/**
+ * Load an image from an opened file and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_USE_DXTC
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * - ILUT_D3D_GEN_DXTC
+ * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
+  
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
   
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -206,20 +300,28 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDL
     return IL_FALSE;
   }
 
-  *Texture = ilutD3D8Texture(Device);
+  *Texture = iD3D8Texture(Temp, Device, &Settings);
   ilCloseImage(Temp);
   return IL_TRUE;
 }
 
 
-ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DVolumeTexture8 **Texture)
-{
+/**
+ * Load a volumetric (3d) image from an opened file and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx8
+ */
+ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
+
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
 
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -227,14 +329,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHA
     return IL_FALSE;
   }
 
-  *Texture = ilutD3D8VolumeTexture(Device);
+  *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
   ilCloseImage(Temp);
   return IL_TRUE;
 }
 
-
-D3DFORMAT D3DGetDXTCNumDX8(ILenum DXTCFormat)
-{
+static D3DFORMAT D3DGetDXTCNumDX8(ILenum DXTCFormat) {
   switch (DXTCFormat)
   {
     case IL_DXT1:
@@ -248,12 +348,11 @@ D3DFORMAT D3DGetDXTCNumDX8(ILenum DXTCFormat)
   return D3DFMT_UNKNOWN;
 }
 
-static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device) {
+static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *Device, ILUT_TEXTURE_SETTINGS_DX8 *Settings) {
   IDirect3DTexture8 *Texture;
   D3DLOCKED_RECT Rect;
   D3DFORMAT Format;
   ILimage *Image;
-  ILenum  DXTCFormat;
   ILuint  Size;
   ILubyte *Buffer;
 
@@ -266,13 +365,13 @@ static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *
   if (!FormatsDX8Checked)
     CheckFormatsDX8(Device);
 
-  if (ilutGetBoolean(ILUT_D3D_USE_DXTC) && FormatsDX8supported[3] && FormatsDX8supported[4] && FormatsDX8supported[5]) {
+  if (Settings->UseDXTC && FormatsDX8supported[3] && FormatsDX8supported[4] && FormatsDX8supported[5]) {
     if (ilutCurImage->DxtcData != NULL && ilutCurImage->DxtcSize != 0) {
       Format = D3DGetDXTCNumDX8(ilutCurImage->DxtcFormat);
 
       if (FAILED(IDirect3DDevice8_CreateTexture(Device, ilutCurImage->Width,
-        ilutCurImage->Height, ilutGetInteger(ILUT_D3D_MIPLEVELS), 0, Format,
-        (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL), &Texture)))
+        ilutCurImage->Height, Settings->MipLevels, 0, Format,
+        Settings->Pool, &Texture)))
           goto failure;
       if (FAILED(IDirect3DTexture8_LockRect(Texture, 0, &Rect, NULL, 0)))
         return NULL;
@@ -280,24 +379,22 @@ static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *
       goto success;
     }
 
-    if (ilutGetBoolean(ILUT_D3D_GEN_DXTC)) {
-      DXTCFormat = ilutGetInteger(ILUT_DXTC_FORMAT);
-
-      Size = ilGetDXTCData(NULL, 0, DXTCFormat);
+    if (Settings->GenDXTC) {
+      Size = ilGetDXTCData(NULL, 0, Settings->DXTCFormat);
       if (Size != 0) {
         Buffer = (ILubyte*)ialloc(Size);
         if (Buffer == NULL)
           return NULL;
-        Size = ilGetDXTCData(Buffer, Size, DXTCFormat);
+        Size = ilGetDXTCData(Buffer, Size, Settings->DXTCFormat);
         if (Size == 0) {
           ifree(Buffer);
           return NULL;
         }
 
-        Format = D3DGetDXTCNumDX8(DXTCFormat);
+        Format = D3DGetDXTCNumDX8(Settings->DXTCFormat);
         if (FAILED(IDirect3DDevice8_CreateTexture(Device, ilutCurImage->Width,
-          ilutCurImage->Height, ilutGetInteger(ILUT_D3D_MIPLEVELS), 0, Format,
-          (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL), &Texture))) {
+          ilutCurImage->Height, Settings->MipLevels, 0, Format,
+          Settings->Pool, &Texture))) {
             ifree(Buffer);
             return NULL;
         }
@@ -319,7 +416,7 @@ static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *
     return NULL;
   }
   if (FAILED(IDirect3DDevice8_CreateTexture(Device, Image->Width, Image->Height,
-    ilutGetInteger(ILUT_D3D_MIPLEVELS), 0, Format, (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL), &Texture))) {
+    Settings->MipLevels, 0, Format, Settings->Pool, &Texture))) {
     if (Image != ilutCurImage)
       ilCloseImage(Image);
     return NULL;
@@ -346,20 +443,31 @@ failure:
   return NULL;
 }
 
-
+/**
+ * Convert the currently bound image into a @a IDirect3DTexture8.
+ * Uses the following settings:
+ * - ILUT_D3D_USE_DXTC
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * - ILUT_D3D_GEN_DXTC
+ * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
+ * @ingroup ilut_dx8
+ */
 IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
 {
   iLockState();
-  ILimage * Image     = iLockCurImage();
+  ILimage * Image       = iLockCurImage();
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
 
-  IDirect3DTexture8 * Result = iD3D8Texture(Image, Device);
+  IDirect3DTexture8 * Result = iD3D8Texture(Image, Device, &Settings);
   iUnlockImage(Image);
 
   return Result;
 }
 
-static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device)
+static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice8 *Device, ILUT_TEXTURE_SETTINGS_DX8 *Settings)
 {
   IDirect3DVolumeTexture8 *Texture;
   D3DLOCKED_BOX Box;
@@ -378,7 +486,7 @@ static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirec
   if (Image == NULL)
     goto failure;
   if (FAILED(IDirect3DDevice8_CreateVolumeTexture(Device, Image->Width, Image->Height,
-    Image->Depth, 1, 0, Format, (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL), &Texture)))
+    Image->Depth, 1, 0, Format, Settings->Pool, &Texture)))
     goto failure;  
   if (FAILED(IDirect3DVolumeTexture8_LockBox(Texture, 0, &Box, NULL, 0)))
     goto failure;
@@ -402,20 +510,28 @@ failure:
   return NULL;  
 }
 
+/** 
+ * Convert the currently bound image into a @a IDirect3DVolumeTexture8
+ * Uses the following settings:
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx8
+*/
 IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Device)
 {
   iLockState();
-  ILimage * Image     = iLockCurImage();
+  ILimage * Image       = iLockCurImage();
+  ILUT_TEXTURE_SETTINGS_DX8 Settings;
+  GetSettings(&Settings);
   iUnlockState();
 
-  IDirect3DVolumeTexture8 * Result = iD3D8VolumeTexture(Image, Device);
+  IDirect3DVolumeTexture8 * Result = iD3D8VolumeTexture(Image, Device, &Settings);
   iUnlockImage(Image);
 
   return Result;
 }
 
 
-static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat) {
+static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Device, D3DFORMAT *DestFormat, ILUT_TEXTURE_SETTINGS_DX8 *Settings) {
   ILimage *Converted, *Scaled;
 
   (void)Device;
@@ -445,7 +561,8 @@ static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Devic
     Scaled = iluScale_(Converted, 
       ilNextPower2(ilutCurImage->Width),
       ilNextPower2(ilutCurImage->Height), 
-      ilNextPower2(ilutCurImage->Depth)
+      ilNextPower2(ilutCurImage->Depth),
+      Settings->Filter
     );
     if (Converted != ilutCurImage) {
       ilCloseImage(Converted);
@@ -460,8 +577,7 @@ static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Devic
 }
 
 
-ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image)
-{
+static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image) {
   D3DLOCKED_RECT  Rect;
   D3DSURFACE_DESC Desc;
   ILuint      NumMips, Width, Height, i;
@@ -519,6 +635,10 @@ ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image)
 // WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
 //
 
+/**
+ * Copy a given @a Surface into the currently bound image.
+ * @ingroup ilut_dx8
+ */
 ILAPI ILboolean ILAPIENTRY ilutD3D8LoadSurface(IDirect3DDevice8 *Device, IDirect3DSurface8 *Surface)
 {
   HRESULT       hr;
@@ -643,3 +763,6 @@ failure:
 }
 
 #endif//ILUT_USE_DIRECTX8
+
+/** @} */
+/** @} */

@@ -62,14 +62,14 @@ ILboolean isValidCutHeader(const CUT_HEAD* header)
 // Simple check if the file header is plausible
 static ILboolean 
 iIsValidCut(SIO* io) {
+	CUT_HEAD	header;
+
 	if (io == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	CUT_HEAD	header;
-	return SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD)
-	    && isValidCutHeader(&header);
+	return SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD) && isValidCutHeader(&header);
 }
 
 ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y)
@@ -113,13 +113,18 @@ ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y
 
 static ILboolean 
 iLoadCutInternal(ILimage* image) {
+	SIO *       io;
+	CUT_HEAD	Header;
+    ILubyte *   chunk;
+	ILboolean   done    = IL_FALSE;
+	ILint       y       = 0, i;
+
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
-	CUT_HEAD	Header;
+	io = &image->io;
 
 	if ( SIOread(io, &Header, 1, sizeof(Header)) != sizeof(Header) 
 	  || Header.Width == 0 
@@ -133,9 +138,7 @@ iLoadCutInternal(ILimage* image) {
 	}
 	image->Origin = IL_ORIGIN_LOWER_LEFT;
 
-	ILubyte* chunk = (ILubyte*) ialloc(64 * 1024); // max. size of a data chunk
-	ILboolean done = IL_FALSE;
-	int y = 0;
+	chunk = (ILubyte*) ialloc(64 * 1024); // max. size of a data chunk
 
 	while (!done) {
 		ILushort chunkSize;
@@ -158,7 +161,6 @@ iLoadCutInternal(ILimage* image) {
 	image->Pal.Palette = (ILubyte*)ialloc(image->Pal.PalSize);
 
 	// Create a fake greyscale palette
-	int i;
 	for (i = 0; i < 256; ++i) {
 		image->Pal.Palette[3*i  ] = i;
 		image->Pal.Palette[3*i+1] = i;
@@ -174,10 +176,10 @@ ILconst_string iFormatExtsCUT[] = {
 };
 
 ILformat iFormatCUT = { 
-	.Validate = iIsValidCut, 
-	.Load     = iLoadCutInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsCUT
+	/* .Validate = */ iIsValidCut, 
+	/* .Load     = */ iLoadCutInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsCUT
 };
 
 #endif//IL_NO_CUT

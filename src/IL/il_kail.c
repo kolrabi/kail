@@ -96,12 +96,13 @@ ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Dep
 ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data)
 {
+  ILubyte BpcType = ilGetBpcType(Type);
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  ILubyte BpcType = ilGetBpcType(Type);
   if (BpcType == 0) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
@@ -498,11 +499,6 @@ ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
 
 ILboolean ILAPIENTRY iClearImage(ILimage *Image)
 {
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
   ILuint    i, c, NumBytes;
   ILubyte   Colours[32];  // Maximum is sizeof(double) * 4 = 32
   ILubyte   *BytePtr;
@@ -510,6 +506,11 @@ ILboolean ILAPIENTRY iClearImage(ILimage *Image)
   ILuint    *IntPtr;
   ILfloat   *FloatPtr;
   ILdouble  *DblPtr;
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
   
   NumBytes = Image->Bpp * Image->Bpc;
   ilGetClear(Colours, Image->Format, Image->Type);
@@ -752,13 +753,13 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
 }
 
 ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord) {
+  ILuint  Width, Height, Depth;
+
   // Check if the destination and source really exist
   if (Dest == NULL || Src == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
-
-  ILuint  Width, Height, Depth;
 
   Width = Dest->Width;  
   Height = Dest->Height;  

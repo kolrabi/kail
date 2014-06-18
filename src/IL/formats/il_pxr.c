@@ -40,13 +40,15 @@ static ILboolean iIsValidPxr(SIO *io) {
 
 // Internal function used to load the Pxr.
 static ILboolean iLoadPxrInternal(ILimage *Image) {
-	if (Image == NULL) {
+	PIXHEAD		Head;
+	SIO *     io;
+
+    if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	PIXHEAD		Head;
-	SIO *     io = &Image->io;
+	io = &Image->io;
 
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
 		return IL_FALSE;
@@ -83,10 +85,10 @@ ILconst_string iFormatExtsPXR[] = {
 };
 
 ILformat iFormatPXR = { 
-	.Validate = iIsValidPxr, 
-	.Load     = iLoadPxrInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsPXR
+	/* .Validate = */ iIsValidPxr, 
+	/* .Load     = */ iLoadPxrInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsPXR
 };
 
 #endif//IL_NO_PXR

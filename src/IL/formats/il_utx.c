@@ -61,6 +61,7 @@ static char *GetUtxName(SIO *io, UTXHEADER *Header)
 {
 	char * 	Name = NULL;
 	ILubyte	Length = 0;
+    ILuint Pos;
 
 	// New style (Unreal Tournament) name.  This has a byte at the beginning telling
 	//  how long the string is (plus terminating 0), followed by the terminating 0. 
@@ -80,7 +81,7 @@ static char *GetUtxName(SIO *io, UTXHEADER *Header)
 
 	// Old style (Unreal) name.  This string length is unknown, but it is terminated
 	//  by a 0.
-	ILuint Pos = SIOtell(io);
+	Pos = SIOtell(io);
 
 	while (SIOeof(io) && SIOgetc(io))
 		Length++;
@@ -272,13 +273,14 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 	ILboolean	BaseCreated = IL_FALSE, HasPal;
 	ILint		Format;
 	ILubyte		*CompData = NULL;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	if (!GetUtxHead(io, &Header))
 		return IL_FALSE;
@@ -495,12 +497,14 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 	}
 
 	if (NameEntries) {
-		for (ILuint i=0; i<Header.NameCount; i++)
+        ILuint i;
+		for (i=0; i<Header.NameCount; i++)
 			ifree(NameEntries[i].Name);
 	}
 
 	if (Palettes) {
-		for (ILuint i=0; i<NumPal; i++)
+        ILuint  i;
+		for (i=0; i<NumPal; i++)
 			ifree(Palettes[i].Pal);
 	}
 
@@ -513,12 +517,14 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 error:
 
 	if (NameEntries) {
-		for (ILuint i=0; i<Header.NameCount; i++)
+        ILuint i;
+        for (i=0; i<Header.NameCount; i++)
 			ifree(NameEntries[i].Name);
 	}
 
 	if (Palettes) {
-		for (ILuint i=0; i<NumPal; i++)
+        ILuint i;
+		for (i=0; i<NumPal; i++)
 			ifree(Palettes[i].Pal);
 	}
 
@@ -535,10 +541,10 @@ ILconst_string iFormatExtsUTX[] = {
 };
 
 ILformat iFormatUTX = { 
-	.Validate = iIsValidUtx, 
-	.Load     = iLoadUtxInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsUTX
+	/* .Validate = */ iIsValidUtx, 
+	/* .Load     = */ iLoadUtxInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsUTX
 };
 
 #endif//IL_NO_UTX

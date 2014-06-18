@@ -32,14 +32,17 @@ static ILboolean iIsValidMdl(SIO *io)
 static ILboolean iLoadMdlInternal(ILimage *Image)
 {
 	ILimage *	BaseImage 	= NULL;
+	MDL_HEAD Head;
+	TEX_INFO TexInfo;
+	ILuint ImageNum;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	MDL_HEAD Head;
+	io = &Image->io;
 
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -50,8 +53,6 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 
 	// Skips the actual model header.
 	SIOseek(io, 172, IL_SEEK_CUR);
-
-	TEX_INFO TexInfo;
 
 	if (SIOread(io, &TexInfo, 1, sizeof(TexInfo)) != sizeof(TexInfo)) {
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -69,9 +70,11 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 
 	SIOseek(io, TexInfo.TexOff, IL_SEEK_SET);
 
-	ILuint ImageNum;
 	for (ImageNum = 0; ImageNum < TexInfo.NumTex; ImageNum++) {
 		TEX_HEAD	TexHead;
+        ILuint      Position;
+        ILubyte *   TempPal;
+
 		if (SIOread(io, &TexHead, 1, sizeof(TexHead)) != sizeof(TexHead)) {
 			return IL_FALSE;
 		}
@@ -81,7 +84,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 		UInt(&TexHead.Height);
 		UInt(&TexHead.Offset);
 
-		ILuint Position = SIOtell(io);
+		Position = SIOtell(io);
 
 		if (TexHead.Offset == 0) {
 			iSetError(IL_ILLEGAL_FILE_VALUE);
@@ -99,7 +102,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 			Image->Type 	= IL_UNSIGNED_BYTE;
 		}
 
-		ILubyte *TempPal	= (ILubyte*)ialloc(768);
+		TempPal	= (ILubyte*)ialloc(768);
 		if (TempPal == NULL) {
 			return IL_FALSE;
 		}
@@ -128,10 +131,10 @@ ILconst_string iFormatExtsMDL[] = {
 };
 
 ILformat iFormatMDL = { 
-  .Validate = iIsValidMdl, 
-  .Load     = iLoadMdlInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsMDL
+  /* .Validate = */ iIsValidMdl, 
+  /* .Load     = */ iLoadMdlInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsMDL
 };
 
 #endif//IL_NO_MDL

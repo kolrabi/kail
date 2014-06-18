@@ -37,7 +37,8 @@ static ILint iGetTgaHead(SIO* io, TARGAHEAD *Header) {
 // Internal function to get the header and check it.
 static ILboolean iIsValidTarga(SIO* io) {
 	TARGAHEAD	Head;
-	ILuint read = iGetTgaHead(io, &Head);
+	ILint read = iGetTgaHead(io, &Head);
+
 	SIOseek(io, -read, IL_SEEK_CUR);
 
 	if (read == sizeof(Head)) 
@@ -425,13 +426,14 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	char		* idString = "kolrabi's another Image Library (DevIL)";
 	ILuint		Day, Month, Year, Hour, Minute, Second;
 	char		* TempData;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 	
 	if (iGetInt(IL_TGA_RLE) == IL_TRUE)
 		Compress = IL_TRUE;
@@ -711,10 +713,10 @@ ILconst_string iFormatExtsTGA[] = {
 };
 
 ILformat iFormatTGA = { 
-	.Validate = iIsValidTarga, 
-	.Load     = iLoadTargaInternal, 
-	.Save     = iSaveTargaInternal, 
-	.Exts     = iFormatExtsTGA
+	/* .Validate = */ iIsValidTarga, 
+	/* .Load     = */ iLoadTargaInternal, 
+	/* .Save     = */ iSaveTargaInternal, 
+	/* .Exts     = */ iFormatExtsTGA
 };
 
 #endif//IL_NO_TGA

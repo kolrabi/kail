@@ -185,10 +185,10 @@ ILconst_string iFormatExtsMP3[] = {
 };
 
 ILformat iFormatMP3 = { 
-  .Validate = iIsValidMp3, 
-  .Load     = iLoadMp3Internal, 
-  .Save     = NULL,
-  .Exts     = iFormatExtsMP3
+  /* .Validate = */ iIsValidMp3, 
+  /* .Load     = */ iLoadMp3Internal, 
+  /* .Save     = */ NULL,
+  /* .Exts     = */ iFormatExtsMP3
 };
 
 #endif//IL_NO_MP3

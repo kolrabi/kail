@@ -215,9 +215,10 @@ ILboolean iCheckDicom(DICOMHEAD *Header)
 static ILboolean iIsValidDicom(SIO* io)
 {
 	char Sig[4];
+    ILint Read;
 
 	SIOseek(io, 128, IL_SEEK_CUR);
-	ILuint Read = SIOread(io, Sig, 1, 4);
+	Read = SIOread(io, Sig, 1, 4);
 	SIOseek(io, -Read - 128, IL_SEEK_CUR);
 	return Read == 4 && memcmp(Sig, "DICM", 4) == 0;
 }
@@ -424,13 +425,14 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	ILushort	TempS, *ShortPtr;
 	ILfloat		TempF, *FloatPtr;
 	ILboolean	Swizzle = IL_FALSE;
+    SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	// Clear the header to all 0s to make checks later easier.
 	memset(&Header, 0, sizeof(DICOMHEAD));
@@ -529,10 +531,10 @@ ILconst_string iFormatExtsDICOM[] = {
 };
 
 ILformat iFormatDICOM = { 
-	.Validate = iIsValidDicom, 
-	.Load     = iLoadDicomInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsDICOM
+	/* .Validate = */ iIsValidDicom, 
+	/* .Load     = */ iLoadDicomInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsDICOM
 };
 
 

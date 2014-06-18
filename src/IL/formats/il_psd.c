@@ -114,13 +114,14 @@ static ILboolean iCheckPsd(PSDHEAD *Header) {
 // Internal function used to load the Psd.
 static ILboolean iLoadPsdInternal(ILimage* image) {
 	PSDHEAD	Header;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	if (!iGetPsdHead(io, &Header) || !iCheckPsd(&Header)) {
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -838,13 +839,14 @@ ILboolean iSavePsdInternal(ILimage* image)
 	ILubyte		*TempData;
 	ILushort	*ShortPtr;
 	ILenum		Format, Type;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	Format = image->Format;
 	Type = image->Type;
@@ -967,10 +969,10 @@ ILconst_string iFormatExtsPSD[] = {
 };
 
 ILformat iFormatPSD = { 
-  .Validate = iIsValidPsd, 
-  .Load     = iLoadPsdInternal, 
-  .Save     = iSavePsdInternal, 
-  .Exts     = iFormatExtsPSD
+  /* .Validate = */ iIsValidPsd, 
+  /* .Load     = */ iLoadPsdInternal, 
+  /* .Save     = */ iSavePsdInternal, 
+  /* .Exts     = */ iFormatExtsPSD
 };
 
 #endif//IL_NO_PSD

@@ -13,21 +13,30 @@
 
 #include "ilut_internal.h"
 
+/**
+ * @file
+ * @brief Main functions.
+ *
+ * @defgroup ILUT Image Library Utility Toolkit
+ *                Functions to make images usable in other APIs.
+
+ * @ingroup ILUT
+ * @{
+ * @defgroup ilu_setup  Initialization / Deinitalization
+ * @}
+ */
+
 #ifdef _WIN32
 #ifndef IL_STATIC_LIB
-	//#define WIN32_LEAN_AND_MEAN
-	#include <windows.h>
 
+//#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 
-#ifdef _WIN32
-	#if (defined(IL_USE_PRAGMA_LIBS))
-		#if defined(_MSC_VER) || defined(__BORLANDC__)
-			#pragma comment(lib, "ILU.lib")
-		#endif
+#if (defined(IL_USE_PRAGMA_LIBS))
+	#if defined(_MSC_VER) || defined(__BORLANDC__)
+		#pragma comment(lib, "ILU.lib")
 	#endif
 #endif
-
-
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserved)
 {
@@ -55,7 +64,12 @@ static void GccMain()
 
 #endif
 
-
+/**
+ * Initializes the ILUT using all available renderers.
+ * ilInit() must have been called before.
+ * @ingroup ilut_setup
+ * @see ilutRenderer
+ */
 void ILAPIENTRY ilutInit()
 {
 	ilutDefaultStates();  // Set states to their defaults
@@ -72,6 +86,4 @@ void ILAPIENTRY ilutInit()
 #ifdef ILUT_USE_DIRECTX9
 	ilutD3D9Init();
 #endif
-
-	return;
 }

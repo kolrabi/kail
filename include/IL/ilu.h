@@ -26,8 +26,8 @@
 //
 
 #define ILU_VERSION_1_7_8 1
-#define ILU_VERSION_1_8_3 1
-#define ILU_VERSION       183
+#define ILU_VERSION_1_9_0 1
+#define ILU_VERSION       190
 
 #include <IL/il.h>
 

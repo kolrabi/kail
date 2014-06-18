@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['image_20functions',['Image Functions',['../dd/d57/group__image.html',1,'']]],
-  ['initialization_20_2f_20deinitalization',['Initialization / Deinitalization',['../dc/d35/group__setup.html',1,'']]]
+  ['global_20parameters_20and_20configurations_2e',['Global Parameters and Configurations.',['../db/d7b/group__ilu__state.html',1,'']]],
+  ['global_20state',['Global State',['../d2/ddf/group__state.html',1,'']]]
 ];

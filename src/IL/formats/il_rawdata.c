@@ -16,6 +16,8 @@
 #include "il_manip.h"
 
 ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  ILboolean bRet;
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -32,7 +34,7 @@ ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuin
   }
 
   // iSetInputFile(Image, File);
-  ILboolean bRet = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
+  bRet = iLoadDataInternal(Image, Width, Height, Depth, Bpp);
 
   SIOclose(&Image->io);
 
@@ -58,6 +60,8 @@ ILboolean iLoadDataF(ILimage *Image, ILHANDLE File, ILuint Width, ILuint Height,
 
 // Internal function to load a raw data image
 ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
+  SIO *io;
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -68,7 +72,7 @@ ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint 
     return IL_FALSE;
   }
 
-  SIO *io = &Image->io;
+  io = &Image->io;
 
   if (!iTexImage(Image, Width, Height, Depth, Bpp, 0, IL_UNSIGNED_BYTE, NULL)) {
     return IL_FALSE;
@@ -91,6 +95,7 @@ ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint 
 
 ILboolean iSaveData(ILimage *Image, ILconst_string FileName) {
   ILHANDLE DataFile;
+  SIO *io;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -108,7 +113,7 @@ ILboolean iSaveData(ILimage *Image, ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  SIO *io = &Image->io;
+  io = &Image->io;
 
   SIOwrite(io, Image->Data, 1, Image->SizeOfData);
   SIOclose(io);

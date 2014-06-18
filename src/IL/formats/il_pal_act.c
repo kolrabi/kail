@@ -23,10 +23,12 @@ static ILboolean iLoadActPal(ILimage *Image);
 // TODO: check if i got the endianness right
 
 ILboolean iIsValidActPal(SIO *io) {
-	ILuint 		First = SIOtell(io);
+	ILuint 		First = SIOtell(io), Last;
+
 	SIOseek(io, 0, IL_SEEK_END);
-	ILuint    Last  = SIOtell(io);
+	Last  = SIOtell(io);
 	SIOseek(io, First, IL_SEEK_SET);
+
 	return Last == 768; 
 }
 
@@ -35,13 +37,15 @@ ILboolean iIsValidActPal(SIO *io) {
 
 //! Loads an .act palette file.
 static ILboolean iLoadActPal(ILimage *Image) {
+    SIO *io;
+	ILpal NewPal;
+
  	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	ILpal NewPal;
+	io = &Image->io;
 	imemclear(&NewPal, sizeof(NewPal));
 
 	NewPal.PalType = IL_PAL_RGB24;
@@ -68,13 +72,13 @@ static ILboolean iLoadActPal(ILimage *Image) {
 }
 
 ILconst_string iFormatExtsACT_PAL[] = { 
-	IL_TEXT("act"),
+  IL_TEXT("act"),
   NULL 
 };
 
 ILformat iFormatACT_PAL = { 
-  .Validate = iIsValidActPal, 
-  .Load     = iLoadActPal, 
-  .Save     = NULL,
-  .Exts     = iFormatExtsACT_PAL
+  /* .Validate = */ iIsValidActPal, 
+  /* .Load     = */ iLoadActPal, 
+  /* .Save     = */ NULL,
+  /* .Exts     = */ iFormatExtsACT_PAL
 };

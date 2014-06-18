@@ -102,13 +102,14 @@ static ILboolean iLoadIwiInternal(ILimage *Image) {
 	ILboolean	HasMipmaps = IL_TRUE;
 	ILenum		Format;
 	ILubyte		Bpp;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 
 	// Read the header and check it.
 	if (!iGetIwiHead(io, &Header))
@@ -332,10 +333,10 @@ ILconst_string iFormatExtsIWI[] = {
 };
 
 ILformat iFormatIWI = { 
-  .Validate = iIsValidIwi, 
-  .Load     = iLoadIwiInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsIWI
+  /* .Validate = */ iIsValidIwi, 
+  /* .Load     = */ iLoadIwiInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsIWI
 };
 
 #endif//IL_NO_IWI

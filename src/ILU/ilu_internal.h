@@ -91,7 +91,7 @@ ILboolean iNegative(ILimage *Image);
 ILboolean iNoisify(ILimage *Image, ILclampf Tolerance);
 ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, const ILubyte *ClearCol);
 ILboolean iRotate(ILimage *Image, ILfloat Angle);
-ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth);
+ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
 ILboolean iSetLanguage(ILenum Language);
 ILboolean iWave(ILimage *Image, ILfloat Angle);
 

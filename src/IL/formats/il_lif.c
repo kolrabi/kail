@@ -63,13 +63,14 @@ static ILboolean iCheckLif(LIF_HEAD *Header) {
 static ILboolean iLoadLifInternal(ILimage *Image) {
 	LIF_HEAD	LifHead;
 	ILuint		i;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 	
 	if (!iGetLifHead(io, &LifHead))
 		return IL_FALSE;
@@ -107,10 +108,10 @@ ILconst_string iFormatExtsLIF[] = {
 };
 
 ILformat iFormatLIF = { 
-  .Validate = iIsValidLif, 
-  .Load     = iLoadLifInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsLIF
+  /* .Validate = */ iIsValidLif, 
+  /* .Load     = */ iLoadLifInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsLIF
 };
 
 #endif//IL_NO_LIF

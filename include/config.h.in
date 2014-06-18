@@ -76,7 +76,7 @@
 #define IL_THREAD_SAFE_PTHREAD (defined(IL_THREAD_SAFE) && defined(HAVE_PTHREAD))
 #define IL_THREAD_SAFE_WIN32   (defined(IL_THREAD_SAFE) && defined(HAVE_WIN32THREAD))
 
-// Formats
+/* Formats ------------------------------------------------------------------ */
 
 /* blp support (BLP is the texture format for Blizzard games.) */
 #cmakedefine IL_NO_BLP
@@ -240,12 +240,13 @@
 #cmakedefine IL_NO_WDP
 
 #if !defined(_WIN32)
-   // The Microsoft HD Photo Device Porting Kit has not been ported to anything other
-   //  than Windows yet, so we disable this if Windows is not the current platform.
+   /* The Microsoft HD Photo Device Porting Kit has not been ported to anything other
+    * than Windows yet, so we disable this if Windows is not the current platform.
+    */
    #define IL_NO_WDP
-#endif//_WIN32
+#endif /* _WIN32 */
 
-/* xpm support (XPM (X PixMap) is an ASCII-based image used in X Windows.) */
+/* xpm support (XPM (X PixMap) is an ASCII-based image used in the X Window System.) */
 #cmakedefine IL_NO_XPM
 
 /* Google Skia library support */
@@ -254,7 +255,7 @@
 /* LCMS include without lcms/ support */
 #cmakedefine LCMS_NODIRINCLUDE
 
-// If we do not want support for game image formats, this define removes them all.
+/* If we do not want support for game image formats, this define removes them all. */
 #cmakedefine IL_NO_GAMES
 
 #ifdef IL_NO_GAMES
@@ -268,10 +269,10 @@
    #define IL_NO_TPL
    #define IL_NO_UTX
    #define IL_NO_WAL
-#endif//IL_NO_GAMES
+#endif /* IL_NO_GAMES */
 
-// If we want to compile without support for formats supported by external libraries,
-//  this define will remove them all.
+/* If we want to compile without support for formats supported by external libraries,
+ * this define will remove them all. */
 #cmakedefine IL_NO_EXTLIBS
 
 #ifdef IL_NO_EXTLIBS
@@ -285,7 +286,7 @@
    #define IL_NO_WDP
    #undef IL_USE_DXTC_NVIDIA
    #undef IL_USE_DXTC_SQUISH
-#endif//IL_NO_EXTLIBS
+#endif /* IL_NO_EXTLIBS */
 
 /* X86_ASM assembly found */
 #cmakedefine GCC_X86_ASM
@@ -322,7 +323,7 @@
 /* SSE3 extension found */
 #cmakedefine SSE3
 
-// TODO 
+/* TODO */
 #if 0
 
 /* Define if you have nvidia texture tools library installed */

@@ -93,13 +93,14 @@ static ILboolean iCheckPcx(PCXHEAD *Header) {
 static ILboolean iLoadPcxInternal(ILimage* image) {
 	PCXHEAD	Header;
 	ILboolean bPcx = IL_FALSE;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return bPcx;
 	}
 
-	SIO *io = &image->io;
+    io = &image->io;
 
 	if (!iGetPcxHead(io, &Header))
 		return IL_FALSE;
@@ -470,13 +471,14 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 	ILpal	*TempPal;
 	ILimage	*TempImage = image;
 	ILubyte	*TempData;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	switch (image->Format)
 	{
@@ -599,10 +601,10 @@ ILconst_string iFormatExtsPCX[] = {
 };
 
 ILformat iFormatPCX = { 
-  .Validate = iIsValidPcx, 
-  .Load     = iLoadPcxInternal, 
-  .Save     = iSavePcxInternal, 
-  .Exts     = iFormatExtsPCX
+  /* .Validate = */ iIsValidPcx, 
+  /* .Load     = */ iLoadPcxInternal, 
+  /* .Save     = */ iSavePcxInternal, 
+  /* .Exts     = */ iFormatExtsPCX
 };
 
 #endif//IL_NO_PCX

@@ -62,7 +62,7 @@ static ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header) {
 static ILboolean iIsValidVtf(SIO* io) {
 	VTFHEAD Header;
 
-	ILint64 oldReadPos = io->tell(io->handle);
+	ILint oldReadPos = io->tell(io->handle);
 	ILboolean gotHeader = iGetVtfHead(io, &Header);
 	io->seek(io->handle, oldReadPos, IL_SEEK_SET);
 	
@@ -130,14 +130,17 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	ILenum		Format, Type;
 	ILuint		SizeOfData, Channels, k;
 	ILubyte		*CompData = NULL, SwapVal, *Data16Bit, *Temp, NumFaces;
+	ILuint      i;
 	VTFHEAD		Head;
+    ILimage *   Frame;
+	SIO *io;
 
 	if (BaseImage == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = io;
+	io = &BaseImage->io;
 	
 	if (!iGetVtfHead(io, &Head))
 		return IL_FALSE;
@@ -276,7 +279,6 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 
 	// Create our animation chain
 	Image = BaseImage;  // Top-level image
-	ILuint i;
 	for (i = 1; i < Head.Frames; i++) {
 		Image->Next = ilNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
 		if (Image->Next == NULL)
@@ -290,7 +292,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	}
 
 	// We want to put the smallest mipmap at the end, but it is first in the file, so we count backwards.
-	ILimage *Frame = BaseImage;
+	Frame = BaseImage;
 	while (Frame) {
 		ILimage *face = Image->Faces;
 		while (face) {
@@ -622,11 +624,10 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	ILubyte	*TempData, *CompData;
 	ILuint	Format, i, CompSize;
 	ILenum	Compression;
+	SIO *io = &BaseImage->io;
 
 	// Find out if the user has specified to use DXT compression.
 	Compression = ilGetInteger(IL_VTF_COMP);
-
-	SIO *io = io;
 
 	//@TODO: Other formats
 	if (Compression == IL_DXT_NO_COMP) {
@@ -795,10 +796,10 @@ ILconst_string iFormatExtsVTF[] = {
 };
 
 ILformat iFormatVTF = { 
-	.Validate = iIsValidVtf, 
-	.Load     = iLoadVtfInternal, 
-	.Save     = iSaveVtfInternal, 
-	.Exts     = iFormatExtsVTF
+	/* .Validate = */ iIsValidVtf, 
+	/* .Load     = */ iLoadVtfInternal, 
+	/* .Save     = */ iSaveVtfInternal, 
+	/* .Exts     = */ iFormatExtsVTF
 };
 
 #endif//IL_NO_VTF

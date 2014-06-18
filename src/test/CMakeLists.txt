@@ -7,9 +7,9 @@ INCLUDE_DIRECTORIES     ( ${CMAKE_SOURCE_DIR}/include )
 INCLUDE_DIRECTORIES     ( ${CMAKE_SOURCE_DIR}/src )
 
 IF                      ( WIN32 )
-  SET                   ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
+  SET                   ( ILLIB         DevIL )
 ELSE                    ()
-  SET                   ( ILLIB         ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
+  SET                   ( ILLIB         IL )
 ENDIF                   ()
 
 ADD_EXECUTABLE          ( ILtestMemory      iltest-memory.c )

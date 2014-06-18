@@ -21,8 +21,8 @@ ILchar* _ilLoadExt = NULL;
 ILchar* _ilSaveExt = NULL;
 
 #define ADD_FORMAT(name) \
-  extern ILformat iFormat ## name; \
-  iAddFormat(IL_ ## name, #name, &iFormat ## name);
+  { extern ILformat iFormat ## name; \
+  iAddFormat(IL_ ## name, #name, &iFormat ## name); }
 
 static void 
 iAddFormat(ILenum id, const char *name, const ILformat *format) {
@@ -45,6 +45,11 @@ iAddFormat(ILenum id, const char *name, const ILformat *format) {
 
 void 
 iInitFormats() {
+  ILuint saveExtLen = 1;
+  ILuint loadExtLen = 1;
+
+  ILformatEntry *entry; 
+
 #ifndef IL_NO_BLP
   ADD_FORMAT(BLP);
 #endif
@@ -189,10 +194,7 @@ iInitFormats() {
   ADD_FORMAT(TGA);
 #endif
 
-  ILuint saveExtLen = 1;
-  ILuint loadExtLen = 1;
-
-  ILformatEntry *entry = FormatHead; 
+  entry = FormatHead; 
   while (entry) {
     ILconst_string *formatExt = entry->format->Exts;
     while (*formatExt) {
@@ -264,11 +266,13 @@ iGetFormat(
 
 ILenum
 iIdentifyFormat(SIO *io) {
+  ILformatEntry *entry = FormatHead; 
+  ILuint pos;
+
   if (!io) return IL_TYPE_UNKNOWN;
 
-  ILuint pos = SIOtell(io);
+  pos = SIOtell(io);
 
-  ILformatEntry *entry = FormatHead; 
   while (entry) {
     if (entry->format->Validate && entry->format->Validate(io))
       return entry->id;
@@ -282,9 +286,10 @@ iIdentifyFormat(SIO *io) {
 
 ILenum
 iIdentifyFormatExt(ILconst_string Ext) {
+  ILformatEntry *entry = FormatHead; 
+
   if (!Ext) return IL_TYPE_UNKNOWN;
 
-  ILformatEntry *entry = FormatHead; 
   while (entry) {
     ILconst_string *formatExt = entry->format->Exts;
     while (*formatExt) {

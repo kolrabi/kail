@@ -103,13 +103,14 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 	ILushort	color_0, color_1;
 	ILuint		bitmask, Select;
 	ILimage * Image = image;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 	
 	if (!iGetTplHead(io, &Header))
 		return IL_FALSE;
@@ -694,10 +695,10 @@ ILconst_string iFormatExtsTPL[] = {
 };
 
 ILformat iFormatTPL = { 
-	.Validate = iIsValidTpl, 
-	.Load     = iLoadTplInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsTPL
+	/* .Validate = */ iIsValidTpl, 
+	/* .Load     = */ iLoadTplInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsTPL
 };
 
 #endif//IL_NO_TPL

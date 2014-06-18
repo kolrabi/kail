@@ -91,13 +91,14 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   ILuint    Size, PadSize, ANDPadSize, j, k, l, m, x, w, CurAndByte; //, AndBytes;
   ILboolean BaseCreated = IL_FALSE;
   ILubyte   PNGTest[3];
+  SIO *io;
 
   if (image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  SIO *io = &image->io;
+  io = &image->io;
 
   if (SIOread(io, &IconDir, 1, sizeof(IconDir)) != sizeof(IconDir))
     return IL_FALSE;
@@ -687,10 +688,10 @@ ILconst_string iFormatExtsICO[] = {
 };
 
 ILformat iFormatICO = { 
-  .Validate = iIsValidIcon, 
-  .Load     = iLoadIconInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsICO
+  /* .Validate = */ iIsValidIcon, 
+  /* .Load     = */ iLoadIconInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsICO
 };
 
 #endif//IL_NO_ICO

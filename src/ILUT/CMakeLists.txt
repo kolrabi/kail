@@ -27,11 +27,9 @@ ENDIF                   ( )
 IF                      ( WIN32 )
   # Windows programs need a ILUT.dll not libILUT.dll
   SET_TARGET_PROPERTIES ( ILUT PROPERTIES PREFIX "" )
-  TARGET_LINK_LIBRARIES ( ILUT ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
-  TARGET_LINK_LIBRARIES ( ILUT ${CMAKE_BINARY_DIR}/src/ILU/libILU.dll.a )
+  TARGET_LINK_LIBRARIES ( ILUT DevIL ILU )
 ELSE                    ()
-  TARGET_LINK_LIBRARIES ( ILUT ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
-  TARGET_LINK_LIBRARIES ( ILUT ${CMAKE_BINARY_DIR}/src/ILU/libILU.so )
+  TARGET_LINK_LIBRARIES ( ILUT IL ILU )
 ENDIF                   ()
 
 TARGET_LINK_LIBRARIES   ( ILUT 

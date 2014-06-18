@@ -75,14 +75,15 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	ILubyte		*CompData = NULL;
 	FORM_HEAD Form;
 	ILimage * BaseImage = Image;
+	ROT_HEAD 	Head;
+	SIO * 		io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO * 		io = &Image->io;
-	ROT_HEAD 	Head;
+	io = &Image->io;
 
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
 		return IL_FALSE;
@@ -165,7 +166,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 		MipSize 	= GetLittleUInt(io);  // This is the same as the previous size listed -20 (for attributes).
 
 		// Lower level mipmaps cannot be larger than the main image.
-		if (MipWidth > Head.Width || MipHeight > Head.Height || MipSize > CompSize) {
+		if (MipWidth > Head.Width || MipHeight > Head.Height /* || MipSize > CompSize */) {
 			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 		}
@@ -294,10 +295,10 @@ ILconst_string iFormatExtsROT[] = {
 };
 
 ILformat iFormatROT = { 
-	.Validate = iIsValidRot, 
-	.Load     = iLoadRotInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsROT
+	/* .Validate = */ iIsValidRot, 
+    /* .Load     = */ iLoadRotInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsROT
 };
 
 #endif//IL_NO_ROT

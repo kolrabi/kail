@@ -74,7 +74,7 @@ static ILboolean iCheckSgi(iSgiHeader *Header)
 static ILboolean iIsValidSgi(SIO *io)
 {
 	iSgiHeader	Head;
-	ILuint 			read = iGetSgiHead(io, &Head);
+	ILint 			read = iGetSgiHead(io, &Head);
 	
 	SIOseek(io, -read, IL_SEEK_CUR);  // Restore previous file position
 
@@ -131,13 +131,14 @@ static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 	for (ixPlane = 0; ixPlane < Head->ZSize; ixPlane++) {
 		for (ixHeight = 0, Cur = 0;	ixHeight < Head->YSize;
 			ixHeight++, Cur += Head->XSize * Head->Bpc) {
+            ILint Scan;
 
 			RleOff = OffTable[ixHeight + ixPlane * Head->YSize];
 			RleLen = LenTable[ixHeight + ixPlane * Head->YSize];
 			
 			// Seeks to the offset table position
 			SIOseek(io, RleOff, IL_SEEK_SET);
-			ILint Scan = iGetScanLine(io, (TempData[ixPlane]) + (ixHeight * Head->XSize * Head->Bpc),	Head, RleLen);
+			Scan = iGetScanLine(io, (TempData[ixPlane]) + (ixHeight * Head->XSize * Head->Bpc),	Head, RleLen);
 			if (Scan != Head->XSize * Head->Bpc) {
 					iSetError(IL_ILLEGAL_FILE_VALUE);
 					goto cleanup_error;
@@ -379,13 +380,14 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 	ILboolean	Compress;
 	ILimage		*Temp = Image;
 	ILubyte		*TempData;
+	SIO * 		io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO * 		io = &Image->io;
+	io = &Image->io;
 
 	if (Image->Format != IL_LUMINANCE
 	    //while the sgi spec doesn't directly forbid rgb files with 2
@@ -623,10 +625,10 @@ ILconst_string iFormatExtsSGI[] = {
 };
 
 ILformat iFormatSGI = { 
-	.Validate = iIsValidSgi, 
-	.Load     = iLoadSgiInternal, 
-	.Save     = iSaveSgiInternal, 
-	.Exts     = iFormatExtsSGI
+	/* .Validate = */ iIsValidSgi, 
+	/* .Load     = */ iLoadSgiInternal, 
+	/* .Save     = */ iSaveSgiInternal, 
+	/* .Exts     = */ iFormatExtsSGI
 };
 
 #endif//IL_NO_SGI

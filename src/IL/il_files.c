@@ -60,16 +60,18 @@ void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
 
 
 ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
-  if (feof(Handle)) {
+  ILuint OrigPos, FileSize;
+
+  if (feof((FILE*)Handle)) {
     clearerr((FILE*)Handle);
     return IL_TRUE;
   }
 
   // Find out the filesize for checking for the end of file
-  ILuint OrigPos = iDefaultTell(Handle);
+  OrigPos = iDefaultTell(Handle);
   iDefaultSeek(Handle, 0, SEEK_END);
   
-  ILuint FileSize = iDefaultTell(Handle);
+  FileSize = iDefaultTell(Handle);
   iDefaultSeek(Handle, OrigPos, SEEK_SET);
   clearerr((FILE*)Handle);
 
@@ -81,8 +83,10 @@ ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
 
 
 ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
+  ILint Val;
+
   if (!Handle) return IL_EOF;
-  ILint Val = fgetc(Handle);
+  Val = fgetc((FILE*)Handle);
 
   if (Val == EOF) return IL_EOF;
   return Val;
@@ -331,7 +335,7 @@ ILint ILAPIENTRY iGetcLump(ILHANDLE h)
 ILuint ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number)
 {
   SIO *io = (SIO*)h;
-  ILuint i, ByteSize = IL_MIN( Size*Number, io->lumpSize-io->lumpPos);
+  ILuint i, ByteSize = IL_MIN( Size*Number,io->lumpSize-io->lumpPos );
 
   for (i = 0; i < ByteSize; i++) {
     *((ILubyte*)Buffer + i) = *((ILubyte*)io->lump + io->lumpPos + i);

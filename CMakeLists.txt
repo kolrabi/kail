@@ -8,10 +8,10 @@ PROJECT                 ( KaIL C )
 INCLUDE                 ( CTest )
 
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
-  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra --std=gnu99 -Werror" )
+  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
   SET                   ( GCC_X86_ASM   TRUE )
   SET                   ( IL_INLINE_ASM TRUE )
-  SET                   ( RESTRICT_KEYWORD TRUE )
+#  SET                   ( RESTRICT_KEYWORD TRUE )
 ENDIF                   ()
 
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )

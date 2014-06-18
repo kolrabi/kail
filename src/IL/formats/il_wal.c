@@ -39,6 +39,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	WALHEAD	Header;
 	ILimage	*Mipmaps[3], *CurImage;
 	ILuint	i, NewW, NewH;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -46,7 +47,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	}
 	CurImage = Image;
 
-	SIO *io = &Image->io;
+	Image->io;
 
 	// Read header
 	SIOread(io, &Header.FileName, 1, 32);
@@ -133,10 +134,10 @@ ILconst_string iFormatExtsWAL[] = {
 };
 
 ILformat iFormatWAL = { 
-	.Validate = NULL, 
-	.Load     = iLoadWalInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsWAL
+	/* .Validate = */ NULL, 
+	/* .Load     = */ iLoadWalInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsWAL
 };
 
 #endif//IL_NO_WAL

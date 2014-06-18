@@ -22,15 +22,16 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 	ILubyte	VertOrientation;
 	ILuint	Width, Height, i, Total, x, CurPos = 0;
 	ILubyte	*Y1=NULL, *Y2=NULL, *CbCr=NULL, r = 0, g = 0, b = 0;
+    SIO *io;
+	ILuint Start;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
-
-	ILuint Start = SIOtell(io);
+	io = &image->io;
+	Start = SIOtell(io);
 
 	SIOseek(io, 72, IL_SEEK_CUR);
 	if (SIOread(io, &VertOrientation, 1, 1) != 1)
@@ -124,10 +125,10 @@ ILconst_string iFormatExtsPCD[] = {
 };
 
 ILformat iFormatPCD = { 
-  .Validate = NULL, // TODO: iIsValidPCD, 
-  .Load     = iLoadPcdInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsPCD
+  /* .Validate = */ NULL, // TODO: iIsValidPCD, 
+  /* .Load     = */ iLoadPcdInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsPCD
 };
 
 #endif//IL_NO_PCD

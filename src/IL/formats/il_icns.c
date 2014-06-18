@@ -270,10 +270,10 @@ ILconst_string iFormatExtsICNS[] = {
 };
 
 ILformat iFormatICNS = { 
-	.Validate = iIsValidIcns, 
-	.Load     = iLoadIcnsInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsICNS
+	/* .Validate = */ iIsValidIcns, 
+	/* .Load     = */ iLoadIcnsInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsICNS
 };
 
 #endif//IL_NO_ICNS

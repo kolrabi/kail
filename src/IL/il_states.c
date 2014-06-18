@@ -22,7 +22,7 @@
 
 // Global variables
 static ILconst_string _ilVendor    = IL_TEXT("kolrabi");
-static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.8.3");
+static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.9.0");
 
 static IL_STATE_STRUCT *iGetStateStruct() {
   return &iGetTLSData()->CurState;
@@ -668,6 +668,7 @@ ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode) {
 void iPushAttrib(ILuint Bits) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos ;
 
   // Should we check here to see if ilCurrentPos is negative?
 
@@ -685,7 +686,7 @@ void iPushAttrib(ILuint Bits) {
 
   // FIXME: colour key data
 
-  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+  ilCurrentPos = StateStruct->ilCurrentPos;
 
   if (Bits & IL_ORIGIN_BIT) {
     ilStates[ilCurrentPos].ilOriginMode = ilStates[ilCurrentPos-1].ilOriginMode;
@@ -858,13 +859,13 @@ void iSetString(ILenum Mode, const char *String_) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+  ILchar *String;
 
   if (String_ == NULL) {
     iSetError(IL_INVALID_PARAM);
     return;
   }
 
-  ILchar *String;
 #ifdef _UNICODE
   String = iWideFromMultiByte(String_);
 #else

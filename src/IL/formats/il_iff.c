@@ -78,25 +78,8 @@ static ILboolean iIsValidIff(SIO *io) {
 
 static ILboolean iLoadIffInternal(ILimage *Image)
 {
-  if (Image == NULL){
-    iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  SIO *io = &Image->io;
-
   iff_chunk       chunkInfo;
   iff_chunk_stack chunkStack;
-
-  // -- Initialize the top of the chunk stack.
-  chunkStack.chunkDepth = -1;
-    
-  // -- File should begin with a FOR4 chunk of type CIMG
-  chunkInfo = iff_begin_read_chunk(io, &chunkStack);
-  if (chunkInfo.chunkType != IFF_TAG_CIMG) {
-    iSetError(IL_ILLEGAL_FILE_VALUE);
-    return IL_FALSE;
-  }
 
   // -- Header info.
   ILuint width, height;
@@ -107,6 +90,25 @@ static ILboolean iLoadIffInternal(ILimage *Image)
   ILubyte bpp;
 
   ILboolean tileImageDataFound;
+
+  SIO *io;
+
+  if (Image == NULL){
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  io = &Image->io;
+
+  // -- Initialize the top of the chunk stack.
+  chunkStack.chunkDepth = -1;
+    
+  // -- File should begin with a FOR4 chunk of type CIMG
+  chunkInfo = iff_begin_read_chunk(io, &chunkStack);
+  if (chunkInfo.chunkType != IFF_TAG_CIMG) {
+    iSetError(IL_ILLEGAL_FILE_VALUE);
+    return IL_FALSE;
+  }
 
   /*
   * Read the image header
@@ -455,10 +457,10 @@ ILconst_string iFormatExtsIFF[] = {
 };
 
 ILformat iFormatIFF = { 
-  .Validate = iIsValidIff, 
-  .Load     = iLoadIffInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsIFF
+  /* .Validate = */ iIsValidIff, 
+  /* .Load     = */ iLoadIffInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsIFF
 };
 
 #endif //IL_NO_IFF

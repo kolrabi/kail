@@ -37,6 +37,10 @@ GifLoadColorTable(
 	ILubyte   Size,
 	ILpal *		Pal
 ) {
+	ILubyte Temp[256*3];
+	ILuint  PalSize = (1 << (Size + 1)) * 3;
+    ILint i;
+
 	if (Pal->Palette) {
 		ifree(Pal->Palette);
 	}
@@ -50,13 +54,10 @@ GifLoadColorTable(
 		return IL_FALSE;
 	}
 
-	ILubyte Temp[256*3];
-	ILuint  PalSize = (1 << (Size + 1)) * 3;
-
 	if (TargetImage->io.read(TargetImage->io.handle, Temp, 1, PalSize) != PalSize)
 		return IL_FALSE;
 
-	for (ILint i=0; i<1<<(Size+1); i++) {
+	for (i=0; i<1<<(Size+1); i++) {
 		Pal->Palette[i*4+0] = Temp[i*3+0];
 		Pal->Palette[i*4+1] = Temp[i*3+1];
 		Pal->Palette[i*4+2] = Temp[i*3+2];
@@ -75,8 +76,6 @@ GifLoadSubBlock(
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, Length, 1, 1) != 1) {
 		return IL_FALSE;
 	}
-
-	iTrace("---- Subblock of size to %u @ %08x", *Length, SIOtell(&Ctx->Target->io)-1);
 
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, SubBlock, 1, *Length) != *Length) {
 		return IL_FALSE;
@@ -138,12 +137,13 @@ GifLoadExtension(
  	GifLoadingContext *Ctx
 ) {
 	ILubyte Type;
+	ILubyte SubBlock[255];
+	ILubyte SubBlockLength = 0;
+
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, &Type, 1, 1) != 1) {
 		return IL_FALSE;
 	}
 
-	ILubyte SubBlock[255];
-	ILubyte SubBlockLength = 0;
 	do {
 		if (!GifLoadSubBlock(Ctx, SubBlock, &SubBlockLength))
 			return IL_FALSE;
@@ -324,6 +324,10 @@ LZWInputStreamBufferCode(
 	LZWInputStream *Stream,
 	ILuint Code
 ) {
+	const ILuint *Phrase;
+	ILuint i;
+	ILuint PhraseLength;
+
 	if (Code < Stream->ClearCode) {
 		// output directly
 		return LZWInputStreamBufferByte(Stream, Code & 0xFF);
@@ -334,15 +338,14 @@ LZWInputStreamBufferCode(
 		return IL_FALSE;
 	}
 
-	const ILuint *Phrase = Stream->Phrases[Code];
+	Phrase = Stream->Phrases[Code];
 	if (!Phrase) {
 		// no phrase known for code
 		return IL_FALSE;
 	}
 
 	// output phrase code by code
-	ILuint i;
-	ILuint PhraseLength = Phrase[0];
+	PhraseLength = Phrase[0];
 	for (i = 0; i<PhraseLength; i++) {
 		if (!LZWInputStreamBufferCode(Stream, Phrase[i+1]))
 			return IL_FALSE;
@@ -356,13 +359,16 @@ LZWInputStreamGetFirstOfCode(
 	ILuint Code,
 	ILuint *First
 ) {
+	const ILuint *Phrase;
+
 	if (Code >= 4096) {
 		// invalid code, gif only supports 12 bit code size
 		iTrace("***** %s: Code out of range: %04x\n", __PRETTY_FUNCTION__, Code);
 		return IL_FALSE;
 	}
 
-	const ILuint *Phrase = Stream->Phrases[Code];
+	Phrase = Stream->Phrases[Code];
+
 	if (!Phrase) {
 		// no phrase known for code
 		iTrace("***** %s: Phrase for code unknown: %04x\n", __PRETTY_FUNCTION__, Stream->PrevCode);
@@ -378,6 +384,12 @@ LZWInputStreamAppendCode(
 	LZWInputStream *Stream,
 	ILuint Code
 ) {
+
+	ILuint PrevLength;
+	ILuint *Phrase;
+    const ILuint *PrevPhrase;
+	ILuint i;
+
 	if (Code >= 4096 || Stream->NextCode >= 4096) {
 		// invalid code, gif only supports 12 bit code size
 		iTrace("***** %s: Code out of range: %04x\n", __PRETTY_FUNCTION__, Code);
@@ -390,19 +402,18 @@ LZWInputStreamAppendCode(
 		return IL_FALSE;
 	}
 
-	const ILuint *PrevPhrase = Stream->Phrases[Stream->PrevCode];
+	PrevPhrase = Stream->Phrases[Stream->PrevCode];
 	if (!PrevPhrase) {
 		// no previous phrase known
 		iTrace("***** %s: Phrase for previous code unknown: %04x\n", __PRETTY_FUNCTION__, Stream->PrevCode);
 		return IL_FALSE;
 	}
 
-	ILuint PrevLength = PrevPhrase[0];
-	ILuint *Phrase = (ILuint *) ialloc(sizeof(ILuint) * ( 2 + PrevLength ));
+  	PrevLength = PrevPhrase[0];
+	Phrase = (ILuint *) ialloc(sizeof(ILuint) * ( 2 + PrevLength ));
 
 	Phrase[0] = PrevLength + 1;
 
-	ILuint i;
 	for (i = 0; i<PrevLength; i++) {
 		Phrase[i+1] = PrevPhrase[i+1];
 	}
@@ -426,6 +437,8 @@ LZWInputStreamDecode(
 	LZWInputStream *Stream,
 	ILuint Code
 ) {
+    const ILuint *Phrase;
+
 	if (Code >= 4096) {
 		// invalid code, gif only supports 12 bit code size
 		return IL_FALSE;
@@ -438,11 +451,11 @@ LZWInputStreamDecode(
   }
 
 	// is CODE in the code table?
-	const ILuint *Phrase = Stream->Phrases[Code];
+	Phrase = Stream->Phrases[Code];
 	if (Phrase) {
+		ILuint K;
 		if (!LZWInputStreamBufferCode(Stream, Code)) return IL_FALSE;
 
-		ILuint K;
 		if (!LZWInputStreamGetFirstOfCode(Stream, Code, &K)) return IL_FALSE;
 
 		// if dictionary is not full, create new entry
@@ -450,11 +463,11 @@ LZWInputStreamDecode(
 
 		Stream->PrevCode = Code;
 	} else {
+		ILuint K;
 		if (Stream->NextCode != Code) {
 			iTrace("**** Code mismatch: %04x != %04x !!\n", Stream->NextCode, Code);
 		}
 
-		ILuint K;
 		if (!LZWInputStreamGetFirstOfCode(Stream, Stream->PrevCode, &K)) return IL_FALSE;
 
 		if (!LZWInputStreamBufferCode(Stream, Stream->PrevCode)) return IL_FALSE;
@@ -521,6 +534,13 @@ GifLoadFrame(
  	GifLoadingContext *Ctx
 ) {
 	GifImageDescriptor Img;
+	LZWInputStream Stream;
+	ILubyte B;
+	ILuint y;
+	ILuint x;
+	ILubyte interlaceGroup = 1;
+	ILpal *SourcePal;
+
 	if (Ctx->Target->io.read(Ctx->Target->io.handle, &Img, 1, sizeof(Img)) != sizeof(Img)) {
 		iTrace("**** failed to read image descriptor\n");
 		return IL_FALSE;
@@ -554,7 +574,7 @@ GifLoadFrame(
 
 	Ctx->Image->Duration = Ctx->Delay;
 
-	ILpal *SourcePal = Ctx->UseLocalPal ? &Ctx->LocalPal : &Ctx->GlobalPal;
+    SourcePal = Ctx->UseLocalPal ? &Ctx->LocalPal : &Ctx->GlobalPal;
 	/*if (!iCopyPalette(&Ctx->Image->Pal, SourcePal)) {
 		iTrace("**** Could not copy palette for frame!");
 		return IL_FALSE;
@@ -580,13 +600,11 @@ GifLoadFrame(
 		return IL_FALSE;
 	}
 
-	LZWInputStream Stream;
 	LZWInputStreamInit(&Stream, Ctx->LZWCodeSize, Ctx);
 
-	ILubyte B;
-	ILuint y = Img.Top;
-	ILuint x = Img.Left;
-	ILubyte interlaceGroup = 1;
+	y = Img.Top;
+    x = Img.Left;
+
 	while(LZWInputStreamReadByte(&Stream, &B) && interlaceGroup < 5) {
 		B %= Ctx->Colors;
 
@@ -700,18 +718,20 @@ GifLoad(
 // Internal function used to load the Gif.
 ILboolean iLoadGifInternal(ILimage* TargetImage)
 {
+	GifLoadingContext Ctx;
+	GifSignature Sig;
+    ILboolean Loaded;
+
 	if (TargetImage == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	GifLoadingContext Ctx;
 	memset(&Ctx, 0, sizeof(Ctx));
 	Ctx.Target = TargetImage;
 	Ctx.Image  = TargetImage;
 
 	// check for valid signature
-	GifSignature Sig;
 
 	if (Ctx.Target->io.read(Ctx.Target->io.handle, &Sig, 1, sizeof(Sig)) != sizeof(Sig)) {
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -743,7 +763,7 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 		return IL_FALSE;
 
 	// try loading image(s)
-	ILboolean Loaded = GifLoad(&Ctx);
+	Loaded = GifLoad(&Ctx);
 
 	// always clean up palette afterwards
 	if (Ctx.GlobalPal.Palette && Ctx.GlobalPal.PalSize)
@@ -763,7 +783,7 @@ ILboolean iLoadGifInternal(ILimage* TargetImage)
 ILboolean 
 iIsValidGif(SIO* io) {
 	GifSignature Sig;
-	ILint64 Read = io->read(io->handle, &Sig, 1, 6);
+	ILint Read = io->read(io->handle, &Sig, 1, 6);
 	io->seek(io->handle, -Read, IL_SEEK_CUR);
 	return Read == 6 && GifCheckHeader(&Sig);
 }
@@ -774,10 +794,10 @@ ILconst_string iFormatExtsGIF[] = {
 };
 
 ILformat iFormatGIF = { 
-	.Validate = iIsValidGif, 
-	.Load     = iLoadGifInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsGIF
+	/* .Validate = */ iIsValidGif, 
+	/* .Load     = */ iLoadGifInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsGIF
 };
 
 #endif //IL_NO_GIF

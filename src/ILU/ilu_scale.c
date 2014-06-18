@@ -15,12 +15,12 @@
 #include "ilu_states.h"
 
 
-ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width);
-ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height);
-ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
+ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter);
+ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter);
+ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
 
 
-ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
+ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter) {
   ILimage   *Temp;
   ILboolean UsePal;
   ILenum    PalType;
@@ -41,7 +41,7 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
 
   if ((Image->Width<Width) || (Image->Height<Height)) // only do special scale if there is some zoom?
   {
-    switch (iluFilter)
+    switch (Filter)
     {
       case ILU_SCALE_BOX:
       case ILU_SCALE_TRIANGLE:
@@ -61,7 +61,7 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
         if (Image->Width > Width) // shrink width first
         {
           Origin = Image->Origin;
-          Temp = iluScale_(Image, Width, Image->Height, Image->Depth);
+          Temp = iluScale_(Image, Width, Image->Height, Image->Depth, Filter);
           if (Temp != NULL) {
             if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
               ilCloseImage(Temp);
@@ -74,7 +74,7 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
         else if (Image->Height > Height) // shrink height first
         {
           Origin = Image->Origin;
-          Temp = iluScale_(Image, Image->Width, Height, Image->Depth);
+          Temp = iluScale_(Image, Image->Width, Height, Image->Depth, Filter);
           if (Temp != NULL) {
             if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
               ilCloseImage(Temp);
@@ -85,14 +85,14 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
           }
         }
 
-        return (ILboolean)iScaleAdvanced(Image, Width, Height, iluFilter);
+        return (ILboolean)iScaleAdvanced(Image, Width, Height, Filter);
     }
   }
 
   Origin = Image->Origin;
   UsePal = (Image->Format == IL_COLOUR_INDEX);
   PalType = Image->Pal.PalType;
-  Temp = iluScale_(Image, Width, Height, Depth);
+  Temp = iluScale_(Image, Width, Height, Depth, Filter);
   if (Temp != NULL) {
     if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
       ilCloseImage(Temp);
@@ -112,7 +112,7 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth) {
 }
 
 
-ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth)
+ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter)
 {
   ILimage *Scaled, *ToScale;
   ILenum  Format; // , PalType;
@@ -142,13 +142,13 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
   }
   
   if (Height <= 1 && Image->Height <= 1) {
-    iluScale1D_(ToScale, Scaled, Width);
+    iluScale1D_(ToScale, Scaled, Width, Filter);
   }
   if (Depth <= 1 && Image->Depth <= 1) {
-    iluScale2D_(ToScale, Scaled, Width, Height);
+    iluScale2D_(ToScale, Scaled, Width, Height, Filter);
   }
   else {
-    iluScale3D_(ToScale, Scaled, Width, Height, Depth);
+    iluScale3D_(ToScale, Scaled, Width, Height, Depth, Filter);
   }
 
   if (Format == IL_COLOUR_INDEX) {
@@ -161,7 +161,7 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
 }
 
 
-ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width)
+ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter)
 {
   ILuint    x1, x2;
   ILuint    NewX1, NewX2, NewX3, x, c;
@@ -181,7 +181,7 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width)
   IntPtr = (ILuint*)Image->Data;
   SIntPtr = (ILuint*)Scaled->Data;
 
-  if (iluFilter == ILU_NEAREST) {
+  if (Filter == ILU_NEAREST) {
     switch (Image->Bpc)
     {
       case 1:

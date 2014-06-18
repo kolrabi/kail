@@ -19,10 +19,11 @@ ILboolean  iIsValidDds(SIO *io);
 
 static ILboolean iIsValidTexture(SIO *io) {
   // don't know of any magic value, so just seek forward and check for dds
+  ILboolean   IsDDS;
   ILuint      Start = SIOtell(io);
-  SIOseek(io, 48, IL_SEEK_CUR);
 
-  ILboolean   IsDDS = iIsValidDds(io);
+  SIOseek(io, 48, IL_SEEK_CUR);
+  IsDDS = iIsValidDds(io);
   SIOseek(io, Start, IL_SEEK_SET);
 
   return IsDDS;
@@ -42,10 +43,10 @@ ILconst_string iFormatExtsTEXTURE[] = {
 };
 
 ILformat iFormatTEXTURE = { 
-  .Validate = iIsValidTexture, 
-  .Load     = iLoadTextureInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsTEXTURE
+  /* .Validate = */ iIsValidTexture, 
+  /* .Load     = */ iLoadTextureInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsTEXTURE
 };
 
 #endif//IL_NO_TEXTURE

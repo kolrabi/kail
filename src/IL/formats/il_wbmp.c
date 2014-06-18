@@ -53,13 +53,14 @@ static ILboolean iLoadWbmpInternal(ILimage *Image)
 	ILuint	Width, Height, BitPadding, i;
 	BITFILE	*File;
 	ILubyte	Padding[8];
+	SIO* io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO* io = &Image->io;
+	io = &Image->io;
 	
 	if (SIOgetc(io) != 0 || SIOgetc(io) != 0) {  // The first two bytes have to be 0 (the "header")
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -131,13 +132,14 @@ static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	ILint	k;
 	ILubyte	Val;
 	ILubyte	*TempData;
+	SIO* io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO* io = &Image->io;
+	io = &Image->io;
 	
 	SIOputc(io, 0);  // First two header values
 	SIOputc(io, 0);  //  must be 0.
@@ -190,10 +192,10 @@ ILconst_string iFormatExtsWBMP[] = {
 };
 
 ILformat iFormatWBMP = { 
-	.Validate = iIsValidWbmp, 
-	.Load     = iLoadWbmpInternal, 
-	.Save     = iSaveWbmpInternal, 
-	.Exts     = iFormatExtsWBMP
+	/* .Validate = */ iIsValidWbmp, 
+	/* .Load     = */ iLoadWbmpInternal, 
+	/* .Save     = */ iSaveWbmpInternal, 
+	/* .Exts     = */ iFormatExtsWBMP
 };
 
 #endif//IL_NO_WBMP

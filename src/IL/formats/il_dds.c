@@ -98,8 +98,8 @@ ILboolean iGetDdsHead(SIO* io, DDSHEAD *Header)
 ILboolean iIsValidDds(SIO* io)
 {
 	char Sig[4];
+	ILint Read = SIOread(io, Sig, 1, 4);
 
-	ILuint Read = SIOread(io, Sig, 1, 4);
 	SIOseek(io, -Read, IL_SEEK_CUR);
 	return Read == 4 && memcmp(Sig, "DDS ", 4) == 0;
 }
@@ -716,10 +716,10 @@ ILboolean DdsDecompress(DDS_CONTEXT *ctx, ILuint CompFormat)
 			return DecompressDXT5(ctx->Image, ctx->CompData);
 
 		case PF_ATI1N:
-			return DecompressAti1n(ctx->Image);
+			return DecompressAti1n(ctx);
 
 		case PF_3DC:
-			return Decompress3Dc(ctx->Image);
+			return Decompress3Dc(ctx);
 
 		case PF_RXGB:
 			return DecompressRXGB();
@@ -1931,6 +1931,7 @@ void ilFreeImageDxtcData(ILimage* image)
 ILboolean iDxtcDataToSurface(ILimage* image)
 {
 	ILuint CompFormat;
+	DDS_CONTEXT ctx;
 
 	if (image == NULL || image->DxtcData == NULL) {
 		iSetError(IL_INVALID_PARAM);
@@ -1963,7 +1964,6 @@ ILboolean iDxtcDataToSurface(ILimage* image)
 		image->Data = (ILubyte*) ialloc(image->SizeOfData);
 	}
 
-	DDS_CONTEXT ctx;
 	ctx.Image = image;
 	ctx.BaseImage = image;
 	ctx.Width = image->Width;
@@ -2410,10 +2410,10 @@ ILconst_string iFormatExtsDDS[] = {
 };
 
 ILformat iFormatDDS = { 
-	.Validate = iIsValidDds, 
-	.Load     = iLoadDdsInternal, 
-	.Save     = iSaveDdsInternal, 
-	.Exts     = iFormatExtsDDS
+	/* .Validate = */ iIsValidDds, 
+	/* .Load     = */ iLoadDdsInternal, 
+	/* .Save     = */ iSaveDdsInternal, 
+	/* .Exts     = */ iFormatExtsDDS
 };
 
 #endif//IL_NO_DDS

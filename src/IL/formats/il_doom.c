@@ -31,14 +31,22 @@ typedef struct {
 // From the DTE sources (mostly by Denton Woods with corrections by Randy Heit)
 static ILboolean iLoadDoomInternal(ILimage *Image)
 {
+	SIO *io;
+	ILuint first_pos;
+	DOOM_HEAD head;
+
+	ILushort column_loop;
+
+	ILubyte	*NewData;
+	ILuint	i;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	ILuint first_pos = SIOtell(io);
-	DOOM_HEAD head;
+	io = &Image->io;
+	first_pos = SIOtell(io);
 
 	if (SIOread(io, &head, 1, sizeof(head)) != sizeof(head)) {
 		iSetError(IL_INVALID_FILE_HEADER);
@@ -64,35 +72,36 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 
 	// 247 is always the transparent colour (usually cyan)
 	memset(Image->Data, 247, Image->SizeOfData);
-
-	ILushort column_loop;
 	for (column_loop = 0; column_loop < head.width; column_loop++) {
 		ILuint column_offset;
+        ILuint pointer_position;
+
 		if (!SIOread(io, &column_offset, 1, sizeof(column_offset)) != sizeof(column_offset))
 			return IL_FALSE;
 
 		UInt(&column_offset);
 		
-		ILuint pointer_position = SIOtell(io);
+		pointer_position = SIOtell(io);
 		SIOseek(io, first_pos + column_offset, IL_SEEK_SET);
 
 		while (1) {
 			ILubyte topdelta;
+			ILubyte length;
+			ILubyte post;
+			ILushort	row_loop;
+
 			if (SIOread(io, &topdelta, 1, 1) != 1)
 				return IL_FALSE;
 
 			if (topdelta == 255)
 				break;
 
-			ILubyte length;
 			if (SIOread(io, &length, 1, 1) != 1)
 				return IL_FALSE;
 
-			ILubyte post;
 			if (SIOread(io, &post, 1, 1) != 1)
 				return IL_FALSE; // Skip extra byte for scaling
 
-			ILushort	row_loop;
 			for (row_loop = 0; row_loop < length; row_loop++) {
 				if (SIOread(io, &post, 1, 1) != 1)
 					return IL_FALSE;
@@ -106,10 +115,6 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 
 		SIOseek(io, pointer_position, IL_SEEK_SET);
 	}
-
-
-	ILubyte	*NewData;
-	ILuint	i;
 
 	// Converts palette entry 247 (cyan) to transparent.
 	if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
@@ -147,13 +152,14 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 {
 	ILubyte	*NewData;
 	ILuint	i;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 
 	if (!iTexImage(Image, 64, 64, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
 		return IL_FALSE;
@@ -201,17 +207,17 @@ ILconst_string iFormatExtsDOOM[] = {
 };
 
 ILformat iFormatDOOM = { 
-	.Validate = NULL, 
-	.Load     = iLoadDoomInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsDOOM
+	/* .Validate = */ NULL, 
+	/* .Load     = */ iLoadDoomInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsDOOM
 };
 
 ILformat iFormatDOOM_FLAT = { 
-	.Validate = NULL, 
-	.Load     = iLoadDoomFlatInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsDOOM
+	/* .Validate = */ NULL, 
+	/* .Load     = */ iLoadDoomFlatInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsDOOM
 };
 
 #endif

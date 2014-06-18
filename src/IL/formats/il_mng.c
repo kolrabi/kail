@@ -332,10 +332,10 @@ ILconst_string iFormatExtsMNG[] = {
 };
 
 ILformat iFormatMNG = { 
-  .Validate = iIsValidMng, 
-  .Load     = iLoadMngInternal, 
-  .Save     = NULL, // FIXME: broken iSaveMngInternal, 
-  .Exts     = iFormatExtsMNG
+  /* .Validate = */ iIsValidMng, 
+  /* .Load     = */ iLoadMngInternal, 
+  /* .Save     = */ NULL, // FIXME: broken iSaveMngInternal, 
+  /* .Exts     = */ iFormatExtsMNG
 };
 
 #endif//IL_NO_MNG

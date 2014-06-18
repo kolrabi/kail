@@ -26,8 +26,8 @@
 //
 
 #define ILUT_VERSION_1_7_8 1
-#define ILUT_VERSION_1_8_3 1
-#define ILUT_VERSION       183
+#define ILUT_VERSION_1_9_0 1
+#define ILUT_VERSION       190
 
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -189,7 +189,7 @@ ILAPI ILboolean			ILAPIENTRY ilutGetBoolean(ILenum Mode);
 ILAPI void          ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param);
 ILAPI ILint					ILAPIENTRY ilutGetInteger(ILenum Mode);
 ILAPI void          ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param);
-ILAPI ILstring      ILAPIENTRY ilutGetString(ILenum StringName);
+ILAPI ILconst_string ILAPIENTRY ilutGetString(ILenum StringName);
 ILAPI void          ILAPIENTRY ilutInit(void);
 ILAPI ILboolean     ILAPIENTRY ilutIsDisabled(ILenum Mode);
 ILAPI ILboolean     ILAPIENTRY ilutIsEnabled(ILenum Mode);

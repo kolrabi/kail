@@ -24,14 +24,14 @@ static ILboolean iLoadPltPal(ILimage *Image);
 
 //! Loads an .plt palette file.
 static ILboolean iLoadPltPal(ILimage *Image) {
+	SIO *io;
+	ILpal NewPal;
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-
-	ILpal NewPal;
+	io = &Image->io;
 	imemclear(&NewPal, sizeof(NewPal));
 
 	NewPal.PalSize = GetLittleUInt(io);
@@ -65,8 +65,8 @@ ILconst_string iFormatExtsPLT_PAL[] = {
 };
 
 ILformat iFormatPLT_PAL = { 
-  .Validate = NULL, 
-  .Load     = iLoadPltPal, 
-  .Save     = NULL,
-  .Exts     = iFormatExtsPLT_PAL
+  /* .Validate = */ NULL, 
+  /* .Load     = */ iLoadPltPal, 
+  /* .Save     = */ NULL,
+  /* .Exts     = */ iFormatExtsPLT_PAL
 };

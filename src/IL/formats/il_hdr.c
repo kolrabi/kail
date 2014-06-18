@@ -38,7 +38,7 @@ const char* strnstr(const char* bigstr, const char* substr, size_t max)
 static ILboolean iIsValidHdr(SIO* io)
 {
 	char header[10];
-	ILuint read = SIOread(io, header, 1, sizeof(header));
+	ILint read = SIOread(io, header, 1, sizeof(header));
 	SIOseek(io, -read, IL_SEEK_CUR);
 	return read == 10 && memcmp(header, "#?RADIANCE", 10) == 0;
 }
@@ -138,28 +138,35 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	ILfloat *data;
 	ILubyte *scanline;
 	ILuint i, j, e, r, g, b;
+	SIO *io;
+
+    char header[1024]; // should be sufficient...
+    ILuint read;
+	const char* wstr;
+	const char* hstr;
+	ILuint width = 0;
+	ILuint height = 0;
+    ILuint headerEnd;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	// Header consists of text which must be parsed
-	char header[1024]; // should be sufficient...
-	ILuint read = SIOread(io, header, 1, sizeof(header));
-	const char* wstr = strnstr(header, "+X ", read) + 3;
-	const char* hstr = strnstr(header, "-Y ", read) + 3;
-	ILuint width = 0;
-	ILuint height = 0;
-	if (wstr != NULL) 
+	read = SIOread(io, header, 1, sizeof(header));
+	wstr = strnstr(header, "+X ", read) + 3;
+	hstr = strnstr(header, "-Y ", read) + 3;
+
+    if (wstr != NULL) 
 		width = atoi(wstr);
 	if (hstr != NULL)
 		height = atoi(hstr);
 
 	// Seek to start of data
-	ILuint headerEnd = hstr-header;
+	headerEnd = hstr-header;
 	while (headerEnd < read && header[headerEnd] != 0x0a)
 		++headerEnd;
 
@@ -393,13 +400,14 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	ILfloat		*data;
 	ILuint		i;
 	ILboolean	bRet;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	stHeader.exposure = 0;
 	stHeader.gamma = 0;
@@ -481,10 +489,10 @@ ILconst_string iFormatExtsHDR[] = {
 };
 
 ILformat iFormatHDR = { 
-	.Validate = iIsValidHdr, 
-	.Load     = iLoadHdrInternal, 
-	.Save     = iSaveHdrInternal, 
-	.Exts     = iFormatExtsHDR
+	/* .Validate = */ iIsValidHdr, 
+	/* .Load     = */ iLoadHdrInternal, 
+	/* .Save     = */ iSaveHdrInternal, 
+	/* .Exts     = */ iFormatExtsHDR
 };
 
 #endif//IL_NO_HDR

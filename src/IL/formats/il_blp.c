@@ -65,7 +65,7 @@ typedef struct BLP2HEAD
 static ILboolean 
 iIsValidBLP1(SIO *io) {
 	ILubyte Sig[4];
-	ILint64 Read = io->read(io->handle, &Sig, 1, 4);
+	ILint Read = io->read(io->handle, &Sig, 1, 4);
 	io->seek(io->handle, -Read, IL_SEEK_CUR);
 	if (Read!=4) return IL_FALSE;
 
@@ -75,7 +75,7 @@ iIsValidBLP1(SIO *io) {
 static ILboolean 
 iIsValidBLP2(SIO *io) {
 	ILubyte Sig[4];
-	ILint64 Read = io->read(io->handle, &Sig, 1, 4);
+	ILint Read = io->read(io->handle, &Sig, 1, 4);
 	io->seek(io->handle, -Read, IL_SEEK_CUR);
 	if (Read!=4) return IL_FALSE;
 
@@ -89,11 +89,11 @@ iIsValidBLP(SIO *io) {
 
 static ILboolean
 iGetBlp1Head(SIO *io, BLP1HEAD *Header) {
-	ILint64 Read = SIOread(io, Header, 1, sizeof(*Header));
+    ILuint i;
+	ILint Read = SIOread(io, Header, 1, sizeof(*Header));
+
 	if (Read != sizeof(*Header))
 		return IL_FALSE;
-
-	ILuint i;
 
 	UInt(&Header->Compression);
 	UInt(&Header->Flags);
@@ -134,13 +134,15 @@ iCheckBlp1(const BLP1HEAD *Header) {
 
 static ILubyte *
 ReadJpegHeader(SIO *io, ILuint *size) {
+    ILubyte *JpegHeader;
+
 	if (!SIOread(io, size, sizeof(*size), 1)) {
 		iSetError(IL_FILE_READ_ERROR);
-		return IL_FALSE;
+		return NULL;
 	}
 	UInt(size);
 
-	ILubyte *JpegHeader = (ILubyte*)ialloc(*size);
+	JpegHeader = (ILubyte*)ialloc(*size);
 	if (JpegHeader == NULL)
 		return NULL;
 
@@ -344,13 +346,12 @@ iLoadBlp1(ILimage *TargetImage) {
 // Internal function used to get the BLP header from the current file.
 static ILboolean 
 iGetBlp2Head(SIO *io, BLP2HEAD *Header) {
-	ILint64 Read = SIOread(io, Header, 1, sizeof(*Header));
+	ILuint i;
+	ILint Read = SIOread(io, Header, 1, sizeof(*Header));
 	if (Read != sizeof(*Header)) {
 		SIOseek(io, -Read, IL_SEEK_CUR); // Go back the size of the BLP2 header, since we tried reading it.
 		return IL_FALSE;
 	}
-
-	ILuint i;
 
 	UInt(&Header->Type);
 	UInt(&Header->Width);
@@ -686,10 +687,10 @@ ILconst_string iFormatExtsBLP[] = {
 };
 
 ILformat iFormatBLP = { 
-	.Validate = iIsValidBLP, 
-	.Load     = iLoadBlpInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsBLP
+	/* .Validate = */ iIsValidBLP, 
+	/* .Load     = */ iLoadBlpInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsBLP
 };
 
 #endif//IL_NO_BLP

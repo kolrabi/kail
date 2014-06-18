@@ -4,11 +4,11 @@
 \subsection*{Functions}
 \begin{DoxyCompactItemize}
 \item 
-void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__setup_gac4eeea2ec690f1c38ba24c9a0b284811}{il\-Init} (void)
+void I\+L\+A\+P\+I\+E\+N\+T\+R\+Y \hyperlink{group__setup_gac4eeea2ec690f1c38ba24c9a0b284811}{il\+Init} (void)
 \begin{DoxyCompactList}\small\item\em Initialize the image library. \end{DoxyCompactList}\item 
-void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__setup_ga5cb1805053b3380b59b05655c71b8b45}{il\-Set\-Memory} (m\-Alloc malloc\-Func, m\-Free free\-Func)
+void I\+L\+A\+P\+I\+E\+N\+T\+R\+Y \hyperlink{group__setup_ga5cb1805053b3380b59b05655c71b8b45}{il\+Set\+Memory} (m\+Alloc malloc\+Func, m\+Free free\+Func)
 \begin{DoxyCompactList}\small\item\em Sets the memory allocation and deallocation functions. \end{DoxyCompactList}\item 
-\hypertarget{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}{void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}{il\-Shut\-Down} (void)}\label{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}
+\hypertarget{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}{void I\+L\+A\+P\+I\+E\+N\+T\+R\+Y \hyperlink{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}{il\+Shut\+Down} (void)}\label{group__setup_gaf094c9f19b5e285c599e3fa3d7ea2514}
 
 \begin{DoxyCompactList}\small\item\em Shuts down the image library. \end{DoxyCompactList}\end{DoxyCompactItemize}
 
@@ -17,9 +17,9 @@ void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__setup_ga5cb1805053b3380b59b0
 
 
 \subsection{Function Documentation}
-\hypertarget{group__setup_gac4eeea2ec690f1c38ba24c9a0b284811}{\index{Initialization / Deinitalization@{Initialization / Deinitalization}!il\-Init@{il\-Init}}
-\index{il\-Init@{il\-Init}!Initialization / Deinitalization@{Initialization / Deinitalization}}
-\subsubsection[{il\-Init}]{\setlength{\rightskip}{0pt plus 5cm}void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Init (
+\hypertarget{group__setup_gac4eeea2ec690f1c38ba24c9a0b284811}{\index{Initialization / Deinitalization@{Initialization / Deinitalization}!il\+Init@{il\+Init}}
+\index{il\+Init@{il\+Init}!Initialization / Deinitalization@{Initialization / Deinitalization}}
+\subsubsection[{il\+Init}]{\setlength{\rightskip}{0pt plus 5cm}void I\+L\+A\+P\+I\+E\+N\+T\+R\+Y il\+Init (
 \begin{DoxyParamCaption}
 \item[{void}]{}
 \end{DoxyParamCaption}
@@ -28,24 +28,24 @@ void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y \hyperlink{group__setup_ga5cb1805053b3380b59b0
 
 Initialize the image library. 
 
-This must be called before calling any other I\-L functions or their behaviour is undefined. \hypertarget{group__setup_ga5cb1805053b3380b59b05655c71b8b45}{\index{Initialization / Deinitalization@{Initialization / Deinitalization}!il\-Set\-Memory@{il\-Set\-Memory}}
-\index{il\-Set\-Memory@{il\-Set\-Memory}!Initialization / Deinitalization@{Initialization / Deinitalization}}
-\subsubsection[{il\-Set\-Memory}]{\setlength{\rightskip}{0pt plus 5cm}void I\-L\-A\-P\-I\-E\-N\-T\-R\-Y il\-Set\-Memory (
+This must be called before calling any other I\+L functions or their behaviour is undefined. \hypertarget{group__setup_ga5cb1805053b3380b59b05655c71b8b45}{\index{Initialization / Deinitalization@{Initialization / Deinitalization}!il\+Set\+Memory@{il\+Set\+Memory}}
+\index{il\+Set\+Memory@{il\+Set\+Memory}!Initialization / Deinitalization@{Initialization / Deinitalization}}
+\subsubsection[{il\+Set\+Memory}]{\setlength{\rightskip}{0pt plus 5cm}void I\+L\+A\+P\+I\+E\+N\+T\+R\+Y il\+Set\+Memory (
 \begin{DoxyParamCaption}
-\item[{m\-Alloc}]{malloc\-Func, }
-\item[{m\-Free}]{free\-Func}
+\item[{m\+Alloc}]{malloc\+Func, }
+\item[{m\+Free}]{free\+Func}
 \end{DoxyParamCaption}
 )}}\label{group__setup_ga5cb1805053b3380b59b05655c71b8b45}
 
 
 Sets the memory allocation and deallocation functions. 
 
-When changing the {\itshape free\-Func} all allocated memory up to that point will still be freed by the function that was set when that memory was allocated. This means the correct function will be called for every allocated object.
+When changing the {\itshape free\+Func} all allocated memory up to that point will still be freed by the function that was set when that memory was allocated. This means the correct function will be called for every allocated object.
 
 
 \begin{DoxyParams}{Parameters}
-{\em malloc\-Func} & The function to call to allocate memory or N\-U\-L\-L to reset to the default. \\
+{\em malloc\+Func} & The function to call to allocate memory or N\+U\+L\+L to reset to the default. \\
 \hline
-{\em free\-Func} & The function to call to free memory or N\-U\-L\-L to reset to the default. \\
+{\em free\+Func} & The function to call to free memory or N\+U\+L\+L to reset to the default. \\
 \hline
 \end{DoxyParams}

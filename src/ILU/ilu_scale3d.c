@@ -30,7 +30,7 @@ static ILushort	*ShortPtr, *SShortPtr;
 static ILuint		*IntPtr, *SIntPtr;
 
 
-ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth)
+ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter)
 {
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
@@ -41,12 +41,12 @@ ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Heigh
 	ScaleY = (ILfloat)Height / Image->Height;
 	ScaleZ = (ILfloat)Depth / Image->Depth;
 
-	//if (iluFilter == ILU_NEAREST)
+	if (Filter == ILU_NEAREST)
 		return iluScale3DNear_(Image, Scaled, Width, Height, Depth);
-	//else if (iluFilter == ILU_LINEAR)
-		//return iluScale3DLinear_(Image, Scaled, Width, Height, Depth);
+	//else if (Filter == ILU_LINEAR)
+	return iluScale3DLinear_(Image, Scaled, Width, Height, Depth);
 	
-	// iluFilter == ILU_BILINEAR
+	// Filter == ILU_BILINEAR
 	//return iluScale3DBilinear_(Image, Scaled, Width, Height, Depth);
 }
 

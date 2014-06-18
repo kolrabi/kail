@@ -33,7 +33,7 @@ static ILfloat	*FloatPtr, *SFloatPtr;
 
 
 
-ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height)
+ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter)
 {
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
@@ -43,11 +43,11 @@ ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Heigh
 	ScaleX = (ILfloat)Width / Image->Width;
 	ScaleY = (ILfloat)Height / Image->Height;
 
-	if (iluFilter == ILU_NEAREST)
+	if (Filter == ILU_NEAREST)
 		return iluScale2DNear_(Image, Scaled, Width, Height);
-	else if (iluFilter == ILU_LINEAR)
+	else if (Filter == ILU_LINEAR)
 		return iluScale2DLinear_(Image, Scaled, Width, Height);
-	// iluFilter == ILU_BILINEAR
+	// Filter == ILU_BILINEAR
 	return iluScale2DBilinear_(Image, Scaled, Width, Height);
 }
 

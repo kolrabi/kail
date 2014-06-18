@@ -461,13 +461,14 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 	XpmPixel	*Colours;
 	ILint		Offset;
 #endif
+	SIO* io = &Image->io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO* io = &Image->io;
+	io = &Image->io;
 
 	Size = XpmGetsInternal(io, Buffer, BUFFER_SIZE);
 	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */"))) {
@@ -570,10 +571,10 @@ ILconst_string iFormatExtsXPM[] = {
 };
 
 ILformat iFormatXPM = { 
-	.Validate = iIsValidXpm, 
-	.Load     = iLoadXpmInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsXPM
+	/* .Validate = */ iIsValidXpm, 
+	/* .Load     = */ iLoadXpmInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsXPM
 };
 
 #endif//IL_NO_XPM

@@ -25,13 +25,15 @@ typedef struct {
 // Internal function to load a raw image
 static ILboolean iLoadRawInternal(ILimage *Image)
 {
+	RAW_HEAD 		Head;
+	SIO * 			io;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO * 			io = &Image->io;
-	RAW_HEAD 		Head;
+	io = &Image->io;
 
 	if (!SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
 		return IL_FALSE;
@@ -67,13 +69,15 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 // Internal function used to load the raw data.
 static ILboolean iSaveRawInternal(ILimage *Image)
 {
+	RAW_HEAD 		Head;
+	SIO *           io;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	RAW_HEAD 		Head;
+	io = &Image->io;
 
 	Head.Width 	= Image->Width;
 	Head.Height = Image->Height;
@@ -96,10 +100,10 @@ ILconst_string iFormatExtsRAW[] = {
 };
 
 ILformat iFormatRAW = { 
-	.Validate = NULL, 
-	.Load     = iLoadRawInternal, 
-	.Save     = iSaveRawInternal, 
-	.Exts     = iFormatExtsRAW
+	/* .Validate = */ NULL, 
+	/* .Load     = */ iLoadRawInternal, 
+	/* .Save     = */ iSaveRawInternal, 
+	/* .Exts     = */ iFormatExtsRAW
 };
 
 #endif//IL_NO_RAW

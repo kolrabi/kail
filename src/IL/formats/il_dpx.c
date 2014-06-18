@@ -68,6 +68,8 @@ DpxFixImageElement(DPX_IMAGE_ELEMENT *ImageElement, ILboolean big) {
 
 static ILboolean 
 DpxGetImageInfo(SIO *io, DPX_IMAGE_INFO *ImageInfo, ILboolean big) {
+	ILuint i;
+
 	if (SIOread(io, ImageInfo, 1, sizeof(*ImageInfo)) != sizeof(*ImageInfo))
 		return IL_FALSE;
 
@@ -83,7 +85,6 @@ DpxGetImageInfo(SIO *io, DPX_IMAGE_INFO *ImageInfo, ILboolean big) {
 		UInt  (&ImageInfo->Height);
 	}
 
-	ILuint i;
 	for (i = 0; i < 8; i++) {
 		DpxFixImageElement(&ImageInfo->ImageElement[i], big);
 	}
@@ -134,13 +135,14 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 	ILenum		Format = 0;
 	ILubyte		NumChans = 0;
 	ILboolean bigEndian = IL_FALSE;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 	
 	if (!DpxGetFileInfo(io, &FileInfo))
 		return IL_FALSE;
@@ -306,10 +308,10 @@ ILconst_string iFormatExtsDPX[] = {
 };
 
 ILformat iFormatDPX = { 
-	.Validate = iIsValidDpx, 
-	.Load     = iLoadDpxInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsDPX
+	/* .Validate = */ iIsValidDpx, 
+	/* .Load     = */ iLoadDpxInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsDPX
 };
 
 #endif//IL_NO_DPX

@@ -118,6 +118,8 @@ ILenum iDetermineTypeFuncs(ILimage *Image) {
 }
 
 ILboolean iIsValidIO(ILenum Type, SIO* io) {
+  const ILformat *format = iGetFormat(Type);
+
   if (io == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
@@ -131,7 +133,6 @@ ILboolean iIsValidIO(ILenum Type, SIO* io) {
     #endif
   }
 
-  const ILformat *format = iGetFormat(Type);
   if (format) {
     return format->Validate && format->Validate(io);
   }
@@ -153,9 +154,12 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
   }
 
   if (SIOopenRO(&Image->io, FileName)) {
+    ILboolean bRet;
     if (Type == IL_TYPE_UNKNOWN)
       Type = iDetermineTypeFuncs(Image);
-    ILboolean bRet = iLoadFuncs2(Image, Type);
+
+    bRet = iLoadFuncs2(Image, Type);
+
     SIOclose(&Image->io);
 
     if (Type == IL_CUT) {
@@ -181,10 +185,11 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
 }
 
 ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
+  const ILformat *format = iGetFormat(type);
+
   if (type == IL_TYPE_UNKNOWN)
     return IL_FALSE;
 
-  const ILformat *format = iGetFormat(type);
   if (format) {
     return format->Load != NULL && format->Load(image) && iFixImages(image);
   }
@@ -195,8 +200,8 @@ ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
 
 ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
   ILboolean bRet = IL_FALSE;
-
   const ILformat *format = iGetFormat(type);
+
   if (format) {
     return format->Save != NULL && format->Save(image);
   }
@@ -212,6 +217,8 @@ ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
 }
 
 ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName) {
+  ILboolean bRet = IL_FALSE;
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -227,7 +234,6 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName)
     return IL_FALSE;
   }
 
-  ILboolean bRet = IL_FALSE;
   Image->io.handle = Image->io.openWrite(FileName);
   if (Image->io.handle != NULL) {
     bRet = iSaveFuncs2(Image, type);
@@ -239,6 +245,9 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName)
 }
 
 ILboolean iSaveImage(ILimage *Image, ILconst_string FileName) {
+  ILenum type;
+  ILboolean bRet = IL_FALSE;
+
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -258,8 +267,7 @@ ILboolean iSaveImage(ILimage *Image, ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  ILenum type = ilTypeFromExt(FileName);
-  ILboolean bRet = IL_FALSE;
+  type = ilTypeFromExt(FileName);
   Image->io.handle = Image->io.openWrite(FileName);
   if (Image->io.handle != NULL) {
     bRet = iSaveFuncs2(Image, type);

@@ -92,6 +92,7 @@ ILboolean iSaveDdsInternal(ILimage *Image)
   ILubyte *CurData = NULL;
   ILint CubeTable[6] = { 0 };
   ILuint  CubeFlags;
+  ILimage *SubImage;
 
   CubeFlags = GetCubemapInfo(Image, CubeTable);
 
@@ -106,7 +107,6 @@ ILboolean iSaveDdsInternal(ILimage *Image)
 
   numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS); //this assumes all faces have same # of mipmaps
 
-  ILimage *SubImage;
   for (i = 0; i <= numFaces; ++i) {
     for (counter = 0; counter <= numMipMaps; counter++) {
       SubImage = iGetSubImage(Image, CubeTable[i]);
@@ -145,7 +145,8 @@ ILboolean iSaveDdsInternal(ILimage *Image)
 ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 {
   ILuint i, FourCC, Flags1 = 0, Flags2 = 0, ddsCaps1 = 0,
-  LinearSize, BlockSize, ddsCaps2 = 0;
+          LinearSize, BlockSize, ddsCaps2 = 0;
+  ILint numMipMaps;
   SIO *io = &Image->io;
 
   Flags1 |= DDS_LINEARSIZE | DDS_MIPMAPCOUNT | DDS_WIDTH | DDS_HEIGHT | DDS_CAPS | DDS_PIXELFORMAT;
@@ -228,7 +229,6 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   else
     SaveLittleUInt(io,0);           // Depth
 
-  ILint numMipMaps;
   numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
   SaveLittleUInt(io, numMipMaps + 1);  // MipMapCount
   SaveLittleUInt(io,0);     // AlphaBitDepth

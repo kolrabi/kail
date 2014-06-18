@@ -38,14 +38,15 @@ static ILboolean iLoadColPal(ILimage *Image)
 {
 	ILuint		RealFileSize, FileSize;
 	ILushort	Version;
+	ILpal NewPal;
+	SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	ILpal NewPal;
+	io = &Image->io;
 	imemclear(&NewPal, sizeof(NewPal));
 
 	SIOseek(io, 0, IL_SEEK_END);
@@ -103,8 +104,8 @@ ILconst_string iFormatExtsCOL_PAL[] = {
 };
 
 ILformat iFormatCOL_PAL = { 
-  .Validate = iIsValidColPal, 
-  .Load     = iLoadColPal, 
-  .Save     = NULL,
-  .Exts     = iFormatExtsCOL_PAL
+  /* .Validate = */ iIsValidColPal, 
+  /* .Load     = */ iLoadColPal, 
+  /* .Save     = */ NULL,
+  /* .Exts     = */ iFormatExtsCOL_PAL
 };

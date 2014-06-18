@@ -22,14 +22,15 @@ typedef struct {
 // Internal function used to load the FTX.
 static ILboolean iLoadFtxInternal(ILimage *Image)
 {
+	FTX_HEAD Head;
+	SIO *io;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+	io = &Image->io;
 
-	SIO *io = &Image->io;
-
-	FTX_HEAD Head;
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head)) {
 		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
@@ -70,10 +71,10 @@ ILconst_string iFormatExtsFTX[] = {
 };
 
 ILformat iFormatFTX = { 
-	.Validate = NULL, 
-	.Load     = iLoadFtxInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsFTX
+	/* .Validate = */ NULL, 
+	/* .Load     = */ iLoadFtxInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsFTX
 };
 
 #endif//IL_NO_FTX

@@ -15,7 +15,7 @@
  *               Image manipulation utilities beyond just loading
  *               and saving.
  *
- * @ingroup ilu_ILU
+ * @ingroup ILU
  * @{
  * 
  * @defgroup ilu_setup  Initialization / Deinitalization
@@ -32,24 +32,27 @@
  * @defgroup ilu_state  Global Parameters and Configurations.
  *                      
  */
+#include "ilu_internal.h"
 #include "ilu_filter.h"
 #include "ilu_states.h"
 #include "ilu_region.h"
 
-#define SIMPLE_PROC(img, f) \
+#define SIMPLE_PROC(img, f) { \
+  ILimage *img; \
   iLockState(); \
-  ILimage *img = iLockCurImage(); \
+  img = iLockCurImage(); \
   iUnlockState(); \
   f; \
-  iUnlockImage(img); \
+  iUnlockImage(img);  }
 
-#define SIMPLE_FUNC(img, r, f) \
+#define SIMPLE_FUNC(img, r, f) { \
+  ILimage *img; r Result; \
   iLockState(); \
-  ILimage *img = iLockCurImage(); \
+  img = iLockCurImage(); \
   iUnlockState(); \
-  r Result = f; \
+  Result = (f); \
   iUnlockImage(img); \
-  return Result;
+  return Result; }
 
 /**
  * Funny as hell filter that I stumbled upon accidentally.
@@ -131,12 +134,15 @@ ILuint ILAPIENTRY iluColoursUsed() {
  * @ingroup ilu_util
  */
 ILboolean ILAPIENTRY iluCompareImage(ILuint Comp) {
+  ILimage * Image, * Original;
+  ILboolean Result;
+
   iLockState();
-  ILimage * Image     = iLockCurImage();
-  ILimage * Original  = iLockImage(Comp);
+  Image     = iLockCurImage();
+  Original  = iLockImage(Comp);
   iUnlockState();
 
-  ILboolean Result    = iCompareImage(Image, Original);
+  Result    = iCompareImage(Image, Original);
   iUnlockImage(Image);
   iUnlockImage(Original);
   return Result;
@@ -301,14 +307,23 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
+  ILimage *Image;
+  ILenum   Filter;
+  ILboolean Result;
+
   if (XDim <= 0.0f || YDim <= 0.0f || ZDim <= 0.0f) {
     iSetError(ILU_INVALID_PARAM);
     return IL_FALSE;
   }
 
-
-  SIMPLE_FUNC(Image, ILboolean, iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
-          (ILuint)(Image->Depth * ZDim)));
+  iLockState(); 
+  Image = iLockCurImage();
+  Filter = iluGetInteger(ILU_FILTER);
+  iUnlockState();
+  Result = iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
+          (ILuint)(Image->Depth * ZDim), Filter);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -366,14 +381,17 @@ ILuint ILAPIENTRY iluGenImage() {
  * @ingroup ilu_util
  */
 void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
+  ILimage *Image;
+  ILuint Id;
+
   if (Info == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return;
   }
 
   iLockState();
-  ILimage *  Image = iLockCurImage();
-  ILuint     Id    = ilGetCurName();
+  Image = iLockCurImage();
+  Id    = ilGetCurName();
   iUnlockState();
 
   if (Image == NULL) {
@@ -446,9 +464,12 @@ void ILAPIENTRY iluGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup ilu_state
  */
 ILconst_string ILAPIENTRY iluGetString(ILenum StringName) {
+  ILconst_string Result;
+
   iLockState();
-  ILconst_string Result = iGetString(StringName);
+  Result = iGetString(StringName);
   iUnlockState();
+
   return Result;
 }
 
@@ -640,7 +661,19 @@ ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Satu
  * @ingroup ilu_geometry
  */
 ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth) {
-  SIMPLE_FUNC(Image, ILboolean, iScale(Image, Width, Height, Depth));
+  ILimage *Image;
+  ILenum Filter;
+  ILboolean Result;
+
+  iLockState(); 
+  Image  = iLockCurImage();
+  Filter = iluGetInteger(ILU_FILTER);
+  iUnlockState();
+
+  Result = iScale(Image, Width, Height, Depth, Filter);
+  iUnlockImage(Image);
+
+  return Result;
 }
 
 /**
@@ -669,9 +702,12 @@ ILboolean ILAPIENTRY iluScaleColours(ILfloat r, ILfloat g, ILfloat b) {
  * @ingroup ilu_state
  */
 ILboolean ILAPIENTRY iluSetLanguage(ILenum Language) {
+  ILboolean Result;
+
   iLockState();
-  ILboolean Result = iSetLanguage(Language);
+  Result = iSetLanguage(Language);
   iUnlockState();
+
   return Result;
 }
 

@@ -60,13 +60,15 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 	HALOHEAD	HaloHead;
 	ILushort	*TempPal;
 	ILuint		i, Size;
+	ILpal NewPal;
+	SIO *io = &Image->io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 
 	if (SIOread(io, &HaloHead, sizeof(HALOHEAD), 1) != 1)
 		return IL_FALSE;
@@ -95,7 +97,6 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 		return IL_FALSE;
 	}
 
-	ILpal NewPal;
 	imemclear(&NewPal, sizeof(NewPal));
 
 	NewPal.PalType = IL_PAL_RGB24;
@@ -127,8 +128,8 @@ ILconst_string iFormatExtsHALO_PAL[] = {
 };
 
 ILformat iFormatHALO_PAL = { 
-  .Validate = iIsValidHaloPal, 
-  .Load     = iLoadHaloPal, 
-  .Save     = NULL,
-  .Exts     = iFormatExtsHALO_PAL
+  /* .Validate = */ iIsValidHaloPal, 
+  /* .Load     = */ iLoadHaloPal, 
+  /* .Save     = */ NULL,
+  /* .Exts     = */ iFormatExtsHALO_PAL
 };

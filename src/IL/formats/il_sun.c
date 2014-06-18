@@ -167,9 +167,9 @@ static void iSunDecodeRle(ILimage* image) {
 
   while (dataOffset < image->SizeOfData) {
     ILint res = SIOgetc(io);
+    ILubyte Flag = res;
     if (res == IL_EOF) break;
     
-    ILubyte Flag = res;
     if (Flag == 0x80) {
       ILuint count = SIOgetc(io);
       if (count == 0) {
@@ -207,13 +207,15 @@ static ILboolean iLoadSunInternal(ILimage* image) {
   ILubyte PaddingData[16];
   ILubyte* buf = NULL;
   ILuint outputOffset;
+  SIO *io;
+  ILuint y;
 
   if (image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  SIO *io = &image->io;
+  io = &image->io;
 
   if (iGetSunHead(io, &Header) < sizeof(Header)) {
     iSetError(IL_INVALID_FILE_HEADER);
@@ -276,23 +278,30 @@ static ILboolean iLoadSunInternal(ILimage* image) {
           return IL_FALSE;
       }
       else {  // Colour-mapped image
+        int colCount;
+        ILubyte* r;
+        ILubyte* g;
+        ILubyte* b;
+        ILubyte* sunPalette;
+        ILint i;
+
         if (!iTexImage(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
         image->Pal.Palette = (ILubyte*)ialloc(Header.ColorMapLength);  // Allocate color map.
         if (image->Pal.Palette == NULL)
           return IL_FALSE;
 
-        ILubyte* sunPalette = (ILubyte*) ialloc(Header.ColorMapLength);
+        sunPalette = (ILubyte*) ialloc(Header.ColorMapLength);
         if (SIOread(io, sunPalette, 1, Header.ColorMapLength) != Header.ColorMapLength) {  // Read color map.
           iSetError(IL_FILE_READ_ERROR);
           return IL_FALSE;
         }
-        int colCount = Header.ColorMapLength / 3;
-        ILubyte* r = sunPalette;
-        ILubyte* g = &sunPalette[Header.ColorMapLength / 3];
-        ILubyte* b = &sunPalette[2*colCount];
+        
+        colCount = Header.ColorMapLength / 3;
+        r = sunPalette;
+        g = &sunPalette[Header.ColorMapLength / 3];
+        b = &sunPalette[2*colCount];
 
-        int i;
         for (i = 0; i < colCount; ++i) {
           image->Pal.Palette[3*i] = r[i];
           image->Pal.Palette[3*i+1] = g[i];
@@ -362,7 +371,6 @@ static ILboolean iLoadSunInternal(ILimage* image) {
       buf = (ILubyte*) ialloc(4*image->Width);
       outputOffset = 0;
 
-      ILuint y;
       for (y = 0; y < Header.Height; y++) {
         ILuint inputOffset = 0;
         ILuint read = SIOread(io, buf, 1, 4*image->Width);
@@ -396,10 +404,10 @@ ILconst_string iFormatExtsSUN[] = {
 };
 
 ILformat iFormatSUN = { 
-  .Validate = iIsValidSun, 
-  .Load     = iLoadSunInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsSUN
+  /* .Validate = */ iIsValidSun, 
+  /* .Load     = */ iLoadSunInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsSUN
 };
 
 #endif//IL_NO_SUN

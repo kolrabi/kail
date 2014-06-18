@@ -33,9 +33,9 @@
 // IL-specific #define's
 //
 
-#define IL_VERSION_1_8_2
-#define IL_VERSION_1_8_3
-#define IL_VERSION              183
+#define IL_VERSION_1_9_0
+#define IL_VERSION_1_9_0
+#define IL_VERSION              190
 
 #define IL_VARIANT_KAIL
 
@@ -89,11 +89,8 @@ extern "C" {
 #if defined __GNUC__ && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ > 0))
   // __attribute__((deprecated)) is supported by GCC 3.1 and later.
   #define IL_DEPRECATED(D) D __attribute__((deprecated))
-#elif defined _MSC_VER && _MSC_VER >= 1300
-  // __declspec(deprecated) is supported by MSVC 7.0 and later.
-  #define IL_DEPRECATED(D) __declspec(deprecated) D
 #else
-  #define IL_DEPRECATED (D) D
+  #define IL_DEPRECATED(D) D
 #endif
 
 //
@@ -115,14 +112,24 @@ extern "C" {
 // This is from Win32's <wingdi.h> and <winnt.h>
 #if defined(__LCC__)
   #define ILAPI __stdcall
+  #define ILAPI_DEPRECATED 
 #elif defined(_WIN32) //changed 20031221 to fix bug 840421
   #ifdef IL_STATIC_LIB
     #define ILAPI
+    #define ILAPI_DEPRECATED 
   #else
     #ifdef _IL_BUILD_LIBRARY
+      #if defined _MSC_VER && _MSC_VER >= 1300
+        // __declspec(deprecated) is supported by MSVC 7.0 and later.
+        #define ILAPI_DEPRECATED __declspec(dllexport deprecated)
+      #else
+        #define ILAPI_DEPRECATED 
+      #endif
+
       #define ILAPI __declspec(dllexport)
     #else
       #define ILAPI 
+      #define ILAPI_DEPRECATED __declspec(deprecated)
     #endif
   #endif
 #elif __APPLE__
@@ -539,7 +546,7 @@ typedef ILenum    (ILAPIENTRY *IL_SAVEPROC) (ILconst_string);
 
 // State
 ILAPI void      ILAPIENTRY ilBindImage(ILuint Image);
-ILAPI ILboolean ILAPIENTRY IL_DEPRECATED(ilCompressFunc(ILenum Mode)); // value not used anywhere
+ILAPI_DEPRECATED ILboolean ILAPIENTRY IL_DEPRECATED(ilCompressFunc(ILenum Mode)); // value not used anywhere
 ILAPI ILboolean ILAPIENTRY ilDisable(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilEnable(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilFormatFunc(ILenum Mode);
@@ -666,7 +673,7 @@ ILAPI ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, IL
 ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 
 
-#ifdef IL_VERSION_1_8_3
+#ifdef IL_VERSION_1_9_0
 ILAPI ILboolean ILAPIENTRY ilAddAlpha();
 ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 #endif 

@@ -3,7 +3,7 @@
 
 #define IL_USE_PRAGMA_LIBS
 
-// Supported APIs (ILUT)
+/* Supported APIs (ILUT) */
 
 #cmakedefine ILUT_USE_ALLEGRO 1
 #cmakedefine ILUT_USE_DIRECTX8 1
@@ -14,9 +14,4 @@
 #cmakedefine ILUT_USE_XRENDER 1
 #cmakedefine ILUT_USE_XSHM 1
 
-#ifdef ILUT_USE_DIRECTX9
-// allow only one directx
-// #undef ILUT_USE_DIRECTX8
-#endif
-
-#endif//__ILUT_CONFIG_H__
+#endif /* __ILUT_CONFIG_H__ */

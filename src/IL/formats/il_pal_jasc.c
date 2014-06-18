@@ -39,14 +39,15 @@ static ILboolean iLoadJascPal(ILimage *Image)
 {
 	ILuint NumColours, i, c;
 	char Buff[BUFFLEN];
+	ILpal NewPal;
+    SIO *io;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &Image->io;
-	ILpal NewPal;
+	io = &Image->io;
 	imemclear(&NewPal, sizeof(NewPal));
 
 	if ( !SIOgetw(io, Buff, BUFFLEN) 
@@ -106,6 +107,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 static ILboolean iSaveJascPal(ILimage *Image) {
 	ILuint	i, PalBpp, NumCols = ilGetInteger(IL_PALETTE_NUM_COLS);
 	SIO *io = &Image->io;
+    ILpal *ConvPal;
 
 	if (NumCols == 0 || NumCols > 256) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -113,7 +115,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 	}
 
 	// Create a copy of the current palette and convert it to RGB24 format.
-	ILpal *ConvPal = iConvertPal(&Image->Pal, IL_PAL_RGB24);
+	ConvPal = iConvertPal(&Image->Pal, IL_PAL_RGB24);
 	if (!ConvPal) {
 		return IL_FALSE;
 	}
@@ -144,8 +146,8 @@ ILconst_string iFormatExtsJASC_PAL[] = {
 };
 
 ILformat iFormatJASC_PAL = { 
-  .Validate = iIsValidJascPal, 
-  .Load     = iLoadJascPal, 
-  .Save     = iSaveJascPal,
-  .Exts     = iFormatExtsJASC_PAL
+  /* .Validate = */ iIsValidJascPal, 
+  /* .Load     = */ iLoadJascPal, 
+  /* .Save     = */ iSaveJascPal,
+  /* .Exts     = */ iFormatExtsJASC_PAL
 };

@@ -26,13 +26,15 @@ iSaveCHEADInternal(ILimage* image)
 	ILuint		i = 0, j;
 	ILimage		*TempImage;
 	const char	*Name;
+	char        tmp[512];
+	SIO *       io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO * io = &image->io;
+	io = &image->io;
 
 	Name = iGetString(IL_CHEAD_HEADER_STRING);
 	if (Name == NULL)
@@ -45,8 +47,6 @@ iSaveCHEADInternal(ILimage* image)
 	} else {
 		TempImage = image;
 	}
-
-	char tmp[512];
 
 	SIOputs(io, "//#include <il/il.h>\n");
 	SIOputs(io, "// C Image Header:\n\n\n");
@@ -132,10 +132,10 @@ ILconst_string iFormatExtsCHEAD[] = {
 };
 
 ILformat iFormatCHEAD = { 
-	.Validate = NULL, 
-	.Load     = NULL, 
-	.Save     = iSaveCHEADInternal,
-	.Exts     = iFormatExtsCHEAD
+	/* .Validate = */ NULL, 
+	/* .Load     = */ NULL, 
+	/* .Save     = */ iSaveCHEADInternal,
+	/* .Exts     = */ iFormatExtsCHEAD
 };
 
 #endif//IL_NO_CHEAD

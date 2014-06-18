@@ -4,8 +4,8 @@ PROJECT                 ( IL C CXX )
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 SET                     ( SOURCES
-                          altivec/common.c
-                          altivec/typeconversion.c
+                          # altivec/common.c
+                          # altivec/typeconversion.c
 
                           algo/il_neuquant.c
                           algo/il_nvidia.cc
@@ -117,21 +117,32 @@ ELSE                    ()
   ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
 ENDIF                   ()
 
+SET                     ( LINK_LIBS "" )
+
+IF                      ( NOT IL_NO_JP2 )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${JASPER_LIBRARIES} )
+ENDIF                   ()
+
+IF                      ( NOT IL_NO_LCMS )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${LCMS2_LIBRARIES} )
+ENDIF                   ()
+
+IF                      ( MINGW ) 
+  SET                   ( LINK_LIBS ${LINK_LIBS} m z )
+ENDIF                   ()
+
 INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )
 TARGET_LINK_LIBRARIES   ( ${LIBNAME}
-                          ${JASPER_LIBRARIES}
+                          ${LINK_LIBS}
                           ${MNG_LIBRARIES}
                           ${JPEG_LIBRARIES}
                           ${PNG_LIBRARIES}
                           ${TIFF_LIBRARIES}
-                          ${LCMS2_LIBRARIES}
                           ${ALLEGRO_LIBRARIES}
                           ${OPENGL_LIBRARIES}
                           ${SDL_LIBRARIES}
                           ${X11_LIBRARIES}
                           ${CMAKE_THREAD_LIBS_INIT}
-                          m
-                          z
                         )
 
 INSTALL                 ( TARGETS ${LIBNAME}

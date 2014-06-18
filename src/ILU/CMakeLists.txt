@@ -37,9 +37,9 @@ ADD_LIBRARY             ( ILU ${SOURCES} )
 IF                      ( WIN32 )
   # Windows programs need a ILU.dll not libILU.dll
   SET_TARGET_PROPERTIES ( ILU PROPERTIES PREFIX "" )
-  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libDevIL.dll.a )
+  TARGET_LINK_LIBRARIES ( ILU DevIL )
 ELSE                    ()
-  TARGET_LINK_LIBRARIES ( ILU ${CMAKE_BINARY_DIR}/src/IL/libIL.so )
+  TARGET_LINK_LIBRARIES ( ILU IL )
 ENDIF                   ()
 
 INSTALL                 ( TARGETS ILU

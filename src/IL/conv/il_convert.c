@@ -542,12 +542,12 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 
 ILboolean iAddAlpha(ILimage *Image)
 {
+  ILubyte   *NewData, NewBpp;
+  ILuint    i = 0, j = 0, Size;
+
   if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
     return iAddAlphaKey(Image);
   }
-
-  ILubyte   *NewData, NewBpp;
-  ILuint    i = 0, j = 0, Size;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);

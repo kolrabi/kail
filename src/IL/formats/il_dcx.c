@@ -22,9 +22,9 @@ static ILimage *iUncompressDcxSmall(SIO *io, DCXHEAD *Header);
 static ILboolean 
 iIsValidDcx(SIO *io) {
 	ILuint Signature;
+	ILint Read = SIOread(io, &Signature, 1, 4);
 
-	ILuint Read = SIOread(io, &Signature, 1, 4);
-	SIOseek(io, -Read, IL_SEEK_CUR);
+    SIOseek(io, -Read, IL_SEEK_CUR);
 
 	if (Read != 4)
 		return IL_FALSE;
@@ -40,7 +40,6 @@ iGetDcxHead(SIO *io, DCXHEAD *Head) {
 	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
 		return IL_FALSE;
 
-	//UInt  (&Head->Signature);
 	UShort(&Head->Xmin);
 	UShort(&Head->Ymin);
 	UShort(&Head->Xmax);
@@ -98,13 +97,14 @@ iLoadDcxInternal(ILimage *TargetImage)
 	ILuint	Signature, i, Entries[1024], Num = 0;
 	ILimage	*Prev = TargetImage;
 	ILimage *Image = TargetImage;
+    SIO *    io;
 
 	if (TargetImage == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &TargetImage->io;
+	io = &TargetImage->io;
 
 	if (!iIsValidDcx(io))
 		return IL_FALSE;
@@ -402,10 +402,10 @@ ILconst_string iFormatExtsDCX[] = {
 };
 
 ILformat iFormatDCX = { 
-	.Validate = iIsValidDcx, 
-	.Load     = iLoadDcxInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsDCX
+	/* .Validate = */ iIsValidDcx, 
+	/* .Load     = */ iLoadDcxInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsDCX
 };
 
 #endif//IL_NO_DCX

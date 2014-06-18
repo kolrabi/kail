@@ -165,13 +165,14 @@ iLoadFitsInternal(ILimage* image) {
 	ILuint		i, NumPix;
 	ILfloat		MaxF = 0.0f;
 	ILdouble	MaxD = 0.0f;
+	SIO *io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	if (!iGetFitsHead(io, &Header))
 		return IL_FALSE;
@@ -367,8 +368,8 @@ GetCardInt(char *Buffer, ILint *Val) {
 // Internal function to get the header and check it.
 static ILboolean
 iIsValidFits(SIO *io) {
-	char Sig[7];
-  ILuint Read = SIOread(io, &Sig, 1, 7);
+  char Sig[7];
+  ILint Read = SIOread(io, &Sig, 1, 7);
 
   SIOseek(io, -Read, IL_SEEK_CUR);
   return Read == 7 && memcmp(Sig, "SIMPLE ", 7) == 0;
@@ -395,10 +396,10 @@ ILconst_string iFormatExtsFITS[] = {
 };
 
 ILformat iFormatFITS = { 
-	.Validate = iIsValidFits, 
-	.Load     = iLoadFitsInternal, 
-	.Save     = NULL, 
-	.Exts     = iFormatExtsFITS
+	/* .Validate = */ iIsValidFits, 
+	/* .Load     = */ iLoadFitsInternal, 
+	/* .Save     = */ NULL, 
+	/* .Exts     = */ iFormatExtsFITS
 };
 
 #endif//IL_NO_FITS

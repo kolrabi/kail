@@ -17,7 +17,7 @@
 #include "il_internal.h"
 #include "il_stack.h"
 
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
 #include <pthread.h>
 
 static pthread_key_t iTlsKey;
@@ -25,7 +25,7 @@ pthread_mutex_t iStateMutex;
 #endif
 
 static void iSetImage0();
-static void iBindImageTemp();
+// static void iBindImageTemp();
 
 // Global variables for il_stack.c shared among threads
 ILuint      StackSize     = 0;
@@ -47,7 +47,7 @@ static void iFreeTLSData(void *ptr) {
 }
 
 IL_TLS_DATA * iGetTLSData() {
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   IL_TLS_DATA *iDataPtr = (IL_TLS_DATA*)pthread_getspecific(iTlsKey);
   if (iDataPtr == NULL) {
     iDataPtr = ioalloc(IL_TLS_DATA);
@@ -99,9 +99,13 @@ ILimage * iGetImage(ILuint Image) {
 }
 
 ILimage * iGetSelectedImage(const IL_IMAGE_SELECTION *CurSel) {
-  if (CurSel == NULL) CurSel = iGetSelection();
-  ILimage *Image = iGetImage(CurSel->CurName);
+  ILimage *Image;
   ILuint i;
+
+  if (CurSel == NULL) CurSel = iGetSelection();
+
+  Image = iGetImage(CurSel->CurName);
+
   for (i=0; i<CurSel->CurFrame; i++) {
     if (Image) Image = Image->Next;
   }
@@ -336,10 +340,11 @@ ILAPI ILimage * ILAPIENTRY iGetBaseImage() {
 //! Sets the current mipmap level
 ILboolean iActiveMipmap(ILuint Number) {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
+  ILimage *Image;
 
   CurSel.CurMipmap += Number; // FIXME: this is for compatibility
   
-  ILimage *Image = iGetSelectedImage(&CurSel);
+  Image = iGetSelectedImage(&CurSel);
   if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -351,6 +356,9 @@ ILboolean iActiveMipmap(ILuint Number) {
 
 ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
 {
+  ILimage * iTempImage = Image;
+  ILuint Current;
+
   if (Image == NULL) {
     return NULL;
   }
@@ -359,13 +367,11 @@ ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
     return Image;
   }
 
-  ILimage * iTempImage = Image;
   Image = Image->Mipmaps;
   if (Image == NULL) {
     return NULL;
   }
 
-  ILuint Current;
   for (Current = 1; Current < Number; Current++) {
     Image = Image->Mipmaps;
     if (Image == NULL) {
@@ -382,10 +388,11 @@ ILimage *ILAPIENTRY iGetMipmap(ILimage *Image, ILuint Number)
 ILboolean iActiveImage(ILuint Number)
 {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
+  ILimage *Image;
 
   CurSel.CurFrame += Number; // FIXME: this is for compatibility
   
-  ILimage *Image = iGetSelectedImage(&CurSel);
+  Image = iGetSelectedImage(&CurSel);
   if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -398,6 +405,8 @@ ILboolean iActiveImage(ILuint Number)
 //! Used for setting the current image if it is an animation.
 ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
 {
+  ILuint Current;
+
   if (Image == NULL) {
     return NULL;
   }
@@ -410,7 +419,6 @@ ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
     return NULL;
   }
 
-  ILuint Current;
   for (Current = 0; Current < Number; Current++) {
     if (Image->Next == NULL) {
       return NULL;
@@ -423,10 +431,11 @@ ILimage * ILAPIENTRY iGetSubImage(ILimage *Image, ILuint Number)
 
 ILboolean iActiveFace(ILuint Number) {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
+  ILimage *Image;
 
   CurSel.CurFace += Number; // FIXME: this is for compatibility
   
-  ILimage *Image = iGetSelectedImage(&CurSel);
+  Image = iGetSelectedImage(&CurSel);
   if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -440,10 +449,11 @@ ILboolean iActiveFace(ILuint Number) {
 ILboolean iActiveLayer(ILuint Number)
 {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
+  ILimage *Image;
 
   CurSel.CurLayer += Number; // FIXME: this is for compatibility
   
-  ILimage *Image = iGetSelectedImage(&CurSel);
+  Image = iGetSelectedImage(&CurSel);
   if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
@@ -560,17 +570,17 @@ static ILboolean IsInit = IL_FALSE;
 // ONLY call at startup.
 void iInitIL()
 {
+  const char *IL_TRACE_ENV      = getenv("IL_TRACE");
+  const char *IL_TRACE_FILE_ENV = getenv("IL_TRACE_FILE");
+
   // if it is already initialized skip initialization
   if (IsInit == IL_TRUE ) 
     return;
 
-  const char *IL_TRACE_ENV      = getenv("IL_TRACE");
-  const char *IL_TRACE_FILE_ENV = getenv("IL_TRACE_FILE");
-
   if (IL_TRACE_FILE_ENV)          iTraceOut = fopen(IL_TRACE_FILE_ENV, "w+b");
   if (IL_TRACE_ENV && !iTraceOut) iTraceOut = stderr;
 
-  #ifdef IL_THREAD_SAFE_PTHREAD
+  #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_init(&iStateMutex, NULL);
   pthread_key_create(&iTlsKey, &iFreeTLSData);
   #endif
@@ -578,7 +588,7 @@ void iInitIL()
   iSetError(IL_NO_ERROR);
   ilDefaultStates();      // Set states to their defaults.
   iSetImage0();           // Beware!  Clears all existing textures!
-  iBindImageTemp();       // Go ahead and create the temporary image.
+  // iBindImageTemp();       // Go ahead and create the temporary image.
   iInitFormats();
 
   IsInit = IL_TRUE;
@@ -642,6 +652,7 @@ static void iSetImage0() {
   ilDefaultImage();
 }
 
+/*
 static void iBindImageTemp() {
   if (ImageStack == NULL || StackSize <= 1)
     if (!iEnlargeStack())
@@ -660,16 +671,17 @@ static void iBindImageTemp() {
   if (lastImage)
     iGetSelectedImage(iGetSelection())->io = lastImage->io;
 }
+*/
 
 ILAPI void ILAPIENTRY iLockState() {
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&iStateMutex);
   iTrace("---- Locking state");
 #endif
 }
 
 ILAPI void ILAPIENTRY iUnlockState() {
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_unlock(&iStateMutex);
   iTrace("---- Unlocking state");
 #endif
@@ -683,7 +695,7 @@ ILAPI ILimage * ILAPIENTRY iLockCurImage() {
 
   iTrace("---- Locking current image %p", Image);
 
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
 #endif
   return Image;
@@ -697,7 +709,7 @@ ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
 
   iTrace("---- Locking image %p", Image);
 
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
 #endif
 
@@ -709,7 +721,7 @@ ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
 
   iTrace("---- Unlocking image %p", Image);
 
-#ifdef IL_THREAD_SAFE_PTHREAD
+#if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_unlock(&Image->Mutex);
 #endif
 }

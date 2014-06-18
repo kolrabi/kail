@@ -60,9 +60,10 @@ ILint ILAPIENTRY iSizePutc(ILubyte Char, ILHANDLE h)
 
 ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
+  SIO *io = (SIO*)h;
+
   (void)Buffer;
 
-  SIO *io = (SIO*)h;
   io->lumpPos += Size * Number;
   if (io->lumpPos > io->lumpSize)
     io->lumpSize = io->lumpPos;
@@ -77,13 +78,16 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
 // 2. The uncompressed file handlers are usually not a performance concern here, considering that no data
 //    is actually written to a file
 ILuint iDetermineSize(ILimage *Image, ILenum Type) {
+   SIO io;
+   ILuint size;
+
    if (!Image)
     return 0;
 
-  SIO io = Image->io;
+  io = Image->io;
   iSetOutputFake(Image);  // Sets iputc, iwrite, etc. to functions above.
   iSaveFuncs2(Image, Type);
-  ILuint size = Image->io.lumpSize;
+  size = Image->io.lumpSize;
   Image->io = io;
   return size;
 }

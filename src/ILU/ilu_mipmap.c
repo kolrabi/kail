@@ -12,9 +12,6 @@
 
 
 #include "ilu_internal.h"
-//#include "ilu_mipmap.h"
-//#include "ilu_states.h"
-
 
 ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth) {
   if (Parent == NULL) {
@@ -42,7 +39,7 @@ ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint H
   if (Depth == 0)
     Depth = 1;
 
-  Parent->Mipmaps = iluScale_(Parent, Width, Height, Depth);
+  Parent->Mipmaps = iluScale_(Parent, Width, Height, Depth, ILU_LINEAR);
   if (Parent->Mipmaps == NULL)
     return IL_FALSE;
 

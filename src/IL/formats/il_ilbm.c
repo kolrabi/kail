@@ -81,24 +81,12 @@ static ILboolean iIsValidIlbm(SIO *io)
 
 static ILboolean iLoadIlbmInternal(ILimage *Image)
 {
-  if (Image == NULL) {
-      iSetError(IL_ILLEGAL_OPERATION);
-      return IL_FALSE;
-  }
-
-  SIO *io = &Image->io;
-
-  if (!iIsValidIlbm(io)) {
-      iSetError(IL_INVALID_VALUE);
-      return IL_FALSE;
-  }
-
   struct { ILubyte r, g, b; } scratch_pal[MAXCOLORS];
   ILenum      format; /* IL_RGB (ham or 24bit) or IL_COLOUR_INDEX */
 
   ILubyte     colormap[MAXCOLORS*3], *ptr, count, color, msk;
   ILuint      i, j, bytesperline, nbplanes, plane, h;
-  ILuint      remainingbytes;
+  ILuint      remainingbytes, size = 0;
   ILuint      width;
 
   char *      error     = NULL;
@@ -111,16 +99,30 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
   ILubyte *   MiniBuf   = NULL;
 
   BMHD        bmhd;
+  ILubyte     id[4];
+
+  SIO *io = &Image->io;
+
+  if (Image == NULL) {
+      iSetError(IL_ILLEGAL_OPERATION);
+      return IL_FALSE;
+  }
+
+  io = &Image->io;
+
+  if (!iIsValidIlbm(io)) {
+      iSetError(IL_INVALID_VALUE);
+      return IL_FALSE;
+  }
+
   memset( &bmhd, 0, sizeof( BMHD ) );
 
-  ILubyte     id[4];
   if ( !SIOread( io, id, 4, 1 ) ) {
     error = "error reading IFF chunk";
     goto done;
   }
 
   /* Should be the size of the file minus 4+4 ( 'FORM'+size ) */
-  ILuint      size      = 0;
   if ( !SIOread( io, &size, 4, 1 ) ) {
     error = "error reading IFF chunk size";
     goto done;
@@ -150,6 +152,8 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
 
   /* look for BODY chunk */
   while ( memcmp( id, "BODY", 4 ) != 0 ) {
+    ILuint bytesloaded = 0;
+
     if ( !SIOread( io, id, 4, 1 ) ) {
       error = "error reading IFF chunk";
       goto done;
@@ -160,7 +164,6 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
       goto done;
     }
 
-    ILuint bytesloaded = 0;
     BigUInt(&size);
 
     if ( !memcmp( id, "BMHD", 4 ) ) { /* Bitmap header */
@@ -471,10 +474,10 @@ ILconst_string iFormatExtsILBM[] = {
 };
 
 ILformat iFormatILBM = { 
-  .Validate = iIsValidIlbm, 
-  .Load     = iLoadIlbmInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsILBM
+  /* .Validate = */ iIsValidIlbm, 
+  /* .Load     = */ iLoadIlbmInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsILBM
 };
 
 #endif//IL_NO_ILBM

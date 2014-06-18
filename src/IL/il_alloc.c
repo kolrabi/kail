@@ -80,10 +80,11 @@ void* ILAPIENTRY ialloc(const ILsizei Size) {
 }
 
 void ILAPIENTRY ifree(void *Ptr) {
+	void **pptr = (void **)Ptr;
+
 	if (Ptr == NULL)
 		return;
 
-	void **pptr = (void **)Ptr;
 	pptr--;
 	((mFree)*pptr)(pptr);
 }

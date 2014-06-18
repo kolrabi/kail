@@ -16,11 +16,6 @@
 #include "ilut_internal.h"
 
 #ifdef ILUT_USE_OPENGL
-ILenum    ilutGLFormat(ILenum, ILubyte);
-ILimage*  MakeGLCompliant2D(ILimage *Src);
-ILimage*  MakeGLCompliant3D(ILimage *Src);
-ILboolean IsExtensionSupported(const char *extension);
-
 
 #ifdef _WIN32
 	#include <windows.h>

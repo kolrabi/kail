@@ -16,7 +16,7 @@
 
 
 ILconst_string _iluVendor = IL_TEXT("kolrabi");
-ILconst_string _iluVersion  = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.8.3");// IL_TEXT(__DATE__));
+ILconst_string _iluVersion  = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.9.0");// IL_TEXT(__DATE__));
 
 ILconst_string iGetString(ILenum StringName) {
   switch (StringName)   {
@@ -54,6 +54,7 @@ ILenum iluFilter = ILU_NEAREST;
 ILenum iluPlacement = ILU_CENTER;
 
 void iImageParameter(ILenum PName, ILenum Param) {
+  iLockState(); 
   switch (PName)
   {
     case ILU_FILTER:
@@ -72,7 +73,6 @@ void iImageParameter(ILenum PName, ILenum Param) {
           break;
         default:
           iSetError(ILU_INVALID_ENUM);
-          return;
       }
       break;
 
@@ -88,13 +88,11 @@ void iImageParameter(ILenum PName, ILenum Param) {
           break;
         default:
           iSetError(ILU_INVALID_ENUM);
-          return;
       }
       break;
 
     default:
       iSetError(ILU_INVALID_ENUM);
-      return;
   }
-  return;
+  iUnlockState(); 
 }

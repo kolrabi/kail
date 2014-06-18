@@ -92,12 +92,12 @@ ILboolean iCheckPsp(PSPHEAD *Header)
 
 // Internal function used to load the PSP.
 static ILboolean iLoadPspInternal(ILimage *Image) {
-	if (Image == NULL) {
+	PSP_CTX ctx;
+
+    if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
-
-	PSP_CTX ctx;
 
 	ctx.Channels 		= NULL;
 	ctx.Alpha 			= NULL;
@@ -637,10 +637,10 @@ ILconst_string iFormatExtsPSP[] = {
 };
 
 ILformat iFormatPSP = { 
-  .Validate = iIsValidPsp, 
-  .Load     = iLoadPspInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsPSP
+  /* .Validate = */ iIsValidPsp, 
+  /* .Load     = */ iLoadPspInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsPSP
 };
 
 #endif//IL_NO_PSP

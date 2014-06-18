@@ -56,8 +56,7 @@ static ILboolean iCheckPic(PIC_HEAD *Header)
 static ILboolean iIsValidPic(SIO* io)
 {
 	PIC_HEAD	Head;
-
-	ILuint read = iGetPicHead(io, &Head);
+	ILint read = iGetPicHead(io, &Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 	if (read == sizeof(Head))
 		return iCheckPic(&Head);
@@ -338,10 +337,10 @@ ILconst_string iFormatExtsPIC[] = {
 };
 
 ILformat iFormatPIC = { 
-  .Validate = iIsValidPic, 
-  .Load     = iLoadPicInternal, 
-  .Save     = NULL, 
-  .Exts     = iFormatExtsPIC
+  /* .Validate = */ iIsValidPic, 
+  /* .Load     = */ iLoadPicInternal, 
+  /* .Save     = */ NULL, 
+  /* .Exts     = */ iFormatExtsPIC
 };
 
 #endif//IL_NO_PIC
