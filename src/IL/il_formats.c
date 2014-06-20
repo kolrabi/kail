@@ -171,6 +171,9 @@ iInitFormats() {
 #ifndef IL_NO_WAL
   ADD_FORMAT(WAL);
 #endif
+#ifndef IL_NO_WBMP
+  ADD_FORMAT(WBMP);
+#endif
 #ifndef IL_NO_XPM
   ADD_FORMAT(XPM);
 #endif

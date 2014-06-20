@@ -26,7 +26,7 @@ SET                     ( SOURCES
                           formats/il_dicom.c
                           formats/il_doom.c
                           formats/il_dpx.c
-                          formats/il_exr.c
+                          formats/il_exr.cc
                           formats/il_fits.c
                           formats/il_ftx.c
                           formats/il_gif.c
@@ -137,6 +137,10 @@ ENDIF                   ()
 
 IF                      ( NOT IL_NO_LCMS )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${LCMS2_LIBRARIES} )
+ENDIF                   ()
+
+IF                      ( NOT IL_NO_EXR )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${OPENEXR_LIBRARIES} )
 ENDIF                   ()
 
 INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )

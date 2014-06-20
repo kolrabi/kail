@@ -68,9 +68,6 @@ FIND_PACKAGE            ( X11 )
 FIND_LIBRARY            ( ZLIB_LIBRARY NAMES libz.a ) # HACK for mingw
 FIND_PACKAGE            ( ZLIB )
 
-CHECK_INCLUDE_FILE      ( "dlfcn.h"         HAVE_DLFCN_H  )
-CHECK_INCLUDE_FILE      ( "inttypes.h"      HAVE_INTTYPES_H  )
-CHECK_INCLUDE_FILE      ( "memory.h"        HAVE_MEMORY_H )
 CHECK_INCLUDE_FILE      ( "stdint.h"        HAVE_STDINT_H )
 CHECK_INCLUDE_FILE      ( "stdbool.h"       HAVE_STDBOOL_H )
 CHECK_INCLUDE_FILE      ( "stdlib.h"        HAVE_STDLIB_H )
@@ -125,7 +122,7 @@ OPTION                  ( IL_NO_DCX              "Disable support for DCX format
 OPTION                  ( IL_NO_DDS              "Disable support for DDS format" FALSE )
 OPTION                  ( IL_NO_DICOM            "Disable support for DICOM format" FALSE )
 OPTION                  ( IL_NO_DOOM             "Disable support for Doom format" FALSE )
-OPTION                  ( IL_NO_EXR              "Disable support for EXR format" TRUE)
+OPTION                  ( IL_NO_EXR              "Disable support for EXR format"  FALSE)
 OPTION                  ( IL_NO_FITS             "Disable support for FITS format" FALSE )
 OPTION                  ( IL_NO_GIF              "Disable support for GIF format" FALSE )
 OPTION                  ( IL_NO_HDR              "Disable support for HDR format" FALSE )
@@ -204,6 +201,30 @@ IF                      ( NOT IL_NO_TIF )
   IF                    ( NOT TIFF_FOUND )
     SET                 ( IL_NO_TIF TRUE )
     MESSAGE             ( WARNING "No libtiff found. Disabling TIFF support." )
+  ENDIF                 ()
+ENDIF                   ()
+
+IF                      ( NOT IL_NO_EXR )
+  FIND_LIBRARY          ( OPENEXR_LIBRARY NAMES IlmImf libIlmImf IlmImf-2_1 libIlmImf-2_1 )
+  FIND_LIBRARY          ( HALF_LIBRARY NAMES Half.lib libHalf.a Half libHalf)
+  FIND_LIBRARY          ( IEX_LIBRARY NAMES Iex libIex )
+  FIND_LIBRARY          ( ILMTHREAD_LIBRARY NAMES IlmThread libIlmThread )
+  #FIND_LIBRARY          ( IMATH_LIBRARY NAMES Imath libImath )
+  FIND_PATH             ( OPENEXR_INCLUDE_DIR OpenEXR/ImfIO.h )
+  IF                    ( NOT OPENEXR_LIBRARY       OR 
+                          NOT HALF_LIBRARY          OR 
+                          NOT OPENEXR_INCLUDE_DIR   OR 
+                          NOT IEX_LIBRARY           OR 
+                          NOT ILMTHREAD_LIBRARY )
+    SET                 ( IL_NO_EXR TRUE )
+    MESSAGE             ( WARNING "No libIlmImf found. Disabling EXR support." )
+  ELSE                  ()
+    INCLUDE_DIRECTORIES ( OPENEXR_INCLUDE_DIR )
+    SET                 ( OPENEXR_LIBRARIES 
+                          ${OPENEXR_LIBRARY} 
+                          ${HALF_LIBRARY} 
+                          ${IEX_LIBRARY} 
+                          ${ILMTHREAD_LIBRARY} )
   ENDIF                 ()
 ENDIF                   ()
 

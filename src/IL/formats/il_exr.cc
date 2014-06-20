@@ -4,7 +4,7 @@
 // Copyright (C) 2000-2009 by Denton Woods
 // Last modified: 03/07/2009
 //
-// Filename: src-IL/src/il_exr.cpp
+// Filename: src-IL/src/il_exr.cc
 //
 // Description: Reads from an OpenEXR (.exr) file using the OpenEXR library.
 //
@@ -20,16 +20,10 @@
 #endif //HAVE_CONFIG_H
 
 #include "il_exr.h"
-#include <ImfRgba.h>
-#include <ImfArray.h>
-#include <ImfRgbaFile.h>
-//#include <ImfTiledRgbaFile.h>
-//#include <ImfInputFile.h>
-//#include <ImfTiledInputFile.h>
-//#include <ImfPreviewImage.h>
-//#include <ImfChannelList.h>
-
-
+#include <OpenEXR/ImfRgba.h>
+#include <OpenEXR/ImfArray.h>
+#include <OpenEXR/ImfRgbaFile.h>
+#include <stdexcept>
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(IL_USE_PRAGMA_LIBS)
 	#if defined(_MSC_VER) || defined(__BORLANDC__)
@@ -41,83 +35,33 @@
 	#endif
 #endif
 
-
-//! Checks if the file specified in FileName is a valid EXR file.
-ILboolean ilIsValidExr(ILconst_string FileName)
-{
-	ILHANDLE	ExrFile;
-	ILboolean	bExr = IL_FALSE;
-	
-	if (!iCheckExtension(FileName, IL_TEXT("exr"))) {
-		iSetError(IL_INVALID_EXTENSION);
-		return bExr;
-	}
-	
-	ExrFile = iopenr(FileName);
-	if (ExrFile == NULL) {
-		iSetError(IL_COULD_NOT_OPEN_FILE);
-		return bExr;
-	}
-	
-	bExr = ilIsValidExrF(ExrFile);
-	icloser(ExrFile);
-	
-	return bExr;
-}
-
-
-//! Checks if the ILHANDLE contains a valid EXR file at the current position.
-ILboolean ilIsValidExrF(ILHANDLE File)
-{
-	ILuint		FirstPos;
-	ILboolean	bRet;
-	
-	iSetInputFile(File);
-	FirstPos = itell();
-	bRet = iIsValidExr();
-	iseek(FirstPos, IL_SEEK_SET);
-	
-	return bRet;
-}
-
-
-//! Checks if Lump is a valid EXR lump.
-ILboolean ilIsValidExrL(const void *Lump, ILuint Size)
-{
-	iSetInputLump(Lump, Size);
-	return iIsValidExr();
-}
-
+static ILboolean iCheckExr(EXRHEAD *Header);
 
 // Internal function used to get the EXR header from the current file.
-ILboolean iGetExrHead(EXRHEAD *Header)
-{
-	Header->MagicNumber = GetLittleUInt();
-	Header->Version = GetLittleUInt();
-
-	return IL_TRUE;
+static void iGetExrHead(SIO *io, EXRHEAD *Header) {
+	Header->MagicNumber = GetLittleUInt(io);
+	Header->Version 		= GetLittleUInt(io);
 }
 
 
 // Internal function to get the header and check it.
-ILboolean iIsValidExr()
-{
+static ILboolean iIsValidExr(SIO *io) {
 	EXRHEAD Head;
+	ILuint Start = SIOtell(io);
 
-	if (!iGetExrHead(&Head))
-		return IL_FALSE;
-	iseek(-8, IL_SEEK_CUR);
+	iGetExrHead(io, &Head);
+	SIOseek(io, Start, IL_SEEK_SET);
 	
 	return iCheckExr(&Head);
 }
 
 
 // Internal function used to check if the HEADER is a valid EXR header.
-ILboolean iCheckExr(EXRHEAD *Header)
-{
+static ILboolean iCheckExr(EXRHEAD *Header) {
 	// The file magic number (signature) is 0x76, 0x2f, 0x31, 0x01
 	if (Header->MagicNumber != 0x01312F76)
 		return IL_FALSE;
+
 	// The only valid version so far is version 2.  The upper value has
 	//  to do with tiling.
 	if (Header->Version != 0x002 && Header->Version != 0x202)
@@ -128,91 +72,70 @@ ILboolean iCheckExr(EXRHEAD *Header)
 
 
 // Nothing to do here in the constructor.
-ilIStream::ilIStream() : Imf::IStream("N/A")
-{
-	return;
+ilIStream::ilIStream(SIO *io) : Imf::IStream("N/A"), io(io) {
 }
 
-
-bool ilIStream::read(char c[], int n)
-{
-	if (iread(c, 1, n) != n)
-		return false;
-	return true;
+bool ilIStream::read(char c[], int n) {
+	return SIOread(this->io, c, 1, n) == n;
 }
 
-
-//@TODO: Make this work with 64-bit values.
-Imf::Int64 ilIStream::tellg()
-{
-	Imf::Int64 Pos;
-
-	// itell only returns a 32-bit value!
-	Pos = itell();
-
-	return Pos;
+Imf::Int64 ilIStream::tellg() {
+	return SIOtell(this->io);
 }
-
 
 // Note that there is no return value here, even though there probably should be.
-//@TODO: Make this work with 64-bit values.
-void ilIStream::seekg(Imf::Int64 Pos)
-{
-	// iseek only uses a 32-bit value!
-	iseek((ILint)Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
-	return;
+void ilIStream::seekg(Imf::Int64 Pos) {
+	SIOseek(this->io, Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
 }
 
-
-void ilIStream::clear()
-{
-	return;
+void ilIStream::clear() {
 }
 
 using namespace Imath;
 using namespace Imf;
 using namespace std;
 
+static ILboolean iLoadExrInternal(ILimage *iCurImage) {
+	if (!iCurImage) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
 
-ILboolean iLoadExrInternal()
-{
 	Array<Rgba> pixels;
 	Box2i dataWindow;
 	float pixelAspectRatio;
 	ILfloat *FloatData;
 
-	ilIStream File;
+	ilIStream File(&iCurImage->io);
 	RgbaInputFile in(File);
 
 	Rgba a;
-    dataWindow = in.dataWindow();
-    pixelAspectRatio = in.pixelAspectRatio();
 
-    int dw, dh, dx, dy;
+  dataWindow       = in.dataWindow();
+  pixelAspectRatio = in.pixelAspectRatio();
+
+  int dw, dh, dx, dy;
  
 	dw = dataWindow.max.x - dataWindow.min.x + 1;
-    dh = dataWindow.max.y - dataWindow.min.y + 1;
-    dx = dataWindow.min.x;
-    dy = dataWindow.min.y;
+  dh = dataWindow.max.y - dataWindow.min.y + 1;
+  dx = dataWindow.min.x;
+  dy = dataWindow.min.y;
 
-    pixels.resizeErase (dw * dh);
+  pixels.resizeErase (dw * dh);
 	in.setFrameBuffer (pixels - dx - dy * dw, 1, dw);
 
-	try
-    {
+	try {
 		in.readPixels (dataWindow.min.y, dataWindow.max.y);
-    }
-    catch (const exception &e)
-    {
-	// If some of the pixels in the file cannot be read,
-	// print an error message, and return a partial image
-	// to the caller.
+  } catch (const exception &e) {
+		// If some of the pixels in the file cannot be read,
+		// print an error message, and return a partial image
+		// to the caller.
 		iSetError(IL_LIB_EXR_ERROR);  // Could I use something a bit more descriptive based on e?
 		e;  // Prevent the compiler from yelling at us about this being unused.
 		return IL_FALSE;
-    }
+  }
 
-	if (iTexImage(Image, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
+	if (iTexImage(iCurImage, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
 		return IL_FALSE;
 
 	// Determine where the origin is in the original file.
@@ -245,56 +168,39 @@ ILboolean iLoadExrInternal()
 		FloatData[i * 4 + 3] = pixels[i].a;
 	}
 
-	// Converts the image to predefined type, format and/or origin if needed.
 	return IL_TRUE;
 }
 
-
-
 // Nothing to do here in the constructor.
-ilOStream::ilOStream() : Imf::OStream("N/A")
-{
-	return;
+ilOStream::ilOStream(SIO *io) : Imf::OStream("N/A"), io(io) {
 }
 
-void ilOStream::write(const char c[], int n)
-{
-	iwrite(c, 1, n);  //@TODO: Throw an exception here.
-	return;
+void ilOStream::write(const char c[], int n) {
+	if (SIOwrite(this->io, c, 1, n) != n)
+		throw std::length_error("SIOwrite() failed"); // TODO: create own exception?
 }
 
-//@TODO: Make this work with 64-bit values.
-Imf::Int64 ilOStream::tellp()
-{
-	Imf::Int64 Pos;
-
-	// itellw only returns a 32-bit value!
-	Pos = itellw();
-
-	return Pos;
+Imf::Int64 ilOStream::tellp() {
+	return SIOtell(this->io);
 }
 
 // Note that there is no return value here, even though there probably should be.
-//@TODO: Make this work with 64-bit values.
-void ilOStream::seekp(Imf::Int64 Pos)
-{
-	// iseekw only uses a 32-bit value!
-	iseekw((ILint)Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
-	return;
+void ilOStream::seekp(Imf::Int64 Pos) {
+	SIOseek(this->io, Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
 }
 
-
-ILboolean iSaveExrInternal()
-{
+static ILboolean iSaveExrInternal(ILimage *iCurImage) {
 	Imath::Box2i DataWindow(Imath::V2i(0, 0), Imath::V2i(iCurImage->Width-1, iCurImage->Height-1));
 	Imf::LineOrder Order;
+
 	if (iCurImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		Order = DECREASING_Y;
 	else
 		Order = INCREASING_Y;
+
 	Imf::Header Head(iCurImage->Width, iCurImage->Height, DataWindow, 1, Imath::V2f (0, 0), 1, Order);
 
-	ilOStream File;
+	ilOStream File(&iCurImage->io);
 	Imf::RgbaOutputFile Out(File, Head);
 	ILimage *TempImage = iCurImage;
 
@@ -335,5 +241,16 @@ ILboolean iSaveExrInternal()
 	return IL_TRUE;
 }
 
+ILconst_string iFormatExtsEXR[] = { 
+	IL_TEXT("exr"),
+	NULL 
+};
+
+ILformat iFormatEXR = { 
+	/* .Validate = */ iIsValidExr, 
+	/* .Load     = */ iLoadExrInternal, 
+	/* .Save     = */ iSaveExrInternal, 
+	/* .Exts     = */ iFormatExtsEXR
+};
 
 #endif //IL_NO_EXR

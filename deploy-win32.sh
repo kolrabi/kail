@@ -8,6 +8,9 @@ fi
 # I have some libraries there
 GLOBAL_OPTIONS="-DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
 
+# Would create dependency on dll
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE"
+
 function build() {
   SYSTEM="$1"
   NAME="$2"

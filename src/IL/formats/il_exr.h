@@ -15,22 +15,22 @@
 #define EXR_H
 
 #include "il_internal.h"
-#include <ImfIO.h>
+#include <OpenEXR/ImfIO.h>
 
 
 //using namespace Imf;  // Using this leads to errors with Microsoft's IStream.
-						//   So it is better to just specify the namespace explicitly.
+                        // So it is better to just specify the namespace explicitly.
 
-
-typedef struct EXRHEAD
-{
-	ILuint		MagicNumber;		// File signature (0x76, 0x2f, 0x31, 0x01)
-	ILuint		Version;			// Treated as two bitfields
-} IL_PACKSTRUCT EXRHEAD;
+#include "pack_push.h"
+typedef struct EXRHEAD {
+  ILuint    MagicNumber;  // File signature (0x76, 0x2f, 0x31, 0x01)
+  ILuint    Version;      // Treated as two bitfields
+} EXRHEAD;
+#include "pack_pop.h"
 
 //@TODO: Should I just do these as enums?
-#define EXR_UINT 0
-#define EXR_HALF 1
+#define EXR_UINT  0
+#define EXR_HALF  1
 #define EXR_FLOAT 2
 
 #define EXR_NO_COMPRESSION    0
@@ -42,49 +42,37 @@ typedef struct EXRHEAD
 #define EXR_B44_COMPRESSION   6
 #define EXR_B44A_COMPRESSION  7
 
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-ILboolean iIsValidExr();
-ILboolean iCheckExr(EXRHEAD *Header);
-ILboolean iLoadExrInternal();
-ILboolean iSaveExrInternal();
-
-#ifdef __cplusplus
-}
-#endif
-
 class ilIStream : public Imf::IStream
 {
-	public:
-		ilIStream(/*ILHANDLE Handle*/);
-		virtual bool	read (char c[/*n*/], int n);
-		// I don't think I need this one, since we are taking care of the file handles ourselves.
-		//virtual char *	readMemoryMapped (int n);
-		virtual Imf::Int64	tellg ();
-		virtual void	seekg (Imf::Int64 Pos);
-		virtual void	clear ();
+  public:
+    ilIStream(SIO *io);
+    virtual bool  read (char c[/*n*/], int n);
+    // I don't think I need this one, since we are taking care of the file handles ourselves.
+    //virtual char *  readMemoryMapped (int n);
+    virtual Imf::Int64  tellg ();
+    virtual void  seekg (Imf::Int64 Pos);
+    virtual void  clear ();
 
-	protected:
+  protected:
+    SIO *io;
 
-	private:
+  private:
 };
 
 class ilOStream : public Imf::OStream
 {
-	public:
-		ilOStream(/*ILHANDLE Handle*/);
-		virtual void	write (const char c[/*n*/], int n);
-		// I don't think I need this one, since we are taking care of the file handles ourselves.
-		//virtual char *	readMemoryMapped (int n);
-		virtual Imf::Int64	tellp ();
-		virtual void	seekp (Imf::Int64 Pos);
+  public:
+    ilOStream(SIO *io);
+    virtual void  write (const char c[/*n*/], int n);
+    // I don't think I need this one, since we are taking care of the file handles ourselves.
+    //virtual char *  readMemoryMapped (int n);
+    virtual Imf::Int64  tellp ();
+    virtual void  seekp (Imf::Int64 Pos);
 
-	protected:
+  protected:
+    SIO *io;
 
-	private:
+  private:
 };
 
 #endif//EXR_H

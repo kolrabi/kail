@@ -20,6 +20,8 @@
 //
 // Structures
 //
+
+#include "pack_push.h"
 typedef struct WDPHEAD
 {
 	ILubyte		Encoding[2];
@@ -86,6 +88,8 @@ typedef struct WDPTILE
 	ILuint		StartCode;
 	ILubyte		HashAndType;
 } WDPTILE;
+
+#include "pack_pop.h"
 
 //
 // Image header defines

@@ -81,8 +81,6 @@ ILenum iTypeFromExt(ILconst_string FileName) {
     return IL_TYPE_UNKNOWN;
   }
 
-  else if (!iStrCmp(Ext, IL_TEXT("exr")))
-    Type = IL_EXR;
   else if (!iStrCmp(Ext, IL_TEXT("wdp")) || !iStrCmp(Ext, IL_TEXT("hdp")))
     Type = IL_WDP;
   else
@@ -123,14 +121,6 @@ ILboolean iIsValidIO(ILenum Type, SIO* io) {
   if (io == NULL) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
-  }
-
-  switch (Type)
-  {
-    #ifndef IL_NO_EXR
-    case IL_EXR:
-      return ilIsValidExr(io);
-    #endif
   }
 
   if (format) {

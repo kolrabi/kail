@@ -23,7 +23,7 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
 
 static ILuint WbmpGetMultibyte(SIO* io) {
 	ILuint Val = 0, i;
-	ILubyte Cur;
+	ILubyte Cur = 0;
 
 	for (i = 0; i < 5; i++) {  // Should not be more than 5 bytes.
 		Cur = io->getchar(io->handle);
@@ -41,11 +41,10 @@ static ILboolean iIsValidWbmp(SIO *io) {
 	ILushort  Head  	= GetLittleUShort(io);
 	ILuint 	 	Width 	= WbmpGetMultibyte(io);
 	ILuint    Height 	= WbmpGetMultibyte(io);
-	ILboolean Eof     = SIOeof(io);
 
 	SIOseek(io, Start, IL_SEEK_SET);
 
-	return Head == 0 && Width != 0 && Height != 0 && !Eof;
+	return Head == 0 && Width != 0 && Height != 0;
 }
 
 static ILboolean iLoadWbmpInternal(ILimage *Image)

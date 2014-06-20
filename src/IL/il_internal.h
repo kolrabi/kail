@@ -205,19 +205,7 @@ ILboolean iLoadDataF(ILimage *Image, ILHANDLE File, ILuint Width, ILuint Height,
 ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILboolean iSaveData(ILimage *Image, ILconst_string FileName);
 
- 
-/* FIXME:
-ILboolean ilIsValidExr(ILconst_string FileName);
-ILboolean ilIsValidExrF(ILHANDLE File);
-ILboolean ilIsValidExrL(const void *Lump, ILuint Size);
-
-ILboolean ilLoadExr(ILconst_string FileName);
-ILboolean ilLoadExrF(ILHANDLE File);
-ILboolean ilLoadExrL(const void *Lump, ILuint Size);
-ILboolean iLoadExrInternal();
-*/
-
-/* FIXME:
+ /* FIXME:
 ILboolean ilIsValidWdp(ILconst_string FileName);
 ILboolean ilIsValidWdpF(ILHANDLE File);
 ILboolean ilIsValidWdpL(const void *Lump, ILuint Size);
