@@ -301,21 +301,20 @@ Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename
 #include <X11/extensions/XShm.h>
 
 
-XImage * ILAPIENTRY ilutXShmCreateImage( Display * dpy, XShmSegmentInfo * info )
-{
+static XImage * iXShmCreateImage( ILimage *ilutCurImage, Display * dpy, XShmSegmentInfo * info ) {
   Visual * vis;
   XImage * img;
+  int size, format;
 
-  iLockState();
-  ILimage *ilutCurImage = iLockCurImage();
-  iUnlockState();
+  if (!ilutCurImage) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return NULL;
+  }
 
   // Get server supported format
-
-  int size,format = XShmPixmapFormat( dpy );
+  format = XShmPixmapFormat( dpy );
 
   // Create a shared image
-
   vis = CopyFromParent;
   img = XShmCreateImage( dpy,vis, 24,format,NULL,info,ilutCurImage->Width,ilutCurImage->Height );
 
@@ -344,7 +343,20 @@ XImage * ILAPIENTRY ilutXShmCreateImage( Display * dpy, XShmSegmentInfo * info )
   return img;
 }
 
+XImage * ILAPIENTRY ilutXShmCreateImage( Display * dpy, XShmSegmentInfo * info )
+{
+  ILimage *ilutCurImage;
+  XImage  *Result;
 
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  iUnlockState();
+
+  Result = iXShmCreateImage( ilutCurImage, dpy, info );
+  iUnlockImage(ilutCurImage);
+
+  return Result;
+}
 
 void ILAPIENTRY ilutXShmDestroyImage( Display * dpy, XImage * img, XShmSegmentInfo * info )
 {
@@ -356,16 +368,14 @@ void ILAPIENTRY ilutXShmDestroyImage( Display * dpy, XImage * img, XShmSegmentIn
   shmctl( info->shmid, IPC_RMID, 0 );
 }
 
-
-
-Pixmap ILAPIENTRY ilutXShmCreatePixmap( Display * dpy, Drawable draw, XShmSegmentInfo * info )
+static Pixmap iXShmCreatePixmap( ILimage *ilutCurImage, Display * dpy, Drawable draw, XShmSegmentInfo * info )
 {
   Pixmap pix;
   XImage*img;
 
   // Create a dumby image
 
-  img = ilutXShmCreateImage( dpy,info );
+  img = iXShmCreateImage( ilutCurImage, dpy,info );
   if (!img) {
     return None;
   }
@@ -385,6 +395,20 @@ Pixmap ILAPIENTRY ilutXShmCreatePixmap( Display * dpy, Drawable draw, XShmSegmen
   return pix;
 }
 
+Pixmap ILAPIENTRY ilutXShmCreatePixmap( Display * dpy, Drawable draw, XShmSegmentInfo * info )
+{
+  ILimage *ilutCurImage;
+  Pixmap  Result;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  iUnlockState();
+
+  Result = iXShmCreatePixmap( ilutCurImage, dpy, draw, info );
+  iUnlockImage(ilutCurImage);
+
+  return Result;
+}
 
 
 void ILAPIENTRY ilutXShmFreePixmap( Display * dpy, Pixmap pix, XShmSegmentInfo * info )
@@ -406,21 +430,67 @@ XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename_, XShmSegme
 #else
   ILchar *filename = iStrDup(filename_);
 #endif
+  ILimage *ilutCurImage;
+  ILimage* Temp;
+  XImage * Result;
 
-  iBindImageTemp();
-  if (!ilLoadImage(filename)) {
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
+    ilCloseImage(Temp);
     ifree(filename);
     return NULL;
   }
 
   ifree(filename);
-  return ilutXShmCreateImage( dpy,info );
-}
 
+  Result = iXShmCreateImage( Temp,dpy,info );
+  ilCloseImage(Temp);
+
+  return Result;
+}
+ 
 
 
 Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filename_, XShmSegmentInfo * info )
 {
+#ifdef _UNICODE
+  ILchar *filename = iWideFromMultiByte(filename_);
+#else
+  ILchar *filename = iStrDup(filename_);
+#endif
+  ILimage *ilutCurImage;
+  ILimage* Temp;
+  Pixmap   Result;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = ilNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
+    ilCloseImage(Temp);
+    ifree(filename);
+    return None;
+  }
+
+  ifree(filename);
+
+  Result = iXShmCreatePixmap( Temp, dpy, draw, info );
+  ilCloseImage(Temp);
+
+  return Result;
+
+/*  
 #ifdef _UNICODE
   ILchar *filename = iWideFromMultiByte(filename_);
 #else
@@ -434,14 +504,21 @@ Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filena
   }
   ifree(filename);
   return ilutXShmCreatePixmap( dpy,draw,info );
+
+  ILimage *ilutCurImage;
+  Pixmap  Result;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  iUnlockState();
+
+  Result = iXShmCreatePixmap( ilutCurImage, dpy, info );
+  iUnlockImage(ilutCurImage);
+
+  return Result;
+  */
 }
 
-
-
-
-
 #endif//ILUT_USE_XSHM
-
-
 #endif//ILUT_USE_X11
 

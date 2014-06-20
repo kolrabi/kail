@@ -15,7 +15,7 @@
 #define EXR_H
 
 #include "il_internal.h"
-#include <OpenEXR/ImfIO.h>
+#include <ImfIO.h>
 
 
 //using namespace Imf;  // Using this leads to errors with Microsoft's IStream.

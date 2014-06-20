@@ -134,8 +134,10 @@ extern "C" {
   #endif
 #elif __APPLE__
   #define ILAPI extern
+  #define ILAPI_DEPRECATED 
 #else
   #define ILAPI
+  #define ILAPI_DEPRECATED 
 #endif
 
 ///////////////////////////////////////////////////////////////////////////

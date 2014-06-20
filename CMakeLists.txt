@@ -3,12 +3,13 @@ IF                      ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
 ENDIF                   ( )
 
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
-PROJECT                 ( KaIL C )
+PROJECT                 ( KaIL C CXX )
 
 INCLUDE                 ( CTest )
 
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
-  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
+  SET                   ( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
+  SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror" )
 
   IF                    ( WIN32 )
     SET                   ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static" )
@@ -65,7 +66,9 @@ FIND_PACKAGE            ( D3D8 )
 FIND_PACKAGE            ( SDL )
 FIND_PACKAGE            ( X11 )
 
-FIND_LIBRARY            ( ZLIB_LIBRARY NAMES libz.a ) # HACK for mingw
+IF                      ( MINGW )
+  FIND_LIBRARY          ( ZLIB_LIBRARY NAMES libz.a ) # HACK for mingw
+ENDIF                   ( )
 FIND_PACKAGE            ( ZLIB )
 
 CHECK_INCLUDE_FILE      ( "stdint.h"        HAVE_STDINT_H )
@@ -164,7 +167,9 @@ OPTION                  ( IL_NO_XPM              "Disable support for XPM format
 SET                     ( IL_NO_SKIA             TRUE )
 
 IF                      ( NOT IL_NO_JPG )
-  FIND_LIBRARY          ( JPEG_LIBRARY NAMES ${JPEG_NAMES} libjpeg.a )
+  IF                    ( MINGW )
+    FIND_LIBRARY        ( JPEG_LIBRARY NAMES ${JPEG_NAMES} libjpeg.a ) # HACK for mingw
+  ENDIF                 ( )
   FIND_PACKAGE          ( JPEG )
   IF                    ( NOT JPEG_FOUND )
     SET                 ( IL_NO_JPG TRUE )
@@ -206,11 +211,11 @@ ENDIF                   ()
 
 IF                      ( NOT IL_NO_EXR )
   FIND_LIBRARY          ( OPENEXR_LIBRARY NAMES IlmImf libIlmImf IlmImf-2_1 libIlmImf-2_1 )
-  FIND_LIBRARY          ( HALF_LIBRARY NAMES Half.lib libHalf.a Half libHalf)
+  FIND_LIBRARY          ( HALF_LIBRARY NAMES Half.lib Half libHalf)
   FIND_LIBRARY          ( IEX_LIBRARY NAMES Iex libIex )
   FIND_LIBRARY          ( ILMTHREAD_LIBRARY NAMES IlmThread libIlmThread )
   #FIND_LIBRARY          ( IMATH_LIBRARY NAMES Imath libImath )
-  FIND_PATH             ( OPENEXR_INCLUDE_DIR OpenEXR/ImfIO.h )
+  FIND_PATH             ( OPENEXR_INCLUDE_DIR ImfIO.h PATH_SUFFIXES OpenEXR)
   IF                    ( NOT OPENEXR_LIBRARY       OR 
                           NOT HALF_LIBRARY          OR 
                           NOT OPENEXR_INCLUDE_DIR   OR 
@@ -219,7 +224,7 @@ IF                      ( NOT IL_NO_EXR )
     SET                 ( IL_NO_EXR TRUE )
     MESSAGE             ( WARNING "No libIlmImf found. Disabling EXR support." )
   ELSE                  ()
-    INCLUDE_DIRECTORIES ( OPENEXR_INCLUDE_DIR )
+  MESSAGE(WARNING OpenEXR: ${OPENEXR_INCLUDE_DIR})
     SET                 ( OPENEXR_LIBRARIES 
                           ${OPENEXR_LIBRARY} 
                           ${HALF_LIBRARY} 

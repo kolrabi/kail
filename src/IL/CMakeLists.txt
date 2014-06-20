@@ -107,16 +107,6 @@ ELSE                    ( )
   SET                   ( SOURCES SHARED ${SOURCES} )
 ENDIF                   ( )
 
-IF                      ( WIN32 )
-  # Windows programs need a DevIL.dll not libIL.dll
-  SET                   ( LIBNAME DevIL )
-  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
-  SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES PREFIX "" )
-ELSE                    ()
-  SET                   ( LIBNAME IL )
-  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
-ENDIF                   ()
-
 SET                     ( LINK_LIBS 
                           ${LINK_LIBS}
                           ${ZLIB_LIBRARIES}
@@ -141,9 +131,21 @@ ENDIF                   ()
 
 IF                      ( NOT IL_NO_EXR )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${OPENEXR_LIBRARIES} )
+  INCLUDE_DIRECTORIES   ( ${OPENEXR_INCLUDE_DIR} )
 ENDIF                   ()
 
 INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )
+
+IF                      ( WIN32 )
+  # Windows programs need a DevIL.dll not libIL.dll
+  SET                   ( LIBNAME DevIL )
+  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
+  SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES PREFIX "" )
+ELSE                    ()
+  SET                   ( LIBNAME IL )
+  ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
+ENDIF                   ()
+
 TARGET_LINK_LIBRARIES   ( ${LIBNAME} ${LINK_LIBS} )
 
 INSTALL                 ( TARGETS ${LIBNAME}

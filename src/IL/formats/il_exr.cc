@@ -76,7 +76,7 @@ ilIStream::ilIStream(SIO *io) : Imf::IStream("N/A"), io(io) {
 }
 
 bool ilIStream::read(char c[], int n) {
-	return SIOread(this->io, c, 1, n) == n;
+	return SIOread(this->io, c, 1, n) == (ILuint)n;
 }
 
 Imf::Int64 ilIStream::tellg() {
@@ -103,7 +103,6 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 
 	Array<Rgba> pixels;
 	Box2i dataWindow;
-	float pixelAspectRatio;
 	ILfloat *FloatData;
 
 	ilIStream File(&iCurImage->io);
@@ -112,7 +111,7 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 	Rgba a;
 
   dataWindow       = in.dataWindow();
-  pixelAspectRatio = in.pixelAspectRatio();
+  /* pixelAspectRatio = */ in.pixelAspectRatio();
 
   int dw, dh, dx, dy;
  
@@ -131,7 +130,7 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 		// print an error message, and return a partial image
 		// to the caller.
 		iSetError(IL_LIB_EXR_ERROR);  // Could I use something a bit more descriptive based on e?
-		e;  // Prevent the compiler from yelling at us about this being unused.
+		(void)e;  // Prevent the compiler from yelling at us about this being unused.
 		return IL_FALSE;
   }
 

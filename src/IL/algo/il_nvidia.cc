@@ -220,6 +220,12 @@ ILuint ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuin
 // Let's have this so that the function is always created and exported, even if it does nothing.
 ILAPI ILubyte* ILAPIENTRY ilNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
+	(void)Data;
+	(void)Width;
+	(void)Height;
+	(void)Depth;
+	(void)DxtFormat;
+	(void)DxtSize;
 	//@TODO: Do we need to set an error message?
 	return NULL;
 }
