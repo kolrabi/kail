@@ -22,6 +22,12 @@
 
 static pthread_key_t iTlsKey;
 pthread_mutex_t iStateMutex;
+
+#elif IL_THREAD_SAFE_WIN32
+
+static DWORD         iTlsKey = ~0;
+HANDLE iStateMutex = NULL; // FIXME: CloseHandle on exit
+
 #endif
 
 static void iSetImage0();
@@ -39,12 +45,14 @@ static void iInitTlsData(IL_TLS_DATA *Data) {
   Data->CurError.ilErrorPlace = -1;
 }
 
+#if IL_THREAD_SAFE_PTHREAD
 // only called when thread safety is enabled and a thread stops
 static void iFreeTLSData(void *ptr) {
   IL_TLS_DATA *Data = (IL_TLS_DATA*)ptr;
   // TODO: clear set strings from state
   ifree(Data);
 }
+#endif
 
 IL_TLS_DATA * iGetTLSData() {
 #if IL_THREAD_SAFE_PTHREAD
@@ -56,6 +64,18 @@ IL_TLS_DATA * iGetTLSData() {
   }
 
   return iDataPtr;
+
+#elif IL_THREAD_SAFE_WIN32
+
+  IL_TLS_DATA *iDataPtr = (IL_TLS_DATA*)TlsGetValue(iTlsKey);
+  if (iDataPtr == NULL) {
+    iDataPtr = ioalloc(IL_TLS_DATA);
+    TlsSetValue(iTlsKey, iDataPtr);
+    iInitTlsData(iDataPtr);
+  }
+
+  return iDataPtr;
+
 #else
   static IL_TLS_DATA iData;
   static IL_TLS_DATA *iDataPtr = NULL;
@@ -583,6 +603,9 @@ void iInitIL()
   #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_init(&iStateMutex, NULL);
   pthread_key_create(&iTlsKey, &iFreeTLSData);
+  #elif IL_THREAD_SAFE_WIN32
+  iStateMutex = CreateMutex(NULL, FALSE, NULL);
+  iTlsKey = TlsAlloc();
   #endif
   
   iSetError(IL_NO_ERROR);
@@ -676,14 +699,20 @@ static void iBindImageTemp() {
 ILAPI void ILAPIENTRY iLockState() {
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&iStateMutex);
-  iTrace("---- Locking state");
+  iTrace("---- Locked state");
+#elif IL_THREAD_SAFE_WIN32
+  WaitForSingleObject(iStateMutex, INFINITE);
+  iTrace("---- Locked state");
 #endif
 }
 
 ILAPI void ILAPIENTRY iUnlockState() {
 #if IL_THREAD_SAFE_PTHREAD
-  pthread_mutex_unlock(&iStateMutex);
   iTrace("---- Unlocking state");
+  pthread_mutex_unlock(&iStateMutex);
+#elif IL_THREAD_SAFE_WIN32
+  iTrace("---- Unlocking state");
+  ReleaseMutex(iStateMutex);
 #endif
 } 
 
@@ -697,6 +726,8 @@ ILAPI ILimage * ILAPIENTRY iLockCurImage() {
 
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
+#elif IL_THREAD_SAFE_WIN32
+  WaitForSingleObject(Image->Mutex, INFINITE);
 #endif
   return Image;
 }
@@ -711,6 +742,8 @@ ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
 
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
+#elif IL_THREAD_SAFE_WIN32
+  WaitForSingleObject(Image->Mutex, INFINITE);
 #endif
 
   return Image;
@@ -723,5 +756,7 @@ ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
 
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_unlock(&Image->Mutex);
+#elif IL_THREAD_SAFE_WIN32
+  ReleaseMutex(Image->Mutex);
 #endif
 }

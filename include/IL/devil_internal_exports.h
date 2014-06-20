@@ -29,8 +29,13 @@
 
 #include <wchar.h>
 
-#if IL_THREAD_SAFE_PTHREAD
+#if defined(IL_THREAD_SAFE_PTHREAD)
 #include <pthread.h>
+#elif defined(IL_THREAD_SAFE_WIN32)
+#define WINDOWS_MEAN_AND_LEAN
+#include <windows.h>
+#elif defined(IL_THREAD_SAFE)
+#error "IL_THREAD_SAFE defined but don't know how to"
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
@@ -169,6 +174,8 @@ typedef struct ILimage {
 
 #if IL_THREAD_SAFE_PTHREAD
     pthread_mutex_t Mutex;
+#elif IL_THREAD_SAFE_WIN32
+    HANDLE          Mutex;
 #endif
 } ILimage;
 

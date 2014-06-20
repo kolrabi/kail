@@ -1,5 +1,5 @@
 IF                      ( ${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR} )
-  MESSAGE               ( FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the SDL source code and call cmake from there" )
+  MESSAGE               ( FATAL_ERROR "Prevented in-tree built. Please create a build directory outside of the source code and call cmake from there" )
 ENDIF                   ( )
 
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
@@ -9,9 +9,16 @@ INCLUDE                 ( CTest )
 
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
   SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
+
+  IF                    ( WIN32 )
+    SET                   ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static" )
+    SET                   ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -static-libgcc -static-libstdc++ -static" )
+  ENDIF                 ()
   SET                   ( GCC_X86_ASM   TRUE )
   SET                   ( IL_INLINE_ASM TRUE )
-#  SET                   ( RESTRICT_KEYWORD TRUE )
+  SET                   ( RESTRICT_KEYWORD TRUE )
+ELSEIF                  ( MSVC )
+  SET                   ( IL_INLINE_ASM TRUE )
 ENDIF                   ()
 
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
@@ -24,6 +31,42 @@ INCLUDE                 ( FindPkgConfig )
 INCLUDE                 ( TestBigEndian )
 INCLUDE                 ( CheckCCompilerFlag )
 INCLUDE                 ( TestBigEndian )
+
+# HACK: prefer static 
+IF                      ( MINGW )
+  FIND_LIBRARY          ( PTHREAD_STATIC_LIB NAMES libpthread.a libpthreads.a )
+  IF                    ( PTHREAD_STATIC_LIB )
+
+    SET                 ( THREADS_HAVE_PTHREAD_ARG TRUE ) 
+    SET                 ( CMAKE_THREAD_LIBS_INIT ${PTHREAD_STATIC_LIB} )
+    SET                 ( CMAKE_HAVE_THREADS_LIBRARY TRUE )
+    SET                 ( Threads_FOUND TRUE )
+
+    SET                 ( THREADS_LIB ${PTHREAD_STATIC_LIB})
+  ENDIF                 ()
+ENDIF                   ()
+
+FIND_PACKAGE            ( Threads )
+
+SET                     ( HAVE_PTHREAD      ${CMAKE_USE_PTHREADS_INIT} )
+IF                      ( NOT PTHREAD_STATIC_LIB )
+    SET                 ( THREADS_LIB ${CMAKE_THREAD_LIBS_INIT})
+ENDIF                   ()
+
+IF                      ( HAVE_PTHREAD OR WIN32 )
+SET                     ( HAVE_THREADS      TRUE )
+ELSE                    ()
+SET                     ( HAVE_THREADS      FALSE )
+ENDIF                   ()
+
+FIND_PACKAGE            ( OpenGL ) 
+FIND_PACKAGE            ( D3D9 )
+FIND_PACKAGE            ( D3D8 )
+FIND_PACKAGE            ( SDL )
+FIND_PACKAGE            ( X11 )
+
+FIND_LIBRARY            ( ZLIB_LIBRARY NAMES libz.a ) # HACK for mingw
+FIND_PACKAGE            ( ZLIB )
 
 CHECK_INCLUDE_FILE      ( "dlfcn.h"         HAVE_DLFCN_H  )
 CHECK_INCLUDE_FILE      ( "inttypes.h"      HAVE_INTTYPES_H  )
@@ -52,44 +95,22 @@ CHECK_C_COMPILER_FLAG   ( "-msse3" SSE3 )
 
 TEST_BIG_ENDIAN         ( WORDS_BIGENDIAN )
 
-FIND_PACKAGE            ( OpenGL ) 
-SET                     ( HAVE_GL_GL_H      ${OPENGL_FOUND})
-SET                     ( HAVE_GL_GLU_H     ${OPENGL_GLU_FOUND})
-
-FIND_PACKAGE            ( GLUT )
-SET                     ( HAVE_GL_GLUT_H    ${GLUT_FOUND})
-
-FIND_PACKAGE            ( Threads )
-SET                     ( HAVE_PTHREAD      ${CMAKE_USE_PTHREADS_INIT} )
-SET                     ( HAVE_WIN32THREADS ${CMAKE_USE_WIN32_THREADS_INIT} )
-
-IF                      ( DEFINED CMAKE_USE_PTHREADS_INIT OR DEFINED CMAKE_USE_WIN32_THREADS_INIT )
-SET                     ( HAVE_THREADS      TRUE )
-ELSE                    ()
-SET                     ( HAVE_THREADS      FALSE )
-ENDIF                   ()
-
 SET                     ( HAVE_LIBM         TRUE )
-SET                     ( HAVE_LIBZ         TRUE )
 
 SET                     ( DEBUG             ${CMAKE_BUILD_TYPE} == Debug )
 
-PKG_SEARCH_MODULE       ( Allegro           Allegro )
-CHECK_INCLUDE_FILE      ( "d3d9.h"          HAVE_D3D9_H )
-CHECK_INCLUDE_FILE      ( "d3d8.h"          HAVE_D3D8_H )
-
-FIND_PACKAGE            ( SDL )
-FIND_PACKAGE            ( X11 )
+# PKG_SEARCH_MODULE       ( Allegro           Allegro )
 # FIND_PACKAGE            ( Allegro )
 
 OPTION                  ( IL_STATIC_LIB          "Build static libraries"         FALSE )
 OPTION                  ( ILU_ENABLED            "Build ILU"                      TRUE )
 OPTION                  ( IL_THREAD_SAFE         "Build thread safe libraries"    ${HAVE_THREADS} )
+OPTION                  ( IL_UNICODE             "Enable unicode"                 FALSE )
 
 OPTION                  ( ILUT_USE_ALLEGRO       "Enable support for Allegro"     ${ALLEGRO_FOUND} )
-OPTION                  ( ILUT_USE_DIRECTX8      "Enable support for DirectX 8"   ${HAVE_D3D8_H} )
-OPTION                  ( ILUT_USE_DIRECTX9      "Enable support for DirectX 9"   ${HAVE_D3D9_H} )
-OPTION                  ( ILUT_USE_OPENGL        "Enable support for OpenGL"      ${HAVE_GL_GL_H} )
+OPTION                  ( ILUT_USE_DIRECTX8      "Enable support for DirectX 8"   ${D3D8_FOUND} )
+OPTION                  ( ILUT_USE_DIRECTX9      "Enable support for DirectX 9"   ${D3D9_FOUND} )
+OPTION                  ( ILUT_USE_OPENGL        "Enable support for OpenGL"      ${OPENGL_FOUND} )
 OPTION                  ( ILUT_USE_SDL           "Enable support for SDL"         ${SDL_FOUND} )
 OPTION                  ( ILUT_USE_X11           "Enable support for X11"         ${X11_FOUND} )
 OPTION                  ( ILUT_USE_XRENDER       "Enable support for Xrender"     ${X11_Xrender_FOUND} )
@@ -145,19 +166,20 @@ OPTION                  ( IL_NO_XPM              "Disable support for XPM format
 
 SET                     ( IL_NO_SKIA             TRUE )
 
+IF                      ( NOT IL_NO_JPG )
+  FIND_LIBRARY          ( JPEG_LIBRARY NAMES ${JPEG_NAMES} libjpeg.a )
+  FIND_PACKAGE          ( JPEG )
+  IF                    ( NOT JPEG_FOUND )
+    SET                 ( IL_NO_JPG TRUE )
+    MESSAGE             ( WARNING "No jpeglib found. Disabling JPEG support." )
+  ENDIF                 ()
+ENDIF                   ()
+
 IF                      ( NOT IL_NO_JP2 )
   FIND_PACKAGE          ( Jasper )
   IF                    ( NOT JASPER_FOUND )
     SET                 ( IL_NO_JP2 TRUE )
     MESSAGE             ( WARNING "No Jasper found. Disabling JPEG2000 support." )
-  ENDIF                 ()
-ENDIF                   ()
-
-IF                      ( NOT IL_NO_JPG )
-  FIND_PACKAGE          ( JPEG )
-  IF                    ( NOT JPEG_FOUND )
-    SET                 ( IL_NO_JPG TRUE )
-    MESSAGE             ( WARNING "No jpeglib found. Disabling JPEG support." )
   ENDIF                 ()
 ENDIF                   ()
 

@@ -10,13 +10,13 @@
 static ILuint image;
 
 static int load(const char *file_, int w, int h, int d, int f) {
+  ILboolean loaded;
 #ifdef _UNICODE
   wchar_t file[1024];
   mbstowcs(file, file_, sizeof(file)/sizeof(wchar_t));
 #else
   const char *file = file_;
 #endif
-  ILboolean loaded;
 
   ilBindImage(image);
   loaded = ilLoad(IL_TYPE_UNKNOWN, file);

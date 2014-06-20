@@ -47,7 +47,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	}
 	CurImage = Image;
 
-	Image->io;
+	io = &Image->io;
 
 	// Read header
 	SIOread(io, &Header.FileName, 1, 32);

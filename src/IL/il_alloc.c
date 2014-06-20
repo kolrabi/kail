@@ -67,7 +67,7 @@ void *vec_malloc(const ILsizei size) {
 #endif
 
 /*** Allocation/Deallocation Function ***/
-void* ILAPIENTRY ialloc(const ILsizei Size) {
+void* ILAPIENTRY ialloc(ILsizei Size) {
 	void **Ptr = (void**)ialloc_ptr(Size + sizeof(void*));
 	if (Ptr == NULL) {
 		iSetError(IL_OUT_OF_MEMORY);

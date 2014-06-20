@@ -1,20 +1,16 @@
 /* "Enable debug code features" */
-#cmakedefine DEBUG 1
+#ifdef _DEBUG
+#define DEBUG 1
+#endif 
+
+#cmakedefine IL_UNICODE 1
+#if IL_UNICODE
+#define _UNICODE 1
+#define UNICODE 1
+#endif
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #cmakedefine HAVE_DLFCN_H 1
-
-/* Define to 1 if you have the <GLUT/glut.h> header file. */
-#cmakedefine HAVE_GLUT_GLUT_H 1
-
-/* Define to 1 if you have the <GL/glut.h> header file. */
-#cmakedefine HAVE_GL_GLUT_H 1
-
-/* Define to 1 if you have the <GL/glu.h> header file. */
-#cmakedefine HAVE_GL_GLU_H 1
-
-/* Define to 1 if you have the <GL/gl.h> header file. */
-#cmakedefine HAVE_GL_GL_H 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H 1
@@ -37,7 +33,7 @@
 /* Define if you have POSIX threads libraries and header files. */
 #cmakedefine HAVE_PTHREAD 1
 
-#cmakedefine HAVE_WIN32THREAD 1
+#define HAVE_WIN32THREAD (defined(WIN32))
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine HAVE_STDINT_H 1
@@ -73,8 +69,15 @@
 #cmakedefine IL_STATIC_LIB 1
 #cmakedefine IL_THREAD_SAFE 1
 
-#define IL_THREAD_SAFE_PTHREAD (defined(IL_THREAD_SAFE) && defined(HAVE_PTHREAD))
-#define IL_THREAD_SAFE_WIN32   (defined(IL_THREAD_SAFE) && defined(HAVE_WIN32THREAD))
+#ifdef IL_THREAD_SAFE
+   #ifdef HAVE_PTHREAD
+      #define IL_THREAD_SAFE_PTHREAD 1
+   #else
+      #ifdef WIN32
+         #define IL_THREAD_SAFE_WIN32 1
+      #endif
+   #endif
+#endif
 
 /* Formats ------------------------------------------------------------------ */
 

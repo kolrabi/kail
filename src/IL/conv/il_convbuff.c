@@ -1970,6 +1970,8 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 	ILdouble	*DblPtr, tempDouble;
 	ILushort	*HalfPtr;
 
+    ILubyte     *ByteBuf = (ILubyte*)Buffer;
+
 	BpcSrc = ilGetBpcType(SrcType);
 	BpcDest = ilGetBpcType(DestType);
 
@@ -2021,12 +2023,13 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 					break;
 				case IL_HALF:
 					for (i = 0; i < Size; i++) {
+						ilHalfToFloatV(ByteBuf + i * 2, &tempFloat);
 						#if CLAMP_HALF
-							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+							// *((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 							tempFloat = IL_CLAMP(tempFloat);					
 							BytePtr[i] = (ILubyte)(tempFloat * UCHAR_MAX);
 						#else
-							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+							// *((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 							BytePtr[i] = (ILubyte)(tempFloat * UCHAR_MAX);
 						#endif
 					}
@@ -2073,12 +2076,13 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 					break;
 				case IL_HALF:
 					for (i = 0; i < Size; i++) {
+						ilHalfToFloatV(ByteBuf + i * 2, &tempFloat);
 						#if CLAMP_FLOATS
-							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+							// *((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 							tempFloat = IL_CLAMP(tempFloat);					
 							ShortPtr[i] = (ILushort)(tempFloat * USHRT_MAX);
 						#else
-							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+//							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 							ShortPtr[i] = (ILushort)(tempFloat * USHRT_MAX);
 						#endif
 					}
@@ -2126,12 +2130,13 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 					break;
 				case IL_HALF:
 					for (i = 0; i < Size; i++) {
+						ilHalfToFloatV(ByteBuf + i * 2, &tempFloat);
 						#if CLAMP_FLOATS
-							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+//							*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 							tempFloat = IL_CLAMP(tempFloat);
 							IntPtr[i] = (ILuint)(tempFloat * UINT_MAX);
 						#else
-						*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+//						*((ILuint*)&tempFloat) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 						IntPtr[i] = (ILuint)(tempFloat * UINT_MAX);
 						#endif
 					}
@@ -2186,7 +2191,8 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 					break;
 				case IL_HALF:
 					for (i = 0; i < Size; i++) {
-						*((ILuint*)&FloatPtr[i]) = ilHalfToFloat(((ILushort*)Buffer)[i]);
+						ilHalfToFloatV(ByteBuf + i * 2, FloatPtr + i);
+						// *((ILuint*)&FloatPtr[i]) = ilHalfToFloat(((ILushort*)Buffer)[i]);
 					}
 					break;
 				case IL_DOUBLE:
@@ -2233,7 +2239,8 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 					break;
 				case IL_HALF:
 					for (i = 0; i < Size; i++) {
-						*(ILuint*)&tempFloat = ilHalfToFloat(((ILushort*)Buffer)[i]);
+						ilHalfToFloatV(ByteBuf + i * 2, &tempFloat);
+						// *(ILuint*)&tempFloat = ilHalfToFloat(((ILushort*)Buffer)[i]);
 						DblPtr[i] = tempFloat;
 					}
 					break;
@@ -2252,49 +2259,57 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 			case IL_UNSIGNED_BYTE:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILubyte*)Buffer)[i] / (ILfloat)UCHAR_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					//*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_BYTE:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILbyte*)Buffer)[i] / (ILfloat)UCHAR_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_UNSIGNED_SHORT:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILushort*)Buffer)[i] / (ILfloat)USHRT_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_SHORT:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILshort*)Buffer)[i] / (ILfloat)USHRT_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_UNSIGNED_INT:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILuint*)Buffer)[i] / (ILfloat)UINT_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_INT:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILint*)Buffer)[i] / (ILfloat)UINT_MAX;
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_DOUBLE:
 				for (i = 0; i < Size; i++) {
 					tempFloat = (ILfloat)((ILdouble*)Buffer)[i];
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			case IL_FLOAT:
 				for (i = 0; i < Size; i++) {
 					tempFloat = ((ILfloat*)Buffer)[i];
-					*((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
+					ilFloatToHalfV(&tempFloat, HalfPtr + i);
+					// *((ILushort*)&HalfPtr[i]) = ilFloatToHalf(*(ILuint*)&tempFloat);
 				}
 				break;
 			}

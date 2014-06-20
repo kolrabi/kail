@@ -237,6 +237,15 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 
 	return (s << 31) | (e << 23) | m;
 }
+
+INLINE void ILAPIENTRY ilHalfToFloatV (const void *Half, void *Float) {
+	*((ILuint*)Float) = ilHalfToFloat(*((ILshort*)Half));
+}
+
+INLINE void ILAPIENTRY ilFloatToHalfV (const void *Float, void *Half) {
+	*((ILshort*)Half) = ilFloatToHalf(*((ILuint*)Float));
+}
+
 #endif //NOINLINE
 
 ILboolean iDefaultImage(ILimage *Image);

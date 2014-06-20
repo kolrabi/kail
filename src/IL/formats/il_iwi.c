@@ -167,6 +167,7 @@ static ILenum IwiGetFormat(ILubyte Format, ILubyte *Bpp) {
 			return IL_RGBA;
 	}
 
+	*Bpp = 0;
 	return 0;  // Will never reach this.
 }
 

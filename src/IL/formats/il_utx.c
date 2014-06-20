@@ -356,6 +356,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 				if (Type == 0xA2)
 					SIOgetc(io);  // Byte is 1 here...
 
+				Val = 0;
 				switch (Type & 0x0F)
 				{
 					case 1:  // Get a single byte.
@@ -400,7 +401,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 						break;
 
 					default:  // Uhm...
-						break;
+						goto error;
 				}
 
 				//@TODO: What should we do if Name >= Header.NameCount?

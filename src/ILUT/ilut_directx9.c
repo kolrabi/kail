@@ -20,16 +20,10 @@
  */
 
 #include "ilut_internal.h"
+
 #ifdef ILUT_USE_DIRECTX9
 
 #include <d3d9.h>
-
-#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
-  #if defined(_MSC_VER) || defined(__BORLANDC__)
-    #pragma comment(lib, "d3d9.lib")
-    #pragma comment(lib, "d3dx9.lib")
-  #endif
-#endif
 
 typedef struct {
   ILboolean UseDXTC;

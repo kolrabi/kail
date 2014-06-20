@@ -570,6 +570,9 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 			NewFormat = IL_RGBA;
 			NumChans = 4;
 			break;
+
+		default:
+			return IL_FALSE;
 	}
 
 	if (NewType != image->Type || NewFormat != image->Format) {

@@ -42,7 +42,7 @@ static ILboolean	DecompressARGB(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DecompressARGB16(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	Decompress3Dc();
 static ILboolean	DecompressAti1n();
-static ILboolean	DecompressRXGB();
+static ILboolean	DecompressRXGB(DDS_CONTEXT *ctx);
 static ILboolean	DecompressFloat(DDS_CONTEXT *ctx, ILuint lCompFormat);
 
 static const ILuint CubemapDirections[CUBEMAP_SIDES] = {
@@ -722,7 +722,7 @@ ILboolean DdsDecompress(DDS_CONTEXT *ctx, ILuint CompFormat)
 			return Decompress3Dc(ctx);
 
 		case PF_RXGB:
-			return DecompressRXGB();
+			return DecompressRXGB(ctx);
 
 		case PF_A16B16G16R16:
 			memcpy(ctx->Image->Data, ctx->CompData, ctx->Image->SizeOfData);
@@ -1975,6 +1975,8 @@ ILboolean iDxtcDataToSurface(ILimage* image)
 		case IL_DXT1: CompFormat = PF_DXT1; break;
 		case IL_DXT3: CompFormat = PF_DXT3; break;
 		case IL_DXT5: CompFormat = PF_DXT5; break;
+		default:
+			return IL_FALSE;
 	}
 	ctx.CompData = image->DxtcData;
 

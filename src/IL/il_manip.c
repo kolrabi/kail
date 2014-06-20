@@ -750,7 +750,7 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
 {
   ILboolean ret = IL_TRUE;
   ILuint    i,Size;
-  ILuint    AlphaOff;
+  ILuint    AlphaOff = 0;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);

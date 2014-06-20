@@ -435,13 +435,13 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 							for (xBlock = 0; xBlock < 8 && (x + xBlock) < Image->Width; xBlock += 4) {
 								if (SIOread(io, CompData, 1, 8) != 8)
 									return IL_FALSE;  //@TODO: Need to do any cleanup here?
-								color_0 = *((ILushort*)CompData);
+								memcpy(&color_0, CompData, 2);
 								UShort(&color_0);
-								color_1 = *((ILushort*)(CompData + 2));
+								memcpy(&color_1, CompData + 2, 2);
 								UShort(&color_1);
 								DxtcReadColor(color_0, colours);
 								DxtcReadColor(color_1, colours + 1);
-								bitmask = ((ILuint*)CompData)[1];
+								memcpy(&bitmask, CompData + 4, 4);
 								UInt(&bitmask);
 
 								if (color_0 > color_1) {

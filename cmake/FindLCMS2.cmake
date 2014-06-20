@@ -29,7 +29,7 @@ find_path(LCMS2_INCLUDE_DIR lcms2.h
    PATH_SUFFIXES lcms2 liblcms2
 )
 
-find_library(LCMS2_LIBRARIES NAMES lcms2 liblcms2 lcms-2 liblcms-2
+find_library(LCMS2_LIBRARIES NAMES liblcms2.a lcms2 liblcms2 lcms-2 liblcms-2
    PATHS     
    ${PC_LCMS2_LIBDIR}
    ${PC_LCMS2_LIBRARY_DIRS}

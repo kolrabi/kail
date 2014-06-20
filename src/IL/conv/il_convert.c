@@ -26,7 +26,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
   ILfloat   Resultf;
   ILubyte   *Temp = NULL;
   ILboolean Converted;
-  ILboolean HasAlpha;
+  ILboolean HasAlpha = IL_FALSE;
 
   NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
   if (NewImage == NULL) {

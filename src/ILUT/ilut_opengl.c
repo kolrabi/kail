@@ -608,10 +608,13 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
         need_resize = IL_TRUE;
       }
 
-  if ((ILint)Src->Width > Settings->MaxTexW || (ILint)Src->Height > Settings->MaxTexH)
+  if (Src->Width > Settings->MaxTexW || Src->Height > Settings->MaxTexH)
     need_resize = IL_TRUE;
 
   if (need_resize == IL_TRUE) {
+    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : ilNextPower2(Dest->Width)  );
+    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : ilNextPower2(Dest->Height) );
+
     if (!Created) {
       Dest = ilCopyImage_(Src);
       if (Dest == NULL) {
@@ -621,18 +624,12 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
     }
 
     if (Src->Format == IL_COLOUR_INDEX) {
-      iluImageParameter(ILU_FILTER, ILU_NEAREST);
-      Temp = HasNonPowerOfTwoHardware == IL_TRUE ? 
-        iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, Dest->Width),               IL_MIN((ILuint)Settings->MaxTexH, Dest->Height),               1, ILU_NEAREST)
-      : iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, ilNextPower2(Dest->Width)), IL_MIN((ILuint)Settings->MaxTexH, ilNextPower2(Dest->Height)), 1, ILU_NEAREST);
+      Temp = iluScale_(Dest, DestW, DestH, 1, ILU_NEAREST);
     } else {
-      iluImageParameter(ILU_FILTER, ILU_BILINEAR);
-      Temp = HasNonPowerOfTwoHardware == IL_TRUE ?
-        iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, Dest->Width),                       IL_MIN((ILuint)Settings->MaxTexH, Dest->Height),              1, ILU_BILINEAR)
-      : iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, (ILuint)ilNextPower2(Dest->Width)), IL_MIN(Settings->MaxTexH, (ILint)ilNextPower2(Dest->Height)), 1, ILU_BILINEAR);
+      Temp = iluScale_(Dest, DestW, DestH, 1, ILU_BILINEAR);
     }
-
     ilCloseImage(Dest);
+
     if (!Temp) {
       return NULL;
     }
@@ -658,18 +655,15 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
   ILboolean   need_resize = IL_FALSE;
 
   if (Src->Pal.Palette != NULL && Src->Pal.PalSize != 0 && Src->Pal.PalType != IL_PAL_NONE) {
-    //ilSetCurImage(Src);
     Dest = iConvertImage(Src, ilGetPalBaseType(Src->Pal.PalType), IL_UNSIGNED_BYTE);
-    //Dest = iConvertImage(IL_BGR);
-    //ilSetCurImage(ilutCurImage);
+
     if (Dest == NULL)
       return NULL;
 
     Created = IL_TRUE;
 
     // Change here!
-
-
+    
     // Set Dest's palette stuff here
     Dest->Pal.PalType = IL_PAL_NONE;
   }
@@ -681,10 +675,13 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
         need_resize = IL_TRUE;
       }
 
-  if ((ILint)Src->Width > Settings->MaxTexW || (ILint)Src->Height > Settings->MaxTexH || (ILint)Src->Depth > Settings->MaxTexD)
+  if (Src->Width > Settings->MaxTexW || Src->Height > Settings->MaxTexH || Src->Depth > Settings->MaxTexD)
     need_resize = IL_TRUE;
 
   if (need_resize == IL_TRUE) {
+    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : ilNextPower2(Dest->Width)  );
+    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : ilNextPower2(Dest->Height) );
+
     if (!Created) {
       Dest = ilCopyImage_(Src);
       if (Dest == NULL) {
@@ -694,16 +691,13 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
     }
 
     if (Src->Format == IL_COLOUR_INDEX) {
-      Temp = HasNonPowerOfTwoHardware == IL_TRUE ? 
-        iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, Dest->Width),               IL_MIN((ILuint)Settings->MaxTexH, Dest->Height),               IL_MIN((ILuint)Settings->MaxTexD, Dest->Depth),                ILU_NEAREST)
-      : iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, ilNextPower2(Dest->Width)), IL_MIN((ILuint)Settings->MaxTexH, ilNextPower2(Dest->Height)), IL_MIN((ILuint)Settings->MaxTexD, ilNextPower2(Dest->Height)), ILU_NEAREST);
+      Temp = iluScale_(Dest, DestW, DestH, 1, ILU_NEAREST);
     } else {
-      Temp = HasNonPowerOfTwoHardware == IL_TRUE ?
-        iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, Dest->Width),                       IL_MIN((ILuint)Settings->MaxTexH, Dest->Height),              IL_MIN((ILuint)Settings->MaxTexD, Dest->Depth),              ILU_BILINEAR)
-      : iluScale_(Dest, IL_MIN((ILuint)Settings->MaxTexW, (ILuint)ilNextPower2(Dest->Width)), IL_MIN(Settings->MaxTexH, (ILint)ilNextPower2(Dest->Height)), IL_MIN(Settings->MaxTexD, (ILint)ilNextPower2(Dest->Depth)), ILU_BILINEAR);
+      Temp = iluScale_(Dest, DestW, DestH, 1, ILU_BILINEAR);
     }
 
     ilCloseImage(Dest);
+    
     if (!Temp) {
       return NULL;
     }
@@ -733,6 +727,7 @@ GLuint ILAPIENTRY ilutGLLoadImage(ILstring FileName)
   iLockState();
   ilutCurImage = iLockCurImage();
   Temp = ilNewImage(1,1,1,1,1);
+  Temp->io = ilutCurImage->io;
   iUnlockImage(ilutCurImage);
   GetSettings(&Settings);
   iUnlockState();
@@ -843,8 +838,15 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
     ReturnVal = IL_FALSE;
   }
 
-  if (ReturnVal)
+  if (ReturnVal) {
+#if _UNICODE
+    ILstring FileName = iWideFromMultiByte(Buff);
+    iSave(Temp, IL_TGA, FileName);
+    ifree(FileName);
+#else
     iSave(Temp, IL_TGA, Buff);
+#endif
+  }
 
   ilCloseImage(Temp);
   return ReturnVal;

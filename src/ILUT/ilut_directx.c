@@ -20,16 +20,10 @@
  */
 
 #include "ilut_internal.h"
+
 #ifdef ILUT_USE_DIRECTX8
 
 #include <d3d8.h>
-
-#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
-  #if defined(_MSC_VER) || defined(__BORLANDC__)
-    #pragma comment(lib, "d3d8.lib")
-    #pragma comment(lib, "d3dx8.lib")
-  #endif
-#endif
 
 typedef struct {
   ILboolean UseDXTC;
@@ -96,7 +90,7 @@ static void CheckFormatsDX8(IDirect3DDevice8 *Device) {
  * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
  * @ingroup ilut_dx8
  */
-ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DTexture8 **Texture) {
+ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
@@ -128,7 +122,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, char *FileNam
  * - ILUT_D3D_POOL
  * @ingroup ilut_dx8
  */
-ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, char *FileName, IDirect3DVolumeTexture8 **Texture) {
+ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
   ILimage* Temp = ilNewImage(1,1,1, 1,1);
@@ -216,7 +210,7 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, vo
  * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
  * @ingroup ilut_dx8
  */
-ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DTexture8 **Texture) {
+ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DTexture8 **Texture) {
   HRSRC Resource;
   ILubyte *Data;
 
@@ -248,7 +242,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
  * - ILUT_D3D_POOL
  * @ingroup ilut_dx8
  */
-ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, char *SrcResource, IDirect3DVolumeTexture8 **Texture) {
+ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DVolumeTexture8 **Texture) {
   HRSRC Resource;
   ILubyte *Data;
 
@@ -409,7 +403,7 @@ static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *
     }
   }
 
-  Image = MakeD3D8Compliant(ilutCurImage, Device, &Format);
+  Image = MakeD3D8Compliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL) {
     if (Image != ilutCurImage)
       ilCloseImage(Image);
@@ -482,7 +476,7 @@ static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirec
   if (!FormatsDX8Checked)
     CheckFormatsDX8(Device);
 
-  Image = MakeD3D8Compliant(ilutCurImage, Device, &Format);
+  Image = MakeD3D8Compliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL)
     goto failure;
   if (FAILED(IDirect3DDevice8_CreateVolumeTexture(Device, Image->Width, Image->Height,

@@ -117,7 +117,19 @@ ELSE                    ()
   ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
 ENDIF                   ()
 
-SET                     ( LINK_LIBS "" )
+SET                     ( LINK_LIBS 
+                          ${LINK_LIBS}
+                          ${ZLIB_LIBRARIES}
+                          ${MNG_LIBRARIES}
+                          ${JPEG_LIBRARIES}
+                          ${PNG_LIBRARIES}
+                          ${TIFF_LIBRARIES}
+                          ${ALLEGRO_LIBRARIES}
+                          ${OPENGL_LIBRARIES}
+                          ${SDL_LIBRARIES}
+                          ${X11_LIBRARIES}
+                          ${THREADS_LIB}
+                        )
 
 IF                      ( NOT IL_NO_JP2 )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${JASPER_LIBRARIES} )
@@ -127,23 +139,8 @@ IF                      ( NOT IL_NO_LCMS )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${LCMS2_LIBRARIES} )
 ENDIF                   ()
 
-IF                      ( MINGW ) 
-  SET                   ( LINK_LIBS ${LINK_LIBS} m z )
-ENDIF                   ()
-
 INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )
-TARGET_LINK_LIBRARIES   ( ${LIBNAME}
-                          ${LINK_LIBS}
-                          ${MNG_LIBRARIES}
-                          ${JPEG_LIBRARIES}
-                          ${PNG_LIBRARIES}
-                          ${TIFF_LIBRARIES}
-                          ${ALLEGRO_LIBRARIES}
-                          ${OPENGL_LIBRARIES}
-                          ${SDL_LIBRARIES}
-                          ${X11_LIBRARIES}
-                          ${CMAKE_THREAD_LIBS_INIT}
-                        )
+TARGET_LINK_LIBRARIES   ( ${LIBNAME} ${LINK_LIBS} )
 
 INSTALL                 ( TARGETS ${LIBNAME}
                           RUNTIME DESTINATION bin

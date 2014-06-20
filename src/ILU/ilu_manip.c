@@ -471,12 +471,15 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *img) {
 }
 
 
-typedef struct BUCKET { ILubyte Colours[4];  struct BUCKET *Next; } BUCKET;
+typedef struct BUCKET { ILuint Colours;  struct BUCKET *Next; } BUCKET;
 
 ILuint iColoursUsed(ILimage *Image) {
   ILuint i, c, Bpp, ColVal, SizeData, BucketPos = 0, NumCols = 0;
   BUCKET Buckets[8192], *Temp;
-  ILubyte ColTemp[4];
+  union {
+    ILubyte bytes[4];
+    ILuint  u32;
+  } ColTemp;
   ILboolean Matched;
   BUCKET *Heap[9];
   ILuint HeapPos = 0, HeapPtr = 0, HeapSize;
@@ -503,19 +506,17 @@ ILuint iColoursUsed(ILimage *Image) {
     return IL_FALSE;
 
   for (i = 0; i < SizeData; i += Bpp) {
-    *(ILuint*)ColTemp = 0;
-    /*for (c = 0; c < Bpp; c++) {
-      ColTemp[c] = Image->Data[i + c];
-    }*/
-    ColTemp[0] = Image->Data[i];
+    imemclear(&ColTemp, sizeof(ColTemp));
+
+    ColTemp.bytes[0] = Image->Data[i];
     if (Bpp > 1) {
-      ColTemp[1] = Image->Data[i + 1];
-      ColTemp[2] = Image->Data[i + 2];
+      ColTemp.bytes[1] = Image->Data[i + 1];
+      ColTemp.bytes[2] = Image->Data[i + 2];
     }
     if (Bpp > 3)
-      ColTemp[3] = Image->Data[i + 3];
+      ColTemp.bytes[3] = Image->Data[i + 3];
 
-    BucketPos = *(ILuint*)ColTemp % 8192;
+    BucketPos = ColTemp.u32 % 8192;
 
     // Add to hash table
     if (Buckets[BucketPos].Next == NULL) {
@@ -528,23 +529,23 @@ ILuint iColoursUsed(ILimage *Image) {
           goto alloc_error;
         HeapPtr = 0;
       }
-      *(ILuint*)Buckets[BucketPos].Next->Colours = *(ILuint*)ColTemp;
+      Buckets[BucketPos].Next->Colours = ColTemp.u32;
       Buckets[BucketPos].Next->Next = NULL;
     }
     else {
       Matched = IL_FALSE;
       Temp = Buckets[BucketPos].Next;
 
-      ColVal = *(ILuint*)ColTemp;
+      ColVal = ColTemp.u32;
       while (Temp->Next != NULL) {
-        if (ColVal == *(ILuint*)Temp->Colours) {
+        if (ColVal == Temp->Colours) {
           Matched = IL_TRUE;
           break;
         }
         Temp = Temp->Next;
       }
       if (!Matched) {
-        if (ColVal != *(ILuint*)Temp->Colours) {  // Check against last entry
+        if (ColVal != Temp->Colours) {  // Check against last entry
           NumCols++;
           Temp = Buckets[BucketPos].Next;
           //Buckets[BucketPos].Next = (BUCKET*)ialloc(sizeof(BUCKET));
@@ -556,7 +557,7 @@ ILuint iColoursUsed(ILimage *Image) {
             HeapPtr = 0;
           }
           Buckets[BucketPos].Next->Next = Temp;
-          *(ILuint*)Buckets[BucketPos].Next->Colours = *(ILuint*)ColTemp;
+          Buckets[BucketPos].Next->Colours = ColTemp.u32;
         }
       }
     }

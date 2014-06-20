@@ -38,6 +38,11 @@ TARGET_LINK_LIBRARIES   ( ILUT
                           ${X11_LIBRARIES}
                         )
 
+IF                      ( ILUT_USE_SDL )
+  INCLUDE_DIRECTORIES   ( ${SDL_INCLUDE_DIR} )
+  TARGET_LINK_LIBRARIES ( ILUT ${SDL_LIBRARY} )
+ENDIF                   ()
+
 INSTALL                 ( TARGETS ILUT
                           RUNTIME DESTINATION bin
                           LIBRARY DESTINATION lib

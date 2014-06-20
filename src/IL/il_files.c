@@ -371,7 +371,7 @@ ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint Offset, ILuint Mode)
       break;
 
     case IL_SEEK_CUR:
-      if (io->lumpPos + Offset > io->lumpSize || io->lumpPos+Offset < 0)
+      if (io->lumpPos + Offset > io->lumpSize || (ILint)io->lumpPos+Offset < 0)
         return 1;
       io->lumpPos += Offset;
       break;
