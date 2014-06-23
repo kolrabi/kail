@@ -214,34 +214,6 @@ ILboolean ilLoadWdpF(ILHANDLE File);
 ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 */
 
-#define imemclear(x,y) memset(x,0,y);
-
-extern FILE *iTraceOut;
-
-#define iTrace(...) if (iTraceOut) {\
-  fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
-  fprintf(iTraceOut, __VA_ARGS__); \
-  fputc('\n', iTraceOut); \
-  fflush(iTraceOut); \
-}
-
-#define iTraceV(fmt, args) if (iTraceOut) {\
-  fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
-  vfprintf(iTraceOut, fmt, args); \
-  fputc('\n', iTraceOut); \
-  fflush(iTraceOut); \
-}
-
-#ifdef DEBUG
-#define iAssert(x) { \
-  bool __x = (x); \
-  iTrace("Assertion failed: ", #x); \
-  assert(x); \
-}
-#else
-#define iAssert(x)
-#endif
-
 #ifdef __cplusplus
 }
 #endif

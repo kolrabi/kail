@@ -88,7 +88,7 @@ ILboolean iCheckJpg(ILubyte Header[2]) {
 static ILboolean iIsValidJpeg(SIO* io) {
 	ILubyte Head[2];
 
-	ILuint read = iGetJpgHead(io, Head);
+	ILint read = iGetJpgHead(io, Head);
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
 	return read == 2 && iCheckJpg(Head);
@@ -858,10 +858,10 @@ ILconst_string iFormatExtsJPG[] = {
 };
 
 ILformat iFormatJPG = { 
-  .Validate = iIsValidJpeg, 
-  .Load     = iLoadJpegInternal, 
-  .Save     = iSaveJpegInternal, 
-  .Exts     = iFormatExtsJPG
+  /* .Validate = */ iIsValidJpeg, 
+  /* .Load     = */ iLoadJpegInternal, 
+  /* .Save     = */ iSaveJpegInternal, 
+  /* .Exts     = */ iFormatExtsJPG
 };
 
 #endif//IL_NO_JPG

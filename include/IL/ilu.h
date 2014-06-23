@@ -100,6 +100,8 @@ typedef ILUpointi ILpointi;   // for compatibility reasons
 #define ILU_NEAREST             0x2601
 #define ILU_LINEAR              0x2602
 #define ILU_BILINEAR            0x2603
+
+// deprecated: these are not used anywhere it seems
 #define ILU_SCALE_BOX           0x2604
 #define ILU_SCALE_TRIANGLE      0x2605
 #define ILU_SCALE_BELL          0x2606

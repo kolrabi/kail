@@ -698,6 +698,7 @@ static void iBindImageTemp() {
 
 ILAPI void ILAPIENTRY iLockState() {
 #if IL_THREAD_SAFE_PTHREAD
+  iTrace("---- Locking state");
   pthread_mutex_lock(&iStateMutex);
   iTrace("---- Locked state");
 #elif IL_THREAD_SAFE_WIN32

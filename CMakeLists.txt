@@ -20,6 +20,7 @@ IF                      ( CMAKE_COMPILER_IS_GNUCC )
   SET                   ( RESTRICT_KEYWORD TRUE )
 ELSEIF                  ( MSVC )
   SET                   ( IL_INLINE_ASM TRUE )
+  SET                   ( CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${CMAKE_SOURCE_DIR}/msvclibs )
 ENDIF                   ()
 
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )

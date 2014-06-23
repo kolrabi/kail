@@ -42,6 +42,10 @@ void iGetIntegerv(ILenum Mode, ILint *Param) {
       *Param = iluFilter;
       break;
 
+    case ILU_PLACEMENT:
+      *Param = iluPlacement;
+      break;
+
     default:
       iSetError(ILU_INVALID_ENUM);
   }
@@ -54,7 +58,6 @@ ILenum iluFilter = ILU_NEAREST;
 ILenum iluPlacement = ILU_CENTER;
 
 void iImageParameter(ILenum PName, ILenum Param) {
-  iLockState(); 
   switch (PName)
   {
     case ILU_FILTER:
@@ -94,5 +97,4 @@ void iImageParameter(ILenum PName, ILenum Param) {
     default:
       iSetError(ILU_INVALID_ENUM);
   }
-  iUnlockState(); 
 }

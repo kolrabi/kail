@@ -5,11 +5,7 @@ if [ -z "$DXSDK_DIR" ]; then
   export DXSDK_DIR="/C/Program Files (x86)/Microsoft SDKs/Windows/v7.1A"
 fi
 
-# I have some libraries there
-GLOBAL_OPTIONS="-DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
-
-# Would create dependency on dll
-GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE"
+BASE_PATH=`pwd`
 
 function build() {
   SYSTEM="$1"
@@ -19,7 +15,6 @@ function build() {
   PACKEXT="$5"
 
   OPTIONS="$OPTIONS $GLOBAL_OPTIONS"
-  BASE_PATH=`pwd`
   BUILD_PATH="$BASE_PATH/build/$SYSTEM/$NAME"
   DEPLOY_PATH="$BASE_PATH/deploy/$SYSTEM/$NAME"
 
@@ -41,11 +36,15 @@ function build() {
 
   (
     cd "$DEPLOY_PATH" && 
-    $PACK "$BASE_PATH/KaIL-$SYSTEM-$NAME.$PACKEXT" Release Debug 
+    $PACK "$BASE_PATH/deploy/KaIL-$SYSTEM-$NAME.$PACKEXT" Release Debug 
   )
 }
 
-build "Visual Studio 11" NonUnicode ""                  "zip -r"   ".zip"   &&
-build "Visual Studio 11" Unicode    "-DIL_UNICODE=TRUE" "zip -r"   ".zip"   &&
-build "MSYS Makefiles"   NonUnicode ""                  "tar cjvf" ".tbz2"  &&
-build "MSYS Makefiles"   Unicode    "-DIL_UNICODE=TRUE" "tar cjvf" ".tbz2"  
+# Would create dependency on dll
+GLOBAL_OPTIONS="-DILUT_USE_SDL=FALSE"
+
+build "Visual Studio 11" NonUnicode "-DCMAKE_SYSTEM_PREFIX_PATH=$BASE_PATH/msvclibs"                   "zip -r"   "zip"   &&
+build "Visual Studio 11" Unicode    "-DCMAKE_SYSTEM_PREFIX_PATH=$BASE_PATH/msvclibs -DIL_UNICODE=TRUE" "zip -r"   "zip"   || exit $?
+
+build "MSYS Makefiles"   NonUnicode "-DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"                   "tar cjvf" "tbz2"  &&
+build "MSYS Makefiles"   Unicode    "-DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32 -DIL_UNICODE=TRUE" "tar cjvf" "tbz2"  

@@ -1108,10 +1108,11 @@ ILint iGetInt(ILenum Mode) {
 
   //check if an error occured, set another error
   err = ilGetError();
-  if (r == -1 && err == IL_INVALID_ENUM)
+  if (r == -1 && err == IL_INVALID_ENUM) {
     iSetError(IL_INTERNAL_ERROR);
-  else
+  } else {
     iSetError(err); //restore error
+  }
 
   return r;
 }

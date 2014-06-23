@@ -409,9 +409,9 @@ static ILboolean i16BitTarga(ILimage *image) {
 // @todo: write header in one read() call
 static ILboolean iSaveTargaInternal(ILimage* image)
 {
-	char	*ID = iGetString(IL_TGA_ID_STRING);
-	char	*AuthName = iGetString(IL_TGA_AUTHNAME_STRING);
-	char	*AuthComment = iGetString(IL_TGA_AUTHCOMMENT_STRING);
+	char	*ID 					= iGetString(IL_TGA_ID_STRING);
+	char	*AuthName 		= iGetString(IL_TGA_AUTHNAME_STRING);
+	char	*AuthComment 	= iGetString(IL_TGA_AUTHCOMMENT_STRING);
 	ILubyte 	IDLen = 0, UsePal, Type, PalEntSize;
 	ILshort 	ColMapStart = 0, PalSize;
 	ILubyte		Temp;

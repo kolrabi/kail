@@ -27,9 +27,14 @@ ILstring ILAPIENTRY iStrDup(ILconst_string Str) {
 char * ILAPIENTRY iCharStrDup(const char *Str) {
   char *copy;
 
+  if (Str == NULL) 
+    return NULL;
+
   copy = (char *)ialloc((iCharStrLen(Str) + 1) * sizeof(char));
+
   if (copy == NULL)
     return NULL;
+  
   iCharStrCpy(copy, Str);
   return copy;
 }

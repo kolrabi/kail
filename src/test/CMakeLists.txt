@@ -21,6 +21,9 @@ TARGET_LINK_LIBRARIES   ( ILtestIO          ${ILLIB} )
 ADD_EXECUTABLE          ( ILtestFormatLoad  iltest-format-load.c )
 TARGET_LINK_LIBRARIES   ( ILtestFormatLoad  ${ILLIB} )
 
+ADD_EXECUTABLE          ( ILtestILU         iltest-ilu.c )
+TARGET_LINK_LIBRARIES   ( ILtestILU         ${ILLIB} ILU )
+
 ADD_TEST                ( MemoryDefault     ILtestMemory      default_alloc )
 ADD_TEST                ( MemoryCustom      ILtestMemory      custom_alloc  )
 ADD_TEST                ( MemoryMixed       ILtestMemory      mixed_alloc   )
@@ -28,6 +31,45 @@ ADD_TEST                ( MemoryEndian      ILtestMemory      endian        )
 
 ADD_TEST                ( IOOpenFile        ILtestIO          open_read ${CMAKE_CURRENT_SOURCE_DIR}/TestFile.txt )
 # ADD_TEST                ( IOOpenLump        ILtestIO          open_read_lump ABCDefghijk )
+
+SET                     ( ILU_IMAGE ${CMAKE_SOURCE_DIR}/images/dougie.png )
+ADD_TEST                ( ILUAlienify       ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_alienify.png alienify )
+ADD_TEST                ( ILUBlurAvg        ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_bluravg.png  bluravg )
+ADD_TEST                ( ILUBlurGaussian   ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_blurgaussian.png  blurgaussian )
+# iluBuidMipmaps
+# iluColoursUsed
+# iluCompareImage
+ADD_TEST                ( ILUContrast       ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_constrast.png     contrast )
+# iluConvolution implicitly tested by blurs 
+ADD_TEST                ( ILUCrop           ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_crop.png          crop )
+ADD_TEST                ( ILUEdgeDetectE    ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_edge_e.png        edge_e )
+ADD_TEST                ( ILUEdgeDetectP    ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_edge_p.png        edge_p )
+ADD_TEST                ( ILUEdgeDetectS    ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_edge_s.png        edge_s )
+ADD_TEST                ( ILUEnlargeCanvas  ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_canvas.png        canvas )
+ADD_TEST                ( ILUEqualize       ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_equalize.png      equalize )
+ADD_TEST                ( ILUFlipImage      ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_flip.png          flip )
+ADD_TEST                ( ILUGamma          ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_gamma.png         gamma )
+ADD_TEST                ( ILUMirror         ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_mirror.png        mirror )
+ADD_TEST                ( ILUNegative       ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_negative.png      negative )
+ADD_TEST                ( ILUNoisify        ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_noisify.png       noisify )
+ADD_TEST                ( ILUPixelize       ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_pixelize.png      pixelize )
+# region
+ADD_TEST                ( ILUReplace        ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_replace.png       replace )
+ADD_TEST                ( ILURotate         ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_rotate.png        rotate )
+ADD_TEST                ( ILUSaturate1      ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_saturate1.png     saturate1 )
+ADD_TEST                ( ILUSaturate4      ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_saturate4.png     saturate4 )
+ADD_TEST                ( ILUScaleDNearest  ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_down_nearest.png    scale_down_nearest )
+ADD_TEST                ( ILUScaleDLinear   ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_down_linear.png     scale_down_linear )
+ADD_TEST                ( ILUScaleDBilinear ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_down_bilinear.png   scale_down_bilinear )
+ADD_TEST                ( ILUScaleUNearest  ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_up_nearest.png    scale_up_nearest )
+ADD_TEST                ( ILUScaleULinear   ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_up_linear.png     scale_up_linear )
+ADD_TEST                ( ILUScaleUBilinear ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_up_bilinear.png   scale_up_bilinear )
+ADD_TEST                ( ILUScaleAlpha     ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_alpha.png   scalealpha )
+ADD_TEST                ( ILUScaleColours   ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_scale_colours.png   scalecolours )
+ADD_TEST                ( ILUSharpen        ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_sharpen.png   sharpen )
+ADD_TEST                ( ILUSwap           ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_swap.png   swap )
+ADD_TEST                ( ILUWave           ILtestILU         ${ILU_IMAGE} ${CMAKE_SOURCE_DIR}/images/ilu_wave.png   wave )
+
 
 ADD_TEST                ( FormatLoadBLP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.blp 600 400 1 0 )
 ADD_TEST                ( FormatLoadBMP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.bmp 600 400 1 0 )
@@ -76,5 +118,5 @@ ADD_TEST                ( FormatLoadTIFF    ILtestFormatLoad  ${CMAKE_SOURCE_DIR
 # VTF
 # WAL
 ADD_TEST                ( FormatLoadWBMP    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.wbmp 600 400 1 0 )
-# WDP
+# WDP TODO
 ADD_TEST                ( FormatLoadXPM     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.xpm 600 400 1 0 )

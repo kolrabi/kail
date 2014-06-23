@@ -676,7 +676,7 @@ ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 
 
 #ifdef IL_VERSION_1_9_0
-ILAPI ILboolean ILAPIENTRY ilAddAlpha();
+ILAPI ILboolean ILAPIENTRY ilAddAlpha(void);
 ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 #endif 
 

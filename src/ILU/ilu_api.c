@@ -297,7 +297,18 @@ ILboolean ILAPIENTRY iluEmboss() {
  * @ingroup ilu_geometry
  */ 
 ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth) {
-  SIMPLE_FUNC(Image, ILboolean, iEnlargeCanvas(Image, Width, Height, Depth, iluPlacement));
+  ILimage *Image;
+  ILint Placement;
+  ILboolean Result;
+
+  iLockState(); 
+  Image  = iLockCurImage();
+  iGetIntegerv(ILU_PLACEMENT, &Placement);
+  iUnlockState();
+
+  Result = iEnlargeCanvas(Image, Width, Height, Depth, Placement);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -308,7 +319,7 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
  */
 ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
   ILimage *Image;
-  ILenum   Filter;
+  ILint   Filter;
   ILboolean Result;
 
   if (XDim <= 0.0f || YDim <= 0.0f || ZDim <= 0.0f) {
@@ -318,7 +329,7 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
 
   iLockState(); 
   Image = iLockCurImage();
-  Filter = iluGetInteger(ILU_FILTER);
+  iGetIntegerv(ILU_FILTER, &Filter);
   iUnlockState();
   Result = iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
           (ILuint)(Image->Depth * ZDim), Filter);
@@ -434,9 +445,7 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
 ILint ILAPIENTRY iluGetInteger(ILenum Mode) {
   ILint Temp;
   Temp = 0;
-  iLockState();
   iluGetIntegerv(Mode, &Temp);
-  iUnlockState();
   return Temp;
 }
 
@@ -662,12 +671,12 @@ ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Satu
  */
 ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth) {
   ILimage *Image;
-  ILenum Filter;
+  ILint Filter;
   ILboolean Result;
 
   iLockState(); 
   Image  = iLockCurImage();
-  Filter = iluGetInteger(ILU_FILTER);
+  iGetIntegerv(ILU_FILTER, &Filter);
   iUnlockState();
 
   Result = iScale(Image, Width, Height, Depth, Filter);

@@ -45,9 +45,9 @@ static TIFF*     iTIFFOpen(SIO *io, char *Mode);
 static ILboolean iIsValidTiff(SIO* io) {
 	ILushort 	Header1 = 0, Header2 = 0;
 	ILuint 		Start = SIOtell(io);
+	ILboolean   bRet = IL_TRUE;
 
 	Header1 = GetLittleUShort(io);
-	ILboolean bRet = IL_TRUE;
 
 	if (Header1 == MAGIC_HEADER1) {
 		Header2 = GetLittleUShort(io);
@@ -93,7 +93,8 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 	void	 *Buffer;
 	ILimage  *Image, *TempImage;
 	ILushort si;
-        ILfloat  x_position, x_resolution, y_position, y_resolution;
+    ILfloat  x_position, x_resolution, y_position, y_resolution;
+    SIO *    io;
 	//TIFFRGBAImage img;
 	//char emsg[1024];
 
@@ -105,7 +106,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 		return IL_FALSE;
 	}
 
-	SIO *io = &image->io;
+	io = &image->io;
 
 	TIFFSetWarningHandler(warningHandler);
 	TIFFSetErrorHandler(errorHandler);
@@ -870,10 +871,10 @@ ILconst_string iFormatExtsTIF[] = {
 };
 
 ILformat iFormatTIF = { 
-	.Validate = iIsValidTiff, 
-	.Load     = iLoadTiffInternal, 
-	.Save     = iSaveTiffInternal, 
-	.Exts     = iFormatExtsTIF
+	/* .Validate = */ iIsValidTiff, 
+	/* .Load     = */ iLoadTiffInternal, 
+	/* .Save     = */ iSaveTiffInternal, 
+	/* .Exts     = */ iFormatExtsTIF
 };
 
 #endif//IL_NO_TIF

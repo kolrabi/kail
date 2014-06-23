@@ -110,9 +110,7 @@ ENDIF                   ( )
 SET                     ( LINK_LIBS 
                           ${LINK_LIBS}
                           ${ZLIB_LIBRARIES}
-                          ${MNG_LIBRARIES}
                           ${JPEG_LIBRARIES}
-                          ${PNG_LIBRARIES}
                           ${TIFF_LIBRARIES}
                           ${ALLEGRO_LIBRARIES}
                           ${OPENGL_LIBRARIES}
@@ -132,6 +130,16 @@ ENDIF                   ()
 IF                      ( NOT IL_NO_EXR )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${OPENEXR_LIBRARIES} )
   INCLUDE_DIRECTORIES   ( ${OPENEXR_INCLUDE_DIR} )
+ENDIF                   ()
+
+IF                      ( NOT IL_NO_PNG )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${PNG_LIBRARIES} )
+  INCLUDE_DIRECTORIES   ( ${PNG_PNG_INCLUDE_DIR} )
+ENDIF                   ()
+
+IF                      ( NOT IL_NO_MNG )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${MNG_LIBRARY} )
+  INCLUDE_DIRECTORIES   ( ${MNG_MNG_INCLUDE_DIR} )
 ENDIF                   ()
 
 INCLUDE_DIRECTORIES     ( ${Threads_INCLUDE_DIR} )

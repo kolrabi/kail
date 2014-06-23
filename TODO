@@ -1,14 +1,20 @@
 
-- Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
-  changes behaviour of ilActive*(); 
+1.9.0:
 
-- Change fSeekProc parameter back to ILint64 as the cause for the problems
-  have been fixed
+  - Change fSeekProc parameter back to ILint64 as the cause for the problems
+    have been fixed
 
-- More format tests
+  - More format tests
 
-- SDL2 ILUT
+  - SDL2 ILUT
 
-- IL_CLAMP_* optional as parameter of ilEnable/ilDisable
+  - Add licenses for 3rd party static libraries
 
-- Add option to rescale high dynamic range files (normalizing, clamping, tonemapping?)
+2.0.0:
+
+  - Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
+    changes behaviour of ilActive*(); 
+
+  - IL_CLAMP_* optional as parameter of ilEnable/ilDisable
+
+  - Add option to rescale high dynamic range files (normalizing, clamping, tonemapping?)

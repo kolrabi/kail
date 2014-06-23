@@ -83,7 +83,9 @@ Setting up @code{KaIL} in usually requires the following steps:
 @enumerate
 	@item Unpack @code{KaIL} to your favourite build area: Typically this is done by running @command{tar -xvvf kail-xxx.tar.gz}
 	@item Create a build directory somewhere and @code{cd} to it.
-	@item Run @code{cmake}: @command{cmake <kail base directory> -G "Unix Makefiles"}
+	@item Run @code{cmake}: @command{cmake <kail base directory> -G <makefile generator>}
+
+	Run @command{cmake --help} to get a list of available makefile generators.
 
 	TIP: Typically, you will want add specify @code{-DCMAKE_INSTALL_PREFIX=/usr} (where to install @code{KaIL}).
 	
@@ -96,7 +98,7 @@ Setting up @code{KaIL} in usually requires the following steps:
 
 @end enumerate
 
-In order to link to @code{DevIL}, you may use autotools with @code{libtool}, which means to link either with @file{libIL.la} or @file{libILU.la} or with @file{libILUT.la} depending what level of functionality you require.
+In order to link to @code{KaIL}, you may use autotools with @code{libtool}, which means to link either with @file{libIL.la} or @file{libILU.la} or with @file{libILUT.la} depending what level of functionality you require.
 You may decide to use a monolithic build of the library and you then link with @file{libDevIL.la}.
 The best way is to have this code in your @file{configure.ac} file:
 
@@ -122,7 +124,12 @@ AC_SUBST([DEVIL_CFLAGS DEVIL_LIBS])
 @end example
 If you are skilled with automake, you may link with the libtool files directly, which is more portable (@code{pkg-config} currently breaks cross-compilation).
 
-If you use an IDE or if you don't like autotools (which is a big mistake, by the way :-), then you may use @file{pkg-config} as a program. 
+If you use cmake, just use the FindDevIL module:
+@example
+FIND_PACKAGE(DevIL)
+@end @example
+
+If you use an IDE or if you don't like autotools or cmake (which is a big mistake, by the way :-), then you may use @file{pkg-config} as a program. 
 This is not recommended if you intend to use @code{KaIL} in a cross-platform programs.
 You can get libraries you need to link to by running @command{pkg-config IL --libs}. Again, you decide whether you need @code{IL}, @code{ILU} or @code{ILUT}.
 Also pass @command{pkg-config IL --cflags} to the compiler!
@@ -140,42 +147,6 @@ Some work was put into making @code{KaIL} thread safe.
 Images that are currently being worked on are locked, so that other threads will block when they try to perform an operation on them. 
 Global state of the Image Library (like which image is currently bound, the error state or general settings) is thread local.
 Note that the states of the @code{ILU} and @code{ILUT} are (still) shared among threads.
-
-
-@section Test and examples
-
-@anchor{tests}
-@subsection Test suite
-@code{DevIL} now comes with a test suite. 
-If you can use autotools to configure and compile it, you can also run the test suite by executing @command{make check} in the directory where you ran @command{configure}.
-
-There are following tests available:
-@itemize
-	@item Format test: An image is generated and saved to disc. 
-	It is loaded afterwards and compared to the original.
-	If they are pretty much the same, the test is passed.
-	@item Format test 2 (coming soon): Some image formats can't be saved. 
-	So a test images are provided and loaded and compared. 
-@end itemize
-
-@subsection Examples
-
-@code{IL} examples:
-@itemize
-	@item Simple
-	@item Read
-	@item Override
-@end itemize
-Note: Those examples can be linked against @code{ILU}, but this is only because error report functions.
-
-@code{ILUT} examples:
-@itemize
-	@item Allegro
-	@item C++ wrapper
-	@item SDL
-	@item Volume
-	@item OpenGL
-@end itemize
 
 @node Basic usage
 @chapter Basic usage

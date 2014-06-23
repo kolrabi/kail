@@ -62,6 +62,10 @@ static ILboolean iIsValidJp2(SIO* io) {
 
 //! This is separated so that it can be called for other file types, such as .icns.
 ILboolean iLoadJp2Internal(ILimage* Image) {
+	SIO *io;
+	ILboolean bRet;
+    jas_stream_t *Stream = NULL;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -76,17 +80,17 @@ ILboolean iLoadJp2Internal(ILimage* Image) {
 		JasperInit = IL_TRUE;
 	}
 
-	SIO *io = &Image->io;
+	io = &Image->io;
 
 	// open stream
-	jas_stream_t *Stream = iJp2ReadStream(io);
+	Stream = iJp2ReadStream(io);
 	if (!Stream)
 	{
 		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
-	ILboolean bRet = iLoadJp2InternalStream(Image, Stream);
+	bRet = iLoadJp2InternalStream(Image, Stream);
 
 	// Close the input stream.
 	jas_stream_close(Stream);
@@ -96,6 +100,9 @@ ILboolean iLoadJp2Internal(ILimage* Image) {
 
 //! This is separated so that it can be called for other file types, such as .icns.
 ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
+    jas_stream_t *Stream;
+    ILboolean bRet;
+
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
@@ -111,14 +118,14 @@ ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
 	}
 
 	// open stream
-	jas_stream_t *Stream = jas_stream_memopen((char*)Lump, Size);;
+	Stream = jas_stream_memopen((char*)Lump, Size);;
 	if (!Stream)
 	{
 		iSetError(IL_COULD_NOT_OPEN_FILE);
 		return IL_FALSE;
 	}
 
-	ILboolean bRet = iLoadJp2InternalStream(Image, Stream);
+	bRet = iLoadJp2InternalStream(Image, Stream);
 
 	// Close the input stream.
 	jas_stream_close(Stream);
@@ -683,10 +690,10 @@ ILconst_string iFormatExtsJp2[] = {
 };
 
 ILformat iFormatJP2= { 
-  .Validate = iIsValidJp2, 
-  .Load     = iLoadJp2Internal, 
-  .Save     = iSaveJp2Internal, 
-  .Exts     = iFormatExtsJp2
+  /* .Validate = */ iIsValidJp2, 
+  /* .Load     = */ iLoadJp2Internal, 
+  /* .Save     = */ iSaveJp2Internal, 
+  /* .Exts     = */ iFormatExtsJp2
 };
 
 #endif//IL_NO_JP2

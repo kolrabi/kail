@@ -89,7 +89,7 @@ typedef struct SIO {
     ILuint      lumpSize, ReadFileStart, WriteFileStart;
 } SIO;
 
-#define SIOopenWR(io,       f) ((io)->openWrite    ? (io)->openWrite   ((io)->handle) : NULL)
+#define SIOopenWR(io,       f) ( (io)->handle = ((io)->openWrite    ? (io)->openWrite   (f) : NULL))
 #define SIOclose( io         ) { if ((io)->close) (io)->close((io)->handle); (io)->handle = NULL; }
 #define SIOread(  io, p, s, n) (io)->read   ((io)->handle, (p), (s), (n))
 #define SIOseek(  io,    s, w) (io)->seek   ((io)->handle,      (s), (w))
@@ -194,7 +194,7 @@ ILAPI void*         ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size
 #define                    ioalloc(T)    iaalloc(T, 1)
 
 // Internal library functions in IL
-ILAPI void      ILAPIENTRY iSetError(ILenum Error);
+ILAPI void      ILAPIENTRY iSetErrorReal(ILenum Error);
 ILAPI void      ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal);
 
 ILAPI ILimage * ILAPIENTRY iLockCurImage(void);
@@ -315,6 +315,37 @@ ILAPI ILimage*  ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
 ILAPI ILimage*  ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
 ILAPI ILimage*  ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
 ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint Height, ILuint Depth);
+
+#define imemclear(x,y) memset(x,0,y);
+
+ILAPI extern FILE *iTraceOut;
+
+#define iTrace(...) if (iTraceOut) {\
+  fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
+  fprintf(iTraceOut, __VA_ARGS__); \
+  fputc('\n', iTraceOut); \
+  fflush(iTraceOut); \
+}
+
+#define iTraceV(fmt, args) if (iTraceOut) {\
+  fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \
+  vfprintf(iTraceOut, fmt, args); \
+  fputc('\n', iTraceOut); \
+  fflush(iTraceOut); \
+}
+
+#define iSetError(x) \
+  { iTrace("**** Error: %04x", (x)); iSetErrorReal(x); }
+
+#ifdef DEBUG
+#define iAssert(x) { \
+  bool __x = (x); \
+  iTrace("Assertion failed: ", #x); \
+  assert(x); \
+}
+#else
+#define iAssert(x)
+#endif
 
 #ifdef __cplusplus
 }

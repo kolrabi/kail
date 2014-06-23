@@ -537,7 +537,9 @@ ILboolean iScaleAlpha(ILimage *Image, ILfloat scale) {
     return IL_FALSE;
   }
 
-  if( (Image->Format != IL_COLOUR_INDEX) && (Image->Type != IL_BYTE) ) {
+  if( (Image->Format != IL_COLOUR_INDEX) 
+   && (Image->Type != IL_BYTE)
+   && (Image->Type != IL_UNSIGNED_BYTE) ) {
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
@@ -598,7 +600,10 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
     return IL_FALSE;
   }
 
-  if( (Image->Format != IL_COLOUR_INDEX) && (Image->Type != IL_BYTE) ) {
+  if( (Image->Format != IL_COLOUR_INDEX) 
+   && (Image->Type != IL_BYTE)
+   && (Image->Type != IL_UNSIGNED_BYTE) ) {
+    iTrace("**** Format is %04x, Type is %04x", Image->Format, Image->Type);
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;
   }

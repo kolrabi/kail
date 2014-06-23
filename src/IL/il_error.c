@@ -15,7 +15,7 @@
 
 // Sets the current error
 //  If you go past the stack size for this, it cycles the errors, almost like a LRU algo.
-ILAPI void ILAPIENTRY iSetError(ILenum Error) {
+ILAPI void ILAPIENTRY iSetErrorReal(ILenum Error) {
   ILuint i;
 
   IL_ERROR_STACK *ErrorStack = &iGetTLSData()->CurError;
