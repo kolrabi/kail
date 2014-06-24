@@ -1,0 +1,78 @@
+/**
+ * @file
+ * @brief Data types for the IL.
+ *
+ * @defgroup il_types Image Library Data Types.
+ *               
+ * @ingroup il_types
+ * @{
+ * 
+ * @typedef ILchar
+ * In the Unicode version of the Image Library this is equivalent to a wide
+ * character (@a wchar_t). Otherwise it is just a @a char. 
+ *
+ * @typedef ILenum
+ * Type used for enumerating a set of values.
+ *
+ * @typedef ILboolean
+ * Type used for the boolean values @a IL_FALSE and @a IL_TRUE.
+ *
+ * @typedef ILbitfield
+ * @deprecated
+ *
+ * @typedef ILbyte
+ * A single signed byte.
+ *
+ * @typedef ILshort
+ * A signed short integer.
+ *
+ * @typedef ILint
+ * A signed integer.
+ *
+ * @typedef ILubyte
+ * A single unigned byte.
+ *
+ * @typedef ILushort
+ * An unsigned short integer.
+ *
+ * @typedef ILuint
+ * An unsigned integer.
+ *
+ * @typedef ILsizei
+ * An large unsigned integer (like size_t).
+ *
+ * @typedef ILint16
+ * A signed 64 bit integer.
+ *
+ * @typedef ILint16
+ * An unsigned 64 bit integer.
+ *
+ * @typedef ILfloat
+ * An unclamped single precision float value.
+ *
+ * @typedef ILdouble
+ * An unclamped double precision float value.
+ *
+ * @typedef ILclampf
+ * A clamped single precision float value. Will be clamped between 0 and 1.
+ *
+ * @typedef ILclampd
+ * A clamped double precision float value. Will be clamped between 0 and 1.
+ *
+ * @def IL_TEXT(s)
+ * Can be used to automatically convert a string literal into the correct type
+ * for the current type of ILchar.
+ *
+ * @def IL_SFMT
+ * This is the format specifier to be used in @a printf and related functions
+ * where a ILstring is to be printed. 
+ *
+ * @typedef ILstring
+ * A mutable string of @a ILchars.
+ *
+ * @typedef ILconst_string
+ * An immutable string of @a ILchars.
+ *
+ * @}
+ * 
+ */

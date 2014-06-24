@@ -3,6 +3,8 @@ var searchData=
   ['image_20data_20handling',['Image Data Handling',['../d1/d69/group__data.html',1,'']]],
   ['image_20file_20operations',['Image File Operations',['../db/d3b/group__file.html',1,'']]],
   ['image_20library',['Image Library',['../de/d44/group___i_l.html',1,'']]],
+  ['image_20library_20image_20data_20types_2e',['Image Library Image Data Types.',['../d9/d44/group__il__data__types.html',1,'']]],
+  ['image_20library_20data_20types_2e',['Image Library Data Types.',['../d0/d10/group__il__types.html',1,'']]],
   ['image_20library_20utilities',['Image Library Utilities',['../d1/d8e/group___i_l_u.html',1,'']]],
   ['image_20colours',['Image Colours',['../dd/d6e/group__ilu__colour.html',1,'']]],
   ['image_20filters',['Image Filters',['../dd/d14/group__ilu__filter.html',1,'']]],

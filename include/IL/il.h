@@ -175,22 +175,26 @@ typedef double                      ILclampd;
 
 // define character type
 #if _UNICODE
-  #define ILchar                    wchar_t
+  typedef wchar_t                   ILchar;
   #define IL_TEXT(s)                L##s
-  #define IL_SFMT                   "%ls"
+  #ifdef _MSC_VER     
+    #define IL_SFMT                 "%S"
+  #else
+    #define IL_SFMT                 "%ls"
+  #endif
 #else
-  #define ILchar                    char
+  typedef char                      ILchar;
   #define IL_TEXT(s)                s
   #define IL_SFMT                   "%s"
 #endif //_UNICODE
 
-//if we use a define instead of a typedef,
-//ILconst_string works as intended
-#define ILstring                    ILchar *
-#define ILconst_string              ILchar const *
+typedef ILchar *                    ILstring;
+typedef ILchar const *              ILconst_string;
 
-#define IL_FALSE                    0
-#define IL_TRUE                     1
+enum {
+  IL_FALSE = 0,
+  IL_TRUE  = 1
+};
 
 // limits
 #define IL_MAX_BYTE                 SCHAR_MAX

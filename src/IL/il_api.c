@@ -18,13 +18,21 @@
  * @ingroup IL 
  * @{
  * 
- * @defgroup state Global State
- * @defgroup setup Initialization / Deinitalization
- * @defgroup image_mgt Image Management
- * @defgroup image_manip Image Manipulation
- * @defgroup data Image Data Handling
- * @defgroup file Image File Operations
- * @defgroup register User Defined Image Types
+ * @defgroup state        Global State
+ *                        General state and settings. 
+ * @defgroup setup        Initialization / Deinitalization
+ *                        Setting up the IL
+ * @defgroup image_mgt    Image Management
+ *                        Creating, deleting, copying, selecting images.
+ * @defgroup image_manip  Image Manipulation
+ *                        Perform operations on images.
+ * @defgroup data         Image Data Handling
+ *                        Operations on image data.
+ * @defgroup file         Image File Operations
+ *                        Loading, saving, determining type of image files.
+ * @defgroup register     User Defined Image Types
+ *                        Registering and unregistering loaders/savers for user
+ *                        defined image types.
  */
 
 #include "il_internal.h"
@@ -1224,7 +1232,7 @@ ILboolean ILAPIENTRY ilRegisterNumImages(ILuint Num) {
 
 /**
  * Sets the origin of the currently bound image (no conversion).
- * @param Type The data type to use, valid values are:
+ * @param Origin The image of the image, valid values are:
  *               - IL_ORIGIN_LOWER_LEFT
  *               - IL_ORIGIN_UPPER_LEFT
  * @ingroup register
@@ -1340,14 +1348,14 @@ ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
 
 /**
  * Attempts to save an image to a file stream.  The file format is specified by the user.
- * @param Type Format of this file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
- * IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
- * IL_VTF, IL_WBMP and IL_JASC_PAL.
+ * @param Type Format of this file.  Acceptable values are all supported image and palette type values, eg.
+ * IL_BMP, IL_CHEAD, IL_DDS, IL_EXR, etc. If the given type is a palette type only the
+ * palette is saved.
  * @param File File stream to save to.
  * @return Boolean value of failure or success.  Returns IL_FALSE if saving failed.
  * @ingroup file
  */
-ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
+ILuint ILAPIENTRY ilSaveF(ILenum Type, ILHANDLE File) {
   ILboolean Result;
   ILimage *Image;
 
@@ -1356,7 +1364,7 @@ ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
   iUnlockState();
 
   iSetOutputFile(Image, File);
-  Result = iSaveFuncs2(Image, type);
+  Result = iSaveFuncs2(Image, Type);
   iUnlockImage(Image);
   return Result;
 }
@@ -1364,7 +1372,9 @@ ILuint ILAPIENTRY ilSaveF(ILenum type, ILHANDLE File) {
 /**
  * Attempts to load an image using the currently set IO functions. 
  * The file format is specified by the user.
+ * @param type The image/palette file type to save.
  * @ingroup file
+ * @see ilSetWrite
  */
 ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type) {
   SIMPLE_FUNC(Image, ILboolean, iSaveFuncs2(Image, type));

@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['todo_20list',['Todo List',['../dd/da0/todo.html',1,'']]],
-  ['type',['Type',['../d8/d85/struct_i_limage.html#a437e4fc3b579e2e7879dedd0fd2ac587',1,'ILimage::Type()'],['../d4/df3/struct_i_l_uinfo.html#a437e4fc3b579e2e7879dedd0fd2ac587',1,'ILUinfo::Type()']]]
+  ['width',['Width',['../d4/df3/struct_i_l_uinfo.html#a4146e7b2b0b4097e0e335f9b348392bf',1,'ILUinfo']]]
 ];

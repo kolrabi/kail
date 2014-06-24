@@ -50,7 +50,9 @@ typedef struct ICONDIRENTRY {
   DWORD dataOffset;
 } ICONDIRENTRY;
 
+#ifndef IL_NO_PNG
 static ILboolean iLoadIconPNG(SIO *io, ICOIMAGE *Icon);
+#endif
 
 // Internal function to get the header and check it.
 static ILboolean iIsValidIcon(SIO *io)
@@ -672,13 +674,13 @@ static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon) {
   return IL_TRUE;
 }
 #else
-
+/*
 static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon) {
   (void)io;
   (void)Icon;
   return IL_FALSE;
 }
-
+*/
 #endif
 
 ILconst_string iFormatExtsICO[] = { 

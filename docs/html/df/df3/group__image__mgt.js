@@ -10,6 +10,6 @@ var group__image__mgt =
     [ "ilDeleteImages", "df/df3/group__image__mgt.html#gab4346d371243537a7050e255f99c8b16", null ],
     [ "ilGenImage", "df/df3/group__image__mgt.html#ga056ebbb4dc5b18e027c555fcf39bd3c4", null ],
     [ "ilGenImages", "df/df3/group__image__mgt.html#ga2bd61fd22ff429363d44a4eaff3b064d", null ],
-    [ "ilGetIntegerImage", "df/df3/group__image__mgt.html#ga606b3f79f8ecb130ba29feae010b499b", null ],
+    [ "ilGetIntegerImage", "df/df3/group__image__mgt.html#ga73ee03b6167d7615a0da58c509e3863c", null ],
     [ "ilIsImage", "df/df3/group__image__mgt.html#gad94d46b20c049a81d8fff84fc7193f94", null ]
 ];

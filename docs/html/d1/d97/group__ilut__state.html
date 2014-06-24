@@ -107,14 +107,14 @@ $(document).ready(function(){initNavTree('d1/d97/group__ilut__state.html','../..
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga239431131fb8f750ce210c7546d0d035"><td class="memItemLeft" align="right" valign="top">ILint ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d97/group__ilut__state.html#ga239431131fb8f750ce210c7546d0d035">ilutGetInteger</a> (ILenum Mode)</td></tr>
+<tr class="memitem:ga239431131fb8f750ce210c7546d0d035"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d10/group__il__types.html#ga8effe51a00daaa0878631e5af75a36cb">ILint</a> ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d97/group__ilut__state.html#ga239431131fb8f750ce210c7546d0d035">ilutGetInteger</a> (<a class="el" href="../../d0/d10/group__il__types.html#ga62ca73445716183ef42b1f3906a45ed0">ILenum</a> Mode)</td></tr>
 <tr class="memdesc:ga239431131fb8f750ce210c7546d0d035"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the current value of the <em>Mode</em>.  <a href="#ga239431131fb8f750ce210c7546d0d035">More...</a><br /></td></tr>
 <tr class="separator:ga239431131fb8f750ce210c7546d0d035"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae638fbd9224912d86a1d2499166295bb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae638fbd9224912d86a1d2499166295bb"></a>
 void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d97/group__ilut__state.html#gae638fbd9224912d86a1d2499166295bb">ilutPopAttrib</a> ()</td></tr>
 <tr class="memdesc:gae638fbd9224912d86a1d2499166295bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pops the last pushed stack entry off the stack and copies the bits specified when pushed by ilutPushAttrib to the previous set of states. <br /></td></tr>
 <tr class="separator:gae638fbd9224912d86a1d2499166295bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac630c7a042dd4ce6840c7e65bd48901d"><td class="memItemLeft" align="right" valign="top">void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d97/group__ilut__state.html#gac630c7a042dd4ce6840c7e65bd48901d">ilutPushAttrib</a> (ILuint Bits)</td></tr>
+<tr class="memitem:gac630c7a042dd4ce6840c7e65bd48901d"><td class="memItemLeft" align="right" valign="top">void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d97/group__ilut__state.html#gac630c7a042dd4ce6840c7e65bd48901d">ilutPushAttrib</a> (<a class="el" href="../../d0/d10/group__il__types.html#gaff8e86a1072c8d7cfe387fb87c6ed8e1">ILuint</a> Bits)</td></tr>
 <tr class="memdesc:gac630c7a042dd4ce6840c7e65bd48901d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pushes a new set of modes and attributes onto the state stack.  <a href="#gac630c7a042dd4ce6840c7e65bd48901d">More...</a><br /></td></tr>
 <tr class="separator:gac630c7a042dd4ce6840c7e65bd48901d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -125,9 +125,9 @@ void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">ILint ILAPIENTRY ilutGetInteger </td>
+          <td class="memname"><a class="el" href="../../d0/d10/group__il__types.html#ga8effe51a00daaa0878631e5af75a36cb">ILint</a> ILAPIENTRY ilutGetInteger </td>
           <td>(</td>
-          <td class="paramtype">ILenum&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d0/d10/group__il__types.html#ga62ca73445716183ef42b1f3906a45ed0">ILenum</a>&#160;</td>
           <td class="paramname"><em>Mode</em></td><td>)</td>
           <td></td>
         </tr>
@@ -163,6 +163,8 @@ void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <td>ILUT_D3D_MIPLEVELS </td><td>RW </td><td>0 </td><td>Number of mip map levels to generate. </td></tr>
 <tr>
 <td>ILUT_D3D_ALPHA_KEY_COLOR </td><td>RW </td><td>-1 </td><td>Alpha key pixel value (ABGR?). </td></tr>
+<tr>
+<td>ILUT_FORCE_INTEGER_FORMAT </td><td>RW </td><td>IL_FALSE </td><td>Convert float pixel format images to integer pixel format. </td></tr>
 </table>
 
 </div>
@@ -174,7 +176,7 @@ void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
         <tr>
           <td class="memname">void ILAPIENTRY ilutPushAttrib </td>
           <td>(</td>
-          <td class="paramtype">ILuint&#160;</td>
+          <td class="paramtype"><a class="el" href="../../d0/d10/group__il__types.html#gaff8e86a1072c8d7cfe387fb87c6ed8e1">ILuint</a>&#160;</td>
           <td class="paramname"><em>Bits</em></td><td>)</td>
           <td></td>
         </tr>
@@ -197,7 +199,7 @@ void ILAPIENTRY&#160;</td><td class="memItemRight" valign="bottom"><a class="el"
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Jun 17 2014 14:30:05 for kolrabi&#39;s another Image Library by
+    <li class="footer">Generated on Tue Jun 24 2014 17:57:08 for kolrabi&#39;s another Image Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

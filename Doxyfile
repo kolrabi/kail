@@ -764,9 +764,22 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/ \
-                         include/ \
-                         docs/dox/
+INPUT                  = src/IL/il_api.c \
+                         src/ILU/ilu_api.c \
+                         src/ILUT/ilut_allegro.c \
+                         src/ILUT/ilut_directx.c \
+                         src/ILUT/ilut_directx9.c \
+                         src/ILUT/ilut_main.c \
+                         src/ILUT/ilut_opengl.c \
+                         src/ILUT/ilut_sdlsurface.c \
+                         src/ILUT/ilut_states.c \
+                         src/ILUT/ilut_win32.c \
+                         src/ILUT/ilut_x11.c \
+                         include/IL/IL.h \
+                         include/IL/ILU.h \
+                         include/IL/ILUT.h \
+                         docs/dox/types.dox \
+                         docs/dox/data_types.dox \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -833,7 +846,7 @@ FILE_PATTERNS          = *.c \
 # be searched for input files as well.
 # The default value is: NO.
 
-RECURSIVE              = YES
+RECURSIVE              = NO
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a

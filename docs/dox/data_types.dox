@@ -1,0 +1,42 @@
+/**
+ * @file
+ * @brief Image Data types for the IL.
+ *
+ * @defgroup il_data_types Image Library Image Data Types.
+ *                         
+ * Defines the underlying data type of each pixel. 
+ * @see il_data_formats
+ *               
+ * @ingroup il_data_types
+ * @{
+ *
+ * @def IL_BYTE
+ * Data consists of signed @a ILbyte s.
+ *
+ * @def IL_UNSIGNED_BYTE
+ * Data consists of unsigned @a ILubyte s.
+ *
+ * @def IL_SHORT
+ * Data consists of signed 16 bit wide @a ILshort s. 
+ *
+ * @def IL_UNSIGNED_SHORT
+ * Data consists of unsigned 16 bit wide @a ILshort s. 
+ *
+ * @def IL_INT
+ * Data consists of signed 32 bit wide @a ILint s. 
+ *
+ * @def IL_UNSIGNED_INT         
+ * Data consists of unsigned 32 bit wide @a ILuint s. 
+ *
+ * @def IL_FLOAT
+ * Data consists of 32 bit wide single precision @a ILfloat s. 
+ *
+ * @def IL_DOUBLE               
+ * Data consists of 64 bit wide double precision @a ILdouble s. 
+ *
+ * @def IL_HALF                 
+ * Data consists of 16 bit wide half precision floating point values. 
+ *
+ * @}
+ * 
+ */
