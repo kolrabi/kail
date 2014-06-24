@@ -23,16 +23,6 @@
 #ifndef IL_NO_DDS
 #include "il_dds.h"
 
-typedef struct {
-	DDSHEAD	Head;				// Image header
-	ILubyte	*CompData;	// Compressed data
-	ILuint	CompSize;			// Compressed size
-	//static ILuint	CompFormat;			// Compressed format
-	ILimage	*Image, *BaseImage;
-	ILint	Width, Height, Depth;
-	ILboolean	Has16BitComponents;
-} DDS_CONTEXT;
-
 static ILboolean	ReadData(DDS_CONTEXT *);
 static ILboolean	AllocImage(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DdsDecompress(DDS_CONTEXT *, ILuint CompFormat);
@@ -40,8 +30,8 @@ static ILboolean	ReadMipmaps(DDS_CONTEXT *, ILuint CompFormat);
 static void				AdjustVolumeTexture(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DecompressARGB(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DecompressARGB16(DDS_CONTEXT *, ILuint CompFormat);
-static ILboolean	Decompress3Dc();
-static ILboolean	DecompressAti1n();
+static ILboolean	Decompress3Dc(DDS_CONTEXT *);
+static ILboolean	DecompressAti1n(DDS_CONTEXT *);
 static ILboolean	DecompressRXGB(DDS_CONTEXT *ctx);
 static ILboolean	DecompressFloat(DDS_CONTEXT *ctx, ILuint lCompFormat);
 
@@ -1016,7 +1006,7 @@ ILboolean DecompressDXT2(ILimage *lImage, ILubyte *lCompData)
 	//   so the result will be wrong unless corrected. 
 	if (!DecompressDXT3(lImage, lCompData))
 		return IL_FALSE;
-	CorrectPreMult();
+	CorrectPreMult(lImage);
 
 	return IL_TRUE;
 }
@@ -1101,7 +1091,7 @@ ILboolean DecompressDXT4(ILimage *lImage, ILubyte *lCompData)
 	//   so the result will be wrong unless corrected. 
 	if (!DecompressDXT5(lImage, lCompData))
 		return IL_FALSE;
-	CorrectPreMult();
+	CorrectPreMult(lImage);
 
 	return IL_FALSE;
 }

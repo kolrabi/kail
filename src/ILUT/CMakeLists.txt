@@ -32,6 +32,12 @@ ELSE                    ()
   TARGET_LINK_LIBRARIES ( ILUT IL ILU )
 ENDIF                   ()
 
+IF                      ( MINGW )
+  SET_TARGET_PROPERTIES ( ILUT PROPERTIES LINK_FLAGS
+                          "-Wl,--output-def,${CMAKE_BINARY_DIR}/ILUT.def")
+  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/ILUT.def DESTINATION lib)  
+ENDIF                   ()
+
 TARGET_LINK_LIBRARIES   ( ILUT 
                           ${OPENGL_LIBRARIES}
                           ${SDL_LIBRARIES}

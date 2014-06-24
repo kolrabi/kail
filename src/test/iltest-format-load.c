@@ -11,6 +11,7 @@ static ILuint image;
 
 static int load(const char *file_, int w, int h, int d, int f) {
   ILboolean loaded;
+  ILenum error;
 #ifdef _UNICODE
   wchar_t file[1024];
   mbstowcs(file, file_, sizeof(file)/sizeof(wchar_t));
@@ -20,6 +21,8 @@ static int load(const char *file_, int w, int h, int d, int f) {
 
   ilBindImage(image);
   loaded = ilLoad(IL_TYPE_UNKNOWN, file);
+  error = ilGetError();
+  CHECK_EQ(error, 0);
   CHECK_EQ(loaded, IL_TRUE);
   CHECK_EQ(ilGetInteger(IL_IMAGE_WIDTH), w);
   CHECK_EQ(ilGetInteger(IL_IMAGE_HEIGHT), h);

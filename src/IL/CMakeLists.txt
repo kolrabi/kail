@@ -154,6 +154,12 @@ ELSE                    ()
   ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
 ENDIF                   ()
 
+IF                      ( MINGW )
+  SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES LINK_FLAGS
+                          "-Wl,--output-def,${CMAKE_BINARY_DIR}/DevIL.def")
+  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/DevIL.def DESTINATION lib)  
+ENDIF                   ()
+
 TARGET_LINK_LIBRARIES   ( ${LIBNAME} ${LINK_LIBS} )
 
 INSTALL                 ( TARGETS ${LIBNAME}

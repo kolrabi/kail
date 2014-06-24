@@ -42,6 +42,12 @@ ELSE                    ()
   TARGET_LINK_LIBRARIES ( ILU IL )
 ENDIF                   ()
 
+IF                      ( MINGW )
+  SET_TARGET_PROPERTIES ( ILU PROPERTIES LINK_FLAGS
+                          "-Wl,--output-def,${CMAKE_BINARY_DIR}/ILU.def")
+  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/ILU.def DESTINATION lib)  
+ENDIF                   ()
+
 INSTALL                 ( TARGETS ILU
                           RUNTIME DESTINATION bin
                           LIBRARY DESTINATION lib

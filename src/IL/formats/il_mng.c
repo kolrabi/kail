@@ -16,27 +16,6 @@
 #define MNG_SUPPORT_WRITE
 #define MNG_SUPPORT_DISPLAY
 
-#ifdef _WIN32
-//#define MNG_USE_SO
-#endif
-
-#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
-	#if defined(_MSC_VER) || defined(__BORLANDC__)
-		#ifndef _DEBUG
-			#pragma comment(lib, "libmng.lib")
-			#pragma comment(lib, "lcms.lib")
-			#pragma comment(lib, "libjpeg.lib")
-			#pragma comment(lib, "zlib.lib")
-		#else
-			#pragma comment(lib, "libmng-d.lib")
-			#pragma comment(lib, "lcms-d.lib")
-			#pragma comment(lib, "libjpeg-d.lib")
-			#pragma comment(lib, "zlib-d.lib")
-		#endif
-	#endif
-#endif
-
-
 #if defined(_MSC_VER)
 	#pragma warning(push)
 	#pragma warning(disable : 4142)  // Redefinition in jmorecfg.h
@@ -255,7 +234,9 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
+	iTrace("----");
 	mng = mng_initialize(MNG_NULL, mymngalloc, mymngfree, MNG_NULL);
+	iTrace("----");
 	if (mng == MNG_NULL) {
 		iSetError(IL_LIB_MNG_ERROR);
 		return IL_FALSE;
@@ -263,6 +244,7 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 
 	// If .mng background is available, use it.
 	mng_set_usebkgd(mng, MNG_TRUE);
+	iTrace("----");
 
 	// Set the callbacks.
 	mng_setcb_errorproc 		(mng, mymngerror);
@@ -274,11 +256,15 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 	mng_setcb_processheader	(mng, mymngprocessheader);
 	mng_setcb_getcanvasline (mng, mymnggetcanvasline);
 	mng_setcb_refresh 			(mng, mymngrefresh);
+	iTrace("----");
 
 	mng_set_userdata 				(mng, Image);
+	iTrace("----");
 
 	mng_read(mng);
+	iTrace("----");
 	mng_display(mng);
+	iTrace("----");
 
 	return IL_TRUE;
 }

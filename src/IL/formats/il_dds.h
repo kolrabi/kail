@@ -163,9 +163,19 @@ enum PixFormat
 
 #define CUBEMAP_SIDES 6
 
+typedef struct {
+	DDSHEAD	Head;				// Image header
+	ILubyte	*CompData;	// Compressed data
+	ILuint	CompSize;			// Compressed size
+	//static ILuint	CompFormat;			// Compressed format
+	ILimage	*Image, *BaseImage;
+	ILint	Width, Height, Depth;
+	ILboolean	Has16BitComponents;
+} DDS_CONTEXT;
+
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
-ILuint		DecodePixelFormat();
+ILuint		DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat);
 void		DxtcReadColor(ILushort Data, Color8888* Out);
 void		DxtcReadColors(const ILubyte* Data, Color8888* Out);
 ILboolean	DecompressDXT1(ILimage *lImage, ILubyte *lCompData);
@@ -174,7 +184,7 @@ ILboolean	DecompressDXT3(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT4(ILimage *lImage, ILubyte *lCompData);
 ILboolean	DecompressDXT5(ILimage *lImage, ILubyte *lCompData);
 ILboolean	iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
-void		CorrectPreMult();
+void		CorrectPreMult(ILimage *image);
 void		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
 ILboolean	iSaveDdsInternal(ILimage *);
 ILboolean	WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags);

@@ -8,8 +8,13 @@ PACKAGE="kaIL"
 # Would create dependency on dll
 GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE" 
 
+# Segfaults
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DIL_NO_MNG=ON" 
+
 # Some useful libraries there
-GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/x86_64-w64-mingw32"
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_C_FLAGS=-m64"
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_CXX_FLAGS=-m64"
 
 # try guessing where d3d is at
 if [ -z "$DXSDK_DIR" ]; then
@@ -67,7 +72,7 @@ function build() {
       ( 
         cd "$MSVC_PATH/$BUILD/lib" &&
         for DEF in *.def; do
-          "$VC_LIB" /machine:i386 "/def:$DEF" && rm "$DEF" || exit $?
+          "$VC_LIB" /machine:x64 "/def:$DEF" && rm "$DEF" || exit $?
         done
       ) || exit $?
     done
@@ -80,12 +85,12 @@ build Unicode    "-DIL_UNICODE=TRUE"
 for BUILD in NonUnicode Unicode; do
 ( 
   cd "$BASE_PATH/deploy/MinGW/$BUILD" &&
-  tar czvf "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-MinGW.tgz" Debug Release
-  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-MinGW.zip" Debug Release
+  tar czvf "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x64-$BUILD-MinGW.tgz" Debug Release
+  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x64-$BUILD-MinGW.zip" Debug Release
 )
 
 ( 
   cd "$BASE_PATH/deploy/VC/$BUILD" &&
-  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-VC.zip" Debug Release
+  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x64-$BUILD-VC.zip" Debug Release
 )
 done
