@@ -58,6 +58,9 @@ function build() {
       cmake "$BASE_PATH" -G "MSYS Makefiles" $OPTIONS "-DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH/$BUILD" "-DCMAKE_BUILD_TYPE=$BUILD" &&
       cmake --build . --target install --config "$BUILD" &&
 
+      # add license
+      cp "$BASE_PATH/COPYING" "$DEPLOY_PATH/$BUILD" &&
+      
       # copy includes and dlls
       cp -r "$DEPLOY_PATH/$BUILD/include/"* "$MSVC_PATH/$BUILD/include" &&
       cp "$DEPLOY_PATH/$BUILD/bin/"*.dll "$MSVC_PATH/$BUILD/bin" &&
