@@ -24,7 +24,7 @@ iIsValidDcx(SIO *io) {
 	ILuint Signature;
 	ILint Read = SIOread(io, &Signature, 1, 4);
 
-    SIOseek(io, -Read, IL_SEEK_CUR);
+  SIOseek(io, -Read, IL_SEEK_CUR);
 
 	if (Read != 4)
 		return IL_FALSE;
@@ -37,6 +37,7 @@ iIsValidDcx(SIO *io) {
 // Internal function obtain the .dcx header from the current file.
 static ILboolean 
 iGetDcxHead(SIO *io, DCXHEAD *Head) {
+	iTrace("--- %08x", SIOtell(io));
 	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
 		return IL_FALSE;
 
@@ -54,7 +55,6 @@ iGetDcxHead(SIO *io, DCXHEAD *Head) {
 	return IL_TRUE;
 }
 
-#if 0 // seems unused
 // Internal function used to check if the HEADER is a valid .dcx header.
 // Should we also do a check on Header->Bpp?
 static ILboolean 
@@ -87,8 +87,6 @@ iCheckDcx(DCXHEAD *Header) {
 	return IL_TRUE;
 }
 
-#endif
-
 // Internal function used to load the .dcx.
 static ILboolean
 iLoadDcxInternal(ILimage *TargetImage)
@@ -117,21 +115,22 @@ iLoadDcxInternal(ILimage *TargetImage)
 		UInt(&Entries[Num]);
 		Num++;
 	} while (Entries[Num-1] != 0);
+	Num--;
 
 	for (i = 0; i < Num; i++) {
 		SIOseek(io, Entries[i], IL_SEEK_SET);
 		iGetDcxHead(io, &Header);
-		/*if (!iCheckDcx(&Header)) {
+		if (!iCheckDcx(&Header)) {
 			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
-		}*/
+		}
 
 		Image = iUncompressDcx(io, &Header);
 		if (Image == NULL)
 			return IL_FALSE;
 
 		if (i == 0) {
-			iTexImage(Image, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
+ 			iTexImage(TargetImage, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
 			Prev = TargetImage;
 			Prev->Origin = IL_ORIGIN_UPPER_LEFT;
 			ilCloseImage(Image);
