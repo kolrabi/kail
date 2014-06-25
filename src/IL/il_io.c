@@ -17,6 +17,8 @@
 
 #include "il_formats.h"
 
+ILboolean iDefaultImage(ILimage *Image);
+
 // Returns a widened version of a string.
 // Make sure to free this after it is used.  Code help from
 //  https://buildsecurityin.us-cert.gov/daisy/bsi-rules/home/g1/769-BSI.html
@@ -105,7 +107,7 @@ ILenum iDetermineType(ILimage *Image, ILconst_string FileName) {
     }
 
     if (Type == IL_TYPE_UNKNOWN)
-      Type = ilTypeFromExt(FileName);
+      Type = iTypeFromExt(FileName);
   }
 
   return Type;
@@ -147,6 +149,8 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
     ILboolean bRet;
     if (Type == IL_TYPE_UNKNOWN)
       Type = iDetermineTypeFuncs(Image);
+    if (Type == IL_TYPE_UNKNOWN)
+      Type = iTypeFromExt(FileName);
 
     bRet = iLoadFuncs2(Image, Type);
 
@@ -176,16 +180,21 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
 
 ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
   const ILformat *format = iGetFormat(type);
+  ILboolean bRet = IL_FALSE;
 
-  if (type == IL_TYPE_UNKNOWN)
-    return IL_FALSE;
-
-  if (format) {
-    return format->Load != NULL && format->Load(image) && iFixImages(image);
+  if (type == IL_TYPE_UNKNOWN || !format) {
+    iSetError(IL_INVALID_ENUM);
+  } else if (format) {
+    bRet = format->Load != NULL && 
+           format->Load(image) && 
+           iFixImages(image);
   }
 
-  iSetError(IL_INVALID_ENUM);
-  return IL_FALSE;
+  if (!bRet && iGetInt(IL_DEFAULT_ON_FAIL)) {
+    iDefaultImage(image);
+  }
+
+  return bRet;
 }
 
 ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
@@ -229,6 +238,13 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
     return IL_FALSE;
   }
 
+  if (iGetInt(IL_FILE_MODE) == IL_FALSE) {
+    if (iFileExists(FileName)) {
+      iSetError(IL_FILE_ALREADY_EXISTS);
+      return IL_FALSE;
+    }
+  }
+
   if (SIOopenWR(&Image->io, FileName)) {
     bRet = iSaveFuncs2(Image, Type);
     SIOclose(&Image->io);
@@ -264,6 +280,13 @@ ILboolean iSaveImage(ILimage *Image, ILconst_string FileName) {
   if (Type == IL_TYPE_UNKNOWN) {
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
+  }
+
+  if (iGetInt(IL_FILE_MODE) == IL_FALSE) {
+    if (iFileExists(FileName)) {
+      iSetError(IL_FILE_ALREADY_EXISTS);
+      return IL_FALSE;
+    }
   }
 
   if (SIOopenWR(&Image->io, FileName)) {

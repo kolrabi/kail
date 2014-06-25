@@ -2,7 +2,7 @@
  * @file
  * @brief Data types for the IL.
  *
- * @defgroup il_types Data Types.
+ * @defgroup il_types Data Types
  *               
  * @ingroup il_types
  * @{
@@ -59,6 +59,12 @@
  * @typedef ILclampd
  * A clamped double precision float value. Will be clamped between 0 and 1.
  *
+ * @typedef ILstring
+ * A mutable string of @a ILchars.
+ *
+ * @typedef ILconst_string
+ * An immutable string of @a ILchars.
+ *
  * @def IL_TEXT(s)
  * Can be used to automatically convert a string literal into the correct type
  * for the current type of ILchar.
@@ -67,11 +73,23 @@
  * This is the format specifier to be used in @a printf and related functions
  * where a ILstring is to be printed. 
  *
- * @typedef ILstring
- * A mutable string of @a ILchars.
+ * @def IL_MAX_BYTE
+ * The maximal value of an ILbyte.
  *
- * @typedef ILconst_string
- * An immutable string of @a ILchars.
+ * @def IL_MAX_UNSIGNED_BYTE
+ * The maximal value of an ILubyte.
+ *
+ * @def IL_MAX_SHORT
+ * The maximal value of an ILshort.
+ * 
+ * @def IL_MAX_UNSIGNED_SHORT
+ * The maximal value of an ILushort.
+ *
+ * @def IL_MAX_INT
+ * The maximal value of an ILint.
+ *
+ * @def IL_MAX_UNSIGNED_INT
+ * The maximal value of an ILuint.
  *
  * @}
  * 

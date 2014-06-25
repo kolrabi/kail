@@ -199,6 +199,10 @@ ILAPI ILboolean       ILAPIENTRY IL_DEPRECATED      (iluRotate3D(ILfloat x, ILfl
 #define iluReplaceColor iluReplaceColour
 #define iluScaleColor   iluScaleColour
 
+#if defined ILU_VERSION_1_9_0 && defined IL_VARIANT_KAIL
+ILAPI ILboolean       ILAPIENTRY iluNormalize       (void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

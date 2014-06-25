@@ -1,20 +1,34 @@
 
 1.9.0:
 
-  - Change fSeekProc parameter back to ILint64 as the cause for the problems
-    have been fixed
-
   - More format tests
-
-  - SDL2 ILUT
-
-  - Add licenses for 3rd party static libraries
 
 2.0.0:
 
+  - SDL2 ILUT
+
   - Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
     changes behaviour of ilActive*(); 
+  
+  - Add ilClampMode():
+    - IL_WRAP
+    - IL_CLAMP
 
-  - IL_CLAMP_* optional as parameter of ilEnable/ilDisable
+  - iluToneMap()
 
-  - Add option to rescale high dynamic range files (normalizing, clamping, tonemapping?)
+  - ilIsEnabled(IL_PNG) etc. to check for supported formats.
+
+  - JBIG
+
+  - FLI/FLC?
+
+  - Gif save support
+
+  - Save support for all untested formats, so we can create files to check
+    with other programs, then use them as references for format tests.
+
+future:
+
+  - Set strings from loaded images?
+  - Unify strings like IL_PNG_AUTHNAME_STRING, IL_TGA_AUTHNAME_STRING, IL_TIF_AUTHNAME_STRING ?
+  - Load exif data

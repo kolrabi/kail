@@ -18,19 +18,6 @@
 // Global variable: stores the currently used image
 FILE *   iTraceOut = NULL;
 
-// Checks if the file exists
-ILboolean iFileExists(ILconst_string FileName)
-{
-	// TODO: use currently set io functions?
-	ILHANDLE Handle = iDefaultOpenR(FileName);
-	if (Handle) {
-		iDefaultClose(Handle);
-		return IL_TRUE;
-	}
-	return IL_FALSE;
-}
-
-
 // Last time I tried, MSVC++'s fgets() was really really screwy
 char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
 {

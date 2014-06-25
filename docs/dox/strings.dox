@@ -1,0 +1,63 @@
+/**
+ * @file il.h
+ *
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ * @defgroup il_consts Constants
+ * @ingroup il_consts
+ * @{
+ *
+ * @defgroup il_strings String Identifiers
+ *                         
+ * For use with ilGetString() / ilSetString()
+ *               
+ * @ingroup il_strings
+ * @{
+ *
+ * @def IL_VENDOR
+ * (readonly) Gets a string identifying the vendor of the Image Library.
+ *
+ * @def IL_LOAD_EXT
+ * (readonly) Gets a string containing the file extensions of all image types
+ * that can be loaded by the Image Library.
+ *
+ * @def IL_SAVE_EXT
+ * (readonly) Gets a string containing the file extensions of all image types
+ * that can be saved by the Image Library.
+ *
+ * @def IL_CHEAD_HEADER_STRING
+ * Sets the name of the variable to contain the image when saving an image as IL_CHEAD.
+ * 
+ * @def IL_PNG_AUTHNAME_STRING
+ * Sets the author name to store when saving an image as IL_PNG.
+ *
+ * @def IL_PNG_DESCRIPTION_STRING
+ * Sets the description of the image to store when saving it as IL_PNG.
+ *
+ * @def IL_PNG_TITLE_STRING
+ * Sets the title of the image to store when saving it as IL_PNG.
+ *
+ * @def IL_TGA_AUTHCOMMENT_STRING
+ * Sets the author comment to store when saving an image as IL_TGA.
+ *
+ * @def IL_TGA_AUTHNAME_STRING
+ * Sets the author name to store when saving an image as IL_TGA.
+ *
+ * @def IL_TIF_AUTHNAME_STRING
+ * Sets the author name to store when saving an image as IL_TIF.
+ * 
+ * @def IL_TIF_DESCRIPTION_STRING 
+ * Sets the description of the image to store when saving it as IL_TIF.
+ *
+ * @def IL_TIF_DOCUMENTNAME_STRING
+ * Sets the document name of the image to store when saving it as IL_TIF.
+ *
+ * @def IL_TIF_HOSTCOMPUTER_STRING
+ * Sets the name of the computer to store that saved the image saving it as IL_TIF.
+ *
+ * @}
+ * @}
+ * @}
+ * 
+ */

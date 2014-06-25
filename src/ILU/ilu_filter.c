@@ -499,7 +499,7 @@ ILboolean iApplyFilter2(ILimage *Image, ILuint Iter,
       else if (VPass[i] == 0)
         TempImage->Data[i] = HPass[i];
       else
-        TempImage->Data[i] = (ILubyte)sqrt((float)(HPass[i]*HPass[i]+VPass[i]*VPass[i]));
+        TempImage->Data[i] = (ILubyte)IL_LIMIT(sqrt((float)(HPass[i]*HPass[i]+VPass[i]*VPass[i])), 0, 255);
     }
 
     /*for (i = 0; i < Image->SizeOfData; i++) {

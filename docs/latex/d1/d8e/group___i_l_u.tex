@@ -21,8 +21,71 @@ Image manipulation utilities beyond just loading and saving.
 \item 
 \hyperlink{group__ilu__state}{Global Parameters and Configurations.}
 \end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group___i_l_u_gae03210f6b49f7893564886742e1c601f}{S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C}(img, r, f)
+\item 
+\#define \hyperlink{group___i_l_u_ga260bbe56f23e83e488d095877d70f75c}{S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C}(img, f)
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__il__types_gaa6aa7c95cfdc06b4d8601ef832b7bb0a}{I\+Lboolean} \hyperlink{_i_l_8h_a69c08a8d06df986f7e46f209d131ef2f}{I\+L\+A\+P\+I\+E\+N\+T\+R\+Y} \hyperlink{group___i_l_u_ga6284913f73663fb22acc0b4b2c49a5e2}{ilu\+Wave} (\hyperlink{group__il__types_ga376156c9461893f4b1a5de9579dc86f2}{I\+Lfloat} Angle)
+\end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 Image manipulation utilities beyond just loading and saving. 
 
+
+
+\subsection{Macro Definition Documentation}
+\hypertarget{group___i_l_u_gae03210f6b49f7893564886742e1c601f}{\index{Image Library Utilities@{Image Library Utilities}!S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C@{S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C}}
+\index{S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C@{S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C}!Image Library Utilities@{Image Library Utilities}}
+\subsubsection[{S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+I\+M\+P\+L\+E\+\_\+\+F\+U\+N\+C(
+\begin{DoxyParamCaption}
+\item[{}]{img, }
+\item[{}]{r, }
+\item[{}]{f}
+\end{DoxyParamCaption}
+)}}\label{group___i_l_u_gae03210f6b49f7893564886742e1c601f}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+\{ \(\backslash\)
+  ILimage *img; r Result; \(\backslash\)
+  iLockState(); \(\backslash\)
+  img = iLockCurImage(); \(\backslash\)
+  iUnlockState(); \(\backslash\)
+  Result = (f); \(\backslash\)
+  iUnlockImage(img); \(\backslash\)
+  return Result; \}
+\end{DoxyCode}
+\hypertarget{group___i_l_u_ga260bbe56f23e83e488d095877d70f75c}{\index{Image Library Utilities@{Image Library Utilities}!S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C@{S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C}}
+\index{S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C@{S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C}!Image Library Utilities@{Image Library Utilities}}
+\subsubsection[{S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+I\+M\+P\+L\+E\+\_\+\+P\+R\+O\+C(
+\begin{DoxyParamCaption}
+\item[{}]{img, }
+\item[{}]{f}
+\end{DoxyParamCaption}
+)}}\label{group___i_l_u_ga260bbe56f23e83e488d095877d70f75c}
+{\bfseries Value\+:}
+\begin{DoxyCode}
+\{ \(\backslash\)
+  ILimage *img; \(\backslash\)
+  iLockState(); \(\backslash\)
+  img = iLockCurImage(); \(\backslash\)
+  iUnlockState(); \(\backslash\)
+  f; \(\backslash\)
+  iUnlockImage(img);  \}
+\end{DoxyCode}
+
+
+\subsection{Function Documentation}
+\hypertarget{group___i_l_u_ga6284913f73663fb22acc0b4b2c49a5e2}{\index{Image Library Utilities@{Image Library Utilities}!ilu\+Wave@{ilu\+Wave}}
+\index{ilu\+Wave@{ilu\+Wave}!Image Library Utilities@{Image Library Utilities}}
+\subsubsection[{ilu\+Wave}]{\setlength{\rightskip}{0pt plus 5cm}{\bf I\+Lboolean} {\bf I\+L\+A\+P\+I\+E\+N\+T\+R\+Y} ilu\+Wave (
+\begin{DoxyParamCaption}
+\item[{{\bf I\+Lfloat}}]{Angle}
+\end{DoxyParamCaption}
+)}}\label{group___i_l_u_ga6284913f73663fb22acc0b4b2c49a5e2}

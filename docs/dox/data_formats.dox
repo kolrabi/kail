@@ -1,8 +1,11 @@
 /**
  * @file il.h
  *
- * @defgroup consts Constants
- * @ingroup consts
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ * @defgroup il_consts Constants
+ * @ingroup il_consts
  * @{
  *
  * @defgroup il_data_formats Image Library Image Colour Formats.
@@ -38,6 +41,7 @@
  * @def IL_LUMINANCE_ALPHA      0x190A
  * Colours consists of a luminance (brightness) and an alpha (opacity) component.
  *
+ * @}
  * @}
  * @}
  * 

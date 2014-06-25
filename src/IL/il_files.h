@@ -20,18 +20,6 @@
 #endif
 #include <IL/il.h>
 
-// Declaration of default read/write functions, used internally e.g. for ilLoadImage
-__FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpenR(ILconst_string FileName);
-__FILES_EXTERN ILHANDLE   ILAPIENTRY iDefaultOpenW(ILconst_string FileName);
-__FILES_EXTERN void       ILAPIENTRY iDefaultClose(ILHANDLE Handle);
-__FILES_EXTERN ILint      ILAPIENTRY iDefaultGetc(ILHANDLE Handle);
-__FILES_EXTERN ILuint     ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number);
-__FILES_EXTERN ILint      ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint Offset, ILuint Mode);
-__FILES_EXTERN ILuint     ILAPIENTRY iDefaultTell(ILHANDLE Handle);
-__FILES_EXTERN ILint      ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle);
-__FILES_EXTERN ILint      ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle);
-
-// Functions to set file or lump for reading/writing
 __FILES_EXTERN void       iSetOutputFake(ILimage *);
 
 #endif//FILES_H

@@ -1,0 +1,23 @@
+/**
+ * @file il.h
+ *
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ * @defgroup il_macros Useful macros
+ * @ingroup il_macros
+ * @{
+ *
+ * @def IL_MAX(a,b)
+ * Gets the larger of two values.
+ * 
+ * @def IL_MIN(a,b)
+ * Gets the smaller of two values.
+ *
+ * @def IL_LIMIT(x,min,max)
+ * Limits the value @a x to be at least @a min and at most @a max.
+ *
+ * @}
+ * @}
+ * 
+ */

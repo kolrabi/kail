@@ -31,6 +31,7 @@ static void save(const char *file_) {
 #endif
 
   ilBindImage(image);
+  ilSetInteger(IL_FILE_MODE, IL_TRUE);
   ilSaveImage(file);
 }
 
@@ -94,6 +95,9 @@ int main(int argc, char **argv) {
   } else if (!strcmp(argv[3], "noisify")) {
     iluEnlargeImage(0.5,0.5,1.0);
     iluNoisify(5);
+  } else if (!strcmp(argv[3], "normalize")) {
+    iluEnlargeImage(0.5,0.5,1.0);
+    iluNormalize();
   } else if (!strcmp(argv[3], "pixelize")) {
     iluEnlargeImage(0.5,0.5,1.0);
     iluPixelize(8);

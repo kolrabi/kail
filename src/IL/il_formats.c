@@ -93,6 +93,9 @@ iInitFormats() {
 #ifndef IL_NO_HDR
   ADD_FORMAT(HDR);
 #endif
+#ifndef IL_NO_ICNS
+  ADD_FORMAT(ICNS);
+#endif
 #ifndef IL_NO_IFF
   ADD_FORMAT(IFF);
 #endif

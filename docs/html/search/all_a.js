@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['sizeofdata',['SizeOfData',['../d4/df3/struct_i_l_uinfo.html#ad3bfe4c8a6696b42835730f7b70327b7',1,'ILUinfo']]]
+  ['origin',['Origin',['../d4/df3/struct_i_l_uinfo.html#a6f7c49ddc9cd419e2d2af24255df902a',1,'ILUinfo']]]
 ];

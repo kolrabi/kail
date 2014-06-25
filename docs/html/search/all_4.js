@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['global_20parameters_20and_20configurations_2e',['Global Parameters and Configurations.',['../db/d7b/group__ilu__state.html',1,'']]],
-  ['global_20state',['Global State',['../d2/ddf/group__state.html',1,'']]]
+  ['format',['Format',['../d4/df3/struct_i_l_uinfo.html#aab6d023e52ab2d90be412df75a42abfb',1,'ILUinfo']]],
+  ['formats_2edox',['formats.dox',['../d2/d01/formats_8dox.html',1,'']]]
 ];

@@ -404,6 +404,9 @@ ILboolean iSavePngInternal(ILimage* image) {
 			break;
 		case IL_INT:
 		case IL_UNSIGNED_INT:
+		case IL_HALF:
+		case IL_FLOAT:
+		case IL_DOUBLE:
 			Temp = iConvertImage(image, image->Format, IL_UNSIGNED_SHORT);
 			if (Temp == NULL) {
 				png_destroy_write_struct(&png_ptr, &info_ptr);

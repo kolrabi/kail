@@ -219,8 +219,7 @@ enum {
 // DevIL constants
 // 
 
-//  Matches OpenGL's right now.
-//! Data formats \link Formats Formats\endlink
+// Image data formats. Matches OpenGL's right now.
 #define IL_COLOUR_INDEX         0x1900
 #define IL_COLOR_INDEX          0x1900
 #define IL_ALPHA                0x1906
@@ -231,7 +230,7 @@ enum {
 #define IL_LUMINANCE            0x1909
 #define IL_LUMINANCE_ALPHA      0x190A
 
-//! Data types \link Types Types\endlink
+// Image data types. Matches OpenGL's right now.
 #define IL_BYTE                 0x1400
 #define IL_UNSIGNED_BYTE        0x1401
 #define IL_SHORT                0x1402
@@ -347,7 +346,7 @@ enum {
 #define IL_STACK_OVERFLOW       0x050E
 #define IL_STACK_UNDERFLOW      0x050F
 #define IL_INVALID_CONVERSION   0x0510
-#define IL_BAD_DIMENSIONS       0x0511
+#define IL_BAD_DIMENSIONS       0x0511 // unused
 #define IL_FILE_READ_ERROR      0x0512
 #define IL_FILE_WRITE_ERROR     0x0512
 
@@ -532,7 +531,7 @@ typedef ILboolean (ILAPIENTRY *fEofProc)    (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fGetcProc)   (ILHANDLE);
 typedef ILHANDLE  (ILAPIENTRY *fOpenProc)   (ILconst_string);
 typedef ILuint    (ILAPIENTRY *fReadProc)   (ILHANDLE, void*, ILuint, ILuint);
-typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint, ILuint);
+typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint64, ILuint);
 typedef ILuint    (ILAPIENTRY *fTellProc)   (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fPutcProc)   (ILubyte, ILHANDLE);
 typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME

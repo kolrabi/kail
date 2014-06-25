@@ -1,5 +1,7 @@
 var ilu__api_8c =
 [
+    [ "SIMPLE_FUNC", "d1/d8e/group___i_l_u.html#gae03210f6b49f7893564886742e1c601f", null ],
+    [ "SIMPLE_PROC", "d1/d8e/group___i_l_u.html#ga260bbe56f23e83e488d095877d70f75c", null ],
     [ "iluAlienify", "dd/d14/group__ilu__filter.html#gacb6e1a0e8dc10748f1cfbf60b1f8c350", null ],
     [ "iluBlurAvg", "dd/d14/group__ilu__filter.html#ga017478330f243e5bb6e6edc29cdf1f37", null ],
     [ "iluBlurGaussian", "dd/d14/group__ilu__filter.html#ga4163c484488b3afc352e3ed6c768babf", null ],
@@ -45,5 +47,6 @@ var ilu__api_8c =
     [ "iluScaleColours", "dd/d6e/group__ilu__colour.html#ga59c222c85f299a8bf12206dfd86646b8", null ],
     [ "iluSetLanguage", "db/d7b/group__ilu__state.html#ga4c2e7c06c4a5677dbe58cba9c5ed075e", null ],
     [ "iluSharpen", "dd/d14/group__ilu__filter.html#gab8e36ca96f5766b4c9fd6727d688405a", null ],
-    [ "iluSwapColours", "dd/d6e/group__ilu__colour.html#gad18047843d546f50472e0f0af80f2ad8", null ]
+    [ "iluSwapColours", "dd/d6e/group__ilu__colour.html#gad18047843d546f50472e0f0af80f2ad8", null ],
+    [ "iluWave", "d1/d8e/group___i_l_u.html#ga6284913f73663fb22acc0b4b2c49a5e2", null ]
 ];

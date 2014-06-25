@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['type',['Type',['../d8/d85/struct_i_limage.html#a437e4fc3b579e2e7879dedd0fd2ac587',1,'ILimage::Type()'],['../d4/df3/struct_i_l_uinfo.html#a437e4fc3b579e2e7879dedd0fd2ac587',1,'ILUinfo::Type()']]]
+  ['x',['x',['../d7/df2/struct_i_l_upointf.html#a6fe338394a16135b8e04a1dfbebe91c5',1,'ILUpointf::x()'],['../de/de3/struct_i_l_upointi.html#a08e8db6d88cf765e04038598c571d2d1',1,'ILUpointi::x()']]]
 ];

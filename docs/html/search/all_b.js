@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['todo_20list',['Todo List',['../dd/da0/todo.html',1,'']]],
-  ['type',['Type',['../d4/df3/struct_i_l_uinfo.html#a437e4fc3b579e2e7879dedd0fd2ac587',1,'ILUinfo']]],
-  ['types_2edox',['types.dox',['../db/db0/types_8dox.html',1,'']]]
+  ['palette',['Palette',['../d4/df3/struct_i_l_uinfo.html#ab520cff305ed9ee13d2eac7a87ac1d92',1,'ILUinfo']]],
+  ['palsize',['PalSize',['../d4/df3/struct_i_l_uinfo.html#a728a63d4c8b857a800a4d19e250a8c4b',1,'ILUinfo']]],
+  ['paltype',['PalType',['../d4/df3/struct_i_l_uinfo.html#ab091aab8d79003031a4e9957e85f43ca',1,'ILUinfo']]]
 ];

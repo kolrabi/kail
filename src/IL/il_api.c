@@ -42,6 +42,10 @@
 #include "il_manip.h"
 #include "il_register.h" 
 
+/**
+ * @def SIMPLE_PROC(img, f)
+ * @internal
+ */
 #define SIMPLE_PROC(img, f) { \
   ILimage *img; \
   iLockState(); \
@@ -50,6 +54,10 @@
   f; \
   iUnlockImage(img); }
 
+/**
+ * @def SIMPLE_FUNC(img, r, f)
+ * @internal
+ */
 #define SIMPLE_FUNC(img, r, f) { \
   ILimage *img; r Result; \
   iLockState(); \

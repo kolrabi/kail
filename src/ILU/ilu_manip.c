@@ -817,3 +817,47 @@ ILboolean iEqualize(ILimage *Image) {
 
   return IL_TRUE;
 }
+
+ILboolean iNormalize(ILimage *Image) {
+  ILuint      i = 0; // index variable
+  ILuint      NumPixels; //, Bpp;
+  ILint       Min, Max;
+  ILubyte   * BytePtr;
+
+  if (Image == NULL) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return 0;
+  }
+
+  // @TODO:  Change to work with other types!
+  if (Image->Bpc > 1) {
+    iSetError(ILU_INTERNAL_ERROR);
+    return IL_FALSE;
+  }
+
+  if (Image->Format == IL_COLOUR_INDEX) {
+    NumPixels = Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType);
+    // Bpp = ilGetBppPal(Image->Pal.PalType);
+  } else {
+    NumPixels = Image->Width * Image->Height * Image->Depth;
+    // Bpp = Image->Bpp;
+  }
+
+  BytePtr = (Image->Format == IL_COLOUR_INDEX) ? Image->Pal.Palette : Image->Data;
+  // ShortPtr = (ILushort*)Image->Data;
+  // IntPtr = (ILuint*)Image->Data;
+
+  // Transform image using new SumHistm as a LUT
+  Min = Max = *BytePtr;
+
+  for (i = 0; i < NumPixels; i++) {
+    if (BytePtr[i] > Max) Max = BytePtr[i];
+    if (BytePtr[i] < Min) Min = BytePtr[i];
+  }
+
+  for (i = 0; i < NumPixels; i++) {
+    BytePtr[i] = (ILubyte)(255 * ( BytePtr[i] - Min ) / (float)( Max - Min ));
+  }
+
+  return IL_TRUE;
+}

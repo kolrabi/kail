@@ -768,6 +768,14 @@ INPUT                  = \
                          include/IL/IL.h \
                          include/IL/ILU.h \
                          include/IL/ILUT.h \
+                         docs/dox/types.dox \
+                         docs/dox/errors.dox \
+                         docs/dox/macros.dox \
+                         docs/dox/bits.dox \
+                         docs/dox/data_types.dox \
+                         docs/dox/data_formats.dox \
+                         docs/dox/strings.dox \
+                         docs/dox/formats.dox \
                          src/IL/il_api.c \
                          src/ILU/ilu_api.c \
                          src/ILUT/ilut_allegro.c \
@@ -779,9 +787,6 @@ INPUT                  = \
                          src/ILUT/ilut_states.c \
                          src/ILUT/ilut_win32.c \
                          src/ILUT/ilut_x11.c \
-                         docs/dox/types.dox \
-                         docs/dox/data_types.dox \
-                         docs/dox/data_formats.dox \
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses

@@ -1,0 +1,193 @@
+/**
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ *
+ * @defgroup il_consts Constants
+ * @ingroup il_consts
+ * @{
+ *
+ * @defgroup il_formats Supported Image File Formats
+ *                         
+ * @ingroup il_formats
+ * @{
+ *
+ * @def IL_TYPE_UNKNOWN
+ * Image has an unknown format / auto detect format.
+ *
+ * @def IL_BMP
+ * Microsoft Windows / OS2 Bitmap (bmp).
+ *
+ * @def IL_CUT
+ * Dr. Halo Cut image. (cut)
+ *
+ * @def IL_DOOM
+ * DooM walls.
+ * 
+ * @def IL_DOOM_FLAT
+ * DooM flats.
+ *
+ * @def IL_ICO
+ * Microsoft Windows Icons and Cursors (ico, cur).
+ * 
+ * @def IL_JPG
+ * JPEG file (jpg, jpe, jpeg).
+ *
+ * @def IL_JFIF
+ * Alias of IL_JPG.
+ *
+ * @def IL_ILBM
+ * Amiga IFF ("FORM ILBM") (iff, ilbm, lbm).
+ *
+ * @def IL_PCD
+ * Kodak PhotoCD (pcd).
+ *
+ * @def IL_PCX
+ * ZSoft PCX (pcx).
+ *
+ * @def IL_PIC
+ * Softimage Pic (pic).
+ *
+ * @def IL_PNG
+ * Portable Network Graphics (png).
+ *
+ * @def IL_PNM
+ * Portable Any Map (pbm, pgm, ppm, pnm).
+ *
+ * @def IL_SGI
+ * Silicon Graphics (sgi, bw, rgb, rgba).
+ *
+ * @def IL_TGA
+ * TrueVision Targa File (tga, vda, icb, vst).
+ *
+ * @def IL_TIF
+ * Tagged Image File Format (tif, tiff).
+ *
+ * @def IL_CHEAD
+ * C-Style Header (h).
+ *
+ * @def IL_RAW
+ * Raw Image Data.
+ *
+ * @def IL_MDL
+ * Half-Life Model Texture (mdl).
+ *
+ * @def IL_WAL
+ * Quake 2 Texture (wal).
+ *
+ * @def IL_LIF
+ * Homeworld Texture (lif).
+ *
+ * @def IL_MNG
+ * Multiple-image Network Graphics (mng).
+ *
+ * @def IL_JNG
+ * Alias of IL_MNG.
+ *
+ * @def IL_GIF
+ * Graphics Interchange Format (gif).
+ * 
+ * @def IL_DDS
+ * DirectDraw Surface (dds).
+ *
+ * @def IL_DCX
+ * ZSoft Multi-PCX (dcx).
+ *
+ * @def IL_PSD
+ * Adobe PhotoShop (psd).
+ *
+ * @def IL_EXIF
+ * Currently unused.
+ *
+ * @def IL_PSP
+ * PaintShop Pro (psp).
+ *
+ * @def IL_PIX
+ * Alias | Wavefront PIX (pix).
+ *
+ * @def IL_PXR
+ * Pixar (pxr).
+ *
+ * @def IL_XPM
+ * X Pixel Map (xpm).
+ *
+ * @def IL_HDR
+ * Radiance High Dynamic Range (hdr).
+ *
+ * @def IL_ICNS
+ * Macintosh Icon (icns).
+ *
+ * @def IL_JP2
+ * Jpeg 2000 (jp2).
+ * 
+ * @def IL_EXR
+ * OpenEXR (exr).
+ *
+ * @def IL_WDP
+ * Microsoft HD Photo (wdp, hdp).
+ *
+ * @def IL_VTF
+ * Valve Texture Format (vtf).
+ *
+ * @def IL_WBMP
+ * Wireless Bitmap (wbmp).
+ *
+ * @def IL_SUN
+ * Sun Raster (sun, ras, rs, im1, im8, im24 and im32).
+ *
+ * @def IL_IFF
+ * Interchange File Format (iff).
+ *
+ * @def IL_TPL
+ * Gamecube Texture (tpl).
+ *
+ * @def IL_FITS
+ * Flexible Image Transport System (fit, fits).
+ *
+ * @def IL_DICOM
+ * Digital Imaging and Communications in Medicine "DICOM" (dcm, dicom).
+ *
+ * @def IL_IWI
+ * Call of Duty Infinity Ward Image (iwi).
+ *
+ * @def IL_BLP
+ * Blizzard Texture Format (blp).
+ *
+ * @def IL_FTX
+ * Heavy Metal: FAKK2 Texture (ftx).
+ *
+ * @def IL_ROT
+ * Homeworld 2 - Relic Texture (rot).
+ *
+ * @def IL_TEXTURE
+ * Medieval II: Total War Texture (texture).
+ *
+ * @def IL_DPX
+ * Digital Picture Exchange (dpx).
+ *
+ * @def IL_UTX
+ * Unreal (and Unreal Tournament) Texture (utx).
+ *
+ * @def IL_MP3
+ * MPEG-1 Audio Layer 3 embedded image (mp3).
+ *
+ * @def IL_JASC_PAL
+ * PaintShop Pro Palette.
+ *
+ * @def IL_HALO_PAL
+ * Dr. Halo Palette.
+ *
+ * @def IL_ACT_PAL
+ * Photoshop Palette.
+ *
+ * @def IL_COL_PAL
+ * Autodesk Palette.
+ *
+ * @def IL_PLT_PAL
+ * Unknown. I couldn't find any information about this.
+ *
+ * @}
+ * @}
+ * @}
+ * 
+ */

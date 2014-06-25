@@ -1,0 +1,109 @@
+/**
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ *
+ * @defgroup il_consts Constants
+ * @ingroup il_consts
+ * @{
+ *
+ * @defgroup il_errors Error Codes
+ *                         
+ * @ingroup il_errors
+ * @{
+ *
+ * @def IL_NO_ERROR
+ * No error occured. All is fine.
+ *
+ * @def IL_INVALID_ENUM
+ * An invalid value have been used, which was not part of the set of values that can be used.
+ * 
+ * @def IL_OUT_OF_MEMORY
+ * Could not allocate enough memory in an operation.
+ *
+ * @def IL_FORMAT_NOT_SUPPORTED
+ * The image data format a function tried to use was not able to be used by that function.
+ *
+ * @def IL_INTERNAL_ERROR
+ * A serious error has occurred.
+ *
+ * @def IL_INVALID_VALUE
+ * An invalid value was passed to a function.
+ *
+ * @def IL_ILLEGAL_OPERATION
+ * The operation attempted is not allowable in the current state. The function 
+ * returns with no ill side effects.
+ *
+ * @def IL_ILLEGAL_FILE_VALUE
+ * An illegal value was found in a file trying to be loaded.
+ *
+ * @def IL_INVALID_FILE_HEADER
+ * A file's header was incorrect.
+ *
+ * @def IL_INVALID_PARAM
+ * An invalid parameter was passed to a function, such as a NULL pointer.
+ *
+ * @def IL_COULD_NOT_OPEN_FILE
+ * Could not open the file specified. The file may already be open by another 
+ * application or may not exist.
+ *
+ * @def IL_INVALID_EXTENSION
+ * The extension of the specified filename was not correct for the type of 
+ * image-loading function.
+ *
+ * @def IL_FILE_ALREADY_EXISTS
+ * The filename specified already belongs to another file. To overwrite files by
+ * default, call ilEnable with the IL_FILE_OVERWRITE parameter.
+ * 
+ * @def IL_OUT_FORMAT_SAME
+ * Tried to convert an image from its format to the same format.
+ * 
+ * @def IL_STACK_OVERFLOW
+ * One of the internal stacks was already filled, and the user tried to push to 
+ * the full stack.
+ * 
+ * @def IL_STACK_UNDERFLOW
+ * One of the internal stacks was empty, and the user tried to pop from the already
+ * empty stack.
+ *
+ * @def IL_INVALID_CONVERSION
+ * An invalid conversion attempt was tried.
+ * 
+ * @def IL_BAD_DIMENSIONS
+ * Unused.
+ *
+ * @def IL_FILE_READ_ERROR
+ * An error occured while trying to read from a file (eg. end of file). 
+ * 
+ * @def IL_FILE_WRITE_ERROR
+ * An error occured while trying to write to a file (eg. no more space left).
+ *
+ * @def IL_LIB_GIF_ERROR
+ * Unused. Gifs are now decoded internally.
+ *
+ * @def IL_LIB_JPEG_ERROR
+ * The JPEG library encountered an error while decoding or encoding an image.
+ * 
+ * @def IL_LIB_PNG_ERROR
+ * The PNG library encountered an error while decoding or encoding an image.
+ * 
+ * @def IL_LIB_TIFF_ERROR
+ * The TIFF library encountered an error while decoding or encoding an image.
+ *
+ * @def IL_LIB_MNG_ERROR
+ * The MNG library encountered an error while decoding or encoding an image.
+ * 
+ * @def IL_LIB_JP2_ERROR
+ * The JPEG2000 library encountered an error while decoding or encoding an image.
+ *
+ * @def IL_LIB_EXR_ERROR
+ * The OpenEXR library encountered an error while decoding or encoding an image.
+ *
+ * @def IL_UNKNOWN_ERROR
+ * An unknown error has occured.
+ *
+ * @}
+ * @}
+ * @}
+ * 
+ */

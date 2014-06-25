@@ -1,5 +1,11 @@
 var group__il__types =
 [
+    [ "IL_MAX_BYTE", "d0/d10/group__il__types.html#ga4649bcaa712dfa3ac8624ea45e7d7ed8", null ],
+    [ "IL_MAX_INT", "d0/d10/group__il__types.html#gadcca3decb5e180a8c2a0379cb9e7f607", null ],
+    [ "IL_MAX_SHORT", "d0/d10/group__il__types.html#gaff68acb213b771f0915a0a7d7e1f1715", null ],
+    [ "IL_MAX_UNSIGNED_BYTE", "d0/d10/group__il__types.html#gae8d904d56af734501e0bebb1ce981abb", null ],
+    [ "IL_MAX_UNSIGNED_INT", "d0/d10/group__il__types.html#ga2c8a167d1ab04bdd7fc2dab8216d6db8", null ],
+    [ "IL_MAX_UNSIGNED_SHORT", "d0/d10/group__il__types.html#ga7ba1c24cac0ceaaec1c1bebd938ce8e1", null ],
     [ "IL_SFMT", "d0/d10/group__il__types.html#gae9770f68c5226a227b5929f4b42eec18", null ],
     [ "IL_TEXT", "d0/d10/group__il__types.html#ga2907c2129d2ba2ebbae6aa6a69b7f685", null ],
     [ "ILbitfield", "d0/d10/group__il__types.html#gae47e67f5430ba6989eaaf6b9a3bc8e87", null ],

@@ -1,5 +1,7 @@
 var il__api_8c =
 [
+    [ "SIMPLE_FUNC", "de/d44/group___i_l.html#gae03210f6b49f7893564886742e1c601f", null ],
+    [ "SIMPLE_PROC", "de/d44/group___i_l.html#ga260bbe56f23e83e488d095877d70f75c", null ],
     [ "ilActiveFace", "df/df3/group__image__mgt.html#ga77651f86dfb248dddfead0c095ed2c12", null ],
     [ "ilActiveImage", "df/df3/group__image__mgt.html#ga1ea5b35280be4128de20e7218108d669", null ],
     [ "ilActiveLayer", "df/df3/group__image__mgt.html#gad362b9264fd40f787f2748237b214f96", null ],

@@ -338,7 +338,7 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
 }
 
 /**
- * Equalizes the intensities of an image.
+ * Equalizes the intensity distribution in the histogram of an image.
  * The lowest intensity will result in black and the highest in white.
  * @ingroup ilu_colour
  */
@@ -560,6 +560,15 @@ ILboolean ILAPIENTRY iluNegative() {
  */
 ILboolean ILAPIENTRY iluNoisify(ILclampf Tolerance) {
   SIMPLE_FUNC(Image, ILboolean, iNoisify(Image, Tolerance));
+}
+
+/**
+ * Normalizes the intensities in an image.
+ * The lowest intensity will result in black and the highest in white.
+ * @ingroup ilu_colour
+ */
+ILboolean ILAPIENTRY iluNormalize() {
+  SIMPLE_FUNC(Image, ILboolean, iNormalize(Image));
 }
 
 /**

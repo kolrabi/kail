@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['palette',['Palette',['../d4/df3/struct_i_l_uinfo.html#ab520cff305ed9ee13d2eac7a87ac1d92',1,'ILUinfo']]],
-  ['palsize',['PalSize',['../d4/df3/struct_i_l_uinfo.html#a728a63d4c8b857a800a4d19e250a8c4b',1,'ILUinfo']]],
-  ['paltype',['PalType',['../d4/df3/struct_i_l_uinfo.html#ab091aab8d79003031a4e9957e85f43ca',1,'ILUinfo']]]
+  ['numlayers',['NumLayers',['../d4/df3/struct_i_l_uinfo.html#a76780bfd8409518a48a5e0e3d28ff3ae',1,'ILUinfo']]],
+  ['nummips',['NumMips',['../d4/df3/struct_i_l_uinfo.html#a157efa5d606d0da51d39a63380255a5a',1,'ILUinfo']]],
+  ['numnext',['NumNext',['../d4/df3/struct_i_l_uinfo.html#a4d2c3fed597dfde7feaea3217ef1ac35',1,'ILUinfo']]]
 ];

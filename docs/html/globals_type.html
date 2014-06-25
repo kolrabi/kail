@@ -79,6 +79,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="globals.html"><span>All</span></a></li>
       <li><a href="globals_func.html"><span>Functions</span></a></li>
       <li class="current"><a href="globals_type.html"><span>Typedefs</span></a></li>
+      <li><a href="globals_eval.html"><span>Enumerator</span></a></li>
       <li><a href="globals_defs.html"><span>Macros</span></a></li>
     </ul>
   </div>
@@ -102,7 +103,7 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Pages</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Data Structures</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Macros</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(8)"><span class="SelectionMark">&#160;</span>Groups</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(9)"><span class="SelectionMark">&#160;</span>Pages</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -143,8 +144,23 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
 <li>ILfloat
 : <a class="el" href="d0/d10/group__il__types.html#ga376156c9461893f4b1a5de9579dc86f2">IL.h</a>
 </li>
+<li>ILHANDLE
+: <a class="el" href="dd/d60/_i_l_8h.html#a2e3e6f3fab1fa3764f0802258f702d10">IL.h</a>
+</li>
+<li>ILinfo
+: <a class="el" href="d0/d9d/_i_l_u_8h.html#a1481e73074557208ce9249677f8e037c">ILU.h</a>
+</li>
 <li>ILint
 : <a class="el" href="d0/d10/group__il__types.html#ga8effe51a00daaa0878631e5af75a36cb">IL.h</a>
+</li>
+<li>ILint64
+: <a class="el" href="dd/d60/_i_l_8h.html#a2989461dc5019ed8c4c47043e67472c8">IL.h</a>
+</li>
+<li>ILpointf
+: <a class="el" href="d0/d9d/_i_l_u_8h.html#ac5a6edc02104b571e21e919c52e2adc0">ILU.h</a>
+</li>
+<li>ILpointi
+: <a class="el" href="d0/d9d/_i_l_u_8h.html#a06bc6350eb8f00bf87da9cbd879e65a8">ILU.h</a>
 </li>
 <li>ILshort
 : <a class="el" href="d0/d10/group__il__types.html#gaecbb74c86cc28ee190923c1b167a50fc">IL.h</a>
@@ -164,8 +180,20 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
 <li>ILuint
 : <a class="el" href="d0/d10/group__il__types.html#gaff8e86a1072c8d7cfe387fb87c6ed8e1">IL.h</a>
 </li>
+<li>ILuint64
+: <a class="el" href="dd/d60/_i_l_8h.html#aa33b96b79711d5cdf00317ce911f7c77">IL.h</a>
+</li>
+<li>ILUpointf
+: <a class="el" href="d0/d9d/_i_l_u_8h.html#a67e85a0cd91d2f29897f3bd293cb7ecb">ILU.h</a>
+</li>
+<li>ILUpointi
+: <a class="el" href="d0/d9d/_i_l_u_8h.html#a7756faf9d33478687f9e5a6026f4fa5f">ILU.h</a>
+</li>
 <li>ILushort
 : <a class="el" href="d0/d10/group__il__types.html#gac0f1c4cfe288e56c059cd2030f9682d5">IL.h</a>
+</li>
+<li>mAlloc
+: <a class="el" href="dd/d60/_i_l_8h.html#a3e5d6d09d93e8d0031e8f3b95e3538b0">IL.h</a>
 </li>
 </ul>
 </div><!-- contents -->
@@ -173,7 +201,7 @@ $(document).ready(function(){initNavTree('globals_type.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Jun 24 2014 17:57:17 for kolrabi&#39;s another Image Library by
+    <li class="footer">Generated on Wed Jun 25 2014 10:30:42 for kolrabi&#39;s another Image Library by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.7 </li>
   </ul>

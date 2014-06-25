@@ -1,5 +1,6 @@
 #include <IL/devil_internal_exports.h>
 #include "IL/il_endian.h"
+#include <IL/ilu.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -16,7 +17,8 @@ static int load(const char *file_, int w, int h, int d, int f) {
   wchar_t file[1024];
   mbstowcs(file, file_, sizeof(file)/sizeof(wchar_t));
 #else
-  const char *file = file_;
+  char file[1024];
+  strncpy(file, file_, 1024);
 #endif
 
   ilBindImage(image);
@@ -28,6 +30,17 @@ static int load(const char *file_, int w, int h, int d, int f) {
   CHECK_EQ(ilGetInteger(IL_IMAGE_HEIGHT), h);
   CHECK_EQ(ilGetInteger(IL_IMAGE_DEPTH), d);
   CHECK_EQ(ilGetInteger(IL_NUM_IMAGES), f);
+
+#ifdef _UNICODE
+  wcsncat(file, L".loaded.png", 1023-wcslen(file));
+#else
+  strncat(file, ".loaded.png", 1023-strlen(file));
+#endif
+
+  ilSetInteger(IL_FILE_MODE, IL_TRUE);
+  iluNormalize();
+  ilSaveImage(file);
+
   return 0;
 }
 

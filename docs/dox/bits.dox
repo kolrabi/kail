@@ -1,0 +1,41 @@
+/**
+ * @file il.h
+ *
+ * @defgroup IL
+ * @ingroup IL 
+ * @{
+ * @defgroup il_bits Bit Identifiers
+ * @ingroup il_bits
+ * @{
+ *
+ * @def IL_ORIGIN_BIT
+ * Save the IL_IMAGE_ORIGIN parameter when using ilPushAttrib().
+ *
+ * @def IL_FILE_BIT
+ * Save the file overwriting handling parameter when using ilPushAttrib().
+ *
+ * @def IL_PAL_BIT
+ * Save the palette conversion settings when using ilPushAttrib().
+ * 
+ * @def IL_FORMAT_BIT
+ * Save the format conversion settings when using ilPushAttrib().
+ *
+ * @def IL_TYPE_BIT
+ * Save the type conversion settings when using ilPushAttrib().
+ *
+ * @def IL_COMPRESS_BIT
+ * Save the compression settings when using ilPushAttrib().
+ *
+ * @def IL_LOADFAIL_BIT
+ * Save the loading failure handling settings when using ilPushAttrib().
+ *
+ * @def IL_FORMAT_SPECIFIC_BIT
+ * Save the image format specific settings when using ilPushAttrib().
+ *
+ * @def IL_ALL_ATTRIB_BITS
+ * Save all settings when using ilPushAttrib().
+ *
+ * @}
+ * @}
+ * 
+ */

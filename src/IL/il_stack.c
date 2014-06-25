@@ -31,7 +31,7 @@ HANDLE iStateMutex = NULL; // FIXME: CloseHandle on exit
 #endif
 
 static void iSetImage0();
-// static void iBindImageTemp();
+ILboolean iDefaultImage(ILimage *Image);
 
 // Global variables for il_stack.c shared among threads
 ILuint      StackSize     = 0;
@@ -672,7 +672,7 @@ static void iSetImage0() {
   iSetSelection(0, 0,0,0,0);
   if (!ImageStack[0])
     ImageStack[0] = ilNewImage(1, 1, 1, 1, 1);
-  ilDefaultImage();
+  iDefaultImage(ImageStack[0]);
 }
 
 /*

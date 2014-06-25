@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['data',['Data',['../d4/df3/struct_i_l_uinfo.html#a32fd28ac5d89e3ef2f9151330af0149d',1,'ILUinfo']]],
-  ['data_5ftypes_2edox',['data_types.dox',['../d0/d20/data__types_8dox.html',1,'']]],
-  ['deprecated_20list',['Deprecated List',['../da/d58/deprecated.html',1,'']]],
-  ['depth',['Depth',['../d4/df3/struct_i_l_uinfo.html#a2a4c47a9713bee335a0830b336bdc951',1,'ILUinfo']]],
-  ['directx_208_20functionality_2e',['DirectX 8 functionality.',['../d8/dfa/group__ilut__dx8.html',1,'']]],
-  ['directx_209_20functionality_2e',['DirectX 9 functionality.',['../d6/d2d/group__ilut__dx9.html',1,'']]]
+  ['clamp_5fdoubles',['CLAMP_DOUBLES',['../dd/d60/_i_l_8h.html#a1fd693f44139752b5c7597350720d248',1,'IL.h']]],
+  ['clamp_5ffloats',['CLAMP_FLOATS',['../dd/d60/_i_l_8h.html#ab1fbe1769e72e1adb89547e1f6f84d2e',1,'IL.h']]],
+  ['clamp_5fhalf',['CLAMP_HALF',['../dd/d60/_i_l_8h.html#a844535143447b4437a0169743710688c',1,'IL.h']]],
+  ['const_5frestrict',['CONST_RESTRICT',['../dd/d60/_i_l_8h.html#a9ab04b77ec4089e80a58ea6a17622e57',1,'IL.h']]],
+  ['cubeflags',['CubeFlags',['../d4/df3/struct_i_l_uinfo.html#a2141dcf3ce36303a8c31d417d9337034',1,'ILUinfo']]],
+  ['constants',['Constants',['../d5/dc4/group__il__consts.html',1,'']]]
 ];

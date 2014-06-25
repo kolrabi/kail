@@ -89,7 +89,6 @@ SET                     ( SOURCES
                           il_profiles.c
                           il_register.c
                           il_size.c
-                          il_skia.cc
                           il_stack.c
                           il_states.c
                           il_string.c

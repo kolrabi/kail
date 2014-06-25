@@ -2,11 +2,15 @@
  * @file include/IL/il.h
  * @brief Image Data types for the IL.
  *
- * @defgroup consts Constants
- * @ingroup consts
+ * @defgroup IL
+ * @ingroup IL 
  * @{
  *
- * @defgroup il_data_types Image Library Image Data Types.
+ * @defgroup il_consts Constants
+ * @ingroup il_consts
+ * @{
+ *
+ * @defgroup il_data_types Image Library Image Data Types
  *                         
  * Defines the underlying data type of each pixel. 
  * @see il_data_formats
@@ -41,6 +45,28 @@
  * @def IL_HALF                 
  * Data consists of 16 bit wide half precision floating point values. 
  *
+ * @def IL_PAL_NONE
+ * Image has no palette.
+ * 
+ * @def IL_PAL_RGB24
+ * Image has a RGB palette with 8 bit components.
+ *
+ * @def IL_PAL_RGB32
+ * Image has a RGB palette with 8 bit components and a padding byte.
+ *
+ * @def IL_PAL_RGBA32
+ * Image has a RGBA palette with 8 bit components.
+ *
+ * @def IL_PAL_BGR24
+ * Image has a BGR palette with 8 bit components.
+ *
+ * @def IL_PAL_BGR32
+ * Image has a BGR palette with 8 bit components and a padding byte.
+ *
+ * @def IL_PAL_BGRA32
+ * Image has a BGRA palette with 8 bit components.
+ *
+ * @}
  * @}
  * @}
  * 

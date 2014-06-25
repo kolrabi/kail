@@ -16,24 +16,24 @@
 #include <stdarg.h>
 
 // Lump read functions
-ILboolean ILAPIENTRY iEofLump     (ILHANDLE h);
-ILint     ILAPIENTRY iGetcLump    (ILHANDLE h);
-ILuint    ILAPIENTRY iReadLump    (ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number);
-ILint     ILAPIENTRY iSeekLump    (ILHANDLE h, ILint Offset, ILuint Mode);
-ILuint    ILAPIENTRY iTellLump    (ILHANDLE h);
-ILint     ILAPIENTRY iPutcLump    (ILubyte Char, ILHANDLE h);
-ILint     ILAPIENTRY iWriteLump   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
+static ILboolean ILAPIENTRY iEofLump     (ILHANDLE h);
+static ILint     ILAPIENTRY iGetcLump    (ILHANDLE h);
+static ILuint    ILAPIENTRY iReadLump    (ILHANDLE h, void *Buffer, const ILuint Size, const ILuint Number);
+static ILint     ILAPIENTRY iSeekLump    (ILHANDLE h, ILint64 Offset, ILuint Mode);
+static ILuint    ILAPIENTRY iTellLump    (ILHANDLE h);
+static ILint     ILAPIENTRY iPutcLump    (ILubyte Char, ILHANDLE h);
+static ILint     ILAPIENTRY iWriteLump   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // "Fake" size functions, used to determine the size of write lumps
 // Definitions are in il_size.cpp
-ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint Offset, ILuint Mode);
+ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint64 Offset, ILuint Mode);
 ILuint    ILAPIENTRY iSizeTell    (ILHANDLE h);
 ILint     ILAPIENTRY iSizePutc    (ILubyte Char, ILHANDLE h);
 ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // Next 7 functions are the default read functions
 
-ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
+static ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
 #ifndef _UNICODE
   ILHANDLE File = (ILHANDLE)fopen((char*)FileName, "rb");
 #else
@@ -52,14 +52,22 @@ ILHANDLE ILAPIENTRY iDefaultOpenR(ILconst_string FileName) {
   return File;
 }
 
-
-void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
+static void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
   fclose((FILE*)Handle);
-  return;
 }
 
+static ILuint ILAPIENTRY iDefaultTell(ILHANDLE Handle) {
+  ILuint res = ftell((FILE*)Handle);
+  return res;
+}
 
-ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
+static ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint64 Offset, ILuint Mode) {
+  ILuint res = fseek((FILE*)Handle, Offset, Mode);
+  clearerr((FILE*)Handle);
+  return res;
+}
+
+static ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
   ILuint OrigPos, FileSize;
 
   if (feof((FILE*)Handle)) {
@@ -81,8 +89,7 @@ ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
   return IL_FALSE;
 }
 
-
-ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
+static ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
   ILint Val;
 
   if (!Handle) return IL_EOF;
@@ -92,29 +99,14 @@ ILint ILAPIENTRY iDefaultGetc(ILHANDLE Handle) {
   return Val;
 }
 
-
 // @todo: change this back to have the handle in the last argument, then
 // fread can be passed directly to ilSetRead, and iDefaultRead is not needed
-ILuint ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number) {
+static ILuint ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size, ILuint Number) {
   ILuint res = fread(Buffer, Size, Number, (FILE*) Handle);
   return res;
 }
 
-
-ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint Offset, ILuint Mode) {
-  ILuint res = fseek((FILE*)Handle, Offset, Mode);
-  clearerr((FILE*)Handle);
-  return res;
-}
-
-
-ILuint ILAPIENTRY iDefaultTell(ILHANDLE Handle) {
-  ILuint res = ftell((FILE*)Handle);
-  return res;
-}
-
-
-ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
+static ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
 #ifndef _UNICODE
   return (ILHANDLE)fopen((char*)FileName, "wb");
 #else
@@ -132,19 +124,11 @@ ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
 #endif//UNICODE
 }
 
-
-void ILAPIENTRY iDefaultCloseW(ILHANDLE Handle) {
-  fclose((FILE*)Handle);
-  return;
-}
-
-
-ILint ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle) {
+static ILint ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle) {
   return fputc(Char, (FILE*)Handle);
 }
 
-
-ILint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle) {
+static ILint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle) {
   return (ILint)fwrite(Buffer, Size, Number, (FILE*)Handle);
 }
 
@@ -180,8 +164,7 @@ void iResetWrite(ILimage *image) {
 }
 
 // Tells DevIL that we're reading from a file, not a lump
-void ILAPIENTRY iSetInputFile(ILimage *image, ILHANDLE File)
-{
+void ILAPIENTRY iSetInputFile(ILimage *image, ILHANDLE File) {
   if (image != NULL) {
     if (image->io.handle != NULL) {
       if (image->io.close == NULL) {
@@ -247,8 +230,7 @@ void ILAPIENTRY iSetOutputFile(ILimage *image, ILHANDLE File) {
 
 // This is only called by ilDetermineSize.  Associates iputchar, etc. with
 //  "fake" writing functions in il_size.c.
-void iSetOutputFake(ILimage *image)
-{
+void iSetOutputFake(ILimage *image) {
   if (image != NULL) {
     if (image->io.handle != NULL) {
       if (image->io.close == NULL) {
@@ -358,12 +340,10 @@ ILuint ILAPIENTRY iReadLump(ILHANDLE h, void *Buffer, const ILuint Size, const I
 }
 
 // Returns 1 on error, 0 on success
-ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint Offset, ILuint Mode)
-{
+ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint64 Offset, ILuint Mode) {
   SIO *io = (SIO*)h;
 
-  switch (Mode)
-  {
+  switch (Mode) {
     case IL_SEEK_SET:
       if (Offset > (ILint)io->lumpSize)
         return 1;
@@ -426,9 +406,19 @@ ILint ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHA
   return SizeBytes;
 }
 
-
-ILuint ILAPIENTRY iTellLump(ILHANDLE h)
-{
+ILuint ILAPIENTRY iTellLump(ILHANDLE h) {
   SIO *io = (SIO*)h;
   return io->lumpPos;
 }
+
+// Checks if the file exists
+ILboolean iFileExists(ILconst_string FileName) {
+  // TODO: use currently set io functions?
+  ILHANDLE Handle = iDefaultOpenR(FileName);
+  if (Handle) {
+    iDefaultClose(Handle);
+    return IL_TRUE;
+  }
+  return IL_FALSE;
+}
+
