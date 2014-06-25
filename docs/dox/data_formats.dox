@@ -1,0 +1,44 @@
+/**
+ * @file il.h
+ *
+ * @defgroup consts Constants
+ * @ingroup consts
+ * @{
+ *
+ * @defgroup il_data_formats Image Library Image Colour Formats.
+ *                         
+ * Defines the the format in which colours are stored. 
+ * @see il_data_types
+ *               
+ * @ingroup il_data_formats
+ * @{
+ *
+ * @def IL_COLOUR_INDEX
+ * Pixels are indices into a colour palette. This is only valid for 
+ * integer data types.
+ *
+ * @def IL_ALPHA
+ * Colours consists of only an alpha (opacity) component.
+ *
+ * @def IL_RGB
+ * Colours have 3 components: Red, green and blue (in that order).
+ *
+ * @def IL_RGBA
+ * Colours have 4 components: Red, green, blue and alpha (opacity) (in that order).
+ *
+ * @def IL_BGR
+ * Colours have 3 components: Blue, green and red (in that order).
+ *
+ * @def IL_BGRA
+ * Colours have 4 components: Blue, green, red and alpha (opacity) (in that order).
+ *
+ * @def IL_LUMINANCE            0x1909
+ * Colours consists of only an luminance (brightness) component.
+ *
+ * @def IL_LUMINANCE_ALPHA      0x190A
+ * Colours consists of a luminance (brightness) and an alpha (opacity) component.
+ *
+ * @}
+ * @}
+ * 
+ */

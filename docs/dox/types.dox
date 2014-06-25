@@ -2,7 +2,7 @@
  * @file
  * @brief Data types for the IL.
  *
- * @defgroup il_types Image Library Data Types.
+ * @defgroup il_types Data Types.
  *               
  * @ingroup il_types
  * @{

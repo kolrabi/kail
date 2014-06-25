@@ -1,6 +1,10 @@
 /**
- * @file
+ * @file include/IL/il.h
  * @brief Image Data types for the IL.
+ *
+ * @defgroup consts Constants
+ * @ingroup consts
+ * @{
  *
  * @defgroup il_data_types Image Library Image Data Types.
  *                         
@@ -37,6 +41,7 @@
  * @def IL_HALF                 
  * Data consists of 16 bit wide half precision floating point values. 
  *
+ * @}
  * @}
  * 
  */
