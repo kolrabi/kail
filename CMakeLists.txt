@@ -100,8 +100,7 @@ SET                     ( HAVE_LIBM         TRUE )
 
 SET                     ( DEBUG             ${CMAKE_BUILD_TYPE} == Debug )
 
-# PKG_SEARCH_MODULE       ( Allegro           Allegro )
-# FIND_PACKAGE            ( Allegro )
+FIND_PACKAGE            ( Allegro )
 
 OPTION                  ( IL_STATIC_LIB          "Build static libraries"         FALSE )
 OPTION                  ( ILU_ENABLED            "Build ILU"                      TRUE )

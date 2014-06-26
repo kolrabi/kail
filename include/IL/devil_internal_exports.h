@@ -57,6 +57,11 @@
   #define snprintf _snprintf
 #endif
 
+#define BIT(n)      (1<<n)
+#define NUL         '\0'  // Easier to type and ?portable?
+#define IL_PI       3.1415926535897932384626
+#define IL_DEGCONV  0.0174532925199432957692
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -232,9 +237,10 @@ ILAPI void      ILAPIENTRY iSetInputFile(ILimage *, ILHANDLE File);
 ILAPI ILboolean ILAPIENTRY iLoadFuncs2(ILimage *Image, ILenum Type);
 
 ILAPI ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum type, ILconst_string FileName);
+ILAPI ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName);
 ILAPI void      ILAPIENTRY iSetOutputLump(ILimage *, void *Lump, ILuint Size);
-ILAPI ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type);
 ILAPI void      ILAPIENTRY iSetOutputFile(ILimage *, ILHANDLE File);
+ILAPI ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type);
 
 //
 // Image functions

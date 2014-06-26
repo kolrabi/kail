@@ -9,7 +9,7 @@
 // Description: DirectX 9 functions for textures
 //
 //-----------------------------------------------------------------------------
-
+ 
 /**
  * @file
  * @brief DirectX 9 functions.

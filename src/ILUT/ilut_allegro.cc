@@ -10,10 +10,11 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "ilut_internal.h"
+#include <IL/ilut_config.h>
 
 #ifdef ILUT_USE_ALLEGRO
 #include "ilut_allegro.h"
+#include "ilut_internal.h" 
 
 BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
   BITMAP *Bitmap;
@@ -31,13 +32,13 @@ BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
   }
 
   if (ilutCurImage->Origin == IL_ORIGIN_LOWER_LEFT)
-    ilipImage(ilutCurImage);
+    iFlipImage(ilutCurImage);
   if (ilutCurImage->Type > IL_UNSIGNED_BYTE) {}  // Can't do anything about this right now...
   if (ilutCurImage->Type == IL_BYTE) {}  // Can't do anything about this right now...
 
   Bitmap = create_bitmap_ex(ilutCurImage->Bpp * 8, ilutCurImage->Width, ilutCurImage->Height);
   if (Bitmap == NULL) {
-    return IL_FALSE;
+    return NULL;
   }
   memcpy(Bitmap->dat, ilutCurImage->Data, ilutCurImage->SizeOfData);
 
@@ -80,11 +81,12 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal) {
 
 #ifndef _WIN32_WCE
 BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
-  ILuint  ImgId;
   PALETTE Pal;
+  ILimage *Image;
+  BITMAP *Alleg;
 
   iLockState();
-  ILimage *Image = ilNewImage(1,1,1,1,1);
+  Image = ilNewImage(1,1,1,1,1);
   iUnlockState();
 
   if (!iLoad(Image, IL_TYPE_UNKNOWN, FileName)) {
@@ -92,7 +94,7 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
     return NULL;
   }
 
-  BITMAP *Alleg = iConvertToAlleg(Image, Pal);
+  Alleg = iConvertToAlleg(Image, Pal);
   ilCloseImage(Image);
   return Alleg;
 }
@@ -101,8 +103,10 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
 
 // Unfinished
 ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap) {
+  ILimage *ilutCurImage;
+  
   iLockState();
-  ILimage *ilutCurImage = iLockCurImage();
+  ilutCurImage = iLockCurImage();
   iUnlockState();
 
   if (ilutCurImage == NULL) {

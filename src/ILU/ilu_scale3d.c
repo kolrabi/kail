@@ -22,24 +22,12 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 ILimage *iluScale3DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 
-static ILuint		Size, NewX1, NewX2, NewY1, NewY2, NewZ1, NewZ2, x, y, z, c;
-static ILdouble	ScaleX, ScaleY, ScaleZ, x1, x2, t1, t2, t4, f, ft;
-//ILdouble	Table[2][2][4];  // Assumes we don't have larger than 32-bit images.
-static ILuint		ImgBps, SclBps, ImgPlane, SclPlane;
-static ILushort	*ShortPtr, *SShortPtr;
-static ILuint		*IntPtr, *SIntPtr;
-
-
 ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter)
 {
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
-
-	ScaleX = (ILfloat)Width / Image->Width;
-	ScaleY = (ILfloat)Height / Image->Height;
-	ScaleZ = (ILfloat)Depth / Image->Depth;
 
 	if (Filter == ILU_NEAREST)
 		return iluScale3DNear_(Image, Scaled, Width, Height, Depth);
@@ -51,8 +39,17 @@ ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Heigh
 }
 
 
-ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth)
-{
+ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth) {
+	ILuint		NewX1, NewX2, NewY1, NewY2, NewZ1, NewZ2, x, y, z, c;
+	ILdouble	ScaleX, ScaleY, ScaleZ;
+	ILuint		ImgBps, SclBps, ImgPlane, SclPlane;
+	ILushort	*ShortPtr, *SShortPtr;
+	ILuint		*IntPtr, *SIntPtr;
+
+	ScaleX = (ILfloat)Width / Image->Width;
+	ScaleY = (ILfloat)Height / Image->Height;
+	ScaleZ = (ILfloat)Depth / Image->Depth;
+
 	ImgBps = Image->Bps / Image->Bpc;
 	SclBps = Scaled->Bps / Scaled->Bpc;
 	ImgPlane = Image->SizeOfPlane / Image->Bpc;
@@ -128,6 +125,16 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 
 ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth)
 {
+	ILuint		Size, NewX1, NewX2, NewY1, NewZ1, x, y, z, c;
+	ILdouble	ScaleX, ScaleY, ScaleZ, x1, x2, t1, t2, t4, f, ft;
+	ILuint		ImgBps, SclBps, ImgPlane, SclPlane;
+	ILushort	*ShortPtr, *SShortPtr;
+	ILuint		*IntPtr, *SIntPtr;
+
+	ScaleX = (ILfloat)Width / Image->Width;
+	ScaleY = (ILfloat)Height / Image->Height;
+	ScaleZ = (ILfloat)Depth / Image->Depth;
+
 	ImgBps = Image->Bps / Image->Bpc;
 	SclBps = Scaled->Bps / Scaled->Bpc;
 	ImgPlane = Image->SizeOfPlane / Image->Bpc;

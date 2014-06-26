@@ -49,6 +49,11 @@ IF                      ( ILUT_USE_SDL )
   TARGET_LINK_LIBRARIES ( ILUT ${SDL_LIBRARY} )
 ENDIF                   ()
 
+IF                      ( ILUT_USE_ALLEGRO )
+  TARGET_LINK_LIBRARIES ( ILUT ${ALLEGRO_LIBRARY} )
+ENDIF                   ()
+
+
 INSTALL                 ( TARGETS ILUT
                           RUNTIME DESTINATION bin
                           LIBRARY DESTINATION lib

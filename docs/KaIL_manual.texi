@@ -12,6 +12,7 @@
 @c just some fancy stuff like VERSION and UPDATED generation
 @c version.texi is generated automatically
 @include version.texi
+@setchapternewpage on
 
 @copying
 This is @code{kaIL @value{VERSION}} manual.
@@ -170,9 +171,13 @@ You must call @code{ilutRenderer} or @code{ilutInit} before you use any ILUT fun
 This function initializes ILUT support for the API you desire to use by a single parameter:
 
 @itemize
-	@item @code{ILUT_OPENGL} -- Initializes ILUT's OpenGL support.
-	@item @code{ILUT_ALLEGRO} -- Initializes ILUT's Allegro support.
-	@item @code{ILUT_WIN32} -- Initializes ILUT's Windows GDI and DirectX 8 support.
+  @item @code{ILUT_ALLEGRO} -- Initializes ILUT's Allegro support.
+  @item @code{ILUT_DIRECT3D8} -- Initializes ILUT's Direct3D 8 support.
+  @item @code{ILUT_DIRECT3D9} -- Initializes ILUT's Direct3D 9 support.
+  @item @code{ILUT_OPENGL} -- Initializes ILUT's OpenGL support.
+  @item @code{ILUT_SDL} -- Initializes ILUT's SDL surface support.
+  @item @code{ILUT_WIN32} -- Initializes ILUT's Windows GDI support.
+  @item @code{ILUT_X11} -- Initializes ILUT's X11 support.
 @end itemize
 
 An example of using @code{ilutRenderer} follows:
@@ -183,6 +188,7 @@ ilutRenderer(ILUT_OPENGL);
 @end example
 
 Of course the ILUT must be built with support for your chosen API on the platform you are running to use it.
+Allegro and SDL support are disabled by default as both potentially require to be built with the version of the library that is going to be used.
 
 @node Functions index
 @unnumbered Functions index

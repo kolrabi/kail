@@ -18,8 +18,9 @@
 #define ILUT_ALLEG_H
 
 #include <allegro.h>
-
-
+#ifdef ILUT_USE_WIN32
+#include <winalleg.h>
+#endif
 
 #endif//ILUT_ALLEG_H
 #endif//ILUT_USE_ALLEGRO

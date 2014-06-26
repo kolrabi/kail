@@ -4,7 +4,6 @@ SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 SET                     ( SOURCES
 
-                          ilu_alloc.c
                           ilu_api.c
                           ilu_error.c
                           ilu_filter.c
@@ -21,7 +20,6 @@ SET                     ( SOURCES
                           ilu_scale3d.c
                           ilu_scaling.c
                           ilu_states.c
-                          ilu_utilities.c
                         )
 
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )

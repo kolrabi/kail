@@ -38,13 +38,14 @@
 #include <IL/ilu.h>
 #include <IL/devil_internal_exports.h>
 
-extern ILimage *iluCurImage;
+typedef struct {
+  ILenum iluFilter;
+  ILenum iluPlacement;
 
-
-// Useful global variables
-extern const ILdouble IL_PI;
-extern const ILdouble IL_DEGCONV;
-
+  ILuint    PointNum;
+  ILUpointi *RegionPointsi;
+  ILUpointf *RegionPointsf;
+} ILU_TLS_DATA;
 
 #ifdef ILU_INTERNAL_C
 #undef NOINLINE
@@ -70,10 +71,11 @@ INLINE ILint ilRound(ILfloat Num) {
 #else
 ILfloat ilCos(ILfloat Angle);
 ILfloat ilSin(ILfloat Angle);
-ILint ilRound(ILfloat Num);
+ILint   ilRound(ILfloat Num);
 #endif
 
-
+ILU_TLS_DATA * iGetTLSData(void);
+void iInitThreads(void);
 
 ILuint    iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter);
 ILubyte * iScanFill(ILimage *Image);

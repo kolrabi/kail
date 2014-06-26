@@ -5,8 +5,8 @@ RELEASE="1.9.0"
 
 PACKAGE="kaIL"
 
-# Would create dependency on dll
-GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE" 
+# Would create dependencies on dlls, also allegro collides with windows and opengl
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE -DILUT_USE_ALLEGRO=FALSE" 
 
 # Some useful libraries there
 GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
@@ -70,7 +70,7 @@ function build() {
       ( 
         cd "$MSVC_PATH/$BUILD/lib" &&
         for DEF in *.def; do
-          "$VC_LIB" /machine:i386 "/def:$DEF" && rm "$DEF" || exit $?
+          "$VC_LIB" /machine:i386 "/def:$DEF" || exit $?
         done
       ) || exit $?
     done

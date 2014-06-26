@@ -14,6 +14,11 @@
 
 #include "ilut_internal.h"
 #ifdef ILUT_USE_SDL
+
+#ifdef ILUT_USE_ALLEGRO
+#undef main
+#endif
+
 #include <SDL.h>
 
 #ifdef  _MSC_VER
@@ -23,7 +28,7 @@
 static int isBigEndian;
 static int rmask, gmask, bmask, amask;
 
-void InitSDL()
+ILboolean InitSDL()
 {
 //#if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #ifdef __BIG_ENDIAN__
@@ -39,6 +44,7 @@ void InitSDL()
   bmask = 0x00FF0000;
   amask = 0xFF000000;
 #endif
+  return IL_TRUE;
 }
 
 SDL_Surface * iConvertToSDLSurface(ILimage *ilutCurImage, unsigned int flags)

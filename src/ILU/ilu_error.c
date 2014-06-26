@@ -21,12 +21,12 @@
 #include "ilu_error/ilu_err-french.h"
 
 
-ILconst_string *iluErrors;
-ILconst_string *iluLibErrors;
-ILconst_string *iluMiscErrors;
+static ILconst_string *iluErrors = NULL;
+static ILconst_string *iluLibErrors = NULL;
+static ILconst_string *iluMiscErrors = NULL;
 #define ILU_NUM_LANGUAGES 7
 
-ILconst_string *iluErrorStrings[ILU_NUM_LANGUAGES] = {
+static ILconst_string *iluErrorStrings[ILU_NUM_LANGUAGES] = {
 	iluErrorStringsEnglish,
 	iluErrorStringsArabic,
 	iluErrorStringsDutch,
@@ -36,7 +36,7 @@ ILconst_string *iluErrorStrings[ILU_NUM_LANGUAGES] = {
 	iluErrorStringsGerman
 };
 
-ILconst_string *iluLibErrorStrings[ILU_NUM_LANGUAGES] = {
+static ILconst_string *iluLibErrorStrings[ILU_NUM_LANGUAGES] = {
 	iluLibErrorStringsEnglish,
 	iluLibErrorStringsArabic,
 	iluLibErrorStringsDutch,
@@ -46,7 +46,7 @@ ILconst_string *iluLibErrorStrings[ILU_NUM_LANGUAGES] = {
 	iluLibErrorStringsGerman
 };
 
-ILconst_string *iluMiscErrorStrings[ILU_NUM_LANGUAGES] = {
+static ILconst_string *iluMiscErrorStrings[ILU_NUM_LANGUAGES] = {
 	iluMiscErrorStringsEnglish,
 	iluMiscErrorStringsArabic,
 	iluMiscErrorStringsDutch,
@@ -58,6 +58,10 @@ ILconst_string *iluMiscErrorStrings[ILU_NUM_LANGUAGES] = {
 
 
 ILconst_string iErrorString(ILenum Error) {
+	if (!iluMiscErrors) {
+		return IL_TEXT("ILU not initialized!");
+	}
+
 	// Now we are dealing with Unicode strings.
 	if (Error == IL_NO_ERROR) {
 		return iluMiscErrors[0];

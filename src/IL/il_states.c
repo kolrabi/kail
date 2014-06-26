@@ -298,8 +298,6 @@ ILboolean iIsEnabled(ILenum Mode) {
 
 
 //! Internal function to figure out where we are in an image chain.
-//@TODO: This may get much more complex with mipmaps under faces, etc.
-// FIXME: store current layer/frame/mipmap/face seperately
 ILuint iGetActiveNum(ILenum Type) {
   IL_TLS_DATA *TLSData = iGetTLSData();
 

@@ -7,7 +7,6 @@ SET                     ( HEADERS
                           # IL/devil_internal_exports.h
                           IL/il.h
                           IL/ilu.h
-                          IL/ilu_region.h
                           IL/ilut.h
                         )
 

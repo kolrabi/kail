@@ -28,8 +28,78 @@
 static ILconst_string _ilutVendor  = IL_TEXT("kolrabi");
 static ILconst_string _ilutVersion = IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.9.0");
 
+#if IL_THREAD_SAFE_PTHREAD
+#include <pthread.h>
+  static pthread_key_t iTlsKey;
+#elif IL_THREAD_SAFE_WIN32
+  static DWORD         iTlsKey = ~0;
+#endif
+
+static void iInitTlsData(ILUT_TLS_DATA *Data) {
+  imemclear(Data, sizeof(*Data)); 
+}
+
+#if IL_THREAD_SAFE_PTHREAD
+// only called when thread safety is enabled and a thread stops
+static void iFreeTLSData(void *ptr) {
+  ILUT_TLS_DATA *Data = (ILUT_TLS_DATA*)ptr;
+  ifree(Data);
+}
+#endif
+
+ILUT_TLS_DATA * iGetTLSData() {
+#if IL_THREAD_SAFE_PTHREAD
+  ILUT_TLS_DATA *iDataPtr = (ILUT_TLS_DATA*)pthread_getspecific(iTlsKey);
+  if (iDataPtr == NULL) {
+    iDataPtr = ioalloc(ILUT_TLS_DATA);
+    pthread_setspecific(iTlsKey, iDataPtr);
+    iInitTlsData(iDataPtr);
+  }
+
+  return iDataPtr;
+
+#elif IL_THREAD_SAFE_WIN32
+
+  ILUT_TLS_DATA *iDataPtr = (ILUT_TLS_DATA*)TlsGetValue(iTlsKey);
+  if (iDataPtr == NULL) {
+    iDataPtr = ioalloc(ILUT_TLS_DATA);
+    TlsSetValue(iTlsKey, iDataPtr);
+    iInitTlsData(iDataPtr);
+  }
+
+  return iDataPtr;
+
+#else
+  static ILUT_TLS_DATA iData;
+  static ILUT_TLS_DATA *iDataPtr = NULL;
+
+  if (iDataPtr == NULL) {
+    iDataPtr = &iData;
+    iInitTlsData(iDataPtr);
+  }
+  return iDataPtr;
+#endif
+}
+
+void iInitThreads(void) {
+  static ILboolean isInit = IL_FALSE;
+  if (!isInit) {
+  #if IL_THREAD_SAFE_PTHREAD
+    pthread_key_create(&iTlsKey, &iFreeTLSData);
+  #elif IL_THREAD_SAFE_WIN32
+    iTlsKey = TlsAlloc();
+  #endif
+    isInit = IL_TRUE;
+
+    ilutDefaultStates();
+  }
+}
+
 // Set all states to their defaults
 void ilutDefaultStates() {
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+
   ilutStates[ilutCurrentPos].ilutUsePalettes = IL_FALSE;
   ilutStates[ilutCurrentPos].ilutForceIntegerFormat = IL_FALSE;
   ilutStates[ilutCurrentPos].ilutOglConv = IL_FALSE;  // IL_TRUE ?
@@ -50,9 +120,9 @@ void ilutDefaultStates() {
  * @ingroup ilut_dx8
  */
 void ILAPIENTRY ilutD3D8MipFunc(ILuint NumLevels) {
-  iLockState(); 
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
   ilutStates[ilutCurrentPos].D3DMipLevels = NumLevels;
-  iUnlockState(); 
 }
 
 
@@ -74,26 +144,22 @@ ILconst_string ILAPIENTRY ilutGetString(ILenum StringName) {
 
 ILboolean ILAPIENTRY ilutEnable(ILenum Mode) {
   ILboolean Result;
-  iLockState(); 
   Result = ilutAble(Mode, IL_TRUE);
-  iUnlockState();
   return Result;
 }
 
 
 ILboolean ILAPIENTRY ilutDisable(ILenum Mode) {
   ILboolean Result;
-  iLockState(); 
   Result = ilutAble(Mode, IL_FALSE);
-  iUnlockState();
   return Result;
 }
 
 
-ILboolean ilutAble(ILenum Mode, ILboolean Flag)
-{
-  switch (Mode)
-  {
+ILboolean ilutAble(ILenum Mode, ILboolean Flag) {
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+  switch (Mode) {
     case ILUT_PALETTE_MODE:
       ilutStates[ilutCurrentPos].ilutUsePalettes = Flag;
       break;
@@ -128,10 +194,11 @@ ILboolean ilutAble(ILenum Mode, ILboolean Flag)
 }
 
 
-ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode)
-{
-  switch (Mode)
-  {
+ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode) {
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+
+  switch (Mode) {
     case ILUT_PALETTE_MODE:
       return ilutStates[ilutCurrentPos].ilutUsePalettes;
 
@@ -165,8 +232,10 @@ ILboolean ILAPIENTRY ilutIsDisabled(ILenum Mode) {
 
 
 void ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param) {
-  switch (Mode)
-  {
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+
+  switch (Mode)   {
     case ILUT_PALETTE_MODE:
       *Param = ilutStates[ilutCurrentPos].ilutUsePalettes;
       break;
@@ -198,8 +267,7 @@ void ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param) {
 }
 
 
-ILboolean ILAPIENTRY ilutGetBoolean(ILenum Mode)
-{
+ILboolean ILAPIENTRY ilutGetBoolean(ILenum Mode) {
   ILboolean Temp = IL_FALSE;
   ilutGetBooleanv(Mode, &Temp);
   return Temp;
@@ -207,6 +275,9 @@ ILboolean ILAPIENTRY ilutGetBoolean(ILenum Mode)
 
 
 void ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param) {
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+
   switch (Mode) {
     case ILUT_MAXTEX_WIDTH:
       *Param = ilutStates[ilutCurrentPos].MaxTexW;
@@ -289,10 +360,10 @@ ILint ILAPIENTRY ilutGetInteger(ILenum Mode)
 
 
 void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
-  iLockState(); 
+  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
+  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
 
-  switch (Mode)
-  {
+  switch (Mode) {
     case ILUT_S3TC_FORMAT:
       if (Param >= IL_DXT1 && Param <= IL_DXT5) {
         ilutStates[ilutCurrentPos].ilutDXTCFormat = Param;
@@ -356,7 +427,6 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
   }
 
   iSetError(IL_INVALID_PARAM);  // Parameter not in valid bounds.
-  iUnlockState();
 }
 
 /** 
@@ -367,29 +437,26 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
  */
 void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
   // Should we check here to see if ilCurrentPos is negative?
-  iLockState(); 
+  ILUT_TLS_DATA *tls = iGetTLSData();
 
-  if (ilutCurrentPos >= ILUT_ATTRIB_STACK_MAX - 1) {
-    ilutCurrentPos = ILUT_ATTRIB_STACK_MAX - 1;
+  if (tls->ilutCurrentPos >= ILUT_ATTRIB_STACK_MAX - 1) {
+    tls->ilutCurrentPos = ILUT_ATTRIB_STACK_MAX - 1;
     iSetError(ILUT_STACK_OVERFLOW);
-    iUnlockState(); 
     return;
   }
 
-  ilutCurrentPos++;
+  tls->ilutCurrentPos++;
 
   //memcpy(&ilutStates[ilutCurrentPos], &ilutStates[ilutCurrentPos - 1], sizeof(ILUT_STATES));
 
   if (Bits & ILUT_OPENGL_BIT) {
-    ilutStates[ilutCurrentPos].ilutUsePalettes = ilutStates[ilutCurrentPos-1].ilutUsePalettes;
-    ilutStates[ilutCurrentPos].ilutOglConv = ilutStates[ilutCurrentPos-1].ilutOglConv;
+    tls->ilutStates[tls->ilutCurrentPos].ilutUsePalettes = tls->ilutStates[tls->ilutCurrentPos-1].ilutUsePalettes;
+    tls->ilutStates[tls->ilutCurrentPos].ilutOglConv     = tls->ilutStates[tls->ilutCurrentPos-1].ilutOglConv;
   }
   if (Bits & ILUT_D3D_BIT) {
-    ilutStates[ilutCurrentPos].D3DMipLevels = ilutStates[ilutCurrentPos-1].D3DMipLevels;
-    ilutStates[ilutCurrentPos].D3DAlphaKeyColor = ilutStates[ilutCurrentPos-1].D3DAlphaKeyColor;
+    tls->ilutStates[tls->ilutCurrentPos].D3DMipLevels     = tls->ilutStates[tls->ilutCurrentPos-1].D3DMipLevels;
+    tls->ilutStates[tls->ilutCurrentPos].D3DAlphaKeyColor = tls->ilutStates[tls->ilutCurrentPos-1].D3DAlphaKeyColor;
   }
-
-  iUnlockState(); 
 }
 
 
@@ -398,21 +465,17 @@ void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
  * bits specified when pushed by ilutPushAttrib to the previous set of states.
  * @ingroup ilut_state
  */
-void ILAPIENTRY ilutPopAttrib()
-{
-  iLockState(); 
+void ILAPIENTRY ilutPopAttrib() {
+  ILUT_TLS_DATA *tls = iGetTLSData();
 
-  if (ilutCurrentPos <= 0) {
-    ilutCurrentPos = 0;
+  if (tls->ilutCurrentPos <= 0) {
+    tls->ilutCurrentPos = 0;
     iSetError(ILUT_STACK_UNDERFLOW);
-    iUnlockState(); 
     return;
   }
 
   // Should we check here to see if ilutCurrentPos is too large?
-  ilutCurrentPos--;
-
-  iUnlockState(); 
+  tls->ilutCurrentPos--;
 }
 
 
@@ -423,21 +486,37 @@ void ILAPIENTRY ilutPopAttrib()
  * @see ilutInit
  */
 ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer) {
-  if (Renderer > ILUT_WIN32) {
+  if (Renderer > ILUT_SDL) {
     iSetError(ILUT_INVALID_VALUE);
     return IL_FALSE;
   }
 
-  switch (Renderer)
-  {
+  iInitThreads();
+
+  switch (Renderer) {
     #ifdef ILUT_USE_OPENGL
     case ILUT_OPENGL:
       return ilutGLInit();
     #endif
 
+    #ifdef ILUT_USE_ALLEGRO
+    case ILUT_ALLEGRO:
+      return IL_TRUE; // ilutAllegroInit();
+    #endif
+
+    #ifdef ILUT_USE_X11
+    case ILUT_X11:
+      return ilutXInit();
+    #endif
+
     #ifdef ILUT_USE_WIN32
     case ILUT_WIN32:
       return ilutWin32Init();
+    #endif
+
+    #ifdef ILUT_USE_SDL
+    case ILUT_SDL:
+      return InitSDL();
     #endif
 
     #ifdef ILUT_USE_DIRECTX8

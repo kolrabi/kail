@@ -37,8 +37,9 @@ else (ALLEGRO_LIBRARIES AND ALLEGRO_INCLUDE_DIRS)
 
   find_library(ALLEGRO_LIBRARY
     NAMES
-      allegro
-    PATHS
+      allegro alleg
+    HINTS
+      /mingw
       /usr/lib
       /usr/local/lib
       /opt/local/lib

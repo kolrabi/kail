@@ -63,13 +63,13 @@ static ILboolean iGetPsdHead(SIO *io, PSDHEAD *Header)
 	if (SIOread(io, Header, sizeof(*Header), 1) != 1)
 		return IL_FALSE;
 
-	UShort(&Header->Version);
-	UShort(&Header->Channels);
+	BigUShort(&Header->Version);
+	BigUShort(&Header->Channels);
 
-	UInt  (&Header->Height);
-	UInt  (&Header->Width);
-	UShort(&Header->Depth);
-	UShort(&Header->Mode);
+	BigUInt  (&Header->Height);
+	BigUInt  (&Header->Width);
+	BigUShort(&Header->Depth);
+	BigUShort(&Header->Mode);
 
 	return IL_TRUE;
 }

@@ -25,8 +25,13 @@
 
 #include <IL/ilut.h>
 #include <IL/devil_internal_exports.h>
-#include <stdlib.h>
-#include <string.h>
+
+#include "ilut_states.h"
+
+typedef struct {
+  ILUT_STATES ilutStates[ILUT_ATTRIB_STACK_MAX];
+  ILuint ilutCurrentPos;  // Which position on the stack
+} ILUT_TLS_DATA;
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -35,25 +40,31 @@
 
 // ImageLib Utility Toolkit's OpenGL Functions
 #ifdef ILUT_USE_OPENGL
-	ILboolean ilutGLInit();
+	ILboolean ilutGLInit(void);
 #endif
 
 // ImageLib Utility Toolkit's Win32 Functions
 #ifdef ILUT_USE_WIN32
-	ILboolean ilutWin32Init();
+	ILboolean ilutWin32Init(void);
 #endif
 
-// ImageLib Utility Toolkit's Win32 Functions
+// ImageLib Utility Toolkit's DirectX8 Functions
 #ifdef ILUT_USE_DIRECTX8
-	ILboolean ilutD3D8Init();
+	ILboolean ilutD3D8Init(void);
 #endif
 
+// ImageLib Utility Toolkit's DirectX9 Functions
 #ifdef ILUT_USE_DIRECTX9
-	ILboolean ilutD3D9Init();
+	ILboolean ilutD3D9Init(void);
 #endif
 
+// ImageLib Utility Toolkit's DirectX10 Functions
 #ifdef ILUT_USE_DIRECTX10
-	ILboolean ilutD3D10Init();
+	ILboolean ilutD3D10Init(void);
+#endif
+
+#ifdef ILUT_USE_SDL
+  ILboolean InitSDL(void);
 #endif
 
 #define CUBEMAP_SIDES 6
@@ -64,12 +75,5 @@
 void	ilutDefaultStates(void);
 
 #define imemclear(x,y) memset(x,0,y);
-
-///////////////////////////////////////////////////////////////////////////
-//
-// globals
-//
-
-// extern ILimage *ilutCurImage;
 
 #endif//INTERNAL_H

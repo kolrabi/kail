@@ -14,9 +14,8 @@
 #include "ilu_internal.h"
 #include "ilu_states.h"
 
-
-ILconst_string _iluVendor = IL_TEXT("kolrabi");
-ILconst_string _iluVersion  = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.9.0");// IL_TEXT(__DATE__));
+static ILconst_string _iluVendor  = IL_TEXT("kolrabi");
+static ILconst_string _iluVersion = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.9.0");
 
 ILconst_string iGetString(ILenum StringName) {
   switch (StringName)   {
@@ -39,11 +38,11 @@ void iGetIntegerv(ILenum Mode, ILint *Param) {
       break;
 
     case ILU_FILTER:
-      *Param = iluFilter;
+      *Param = iGetTLSData()->iluFilter;
       break;
 
     case ILU_PLACEMENT:
-      *Param = iluPlacement;
+      *Param = iGetTLSData()->iluPlacement;
       break;
 
     default:
@@ -51,11 +50,6 @@ void iGetIntegerv(ILenum Mode, ILint *Param) {
   }
   return;
 }
-
-
-
-ILenum iluFilter = ILU_NEAREST;
-ILenum iluPlacement = ILU_CENTER;
 
 void iImageParameter(ILenum PName, ILenum Param) {
   switch (PName)
@@ -72,7 +66,7 @@ void iImageParameter(ILenum PName, ILenum Param) {
         case ILU_SCALE_BSPLINE:
         case ILU_SCALE_LANCZOS3:
         case ILU_SCALE_MITCHELL:
-          iluFilter = Param;
+          iGetTLSData()->iluFilter = Param;
           break;
         default:
           iSetError(ILU_INVALID_ENUM);
@@ -87,7 +81,7 @@ void iImageParameter(ILenum PName, ILenum Param) {
         case ILU_UPPER_LEFT:
         case ILU_UPPER_RIGHT:
         case ILU_CENTER:
-          iluPlacement = Param;
+          iGetTLSData()->iluPlacement = Param;
           break;
         default:
           iSetError(ILU_INVALID_ENUM);

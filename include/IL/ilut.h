@@ -52,12 +52,12 @@
 // Include required headers
 //
 
+#if defined(ILUT_USE_ALLEGRO) && defined(_WIN32)
+  #include <allegro/palette.h>
+	// #include <winalleg.h>
+#endif    
+
 #ifdef ILUT_USE_OPENGL
-	#if defined(_MSC_VER) || defined(_WIN32)
-		//#define WIN32_LEAN_AND_MEAN
-		#include <windows.h>
-	#endif//_MSC_VER
- 
 	#ifdef __APPLE__
 		#include <OpenGL/gl.h>
 		#include <OpenGL/glu.h>
@@ -68,7 +68,6 @@
 #endif
 
 #ifdef ILUT_USE_WIN32
-	//#define WIN32_LEAN_AND_MEAN
 	#ifdef _DEBUG 
 		#define _CRTDBG_MAP_ALLOC
 		#include <stdlib.h>
@@ -76,7 +75,9 @@
 			#include <crtdbg.h>
 		#endif
 	#endif
-	#include <windows.h>
+  //#ifndef ILUT_USE_ALLEGRO
+    #include <windows.h>
+	//#endif    
 #endif
 
 #ifdef ILUT_USE_DIRECTX9
@@ -172,6 +173,7 @@
 #define	ILUT_DIRECT3D9  4
 #define ILUT_X11        5
 #define	ILUT_DIRECT3D10 6
+#define ILUT_SDL        7
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -222,7 +224,11 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 
 // ImageLib Utility Toolkit's Allegro Functions
 #ifdef ILUT_USE_ALLEGRO
-	#include <allegro.h>
+	/*
+	#undef BITMAP
+	#include <allegro/palette.h>
+	struct BITMAP;
+	*/
 
 	ILAPI BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName);
 	ILAPI BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal);
@@ -241,8 +247,8 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 	ILAPI ILboolean	ILAPIENTRY ilutSetHBitmap(HBITMAP Bitmap);
 	ILAPI ILboolean	ILAPIENTRY ilutSetHPal(HPALETTE Pal);
 	ILAPI ILboolean	ILAPIENTRY ilutSetWinClipboard(void);
-	ILAPI HBITMAP	ILAPIENTRY ilutWinLoadImage(ILstring FileName, HDC hDC);
-	ILAPI ILboolean	ILAPIENTRY ilutWinLoadUrl(ILstring Url);
+	ILAPI HBITMAP	ILAPIENTRY ilutWinLoadImage(ILconst_string FileName, HDC hDC);
+	ILAPI ILboolean	ILAPIENTRY ilutWinLoadUrl(ILconst_string Url);
 	ILAPI ILboolean ILAPIENTRY ilutWinPrint(ILuint XPos, ILuint YPos, ILuint Width, ILuint Height, HDC hDC);
 	ILAPI ILboolean	ILAPIENTRY ilutWinSaveImage(ILstring FileName, HBITMAP Bitmap);
 #endif//ILUT_USE_WIN32
@@ -318,7 +324,6 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 	ILAPI ILboolean ILAPIENTRY ilutD3D10TexFromFileHandle(ID3D10Device *Device, ILHANDLE File, ID3D10Texture2D **Texture);
 #endif//ILUT_USE_DIRECTX10
 
-/*
 // ImageLib Utility Toolkit's SDL Functions
 #ifdef ILUT_USE_SDL
 	#include <SDL/sdl.h>
@@ -328,6 +333,7 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 	ILAPI ILboolean    				ILAPIENTRY ilutSDLSurfaceFromBitmap (struct SDL_Surface *Bitmap);
 #endif//ILUT_USE_SDL
 
+/*
 // ImageLib Utility Toolkit's BeOS Functions
 #ifdef  ILUT_USE_BEOS
 	ILAPI BBitmap ILAPIENTRY ilutConvertToBBitmap(void);

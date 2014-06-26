@@ -74,11 +74,9 @@ extern "C" {
 #define __PRETTY_FUNCTION__ ""
 #endif
 
-#define BIT(n) (1<<n)
-#define NUL '\0'  // Easier to type and ?portable?
 #define IL_ATTRIB_STACK_MAX         32
 #define IL_ERROR_STACK_SIZE         32
-    
+
 typedef struct {
   ILuint    CurName;
   ILuint    CurFrame;
@@ -192,7 +190,6 @@ ILenum    iDetermineTypeFuncs(ILimage *Image);
 ILuint64  iGetLumpPos(ILimage *Image) ;
 ILboolean iIsValidIO(ILenum Type, SIO* io);
 void      iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
-ILboolean iSaveImage(ILimage *Image, ILconst_string FileName);
 void      iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, fReadProc aRead, fSeekProc  aSeek, fTellProc aTell);
 void      iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek,  fTellProc Tell,  fWriteProc Write);
 void      iResetRead(ILimage *image);

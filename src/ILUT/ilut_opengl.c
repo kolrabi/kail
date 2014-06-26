@@ -123,6 +123,8 @@ ILboolean ilutGLInit()
 {
   ILint MaxTexW, MaxTexH, MaxTexD = 1;
 
+  iLockState(); // lock to prevent running more than once at the same time
+
   // Should we really be setting all this ourselves?  Seems too much like a glu(t) approach...
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -172,6 +174,7 @@ ILboolean ilutGLInit()
     ilGLTexImage3D = glTexImage3D;
     ilGLCompressed3D = glCompressedTexImage3DARB;
   #else
+    iUnlockState();
     return IL_FALSE;  // @TODO: Find any other systems that we could be on.
   #endif
 //#else
@@ -196,6 +199,7 @@ ILboolean ilutGLInit()
   if (IsExtensionSupported("GL_ARB_texture_non_power_of_two"))
     HasNonPowerOfTwoHardware = IL_TRUE;
   
+  iUnlockState();
   return IL_TRUE;
 }
 

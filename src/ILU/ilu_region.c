@@ -14,60 +14,61 @@
 #include "ilu_internal.h"
 #include "ilu_region.h"
 
-static ILUpointi *RegionPointsi = NULL;
-static ILUpointf *RegionPointsf = NULL;
-static ILuint    PointNum = 0;
-
 void iRegionfv(ILUpointf *Points, ILuint n) {
+  ILU_TLS_DATA *TLSData = iGetTLSData();
+  ifree(TLSData->RegionPointsi);
+  ifree(TLSData->RegionPointsf);
+  TLSData->RegionPointsf = NULL;
+  TLSData->RegionPointsi = NULL;
+  TLSData->PointNum = 0;
+
   if (Points == NULL || n == 0) {
-    ifree(RegionPointsi);
-    ifree(RegionPointsf);
-    RegionPointsf = NULL;
-    RegionPointsi = NULL;
-    PointNum = 0;
     return;
   }
+
   if (n < 3) {
     iSetError(ILU_INVALID_PARAM);
     return;
   }
-  ifree(RegionPointsi);
-  ifree(RegionPointsf);
-  RegionPointsf = (ILpointf*)ialloc(sizeof(ILpointf) * n);
-  if (RegionPointsf == NULL)
+
+  TLSData->RegionPointsf = (ILpointf*)ialloc(sizeof(ILpointf) * n);
+  if (TLSData->RegionPointsf == NULL)
     return;
-  memcpy(RegionPointsf, Points, sizeof(ILpointi) * n);
-  PointNum = n;
+
+  memcpy(TLSData->RegionPointsf, Points, sizeof(ILpointi) * n);
+  TLSData->PointNum = n;
   return;
 }
 
 
 void iRegioniv(ILUpointi *Points, ILuint n) {
+  ILU_TLS_DATA *TLSData = iGetTLSData();
+
+  ifree(TLSData->RegionPointsi);
+  ifree(TLSData->RegionPointsf);
+  TLSData->RegionPointsf = NULL;
+  TLSData->RegionPointsi = NULL;
+  TLSData->PointNum = 0;
+
   if (Points == NULL || n == 0) {
-    ifree(RegionPointsi);
-    ifree(RegionPointsf);
-    RegionPointsi = NULL;
-    PointNum = 0;
     return;
   }
+
   if (n < 3) {
     iSetError(ILU_INVALID_PARAM);
     return;
   }
-  ifree(RegionPointsi);
-  ifree(RegionPointsf);
-  RegionPointsi = (ILpointi*)ialloc(sizeof(ILpointi) * n);
-  if (RegionPointsi == NULL)
+
+  TLSData->RegionPointsi = (ILpointi*)ialloc(sizeof(ILpointi) * n);
+  if (TLSData->RegionPointsi == NULL)
     return;
-  memcpy(RegionPointsi, Points, sizeof(ILpointi) * n);
-  PointNum = n;
-  return;
+  memcpy(TLSData->RegionPointsi, Points, sizeof(ILpointi) * n);
+  TLSData->PointNum = n;
 }
 
 
 // Inserts edge into list in order of increasing xIntersect field.
-void InsertEdge(Edge *list, Edge *edge)
-{
+void InsertEdge(Edge *list, Edge *edge) {
   Edge *p, *q = list;
 
   p = q->next;
@@ -86,8 +87,7 @@ void InsertEdge(Edge *list, Edge *edge)
 
 
 // For an index, return y-coordinate of next nonhorizontal line
-ILint yNext(ILint k, ILint cnt, ILpointi *pts)
-{
+ILint yNext(ILint k, ILint cnt, ILpointi *pts) {
   ILint j;
 
   if ((k+1) > (cnt-1))
@@ -109,8 +109,7 @@ ILint yNext(ILint k, ILint cnt, ILpointi *pts)
 // Store lower-y coordinate and inverse slope for each edge.  Adjust
 //  and store upper-y coordinate for edges that are the lower member
 //  of a monotonically increasing or decreasing pair of edges
-void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *edges[])
-{
+void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *edges[]) {
   edge->dxPerScan = (ILfloat)(upper.x - lower.x) / (upper.y - lower.y);
   edge->xIntersect = (ILfloat)lower.x;
   if (upper.y < yComp)
@@ -122,8 +121,7 @@ void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *
 }
 
 
-void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges)
-{
+void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges) {
   Edge *edge;
   ILpointi v1, v2;
   ILuint i;
@@ -149,8 +147,7 @@ void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges)
 }
 
 
-void BuildActiveList(ILint scan, Edge *active, Edge *edges[])
-{
+void BuildActiveList(ILint scan, Edge *active, Edge *edges[]) {
   Edge *p, *q;
 
   p = edges[scan]->next;
@@ -161,12 +158,9 @@ void BuildActiveList(ILint scan, Edge *active, Edge *edges[])
   }
 }
 
-
 #define iRegionSetPixel(mask, w, x,y) ((mask)[y * (w) + x] = 1 )
 
-
-void FillScan(ILubyte *mask, ILuint width, ILint scan, Edge *active)
-{
+void FillScan(ILubyte *mask, ILuint width, ILint scan, Edge *active) {
   Edge *p1, *p2;
   ILint i;
 
@@ -181,8 +175,7 @@ void FillScan(ILubyte *mask, ILuint width, ILint scan, Edge *active)
 }
 
 
-void DeleteAfter(Edge *q)
-{
+void DeleteAfter(Edge *q) {
   Edge *p = q->next;
   q->next = p->next;
   free(p);
@@ -190,8 +183,7 @@ void DeleteAfter(Edge *q)
 
 
 // Delete completed edges.  Update 'xIntersect' field for others
-void UpdateActiveList(ILint scan, Edge *active)
-{
+void UpdateActiveList(ILint scan, Edge *active) {
   Edge *q = active, *p = active->next;
 
   while (p) {
@@ -224,28 +216,29 @@ void ResortActiveList(Edge *active)
  * Sets the region mask from the region points and a given image.
  * @internal
  */
-ILubyte *iScanFill(ILimage *Image)
-{
+ILubyte *iScanFill(ILimage *Image) {
+  ILU_TLS_DATA *TLSData = iGetTLSData();
+  
   Edge  **edges = NULL, *active = NULL/*, *temp*/;
   ILuint  i, scan;
   ILubyte   *iRegionMask = NULL;
 
-  if ((RegionPointsi == NULL && RegionPointsf == NULL) || PointNum == 0)
+  if ((TLSData->RegionPointsi == NULL && TLSData->RegionPointsf == NULL) || TLSData->PointNum == 0)
     return NULL;
 
-  if (RegionPointsf) {
+  if (TLSData->RegionPointsf) {
     // temporarily allocate integer points
-    RegionPointsi = (ILpointi*)ialloc(sizeof(ILpointi) * PointNum);
-    if (RegionPointsi == NULL)
+    TLSData->RegionPointsi = (ILpointi*)ialloc(sizeof(ILpointi) * TLSData->PointNum);
+    if (TLSData->RegionPointsi == NULL)
       goto error;
   }
 
-  for (i = 0; i < PointNum; i++) {
-    if (RegionPointsf) {
-      RegionPointsi[i].x = (ILuint)(Image->Width * RegionPointsf[i].x);
-      RegionPointsi[i].y = (ILuint)(Image->Height * RegionPointsf[i].y);
+  for (i = 0; i < TLSData->PointNum; i++) {
+    if (TLSData->RegionPointsf) {
+      TLSData->RegionPointsi[i].x = (ILuint)(Image->Width  * TLSData->RegionPointsf[i].x);
+      TLSData->RegionPointsi[i].y = (ILuint)(Image->Height * TLSData->RegionPointsf[i].y);
     }
-    if (RegionPointsi[i].x >= (ILint)Image->Width || RegionPointsi[i].y >= (ILint)Image->Height)
+    if (TLSData->RegionPointsi[i].x >= (ILint)Image->Width || TLSData->RegionPointsi[i].y >= (ILint)Image->Height)
       goto error;
   }
 
@@ -259,7 +252,7 @@ ILubyte *iScanFill(ILimage *Image)
     edges[i] = (Edge*)ialloc(sizeof(Edge));
     edges[i]->next = NULL;
   }
-  BuildEdgeList(PointNum, RegionPointsi, edges);
+  BuildEdgeList(TLSData->PointNum, TLSData->RegionPointsi, edges);
   active = (Edge*)ialloc(sizeof(Edge));
   active->next = NULL;
 
@@ -275,17 +268,17 @@ ILubyte *iScanFill(ILimage *Image)
   // Free edge records that have been allocated.
   ifree(edges);
 
-  if (RegionPointsf) {
-    ifree(RegionPointsi);
-    RegionPointsi = NULL;
+  if (TLSData->RegionPointsf) {
+    ifree(TLSData->RegionPointsi);
+    TLSData->RegionPointsi = NULL;
   }
 
   return iRegionMask;
 
 error:
-  if (RegionPointsf) {
-    ifree(RegionPointsi);
-    RegionPointsi = NULL;
+  if (TLSData->RegionPointsf) {
+    ifree(TLSData->RegionPointsi);
+    TLSData->RegionPointsi = NULL;
   }
 
   // Free edge records that have been allocated.

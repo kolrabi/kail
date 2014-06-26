@@ -14,9 +14,6 @@
 #ifndef STATES_H
 #define STATES_H
 
-extern ILenum iluFilter;
-extern ILenum iluPlacement;
-
 void iGetIntegerv(ILenum Mode, ILint *Param);
 ILconst_string iGetString(ILenum StringName);
 void iImageParameter(ILenum PName, ILenum Param) ;

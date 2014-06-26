@@ -252,7 +252,7 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
   return bRet;
 }
 
-ILboolean iSaveImage(ILimage *Image, ILconst_string FileName) {
+ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName) {
   ILenum Type;
   ILboolean bRet = IL_FALSE;
 

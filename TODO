@@ -1,7 +1,6 @@
 
 1.9.0:
 
-  - Thread local states for ILU and ILUT
   - More format tests
 
 2.0.0:
@@ -37,3 +36,5 @@ future:
   - Set strings from loaded images?
   - Unify strings like IL_PNG_AUTHNAME_STRING, IL_TGA_AUTHNAME_STRING, IL_TIF_AUTHNAME_STRING ?
   - Load exif data
+  - DirectX10/11 support for ILUT?
+  - Make PSD loader handle layers correctly

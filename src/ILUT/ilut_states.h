@@ -21,8 +21,6 @@ ILboolean ilutAble(ILenum Mode, ILboolean Flag);
 
 #define ILUT_ATTRIB_STACK_MAX 32
 
-ILuint ilutCurrentPos = 0;  // Which position on the stack
-
 //
 // Various states
 //
@@ -50,8 +48,6 @@ typedef struct ILUT_STATES
 	ILint		D3DAlphaKeyColor; // 0x00rrggbb format , -1 for none
 
 } ILUT_STATES;
-
-ILUT_STATES ilutStates[ILUT_ATTRIB_STACK_MAX];
 
 
 #endif//STATES_H
