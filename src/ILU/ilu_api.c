@@ -331,6 +331,12 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
   Image = iLockCurImage();
   iGetIntegerv(ILU_FILTER, &Filter);
   iUnlockState();
+
+  if (!Image) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
   Result = iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
           (ILuint)(Image->Depth * ZDim), Filter);
   iUnlockImage(Image);

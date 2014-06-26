@@ -67,6 +67,10 @@ typedef struct {
   ILboolean InitSDL(void);
 #endif
 
+#ifdef ILUT_USE_X11
+  ILboolean ilutXInit(void);
+#endif
+
 #define CUBEMAP_SIDES 6
 #ifndef SAFE_RELEASE
 #define SAFE_RELEASE(p) {if((p)!=NULL){(p)->lpVtbl->Release(p);(p)=NULL;}}

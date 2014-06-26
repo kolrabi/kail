@@ -19,6 +19,7 @@ static void load(const char *file_) {
 #endif
 
   image = iluLoadImage(file);  
+  fprintf(stderr, "image: %u\n", image);
   ilBindImage(image);
 }
 

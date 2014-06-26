@@ -95,7 +95,7 @@ ADD_TEST                ( FormatLoadHDR     ILtestFormatLoad  ${CMAKE_SOURCE_DIR
 ADD_TEST                ( FormatLoadICNS    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.icns 16 16 1 5 ) # 6 "frames"
 ADD_TEST                ( FormatLoadICON    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.ico 600 400 1 0 )
 ADD_TEST                ( FormatLoadIFF     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.iff 600 400 1 0 )
-ADD_TEST                ( FormatLoadILBM    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.ilbm 600 400 1 0 )
+ADD_TEST                ( FormatLoadILBM    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.lbm 600 400 1 0 )
 ADD_TEST                ( FormatLoadIWI     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.iwi 600 400 1 0 )
 ADD_TEST                ( FormatLoadJP2     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.jp2 600 400 1 0 )
 ADD_TEST                ( FormatLoadJPG     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.jpg 600 400 1 0 )

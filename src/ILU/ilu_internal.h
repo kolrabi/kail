@@ -74,7 +74,7 @@ ILfloat ilSin(ILfloat Angle);
 ILint   ilRound(ILfloat Num);
 #endif
 
-ILU_TLS_DATA * iGetTLSData(void);
+ILU_TLS_DATA * iGetTLSDataILU(void);
 void iInitThreads(void);
 
 ILuint    iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter);

@@ -38,11 +38,11 @@ void iGetIntegerv(ILenum Mode, ILint *Param) {
       break;
 
     case ILU_FILTER:
-      *Param = iGetTLSData()->iluFilter;
+      *Param = iGetTLSDataILU()->iluFilter;
       break;
 
     case ILU_PLACEMENT:
-      *Param = iGetTLSData()->iluPlacement;
+      *Param = iGetTLSDataILU()->iluPlacement;
       break;
 
     default:
@@ -66,7 +66,7 @@ void iImageParameter(ILenum PName, ILenum Param) {
         case ILU_SCALE_BSPLINE:
         case ILU_SCALE_LANCZOS3:
         case ILU_SCALE_MITCHELL:
-          iGetTLSData()->iluFilter = Param;
+          iGetTLSDataILU()->iluFilter = Param;
           break;
         default:
           iSetError(ILU_INVALID_ENUM);
@@ -81,7 +81,7 @@ void iImageParameter(ILenum PName, ILenum Param) {
         case ILU_UPPER_LEFT:
         case ILU_UPPER_RIGHT:
         case ILU_CENTER:
-          iGetTLSData()->iluPlacement = Param;
+          iGetTLSDataILU()->iluPlacement = Param;
           break;
         default:
           iSetError(ILU_INVALID_ENUM);

@@ -4,9 +4,9 @@
 
 #if IL_THREAD_SAFE_PTHREAD
 #include <pthread.h>
-  static pthread_key_t iTlsKey;
+  static pthread_key_t iTlsKeyILU;
 #elif IL_THREAD_SAFE_WIN32
-  static DWORD         iTlsKey = ~0;
+  static DWORD         iTlsKeyILU = ~0;
 #endif
 
 static void iInitTlsData(ILU_TLS_DATA *Data) {
@@ -23,12 +23,13 @@ static void iFreeTLSData(void *ptr) {
 }
 #endif
 
-ILU_TLS_DATA * iGetTLSData() {
+ILU_TLS_DATA * iGetTLSDataILU() {
 #if IL_THREAD_SAFE_PTHREAD
-  ILU_TLS_DATA *iDataPtr = (ILU_TLS_DATA*)pthread_getspecific(iTlsKey);
+  ILU_TLS_DATA *iDataPtr = (ILU_TLS_DATA*)pthread_getspecific(iTlsKeyILU);
+  iTrace("---- iTlsKeyILU = %d", iTlsKeyILU);
   if (iDataPtr == NULL) {
     iDataPtr = ioalloc(ILU_TLS_DATA);
-    pthread_setspecific(iTlsKey, iDataPtr);
+    pthread_setspecific(iTlsKeyILU, iDataPtr);
     iInitTlsData(iDataPtr);
   }
 
@@ -36,10 +37,10 @@ ILU_TLS_DATA * iGetTLSData() {
 
 #elif IL_THREAD_SAFE_WIN32
 
-  ILU_TLS_DATA *iDataPtr = (ILU_TLS_DATA*)TlsGetValue(iTlsKey);
+  ILU_TLS_DATA *iDataPtr = (ILU_TLS_DATA*)TlsGetValue(iTlsKeyILU);
   if (iDataPtr == NULL) {
     iDataPtr = ioalloc(ILU_TLS_DATA);
-    TlsSetValue(iTlsKey, iDataPtr);
+    TlsSetValue(iTlsKeyILU, iDataPtr);
     iInitTlsData(iDataPtr);
   }
 
@@ -59,8 +60,9 @@ ILU_TLS_DATA * iGetTLSData() {
 
 void iInitThreads(void) {
   #if IL_THREAD_SAFE_PTHREAD
-    pthread_key_create(&iTlsKey, &iFreeTLSData);
+    pthread_key_create(&iTlsKeyILU, &iFreeTLSData);
   #elif IL_THREAD_SAFE_WIN32
-    iTlsKey = TlsAlloc();
+    iTlsKeyILU = TlsAlloc();
   #endif
+  iTrace("---- ILU TLS key: %08x", iTlsKeyILU);
 }

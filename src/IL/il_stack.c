@@ -90,10 +90,14 @@ IL_TLS_DATA * iGetTLSData() {
 
 static IL_IMAGE_SELECTION *iGetSelection() {
   IL_TLS_DATA *iData = iGetTLSData();
+  iTrace("---- Returning selection %u %u %u %u %u %p", 
+    iData->CurSel.CurName, iData->CurSel.CurFrame, iData->CurSel.CurFace, 
+    iData->CurSel.CurLayer, iData->CurSel.CurMipmap, &iData->CurSel);
   return &iData->CurSel;
 }
 
 static void iSetSelection(ILuint Image, ILuint Frame, ILuint Face, ILuint Layer, ILuint Mipmap) {
+  iTrace("---- Selecting %u %u %u %u %u %p", Image, Frame, Face, Layer, Mipmap, iGetSelection());
   iGetSelection()->CurName    = Image;
   iGetSelection()->CurFrame   = Frame;
   iGetSelection()->CurFace    = Face;
@@ -607,6 +611,7 @@ void iInitIL()
   iStateMutex = CreateMutex(NULL, FALSE, NULL);
   iTlsKey = TlsAlloc();
   #endif
+  iTrace("---- IL TLS key: %08x", iTlsKey);
   
   iSetError(IL_NO_ERROR);
   ilDefaultStates();      // Set states to their defaults.

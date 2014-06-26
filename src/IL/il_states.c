@@ -1085,6 +1085,10 @@ void iSetInteger(ILimage *CurImage , ILenum Mode, ILint Param) {
         return;
       }
       break;
+    case IL_FILE_MODE: 
+    case IL_FILE_OVERWRITE: // deprecated: unused, IL_FILE_MODE is used instead
+      ilStates[ilCurrentPos].ilOverWriteFiles = !!Param;
+      return;
 
     default:
       iSetError(IL_INVALID_ENUM);

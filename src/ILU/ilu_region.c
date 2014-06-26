@@ -15,7 +15,7 @@
 #include "ilu_region.h"
 
 void iRegionfv(ILUpointf *Points, ILuint n) {
-  ILU_TLS_DATA *TLSData = iGetTLSData();
+  ILU_TLS_DATA *TLSData = iGetTLSDataILU();
   ifree(TLSData->RegionPointsi);
   ifree(TLSData->RegionPointsf);
   TLSData->RegionPointsf = NULL;
@@ -42,7 +42,7 @@ void iRegionfv(ILUpointf *Points, ILuint n) {
 
 
 void iRegioniv(ILUpointi *Points, ILuint n) {
-  ILU_TLS_DATA *TLSData = iGetTLSData();
+  ILU_TLS_DATA *TLSData = iGetTLSDataILU();
 
   ifree(TLSData->RegionPointsi);
   ifree(TLSData->RegionPointsf);
@@ -217,7 +217,7 @@ void ResortActiveList(Edge *active)
  * @internal
  */
 ILubyte *iScanFill(ILimage *Image) {
-  ILU_TLS_DATA *TLSData = iGetTLSData();
+  ILU_TLS_DATA *TLSData = iGetTLSDataILU();
   
   Edge  **edges = NULL, *active = NULL/*, *temp*/;
   ILuint  i, scan;

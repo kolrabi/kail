@@ -99,6 +99,9 @@ iInitFormats() {
 #ifndef IL_NO_IFF
   ADD_FORMAT(IFF);
 #endif
+#ifndef IL_NO_ILBM
+  ADD_FORMAT(ILBM);
+#endif
 #ifndef IL_NO_IWI
   ADD_FORMAT(IWI);
 #endif

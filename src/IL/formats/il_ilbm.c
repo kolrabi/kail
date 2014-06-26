@@ -41,6 +41,7 @@
 #include "il_internal.h"
 #ifndef IL_NO_ILBM
 #include <stdlib.h>
+#include "il_register.h"
 
 /* Structure for an IFF picture ( BMHD = Bitmap Header ) */
 #include "pack_push.h"
@@ -221,7 +222,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
 
   /* compute some usefull values, based on the bitmap header */
 
-  width         =   ( bmhd.w + 15 ) & 0xFFFFFFF0;  /* Width in pixels modulo 16 */
+  width         =   bmhd.w; //( bmhd.w + 15 ) & 0xFFFFFFF0;  /* Width in pixels modulo 16 */
   bytesperline  = ( ( bmhd.w + 15 ) / 16 ) * 2;
   nbplanes      =     bmhd.planes;
 
@@ -300,8 +301,9 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
       scratch_pal[i].b = scratch_pal[i%nbColors].b;
     }
 
-    if ( !isPBM )
-      ilRegisterPal( scratch_pal, 3*nbrcolorsfinal, IL_PAL_RGB24 );
+    if ( !isPBM ) {
+      iRegisterPal( Image, scratch_pal, 3*nbrcolorsfinal, IL_PAL_RGB24 );
+    }
   }
 
   /* Get the bitmap */
