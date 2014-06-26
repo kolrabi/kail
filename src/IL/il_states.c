@@ -220,6 +220,7 @@ ILboolean iAble(ILenum Mode, ILboolean Flag) {
     case IL_TYPE_SET:
       ilStates[ilCurrentPos].ilTypeSet = Flag;
       break;
+    case IL_FILE_MODE: 
     case IL_FILE_OVERWRITE: // deprecated: unused, IL_FILE_MODE is used instead
       ilStates[ilCurrentPos].ilOverWriteFiles = Flag;
       break;
@@ -270,6 +271,7 @@ ILboolean iIsEnabled(ILenum Mode) {
       return ilStates[ilCurrentPos].ilFormatSet;
     case IL_TYPE_SET:
       return ilStates[ilCurrentPos].ilTypeSet;
+    case IL_FILE_MODE: 
     case IL_FILE_OVERWRITE:
       return ilStates[ilCurrentPos].ilOverWriteFiles;
     case IL_CONV_PAL:

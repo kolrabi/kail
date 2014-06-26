@@ -37,8 +37,7 @@ static int load(const char *file_, int w, int h, int d, int f) {
   strncat(file, ".loaded.png", 1023-strlen(file));
 #endif
 
-  ilSetInteger(IL_FILE_MODE, IL_TRUE);
-  iluNormalize();
+  ilEnable(IL_FILE_MODE);
   ilSaveImage(file);
 
   return 0;

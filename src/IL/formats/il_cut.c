@@ -63,13 +63,18 @@ ILboolean isValidCutHeader(const CUT_HEAD* header)
 static ILboolean 
 iIsValidCut(SIO* io) {
 	CUT_HEAD	header;
+	ILuint Start = SIOtell(io);
+	ILboolean bRet;
 
 	if (io == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	return SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD) && isValidCutHeader(&header);
+	bRet = SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD) && isValidCutHeader(&header);
+
+	SIOseek(io, Start, IL_SEEK_SET);
+	return bRet;
 }
 
 ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y)
@@ -115,7 +120,7 @@ static ILboolean
 iLoadCutInternal(ILimage* image) {
 	SIO *       io;
 	CUT_HEAD	Header;
-    ILubyte *   chunk;
+  ILubyte *   chunk;
 	ILboolean   done    = IL_FALSE;
 	ILint       y       = 0, i;
 
