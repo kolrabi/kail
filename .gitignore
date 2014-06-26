@@ -1,3 +1,6 @@
 build/
 deploy/
 msvclibs/
+docs/html/
+docs/latex/
+

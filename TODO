@@ -1,10 +1,15 @@
 
 1.9.0:
 
+  - Thread local states for ILU and ILUT
   - More format tests
 
 2.0.0:
 
+  - iluSimilarity() to get a value of how similar two images are
+  - Use iluSimilarity() in tests to check loading and saving by
+    comparing it against a known good sample.
+  
   - SDL2 ILUT
 
   - Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
