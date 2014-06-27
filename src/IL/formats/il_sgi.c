@@ -482,7 +482,7 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 		TempData = iGetFlipped(Temp);
 		if (TempData == NULL) {
 			if (Temp!= Image)
-				ilCloseImage(Temp);
+				iCloseImage(Temp);
 			return IL_FALSE;
 		}
 	}
@@ -506,7 +506,7 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 	if (TempData != Temp->Data)
 		ifree(TempData);
 	if (Temp != Image)
-		ilCloseImage(Temp);
+		iCloseImage(Temp);
 
 	return IL_TRUE;
 }

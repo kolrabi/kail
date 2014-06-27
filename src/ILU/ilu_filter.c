@@ -430,7 +430,7 @@ ILboolean iApplyFilter(ILimage *Image, ILuint Iter, const ILint *Kernel, ILint S
     Data = Filter(TempImage, Kernel, Scale, Bias);
     if (!Data) {
       if (TempImage != Image) {
-        ilCloseImage(TempImage);
+        iCloseImage(TempImage);
       }
       return IL_FALSE;
     }
@@ -441,16 +441,16 @@ ILboolean iApplyFilter(ILimage *Image, ILuint Iter, const ILint *Kernel, ILint S
   if (Palette) {
     ILimage *Tmp = TempImage;
     TempImage = iConvertImage(Tmp, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
-    ilCloseImage(Tmp);
+    iCloseImage(Tmp);
   } else if (Converted) {
     ILimage *Tmp = TempImage;
     TempImage = iConvertImage(Tmp, Image->Format, Type);
-    ilCloseImage(Tmp);
+    iCloseImage(Tmp);
   }
 
   if (TempImage != Image) {
     iCopyImage(Image, TempImage);
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   }
 
   return IL_TRUE;
@@ -487,7 +487,7 @@ ILboolean iApplyFilter2(ILimage *Image, ILuint Iter,
     if (!HPass || !VPass) {
       ifree(HPass);
       ifree(VPass);
-      if (Image != TempImage) ilCloseImage(TempImage);
+      if (Image != TempImage) iCloseImage(TempImage);
       return IL_FALSE;
     }
 
@@ -513,16 +513,16 @@ ILboolean iApplyFilter2(ILimage *Image, ILuint Iter,
   if (Palette) {
     ILimage *Tmp = TempImage;
     TempImage = iConvertImage(Tmp, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
-    ilCloseImage(Tmp);
+    iCloseImage(Tmp);
   } else if (Converted) {
     ILimage *Tmp = TempImage;
     TempImage = iConvertImage(Tmp, Image->Format, Type);
-    ilCloseImage(Tmp);
+    iCloseImage(Tmp);
   }
 
   if (TempImage != Image) {
     iCopyImage(Image, TempImage);
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   }
 
   return IL_TRUE;
@@ -1017,7 +1017,7 @@ void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
   }
 
   iIntExtImg(Black, Image, Gamma);
-  ilCloseImage(Black);
+  iCloseImage(Black);
 
   return IL_TRUE;
 }*/
@@ -1043,7 +1043,7 @@ ILboolean iContrast(ILimage *Image, ILfloat Contrast) {
   }
 
   iIntExtImg(Grey, Image, Contrast);
-  ilCloseImage(Grey);
+  iCloseImage(Grey);
 
   return IL_TRUE;
 }
@@ -1067,7 +1067,7 @@ ILboolean iSharpen(ILimage *Image, ILfloat Factor, ILuint Iter) {
     iIntExtImg(Blur, Image, Factor);
   }
 
-  ilCloseImage(Blur);
+  iCloseImage(Blur);
   return IL_TRUE;
 }
 

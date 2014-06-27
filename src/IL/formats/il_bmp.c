@@ -895,7 +895,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
     TempPal = iConvertPal(&TempImage->Pal, IL_PAL_BGR32);
     if (TempPal == NULL)
     {
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
       return IL_FALSE;
     }
   }
@@ -962,7 +962,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   if (TempImage->Origin != IL_ORIGIN_LOWER_LEFT) {
     TempData = iGetFlipped(TempImage);
     if (TempData == NULL) {
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
       return IL_FALSE;
     }
   } else {
@@ -1031,7 +1031,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   if (TempData != TempImage->Data)
     ifree(TempData);
   if (TempImage != image)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   
   image->io.seek(image->io.handle, FileSize, IL_SEEK_SET);
   

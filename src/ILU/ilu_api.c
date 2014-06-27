@@ -751,6 +751,25 @@ ILboolean ILAPIENTRY iluSharpen(ILfloat Factor, ILuint Iter) {
 }
 
 /** 
+ * Compares the current image to the image having the name in Comp. 
+ * @ingroup ilu_util
+ */
+ILfloat ILAPIENTRY iluSimilarity(ILuint Comp) {
+  ILimage * Image, * Original;
+  ILfloat Result;
+
+  iLockState();
+  Image     = iLockCurImage();
+  Original  = iLockImage(Comp);
+  iUnlockState();
+
+  Result    = iSimilarity(Image, Original);
+  iUnlockImage(Image);
+  iUnlockImage(Original);
+  return Result;
+}
+
+/** 
  * "Swaps" the colour order of the current image. If the current image is in 
  * bgr(a) format, iluSwapColours will change the image to use rgb(a) format, or 
  * vice-versa. This can be helpful when you want to manipulate the image data yourself but 

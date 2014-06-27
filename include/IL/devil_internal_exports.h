@@ -271,13 +271,14 @@ ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to 
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
 ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
-ILAPI void      ILAPIENTRY ilCloseImage    (ILimage *Image);
+ILAPI void      ILAPIENTRY iCloseImageReal (ILimage *Image);
 ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
 ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
 ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
 
 ILAPI ILuint    ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
 
+#define iCloseImage(img)    { iCloseImageReal(img); img = NULL; }
 
 #ifdef _UNICODE
   #ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.

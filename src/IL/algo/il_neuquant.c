@@ -426,12 +426,12 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
 
   NewImage = (ILimage*)icalloc(sizeof(ILimage), 1);
   if (NewImage == NULL) {
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
     return NULL;
   }
   NewImage->Data = (ILubyte*)ialloc(TempImage->SizeOfData / 3);
   if (NewImage->Data == NULL) {
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
     ifree(NewImage);
     return NULL;
   }
@@ -448,8 +448,8 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
   NewImage->Pal.PalType = IL_PAL_BGR24;
   NewImage->Pal.Palette = (ILubyte*)ialloc(256*3);
   if (NewImage->Pal.Palette == NULL) {
-    ilCloseImage(TempImage);
-    ilCloseImage(NewImage);
+    iCloseImage(TempImage);
+    iCloseImage(NewImage);
     return NULL;
   }
 
@@ -465,7 +465,7 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
       TempImage->Data[j], TempImage->Data[j+1], TempImage->Data[j+2]);
   }
 
-  ilCloseImage(TempImage);
+  iCloseImage(TempImage);
 
   return NewImage;
 }

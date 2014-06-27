@@ -36,7 +36,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
   ilCopyImageAttr(NewImage, Image);
 
   if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || Image->Bpp != 1) {
-    ilCloseImage(NewImage);
+    iCloseImage(NewImage);
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
   }
@@ -186,7 +186,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
   NewImage->Format = DestFormat;
 
   if (ilGetBppFormat(NewImage->Format) == 0) {
-    ilCloseImage(NewImage);
+    iCloseImage(NewImage);
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
   }
@@ -227,7 +227,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
       return NewImage;
 
     default:
-      ilCloseImage(NewImage);
+      iCloseImage(NewImage);
       iSetError(IL_INVALID_CONVERSION);
       return NULL;
   }
@@ -237,7 +237,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
   // ilConvertPal already sets the error message - no need to confuse the user.
   if (!Converted) {
-    ilCloseImage(NewImage);
+    iCloseImage(NewImage);
     return NULL;
   }
 
@@ -259,7 +259,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 alloc_error:
   ifree(Temp);
   if (NewImage)
-    ilCloseImage(NewImage);
+    iCloseImage(NewImage);
   return NULL;
 }
 
@@ -300,7 +300,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
 
     NewData = (ILubyte*)ilConvertBuffer(NewImage->SizeOfData, NewImage->Format, DestFormat, NewImage->Type, DestType, NULL, NewImage->Data);
     if (NewData == NULL) {
-      ifree(NewImage);  // ilCloseImage not needed.
+      ifree(NewImage);  // iCloseImage not needed.
       return NULL;
     }
     ifree(NewImage->Data);
@@ -353,7 +353,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
       }
       NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
       if (NewImage->Data == NULL) {
-        ilCloseImage(NewImage);
+        iCloseImage(NewImage);
         return NULL;
       }
       memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
@@ -361,7 +361,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
     else {
       NewImage->Data = (ILubyte*)ilConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
       if (NewImage->Data == NULL) {
-        ifree(NewImage);  // ilCloseImage not needed.
+        ifree(NewImage);  // iCloseImage not needed.
         return NULL;
       }
     }
@@ -413,7 +413,7 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
     ifree(BaseImage->Data);
     BaseImage->Data = Image->Data;
     Image->Data = NULL;
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
     BaseImage = BaseImage->Next;
   }

@@ -269,7 +269,7 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 
 	// If we read less than what we should have...
 	if (DataInc < Size) {
-		//ilCloseImage(Image);
+		//iCloseImage(Image);
 		//ilSetCurImage(NULL);
 		iSetError(IL_ILLEGAL_FILE_VALUE);
 		return IL_FALSE;
@@ -300,7 +300,7 @@ static ILboolean ilReadBinaryPpm(ILimage *Image, PPMINFO *Info) {
 	Image->io.seek(Image->io.handle, size-Size,IL_SEEK_SET);
 	*/
 	if (Image->io.read(Image->io.handle, Image->Data, 1, Size ) != Size) {
-		ilCloseImage(Image);	
+		iCloseImage(Image);	
 		return IL_FALSE;
 	}
 	return IL_TRUE;
@@ -492,7 +492,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -552,7 +552,7 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 
 	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT)
 		ifree(TempData);
-	ilCloseImage(TempImage);
+	iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

@@ -682,7 +682,7 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
   Alpha = (ILubyte*)ialloc(Size / TempImage->Bpp * Bpc);
   if (Alpha == NULL) {
     if (TempImage != Image)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
     return NULL;
   }
 
@@ -694,7 +694,7 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
     case IL_COLOUR_INDEX:  // @TODO: Make IL_COLOUR_INDEX separate.
       memset(Alpha, 0xFF, Size / TempImage->Bpp * Bpc);
       if (TempImage != Image)
-        ilCloseImage(TempImage);
+        iCloseImage(TempImage);
       return Alpha;
   }
 
@@ -740,7 +740,7 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
   }
 
   if (TempImage != Image)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
 
   return Alpha;
 }

@@ -609,6 +609,65 @@ ILboolean iCompareImage(ILimage * Image, ILimage * Original) {
   return !memcmp(Image->Data, Original->Data, Image->SizeOfData);
 }
 
+ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
+  ILfloat Result = 0.0, Sum1 = 0.0, Sum2 = 0.0;
+  ILimage *Image1, *Image2;
+  ILuint  Size, i;
+  ILuint Bpp, Format;
+
+  // Same image, so return true.
+  if (Original == Image)
+    return 1.0f;
+
+  if (Image == NULL || Original == NULL) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return 0.0f;
+  }
+
+  // must be same dimensions and layout
+  if (Original->Depth   != Image->Depth   ||
+      Original->Height  != Image->Height  ||
+      Original->Origin  != Image->Origin  ||
+      Original->Width   != Image->Width ) {
+      iSetError(ILU_ILLEGAL_OPERATION);
+      return 0.0f;
+  }
+
+  Bpp = IL_MAX(ilGetBppFormat(Original->Format), ilGetBppFormat(Image->Format));
+  Format = ilGetFormatBpp(Bpp);
+
+  Image1 = iConvertImage(Image, Format, IL_FLOAT);
+  if (!Image1) return 0.0;
+
+  Image2 = iConvertImage(Original, Format, IL_FLOAT);
+  if (!Image2) {
+    iCloseImage(Image1);
+    return 0.0;
+  }
+
+  Size = Original->Width * Original->Height * Original->Depth * Bpp;
+
+  for (i = 0; i<Size; i++) {
+    Sum1 += ((ILfloat*)(Image1->Data))[i] * ((ILfloat*)(Image1->Data))[i];
+    Sum2 += ((ILfloat*)(Image2->Data))[i] * ((ILfloat*)(Image2->Data))[i];
+  }
+
+  Sum1 = sqrt(Sum1);
+  Sum2 = sqrt(Sum2);
+
+  for (i = 0; i<Size; i++) {
+    Result += ((ILfloat*)Image1->Data)[i]/Sum1 * ((ILfloat*)Image2->Data)[i]/Sum2;
+  }
+
+  Result = sqrt(Result);
+
+  iCloseImage(Image1);
+  iCloseImage(Image2);
+
+  return Result;
+}
+
+
 ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, const ILubyte *ClearCol) {
   ILint TolVal, Distance, Dist1, Dist2, Dist3;
   ILuint  i; //, NumPix;
@@ -813,7 +872,7 @@ ILboolean iEqualize(ILimage *Image) {
     }
   }
 
-  ilCloseImage(LumImage);
+  iCloseImage(LumImage);
 
   return IL_TRUE;
 }

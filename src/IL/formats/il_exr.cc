@@ -235,7 +235,7 @@ static ILboolean iSaveExrInternal(ILimage *iCurImage) {
 	ifree(HalfData);
 	// Destroy our temporary image if we used one.
 	if (TempImage != iCurImage)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

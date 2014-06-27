@@ -433,7 +433,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 		/* run length encoding is not allowed so write flat*/
 		bRet = RGBE_WritePixels(image, data,TempImage->Width*TempImage->Height);
 		if (image != TempImage)
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 		return bRet;
 	}
 	buffer = (ILubyte*)ialloc(sizeof(ILubyte)*4*TempImage->Width);
@@ -441,7 +441,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 		/* no buffer space so write flat */
 		bRet = RGBE_WritePixels(image, data,TempImage->Width*TempImage->Height);
 		if (image != TempImage)
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 		return bRet;
 	}
 
@@ -453,7 +453,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 		if (image->io.write(rgbe, sizeof(rgbe), 1, image->io.handle) < 1) {
 			free(buffer);
 			if (image != TempImage)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 
@@ -471,7 +471,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 			if (RGBE_WriteBytes_RLE(image, &buffer[i*TempImage->Width],TempImage->Width) != IL_TRUE) {
 				ifree(buffer);
 				if (image != TempImage)
-					ilCloseImage(TempImage);
+					iCloseImage(TempImage);
 				return IL_FALSE;
 			}
 		}
@@ -479,7 +479,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	ifree(buffer);
 
 	if (image != TempImage)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 	return IL_TRUE;
 }
 

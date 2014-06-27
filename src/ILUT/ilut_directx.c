@@ -103,12 +103,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_strin
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8Texture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -134,12 +134,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, ILconst_st
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;  
 }
@@ -165,12 +165,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void 
 
   iSetInputLump(Temp, Lump, Size);
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8Texture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;  
 }
@@ -190,12 +190,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, vo
 
   iSetInputLump(Temp, Lump, Size);
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;   
 }
@@ -225,12 +225,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
 
   iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8Texture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -257,12 +257,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
 
   iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return IL_TRUE;
 }
@@ -290,12 +290,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDL
   iUnlockState();
   
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8Texture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
   return IL_TRUE;
 }
 
@@ -319,12 +319,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHA
   iUnlockState();
 
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   *Texture = iD3D8VolumeTexture(Temp, Device, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
   return IL_TRUE;
 }
 
@@ -406,13 +406,13 @@ static IDirect3DTexture8* iD3D8Texture(ILimage *ilutCurImage, IDirect3DDevice8 *
   Image = MakeD3D8Compliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL) {
     if (Image != ilutCurImage)
-      ilCloseImage(Image);
+      iCloseImage(Image);
     return NULL;
   }
   if (FAILED(IDirect3DDevice8_CreateTexture(Device, Image->Width, Image->Height,
     Settings->MipLevels, 0, Format, Settings->Pool, &Texture))) {
     if (Image != ilutCurImage)
-      ilCloseImage(Image);
+      iCloseImage(Image);
     return NULL;
   }
   if (FAILED(IDirect3DTexture8_LockRect(Texture, 0, &Rect, NULL, 0)))
@@ -426,7 +426,7 @@ success:
   iD3D8CreateMipmaps(Texture, Image);
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
   iUnlockImage(ilutCurImage);
   return Texture;
@@ -492,14 +492,14 @@ static IDirect3DVolumeTexture8* iD3D8VolumeTexture(ILimage *ilutCurImage, IDirec
   // We don't want to have mipmaps for such a large image.
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
   return Texture;
 
 failure:
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
   return NULL;  
 }
@@ -559,7 +559,7 @@ static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Devic
       Settings->Filter
     );
     if (Converted != ilutCurImage) {
-      ilCloseImage(Converted);
+      iCloseImage(Converted);
     }
     if (Scaled == NULL) {
       return NULL;
@@ -584,7 +584,7 @@ static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image) 
   MipImage = ilCopyImage_(Image);
 
   if (!iBuildMipmaps(MipImage, MipImage->Width >> 1, MipImage->Height >> 1, MipImage->Depth >> 1)) {
-    ilCloseImage(MipImage);
+    iCloseImage(MipImage);
     return IL_FALSE;
   }
   Temp = MipImage->Mipmaps;
@@ -609,7 +609,7 @@ static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image) 
     Temp = Temp->Next;
   }
 
-  ilCloseImage(MipImage);
+  iCloseImage(MipImage);
   return IL_TRUE;
 }
 

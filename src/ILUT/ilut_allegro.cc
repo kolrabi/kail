@@ -62,7 +62,7 @@ BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
       Pal[j].filler = 255;
     }
 
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   }
 
   return Bitmap;
@@ -90,12 +90,12 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
   iUnlockState();
 
   if (!iLoad(Image, IL_TYPE_UNKNOWN, FileName)) {
-    ilCloseImage(Image);
+    iCloseImage(Image);
     return NULL;
   }
 
   Alleg = iConvertToAlleg(Image, Pal);
-  ilCloseImage(Image);
+  iCloseImage(Image);
   return Alleg;
 }
 #endif//_WIN32_WCE

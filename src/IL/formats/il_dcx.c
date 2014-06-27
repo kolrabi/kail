@@ -133,7 +133,7 @@ iLoadDcxInternal(ILimage *TargetImage)
  			iTexImage(TargetImage, Image->Width, Image->Height, 1, Image->Bpp, Image->Format, Image->Type, Image->Data);
 			Prev = TargetImage;
 			Prev->Origin = IL_ORIGIN_UPPER_LEFT;
-			ilCloseImage(Image);
+			iCloseImage(Image);
 		}
 		else {
 			Prev->Next = Image;
@@ -266,7 +266,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 		if (ByteHead != 12)
 			SIOseek(io, -1, IL_SEEK_CUR);
 		if (SIOread(io, Image->Pal.Palette, 1, Image->Pal.PalSize) != Image->Pal.PalSize) {
-			ilCloseImage(Image);
+			iCloseImage(Image);
 			return NULL;
 		}
 	}
@@ -275,7 +275,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 
 dcx_error:
 	ifree(ScanLine);
-	ilCloseImage(Image);
+	iCloseImage(Image);
 	return NULL;
 }
 
@@ -302,7 +302,7 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 			break;
 		default:
 			iSetError(IL_ILLEGAL_FILE_VALUE);
-			ilCloseImage(Image);
+			iCloseImage(Image);
 			return NULL;
 	}
 
@@ -345,7 +345,7 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 		ScanLine = (ILubyte*)ialloc(Bps);
 		if (Image->Pal.Palette == NULL || ScanLine == NULL) {
 			ifree(ScanLine);
-			ilCloseImage(Image);
+			iCloseImage(Image);
 			return NULL;
 		}
 
@@ -391,7 +391,7 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 
 file_read_error:
 	ifree(ScanLine);
-	ilCloseImage(Image);
+	iCloseImage(Image);
 	return NULL;
 }
 

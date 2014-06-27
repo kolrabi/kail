@@ -2065,10 +2065,10 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 	}
 
 	// These are set NULL later by the memset call.
-	ilCloseImage(Image->Mipmaps);
-	ilCloseImage(Image->Next);
-	ilCloseImage(Image->Faces);
-	ilCloseImage(Image->Layers);
+	iCloseImage(Image->Mipmaps);
+	iCloseImage(Image->Next);
+	iCloseImage(Image->Faces);
+	iCloseImage(Image->Layers);
 
 	if (Image->Profile)  ifree(Image->Profile);
 	if (Image->DxtcData) ifree(Image->DxtcData);

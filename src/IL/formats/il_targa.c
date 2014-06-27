@@ -251,7 +251,7 @@ static ILboolean iReadUnmapTga(ILimage* image, TARGAHEAD *Header) {
 			//image->Type = IL_UNSIGNED_SHORT_5_6_5_REV;
 			
 			// Remove?
-			//ilCloseImage(image);
+			//iCloseImage(image);
 			//iSetError(IL_FORMAT_NOT_SUPPORTED);
 			//return IL_FALSE;
 			
@@ -646,7 +646,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	}
 	
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

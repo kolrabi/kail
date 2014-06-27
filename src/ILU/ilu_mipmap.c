@@ -21,7 +21,7 @@ ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint H
 
   // Get rid of any existing mipmaps.
   if (Parent->Mipmaps) {
-    ilCloseImage(Parent->Mipmaps);
+    iCloseImage(Parent->Mipmaps);
     Parent->Mipmaps = NULL;
   }
 

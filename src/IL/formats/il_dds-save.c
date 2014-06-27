@@ -354,7 +354,7 @@ ILushort *CompressTo565(ILimage *Image)
   Data = (ILushort*)ialloc(Image->Width * Image->Height * 2 * Image->Depth);
   if (Data == NULL) {
     if (TempImage != Image)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
     return NULL;
   }
 
@@ -423,7 +423,7 @@ ILushort *CompressTo565(ILimage *Image)
   }
 
   if (TempImage != Image)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
 
   return Data;
 }
@@ -447,7 +447,7 @@ ILubyte *CompressTo88(ILimage *Image)
   Data = (ILubyte*)ialloc(Image->Width * Image->Height * 2 * Image->Depth);
   if (Data == NULL) {
     if (TempImage != Image)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
     return NULL;
   }
 
@@ -491,7 +491,7 @@ ILubyte *CompressTo88(ILimage *Image)
   }
 
   if (TempImage != Image)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
 
   return Data;
 }
@@ -519,7 +519,7 @@ void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
   *r = (ILubyte*)ialloc(Image->Width * Image->Height * Image->Depth);
   if (*xgb == NULL || *r == NULL) {
     if (TempImage != Image)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
     return;
   }
 
@@ -579,7 +579,7 @@ void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
   }
 
   if (TempImage != Image)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
 }
 
 
@@ -656,7 +656,7 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
     }
 
     if (TempImage != Image)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
   }
   else
   {
@@ -1255,27 +1255,27 @@ ILubyte* iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, 
   BuffSize = iGetDXTCData(TempImage, NULL, 0, DXTCFormat);
   if (BuffSize == 0) {
     TempImage->Data = NULL;
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
     return NULL;
   }
 
   Buffer = (ILubyte*)ialloc(BuffSize);
   if (Buffer == NULL) {
     TempImage->Data = NULL;
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
     return NULL;
   }
 
   if (iGetDXTCData(TempImage, Buffer, BuffSize, DXTCFormat) != BuffSize) {
     ifree(Buffer);
     TempImage->Data = NULL;
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
     return NULL;
   }
   *DXTCSize = BuffSize;
 
   TempImage->Data = NULL;
-  ilCloseImage(TempImage);
+  iCloseImage(TempImage);
 
   return Buffer;
 }

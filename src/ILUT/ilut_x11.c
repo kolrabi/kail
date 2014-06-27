@@ -156,7 +156,7 @@ void iXConvertImage( ILimage *ilutCurImage, XImage * img )
       iSetError( ILUT_NOT_SUPPORTED );
   }
 
-  ilCloseImage( tmp );
+  iCloseImage( tmp );
 }
 
 ILboolean ilutXInit(void) {
@@ -256,13 +256,13 @@ XImage * ILAPIENTRY ilutXLoadImage( Display * dpy, char * filename_ )
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
     ifree(filename);
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return NULL;
   }
 
   ifree(filename);
   XImage *Result = ilutXCreateImage_( Temp, dpy );
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Result;
 }
@@ -284,13 +284,13 @@ Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
     ifree(filename);
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return None;
   }
 
   ifree(filename);
   Pixmap Result = ilutXCreatePixmap_( Temp, dpy, draw );
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Result;
 }
@@ -443,7 +443,7 @@ XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename_, XShmSegme
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     ifree(filename);
     return NULL;
   }
@@ -451,7 +451,7 @@ XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename_, XShmSegme
   ifree(filename);
 
   Result = iXShmCreateImage( Temp,dpy,info );
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Result;
 }
@@ -478,7 +478,7 @@ Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filena
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     ifree(filename);
     return None;
   }
@@ -486,7 +486,7 @@ Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filena
   ifree(filename);
 
   Result = iXShmCreatePixmap( Temp, dpy, draw, info );
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Result;
 

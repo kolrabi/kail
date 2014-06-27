@@ -162,7 +162,7 @@ done:
     ifree(Data);  // This is flipped data.
   
   if (Image != ilutCurImage)
-    ilCloseImage(Image);  // This is a converted image.
+    iCloseImage(Image);  // This is a converted image.
 
   iUnlockImage(ilutCurImage);
   return Bitmap;  // This is NULL if there was an error.
@@ -201,7 +201,7 @@ SDL_Surface* ILAPIENTRY ilutSDLSurfaceLoadImage(ILstring FileName)
   }
 
   Surface = iConvertToSDLSurface(Temp, SDL_SWSURFACE);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Surface;
 }

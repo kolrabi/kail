@@ -254,7 +254,7 @@ ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num) {
   ILimage *Next, *Prev;
 
   if (Image->Faces)
-    ilCloseImage(Image->Faces);
+    iCloseImage(Image->Faces);
 
   Image->Faces = NULL;
   if (Num == 0)  // Just gets rid of all the mipmaps.
@@ -274,7 +274,7 @@ ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num) {
       Prev = Image->Faces;
       while (Prev) {
         Next = Prev->Faces;
-        ilCloseImage(Prev);
+        iCloseImage(Prev);
         Prev = Next;
       }
       return IL_FALSE;
@@ -290,7 +290,7 @@ ILboolean iRegisterMipNum(ILimage *Image, ILuint Num) {
   ILimage *Next, *Prev;
 
   if (Image->Mipmaps)
-    ilCloseImage(Image->Mipmaps);
+    iCloseImage(Image->Mipmaps);
 
   Image->Mipmaps = NULL;
   if (Num == 0)  // Just gets rid of all the mipmaps.
@@ -309,7 +309,7 @@ ILboolean iRegisterMipNum(ILimage *Image, ILuint Num) {
       Prev = Image->Mipmaps;
       while (Prev) {
         Next = Prev->Mipmaps;
-        ilCloseImage(Prev);
+        iCloseImage(Prev);
         Prev = Next;
       }
       return IL_FALSE;
@@ -325,7 +325,7 @@ ILboolean iRegisterNumImages(ILimage *Image, ILuint Num) {
   ILimage *Next, *Prev;
 
   if (Image->Next)
-    ilCloseImage(Image->Next);
+    iCloseImage(Image->Next);
 
   Image->Next = NULL;
   if (Num == 0)  // Just gets rid of all the "next" images.
@@ -344,7 +344,7 @@ ILboolean iRegisterNumImages(ILimage *Image, ILuint Num) {
       Prev = Image->Next;
       while (Prev) {
         Next = Prev->Next;
-        ilCloseImage(Prev);
+        iCloseImage(Prev);
         Prev = Next;
       }
       return IL_FALSE;

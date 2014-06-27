@@ -76,53 +76,57 @@ ADD_TEST                ( ILUSharpen        ILtestILU         ${ILU_IMAGE} ilu_s
 ADD_TEST                ( ILUSwap           ILtestILU         ${ILU_IMAGE} ilu_swap.png   swap )
 ADD_TEST                ( ILUWave           ILtestILU         ${ILU_IMAGE} ilu_wave.png   wave )
 
+SET                     ( REF_CLR    ${CMAKE_SOURCE_DIR}/images/dougie.png )
+SET                     ( REF_BW     ${CMAKE_SOURCE_DIR}/images/dougie-bw.png )
+SET                     ( REF_ANI    ${CMAKE_SOURCE_DIR}/images/animated-ref.png )
+SET                     ( FMT_PFX    ${CMAKE_SOURCE_DIR}/images )
 
-ADD_TEST                ( FormatLoadBLP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.blp 600 400 1 0 )
-ADD_TEST                ( FormatLoadBMP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.bmp 600 400 1 0 )
-ADD_TEST                ( FormatLoadCUT     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.cut 600 400 1 0 )
-ADD_TEST                ( FormatLoadDCX     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.dcx 600 400 1 0 )
-ADD_TEST                ( FormatLoadDDS     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.dds 600 400 1 0 )
-ADD_TEST                ( FormatLoadDICOM   ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.dicom 600 400 1 0 )
+ADD_TEST                ( FormatLoadBLP     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.blp    600 400 1 0 )
+ADD_TEST                ( FormatLoadBMP     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.bmp    600 400 1 0 )
+ADD_TEST                ( FormatLoadCUT     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.cut    600 400 1 0 )
+ADD_TEST                ( FormatLoadDCX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dcx    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDICOM   ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dicom  600 400 1 0 )
 # DOOM
-ADD_TEST                ( FormatLoadDPX     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.dpx 600 400 1 0 )
-ADD_TEST                ( FormatLoadEXR     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.exr 600 400 1 0 )
-ADD_TEST                ( FormatLoadFITS    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.fits 600 400 3 0 ) # 3 monochrome slices
-ADD_TEST                ( FormatLoadFTX     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.ftx 600 400 1 0 )
-ADD_TEST                ( FormatLoadGIF     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.gif 600 400 1 0 )
-ADD_TEST                ( FormatLoadGIFAnim ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/animated.gif 256 256 1 99 )
-ADD_TEST                ( FormatLoadHDR     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.hdr 600 400 1 0 )
+ADD_TEST                ( FormatLoadDPX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dpx    600 400 1 0 )
+ADD_TEST                ( FormatLoadEXR     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.exr    600 400 1 0 )
+ADD_TEST                ( FormatLoadFITS    ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.fits   600 400 3 0 ) # 3 separate monochrome planes
+ADD_TEST                ( FormatLoadFTX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.ftx    600 400 1 0 )
+ADD_TEST                ( FormatLoadGIF     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.gif    600 400 1 0 )
+ADD_TEST                ( FormatLoadGIFAnim ILtestFormatLoad  ${REF_ANI} ${FMT_PFX}/animated.gif  256 256 1 99 ) # special resolution, 100 frames
+ADD_TEST                ( FormatLoadHDR     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.hdr    600 400 1 0 )
 # CHEAD
-ADD_TEST                ( FormatLoadICNS    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.icns 16 16 1 5 ) # 6 "frames"
-ADD_TEST                ( FormatLoadICON    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.ico 600 400 1 0 )
-ADD_TEST                ( FormatLoadIFF     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.iff 600 400 1 0 )
-ADD_TEST                ( FormatLoadILBM    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.lbm 600 400 1 0 )
-ADD_TEST                ( FormatLoadIWI     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.iwi 600 400 1 0 )
-ADD_TEST                ( FormatLoadJP2     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.jp2 600 400 1 0 )
-ADD_TEST                ( FormatLoadJPG     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.jpg 600 400 1 0 )
-ADD_TEST                ( FormatLoadLIF     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.lif 600 400 1 0 )
+ADD_TEST                ( FormatLoadICNS    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.icns   512 512 1 5 ) # special resolution, 6 "frames"
+ADD_TEST                ( FormatLoadICON    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.ico    600 400 1 0 )
+ADD_TEST                ( FormatLoadIFF     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.iff    600 400 1 0 )
+ADD_TEST                ( FormatLoadILBM    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.lbm    600 400 1 0 )
+ADD_TEST                ( FormatLoadIWI     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.iwi    600 400 1 0 )
+ADD_TEST                ( FormatLoadJP2     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.jp2    600 400 1 0 )
+ADD_TEST                ( FormatLoadJPG     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.jpg    600 400 1 0 )
+ADD_TEST                ( FormatLoadLIF     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.lif    600 400 1 0 )
 # MDL
-ADD_TEST                ( FormatLoadMNG     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.mng 600 400 1 0 )
+ADD_TEST                ( FormatLoadMNG     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.mng    600 400 1 0 )
 # MP3
-ADD_TEST                ( FormatLoadPCD     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pcd 768 512 1 0 ) # special resolution 
-ADD_TEST                ( FormatLoadPCX     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pcx 600 400 1 0 )
-ADD_TEST                ( FormatLoadPIC     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pic 600 400 1 0 )
-ADD_TEST                ( FormatLoadPIX     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pix 600 400 1 0 )
-ADD_TEST                ( FormatLoadPNG     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.png 600 400 1 0 )
-ADD_TEST                ( FormatLoadPNM     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pnm 600 400 1 0 )
-ADD_TEST                ( FormatLoadPSD     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.psd 600 400 1 0 )
-ADD_TEST                ( FormatLoadPSP     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.psp 600 400 1 0 )
-ADD_TEST                ( FormatLoadPXR     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.pxr 600 400 1 0 )
+ADD_TEST                ( FormatLoadPCD     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pcd    768 512 1 0 ) # special resolution 
+ADD_TEST                ( FormatLoadPCX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pcx    600 400 1 0 )
+ADD_TEST                ( FormatLoadPIC     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pic    600 400 1 0 )
+ADD_TEST                ( FormatLoadPIX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pix    600 400 1 0 )
+ADD_TEST                ( FormatLoadPNG     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.png    600 400 1 0 )
+ADD_TEST                ( FormatLoadPNM     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pnm    600 400 1 0 )
+ADD_TEST                ( FormatLoadPSD     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.psd    600 400 1 0 )
+ADD_TEST                ( FormatLoadPSP     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.psp    600 400 1 0 )
+ADD_TEST                ( FormatLoadPXR     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pxr    600 400 1 0 )
 # RAW
-ADD_TEST                ( FormatLoadROT     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.rot 600 400 1 0 )
-ADD_TEST                ( FormatLoadSGI     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.sgi 600 400 1 0 )
-ADD_TEST                ( FormatLoadSUN     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.im24 600 400 1 0 )
-ADD_TEST                ( FormatLoadTGA     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.tga 600 400 1 0 )
+ADD_TEST                ( FormatLoadROT     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.rot    600 400 1 0 )
+ADD_TEST                ( FormatLoadSGI     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.sgi    600 400 1 0 )
+ADD_TEST                ( FormatLoadSUN     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.im24   600 400 1 0 )
+ADD_TEST                ( FormatLoadTGA     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.tga    600 400 1 0 )
 # TEXTURE
-ADD_TEST                ( FormatLoadTIFF    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.tif 600 400 1 0 )
+ADD_TEST                ( FormatLoadTIFF    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.tif    600 400 1 0 )
 # TPL
 # UTX
 # VTF
 # WAL
-ADD_TEST                ( FormatLoadWBMP    ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.wbmp 600 400 1 0 )
+ADD_TEST                ( FormatLoadWBMP    ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.wbmp   600 400 1 0 )
 # WDP TODO
-ADD_TEST                ( FormatLoadXPM     ILtestFormatLoad  ${CMAKE_SOURCE_DIR}/images/dougie.xpm 600 400 1 0 )
+ADD_TEST                ( FormatLoadXPM     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.xpm    600 400 1 0 )

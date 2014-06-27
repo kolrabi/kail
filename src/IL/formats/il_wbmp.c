@@ -157,7 +157,7 @@ static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	} else {
@@ -180,7 +180,7 @@ static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	if (TempData != TempImage->Data)
 		ifree(TempData);
 
-	ilCloseImage(TempImage);
+	iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

@@ -205,7 +205,7 @@ static HBITMAP iConvertSliceToHBitmap(ILimage *ilutCurImage, HDC hDC, ILuint sli
 
   if (ilutCurImage != TempImage) {
     //ilSetCurImage(ilutCurImage);
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   }
 
   return hBitmap;
@@ -215,7 +215,7 @@ error:
   ilutCurImage->Data = DataBackup;
   ilutCurImage->Depth = DepthBackup;
   if (ilutCurImage != TempImage) {
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
   }
 
   if (hBitmap)
@@ -383,14 +383,14 @@ HBITMAP ILAPIENTRY ilutWinLoadImage(ILconst_string filename_, HDC hDC)
   // iBindImageTemp();
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, filename)) {
     ifree(filename);
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return 0;
   }
 
   Bitmap = iConvertSliceToHBitmap(Temp, hDC, 0);
 
   ifree(filename);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Bitmap;
 }
@@ -418,13 +418,13 @@ ILboolean ILAPIENTRY ilutWinSaveImage(ILstring filename_, HBITMAP Bitmap)
 
   if (!iSetHBitmap(Temp, Bitmap)) {
     ifree(filename);
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
   Saved = iSaveImage(Temp, filename);
   ifree(filename);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
 
   return Saved;
 }
@@ -656,12 +656,12 @@ ILboolean ILAPIENTRY ilutSetWinClipboard() {
 
   if (!OpenClipboard(NULL)) {
     if (TempImage != ilutCurImage)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
 
     iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
     ReleaseDC(hWnd, hDC); //added 20040604
     if (TempImage != ilutCurImage)
-      ilCloseImage(TempImage);
+      iCloseImage(TempImage);
 
     iUnlockImage(ilutCurImage);
     return IL_FALSE;
@@ -681,7 +681,7 @@ ILboolean ILAPIENTRY ilutSetWinClipboard() {
   //DeleteObject(Bitmap);  // Needed? No! Clipboard takes care of image.
 
   if (TempImage != ilutCurImage)
-    ilCloseImage(TempImage);
+    iCloseImage(TempImage);
 
   iUnlockImage(ilutCurImage);
   return IL_TRUE;
@@ -707,7 +707,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 
   if (ilutCurImage == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return IL_FALSE;
   }
 
@@ -716,7 +716,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 
     if (!OpenClipboard(hWnd)) {
       iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.
-      ilCloseImage(Temp);
+      iCloseImage(Temp);
       iUnlockImage(ilutCurImage);
       return IL_FALSE;
     }
@@ -724,7 +724,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
     hGlobal = GetClipboardData(CF_DIB);
     if (!hGlobal) {
       CloseClipboard();
-      ilCloseImage(Temp);
+      iCloseImage(Temp);
       iUnlockImage(ilutCurImage);
       return IL_FALSE;  // No error?
     }
@@ -759,18 +759,18 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
     iSetInputLump(Temp, data, BmpHeader->bfSize);
     if (iLoadFuncs2(Temp, IL_BMP)) {
       iCopyImage(ilutCurImage, Temp);
-      ilCloseImage(Temp);
+      iCloseImage(Temp);
       iUnlockImage(ilutCurImage);
       return IL_FALSE;
     } else {
-      ilCloseImage(Temp);
+      iCloseImage(Temp);
       iUnlockImage(ilutCurImage);
       return IL_FALSE;
     }
   }
 
   //no data in clipboard
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
   iUnlockImage(ilutCurImage);
   iSetError(ILUT_ILLEGAL_OPERATION);
   return IL_FALSE;

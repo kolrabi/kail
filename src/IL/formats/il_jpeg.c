@@ -305,7 +305,7 @@ term_destination (j_compress_ptr cinfo)
 
 
 GLOBAL(void)
-devil_jpeg_write_init(j_compress_ptr cinfo)
+devil_jpeg_write_init(j_compress_ptr cinfo, SIO *io)
 {
 	iwrite_ptr dest;
 
@@ -320,7 +320,7 @@ devil_jpeg_write_init(j_compress_ptr cinfo)
 	dest->pub.init_destination = init_destination;
 	dest->pub.empty_output_buffer = empty_output_buffer;
 	dest->pub.term_destination = term_destination;
-
+	dest->io = io;
 	return;
 }
 
@@ -359,7 +359,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -373,7 +373,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 	jpeg_create_compress(&JpegInfo);
 
 	//jpeg_stdio_dest(&JpegInfo, JpegFile);
-	devil_jpeg_write_init(&JpegInfo);
+	devil_jpeg_write_init(&JpegInfo, &TempImage->io);
 
 	JpegInfo.image_width = TempImage->Width;  // image width and height, in pixels
 	JpegInfo.image_height = TempImage->Height;
@@ -431,7 +431,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		ifree(TempData);
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }
@@ -625,7 +625,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -668,7 +668,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		Image.JPGFile = FileName;
 		if (ijlWrite(&Image, IJL_JFILE_WRITEWHOLEIMAGE) != IJL_OK) {
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
@@ -678,7 +678,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 		Image.JPGSizeBytes = Size;
 		if (ijlWrite(&Image, IJL_JBUFF_WRITEWHOLEIMAGE) != IJL_OK) {
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			iSetError(IL_LIB_JPEG_ERROR);
 			return IL_FALSE;
 		}
@@ -689,7 +689,7 @@ ILboolean iSaveJpegInternal(ILstring FileName, void *Lump, ILuint Size)
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		ifree(TempData);
 	if (Temp != image)
-		ilCloseImage(Temp);
+		iCloseImage(Temp);
 
 	return IL_TRUE;
 }
@@ -807,7 +807,7 @@ ILboolean ilSaveFromJpegStruct(ILimage* image, void *_JpegInfo)
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -834,7 +834,7 @@ ILboolean ilSaveFromJpegStruct(ILimage* image, void *_JpegInfo)
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		ifree(TempData);
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return (!jpgErrorOccured);
 #endif//IL_USE_IJL

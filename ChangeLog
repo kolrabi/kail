@@ -15,6 +15,8 @@
   * Added new API functions:
   	- ilAddAlpha();
 		- ilGetIntegerImage(ILuint Image, ILenum Mode);
+		- iluNormalize();
+    - iluSimilarity();
 	* A lot of bug fixes sprinkled everywhere over the code
 
 2014-05-08 Björn Ganster <mail@bjoern-ganster.de>, ResIL 1.8.2

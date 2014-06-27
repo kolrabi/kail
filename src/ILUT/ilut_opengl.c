@@ -346,7 +346,7 @@ ILboolean ILAPIENTRY ilutGLTexImage_(GLuint Level, GLuint Target, ILimage *Image
       ImageCopy->Data); 
 
   if (Image != ImageCopy)
-    ilCloseImage(ImageCopy);
+    iCloseImage(ImageCopy);
 
   return IL_TRUE;
 }
@@ -462,7 +462,7 @@ ILboolean ILAPIENTRY ilutGLBuildMipmaps()
             Image->Height, Image->Format, Image->Type, Image->Data);
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
  
   iUnlockImage(ilutCurImage); 
   return IL_TRUE;
@@ -519,7 +519,7 @@ ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILuint XOff, ILuint YOff)
       Image->Type, Image->Data);
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
   iUnlockImage(ilutCurImage);
   return IL_TRUE;
@@ -576,7 +576,7 @@ ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILuint XOff, ILuint YOff, ILui
       Image->Format, Image->Type, Image->Data);
 
   if (Image != ilutCurImage)
-    ilCloseImage(Image);
+    iCloseImage(Image);
 
   iUnlockImage(ilutCurImage);
   return IL_TRUE;
@@ -632,7 +632,7 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
     } else {
       Temp = iluScale_(Dest, DestW, DestH, 1, ILU_BILINEAR);
     }
-    ilCloseImage(Dest);
+    iCloseImage(Dest);
 
     if (!Temp) {
       return NULL;
@@ -700,7 +700,7 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
       Temp = iluScale_(Dest, DestW, DestH, 1, ILU_BILINEAR);
     }
 
-    ilCloseImage(Dest);
+    iCloseImage(Dest);
     
     if (!Temp) {
       return NULL;
@@ -737,12 +737,12 @@ GLuint ILAPIENTRY ilutGLLoadImage(ILstring FileName)
   iUnlockState();
 
   if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     return 0;
   }
 
   TexId = ilutGLBindTexImage_(Temp, &Settings);
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
   return TexId;
 }
 #endif//_WIN32_WCE
@@ -852,7 +852,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
 #endif
   }
 
-  ilCloseImage(Temp);
+  iCloseImage(Temp);
   return ReturnVal;
 }
 #endif//_WIN32_WCE

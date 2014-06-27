@@ -201,6 +201,7 @@ ILAPI ILboolean       ILAPIENTRY IL_DEPRECATED      (iluRotate3D(ILfloat x, ILfl
 
 #if defined ILU_VERSION_1_9_0 && defined IL_VARIANT_KAIL
 ILAPI ILboolean       ILAPIENTRY iluNormalize       (void);
+ILAPI ILfloat         ILAPIENTRY iluSimilarity      (ILuint Id);
 #endif
 
 #ifdef __cplusplus

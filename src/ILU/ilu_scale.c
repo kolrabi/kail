@@ -64,11 +64,11 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
           Temp = iluScale_(Image, Width, Image->Height, Image->Depth, Filter);
           if (Temp != NULL) {
             if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
-              ilCloseImage(Temp);
+              iCloseImage(Temp);
               return IL_FALSE;
             }
             Image->Origin = Origin;
-            ilCloseImage(Temp);
+            iCloseImage(Temp);
           }
         }
         else if (Image->Height > Height) // shrink height first
@@ -77,11 +77,11 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
           Temp = iluScale_(Image, Image->Width, Height, Image->Depth, Filter);
           if (Temp != NULL) {
             if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
-              ilCloseImage(Temp);
+              iCloseImage(Temp);
               return IL_FALSE;
             }
             Image->Origin = Origin;
-            ilCloseImage(Temp);
+            iCloseImage(Temp);
           }
         }
 
@@ -95,11 +95,11 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
   Temp = iluScale_(Image, Width, Height, Depth, Filter);
   if (Temp != NULL) {
     if (!iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data)) {
-      ilCloseImage(Temp);
+      iCloseImage(Temp);
       return IL_FALSE;
     }
     Image->Origin = Origin;
-    ilCloseImage(Temp);
+    iCloseImage(Temp);
     if (UsePal) {
       if (!iConvertImages(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE))
         return IL_FALSE;
@@ -129,15 +129,15 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
   // So we don't replicate this 3 times (one in each iluScalexD_() function.
   Scaled = (ILimage*)icalloc(1, sizeof(ILimage));
   if (ilCopyImageAttr(Scaled, ToScale) == IL_FALSE) {
-    ilCloseImage(Scaled);
+    iCloseImage(Scaled);
     if (ToScale != Image)
-      ilCloseImage(ToScale);
+      iCloseImage(ToScale);
     return NULL;
   }
   if (ilResizeImage(Scaled, Width, Height, Depth, ToScale->Bpp, ToScale->Bpc) == IL_FALSE) {
-    ilCloseImage(Scaled);
+    iCloseImage(Scaled);
     if (ToScale != Image)
-      ilCloseImage(ToScale);
+      iCloseImage(ToScale);
     return NULL;
   }
   
@@ -152,10 +152,13 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
   }
 
   if (Format == IL_COLOUR_INDEX) {
+    // TODO:
     //ilSetCurImage(Scaled);
     //ilConvertImage(IL_COLOUR_INDEX);
-    ilCloseImage(ToScale);
   }
+
+  if (ToScale != Image)
+    iCloseImage(ToScale);
 
   return Scaled;
 }

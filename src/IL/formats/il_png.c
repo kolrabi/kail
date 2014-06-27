@@ -576,7 +576,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 	ifree(RowPtr);
 
 	if (Temp != image)
-		ilCloseImage(Temp);
+		iCloseImage(Temp);
 	ilClosePal(TempPal);
 
 	return IL_TRUE;
@@ -585,7 +585,7 @@ error_label:
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 	ifree(RowPtr);
 	if (Temp != image)
-		ilCloseImage(Temp);
+		iCloseImage(Temp);
 	ilClosePal(TempPal);
 	return IL_FALSE;
 }

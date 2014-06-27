@@ -693,7 +693,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	} else {
@@ -785,7 +785,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	if (TempData != TempImage->Data)
 		ifree(TempData);
 	if (TempImage != BaseImage)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

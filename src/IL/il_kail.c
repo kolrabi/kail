@@ -115,14 +115,14 @@ ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height
     ifree(Image->Pal.Palette);
   }
 
-  ilCloseImage(Image->Mipmaps);
-  ilCloseImage(Image->Next);
-  ilCloseImage(Image->Faces);
-  ilCloseImage(Image->Layers);
+  iCloseImage(Image->Mipmaps); Image->Mipmaps  = NULL;
+  iCloseImage(Image->Next);    Image->Next     = NULL;
+  iCloseImage(Image->Faces);   Image->Faces    = NULL;
+  iCloseImage(Image->Layers);  Image->Layers   = NULL;
 
-  if (Image->Profile)  ifree(Image->Profile);
-  if (Image->DxtcData) ifree(Image->DxtcData);
-  if (Image->Data)   ifree(Image->Data);
+  if (Image->Profile)   { ifree(Image->Profile);  Image->Profile  = NULL; }
+  if (Image->DxtcData)  { ifree(Image->DxtcData); Image->DxtcData = NULL; }
+  if (Image->Data)      { ifree(Image->Data);     Image->Data     = NULL; }
 
   ////
 
@@ -856,19 +856,19 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
     Dest->Pal.Palette = NULL;
   }
   if (Dest->Faces) {
-    ilCloseImage(Dest->Faces);
+    iCloseImage(Dest->Faces);
     Dest->Faces = NULL;
   }
   if (Dest->Layers) {
-    ilCloseImage(Dest->Layers);
+    iCloseImage(Dest->Layers);
     Dest->Layers = NULL;
   }
   if (Dest->Mipmaps) {
-    ilCloseImage(Dest->Mipmaps);
+    iCloseImage(Dest->Mipmaps);
     Dest->Mipmaps = NULL;
   }
   if (Dest->Next) {
-    ilCloseImage(Dest->Next);
+    iCloseImage(Dest->Next);
     Dest->Next = NULL;
   }
   if (Dest->Profile) {

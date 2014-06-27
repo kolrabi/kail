@@ -676,7 +676,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 
 	// Destroy our temporary image if we used one.
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

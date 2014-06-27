@@ -605,7 +605,7 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 	ifree(Ig);
 	ifree(Ib);
 	ifree(Ir);
-	ilCloseImage(TempImage);
+	iCloseImage(TempImage);
 
 	NewImage = (ILimage*)icalloc(sizeof(ILimage), 1);
 	if (NewImage == NULL) {

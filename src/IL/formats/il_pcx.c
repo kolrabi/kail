@@ -512,7 +512,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
 			if (TempImage != image) {
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			}
 			return IL_FALSE;
 		}
@@ -571,7 +571,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 				if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 					ifree(TempData);
 				if (TempImage != image)
-					ilCloseImage(TempImage);
+					iCloseImage(TempImage);
 				return IL_FALSE;
 			}
 
@@ -590,7 +590,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		ifree(TempData);
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	return IL_TRUE;
 }

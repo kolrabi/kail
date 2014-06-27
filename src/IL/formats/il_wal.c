@@ -90,7 +90,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 	}
 
 	Image = CurImage;
-	ilCloseImage(Image->Mipmaps);
+	iCloseImage(Image->Mipmaps);
 	Image->Mipmaps = Mipmaps[0];
 	Mipmaps[0]->Mipmaps = Mipmaps[1];
 	Mipmaps[1]->Mipmaps = Mipmaps[2];
@@ -122,7 +122,7 @@ static ILboolean iLoadWalInternal(ILimage *Image)
 
 cleanup_error:
 	for (i = 0; i < 3; i++) {
-		ilCloseImage(Mipmaps[i]);
+		iCloseImage(Mipmaps[i]);
 	}
 	return IL_FALSE;
 }

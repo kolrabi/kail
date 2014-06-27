@@ -89,7 +89,7 @@ iSaveCHEADInternal(ILimage* image)
 	}
 
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	SIOputs(io, "};\n");
 

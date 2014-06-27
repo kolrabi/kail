@@ -96,6 +96,7 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
 ILboolean iRotate(ILimage *Image, ILfloat Angle);
 ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
 ILboolean iSetLanguage(ILenum Language);
+ILfloat   iSimilarity(ILimage * Image, ILimage * Original);
 ILboolean iWave(ILimage *Image, ILfloat Angle);
 
 #define imemclear(x,y) memset(x,0,y);

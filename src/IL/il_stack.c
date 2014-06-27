@@ -234,7 +234,7 @@ void iDeleteImages(ILsizei Num, const ILuint *Images) {
       }
       
       // Should *NOT* be NULL here!
-      ilCloseImage(ImageStack[Images[Index]]);
+      iCloseImage(ImageStack[Images[Index]]);
       ImageStack[Images[Index]] = NULL;
 
       // Add to head of list - works for empty and non-empty lists
@@ -270,10 +270,12 @@ ILboolean iIsImage(ILuint Image)
 
 
 //! Closes Image and frees all memory associated with it.
-ILAPI void ILAPIENTRY ilCloseImage(ILimage *Image)
+ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
 {
   if (Image == NULL)
     return;
+
+  iTrace("---- iCloseImageReal(%p)", Image);
 
   if (Image->Data != NULL) {
     ifree(Image->Data);
@@ -286,22 +288,22 @@ ILAPI void ILAPIENTRY ilCloseImage(ILimage *Image)
   }
 
   if (Image->Next != NULL) {
-    ilCloseImage(Image->Next);
+    iCloseImage(Image->Next);
     Image->Next = NULL;
   }
 
   if (Image->Faces != NULL) {
-    ilCloseImage(Image->Faces);
+    iCloseImage(Image->Faces);
     Image->Mipmaps = NULL;
   }
 
   if (Image->Mipmaps != NULL) {
-    ilCloseImage(Image->Mipmaps);
+    iCloseImage(Image->Mipmaps);
     Image->Mipmaps = NULL;
   }
 
   if (Image->Layers != NULL) {
-    ilCloseImage(Image->Layers);
+    iCloseImage(Image->Layers);
     Image->Layers = NULL;
   }
 
@@ -504,21 +506,21 @@ ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num) {
   {
     case IL_SUB_NEXT:
       if (Image->Next)
-        ilCloseImage(Image->Next);
+        iCloseImage(Image->Next);
       Image->Next = ilNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Next;
       break;
 
     case IL_SUB_MIPMAP:
       if (Image->Mipmaps)
-        ilCloseImage(Image->Mipmaps);
+        iCloseImage(Image->Mipmaps);
       Image->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Mipmaps;
       break;
 
     case IL_SUB_LAYER:
       if (Image->Layers)
-        ilCloseImage(Image->Layers);
+        iCloseImage(Image->Layers);
       Image->Layers = ilNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Layers;
       break;
@@ -649,7 +651,7 @@ void iShutDownIL()
   //for (i = 0; i < LastUsed; i++) {
   for (i = 0; i < StackSize; i++) {
     if (ImageStack[i] != NULL)
-      ilCloseImage(ImageStack[i]);
+      iCloseImage(ImageStack[i]);
   }
 
   if (ImageStack)

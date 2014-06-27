@@ -91,12 +91,12 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 			// So that we do not delete the original palette or data.
 			PalImage->Pal.Palette = NULL;
 			PalImage->Data = NULL;
-			ilCloseImage(PalImage);
+			iCloseImage(PalImage);
 			return NULL;
 		}
 
 		// Set TempImage->Data to NULL so that we can preserve it via NewData, or
-		//  else it would get wiped out by ilCloseImage.
+		//  else it would get wiped out by iCloseImage.
 		NewData = TempImage->Data;
 		TempImage->Data = NULL;
 		// So that we do not delete the original palette or data.
@@ -104,8 +104,8 @@ ILAPI void* ILAPIENTRY ilConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILen
 		PalImage->Data = NULL;
 
 		// Clean up here.
-		ilCloseImage(PalImage);
-		ilCloseImage(TempImage);
+		iCloseImage(PalImage);
+		iCloseImage(TempImage);
 		return NewData;
 	}
 	

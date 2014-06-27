@@ -926,7 +926,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT) {
 		TempData = iGetFlipped(TempImage);
 		if (TempData == NULL) {
-			ilCloseImage(TempImage);
+			iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -956,7 +956,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 		ifree(TempData);
 
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 
 	return IL_TRUE;

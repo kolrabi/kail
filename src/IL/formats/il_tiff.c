@@ -815,7 +815,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 				TempImage->Data = OldData;
 			}
 			if (TempImage != image)
-				ilCloseImage(TempImage);
+				iCloseImage(TempImage);
 			return IL_FALSE;
 		}
 	}
@@ -829,7 +829,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	}
 
 	if (TempImage != image)
-		ilCloseImage(TempImage);
+		iCloseImage(TempImage);
 
 	TIFFClose(File);
 
