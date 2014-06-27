@@ -62,6 +62,7 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 	ILuint		i, Size;
 	ILpal NewPal;
 	SIO *io = &Image->io;
+	ILuint BlockPos;
 
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -92,9 +93,21 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 		return IL_FALSE;
 	}
 
-	if (SIOread(io, TempPal, sizeof(ILushort), Size) != Size) {
-		ifree(TempPal);
-		return IL_FALSE;
+	BlockPos = SIOtell(io) % 512;
+
+	for (i = 0; i < Size / 3; i++) {
+		ILuint AfterPos = BlockPos + 3 * sizeof(ILushort);
+		if (AfterPos > 512) {
+			// tuple would cross 512 byte boundary, skip to beginning of next block
+			SIOseek(io, 512 - SIOtell(io)%512, IL_SEEK_CUR);
+			BlockPos = 0;
+		}
+
+		if (SIOread(io, TempPal + 3 * i, sizeof(ILushort), 3) != 3) {
+			ifree(TempPal);
+			return IL_FALSE;
+		}
+		BlockPos += 3 * sizeof(ILushort);
 	}
 
 	imemclear(&NewPal, sizeof(NewPal));
@@ -107,8 +120,10 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 		return IL_FALSE;
 	}
 
-	for (i = 0; i < NewPal.PalSize; i++) {
-		NewPal.Palette[i] = (ILubyte)TempPal[i];
+	for (i = 0; i < NewPal.PalSize/3; i++) {
+		NewPal.Palette[i*3+0] = (ILubyte)( (255 * TempPal[i*3+0]) / HaloHead.MaxRed );
+		NewPal.Palette[i*3+1] = (ILubyte)( (255 * TempPal[i*3+1]) / HaloHead.MaxGreen );
+		NewPal.Palette[i*3+2] = (ILubyte)( (255 * TempPal[i*3+2]) / HaloHead.MaxBlue );
 	}
 	ifree(TempPal);
 
