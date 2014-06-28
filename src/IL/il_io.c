@@ -217,6 +217,7 @@ ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
 
 ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName) {
   ILboolean bRet = IL_FALSE;
+  const ILformat *format;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -238,6 +239,12 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
     return IL_FALSE;
   }
 
+  format = iGetFormat(Type);
+  if (!format || !format->Save) {
+    iSetError(IL_FORMAT_NOT_SUPPORTED);
+    return IL_FALSE;
+  }
+
   if (iGetInt(IL_FILE_MODE) == IL_FALSE) {
     if (iFileExists(FileName)) {
       iSetError(IL_FILE_ALREADY_EXISTS);
@@ -255,6 +262,7 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
 ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName) {
   ILenum Type;
   ILboolean bRet = IL_FALSE;
+  const ILformat *format;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -279,6 +287,12 @@ ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName) {
 
   if (Type == IL_TYPE_UNKNOWN) {
     iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
+  format = iGetFormat(Type);
+  if (!format || !format->Save) {
+    iSetError(IL_FORMAT_NOT_SUPPORTED);
     return IL_FALSE;
   }
 

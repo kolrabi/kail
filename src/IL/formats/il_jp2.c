@@ -271,7 +271,7 @@ static jas_stream_ops_t jas_stream_devilops = {
 };
 
 static jas_stream_t *jas_stream_create(void);
-static void jas_stream_destroy(jas_stream_t *stream);
+// static void jas_stream_destroy(jas_stream_t *stream);
 static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf, int bufsize);
 
 
@@ -413,6 +413,7 @@ static jas_stream_t *jas_stream_create()
 	return stream;
 }
 
+#if 0
 static void jas_stream_destroy(jas_stream_t *stream)
 {
 	/* If the memory for the buffer was allocated with malloc, free
@@ -423,14 +424,13 @@ static void jas_stream_destroy(jas_stream_t *stream)
 	}
 	jas_free(stream);
 }
+#endif
 
 
 
-
-jas_stream_t *iJp2WriteStream()
+jas_stream_t *iJp2WriteStream(SIO *io)
 {
 	jas_stream_t *stream;
-	jas_stream_memobj_t *obj;
 
 	if (!(stream = jas_stream_create())) {
 		return 0;
@@ -447,15 +447,7 @@ jas_stream_t *iJp2WriteStream()
 	stream->ops_ = &jas_stream_devilops;
 
 	/* Allocate memory for the underlying memory stream object. */
-	if (!(obj = (jas_stream_memobj_t *) jas_malloc(sizeof(jas_stream_memobj_t)))) {
-		jas_stream_destroy(stream);
-		return 0;
-	}
-	stream->obj_ = (void *) obj;
-
-	/* Initialize a few important members of the memory stream object. */
-	obj->myalloc_ = 0;
-	obj->buf_ = 0;
+	stream->obj_ = (void *) io;
 	
 	return stream;
 }
@@ -647,7 +639,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
 	}
-	Stream = iJp2WriteStream();
+	Stream = iJp2WriteStream(&image->io);
 	if (Stream == NULL) {
 		jas_stream_close(Mem);
 		jas_image_destroy(Jp2Image);

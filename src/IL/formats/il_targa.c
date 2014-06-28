@@ -587,10 +587,20 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	// Write the extension area.
 	ExtOffset = SIOtell(io);
 	SaveLittleUShort(io, 495);	// Number of bytes in the extension area (TGA 2.0 spec)
-	SIOwrite(io, AuthName, 1, iCharStrLen(AuthName));
-	SIOpad(io, 41 - iCharStrLen(AuthName));
-	SIOwrite(io, AuthComment, 1, iCharStrLen(AuthComment));
-	SIOpad(io, 324 - iCharStrLen(AuthComment));
+
+	if (AuthName) {
+		SIOwrite(io, AuthName, 1, iCharStrLen(AuthName));
+		SIOpad(io, 41 - iCharStrLen(AuthName));
+	} else {
+		SIOpad(io, 41);
+	}
+
+	if (AuthComment) {
+		SIOwrite(io, AuthComment, 1, iCharStrLen(AuthComment));
+		SIOpad(io, 324 - iCharStrLen(AuthComment));
+	} else {
+		SIOpad(io, 324);
+	}
 	ifree(AuthName);
 	ifree(AuthComment);
 	
