@@ -111,7 +111,6 @@ SET                     ( LINK_LIBS
                           ${ZLIB_LIBRARIES}
                           ${JPEG_LIBRARIES}
                           ${TIFF_LIBRARIES}
-                          ${ALLEGRO_LIBRARIES}
                           ${OPENGL_LIBRARIES}
                           ${SDL_LIBRARIES}
                           ${X11_LIBRARIES}

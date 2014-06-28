@@ -3,9 +3,9 @@
 # The release we are building
 RELEASE="1.9.0"
 
-PACKAGE="kaIL"
+PACKAGE="kail"
 
-# Would create dependencies on dlls, also allegro collides with windows and opengl
+# Would create dependencies on dlls
 GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE -DILUT_USE_ALLEGRO=FALSE" 
 
 # Segfaults
@@ -24,9 +24,15 @@ fi
 # try guessing where msvc is
 if [ -z "$VC_PATH" ]; then
   VC_PATH="/C/Program Files (x86)/Microsoft Visual Studio 11.0"
+
+  if [ ! -d "$VC_PATH" ]; then
+   VC_PATH="/E/vs"
+  fi
 fi
 
 BASE_PATH=`pwd`
+
+export MAKEFLAGS="-j9"
 
 # add some msvc tools to the path
 PATH="$PATH:$VC_PATH/VC/bin:$VC_PATH/Common7/IDE"

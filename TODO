@@ -1,36 +1,37 @@
-
-1.9.0:
-
-  - More format tests
-
 2.0.0:
 
-  - SDL2 ILUT
 
   - Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
     changes behaviour of ilActive*(); 
-  
-  - Add ilClampMode():
-    - IL_WRAP
-    - IL_CLAMP
 
+  - iluHistogram(ILfloat *Values);
+
+  - ILU_SIMILARITY_MODE:
+    - ILU_SIMILARITY_PIXELS
+    - ILU_SIMILARITY_HISTOGRAM
+  
   - iluToneMap()
 
   - ilIsEnabled(IL_PNG) etc. to check for supported formats.
 
-  - JBIG
+  - JBIG, JBIG2
 
   - FLI/FLC?
 
-  - Gif save support
-
-  - Save support for all untested formats, so we can create files to check
-    with other programs, then use them as references for format tests.
-
 future:
 
+  - Gif save support
+  - Save support for all untested formats, so we can create files to check
+    with other programs, then use them as references for format tests.
+  - SDL2 ILUT
   - Set strings from loaded images?
   - Unify strings like IL_PNG_AUTHNAME_STRING, IL_TGA_AUTHNAME_STRING, IL_TIF_AUTHNAME_STRING ?
   - Load exif data
   - DirectX10/11 support for ILUT?
   - Make PSD loader handle layers correctly
+  - ILU selection (extension of region)
+    - iluCopySelection()
+  - some kind of iluMixSlices (eg. convert FITS to colour)?
+  - vector formats (svg)
+  - eps
+  - camera raw formats (dng, .nef, .crw, .orf ...)
