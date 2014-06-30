@@ -295,11 +295,12 @@ finish:
 static ILboolean 
 iIsValidDpx(SIO *io) {
 	ILuint magic;
+	ILuint Start = SIOtell(io);
+	ILint Read = SIOread(io, &magic, 1, sizeof(magic));
 
-	if (SIOread(io, &magic, 1, sizeof(magic)) != sizeof(magic))
-		return IL_FALSE;
+	SIOseek(io, Start, IL_SEEK_SET);
 
-	return magic == 0x53445058 || magic == 0x58504453;
+	return Read == sizeof(magic) && (magic == 0x53445058 || magic == 0x58504453);
 }
 
 ILconst_string iFormatExtsDPX[] = { 

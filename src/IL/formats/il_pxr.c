@@ -19,11 +19,12 @@
 #include "pack_push.h"
 typedef struct PIXHEAD
 {
-	ILubyte  	Signature[2];
-	ILubyte		Reserved1[413];
-	ILushort	Height;
-	ILushort	Width;
-	ILubyte		Reserved2[4];
+	ILubyte  	Signature[2];			// 0000
+	ILubyte		Reserved1[414];		// 0002
+	ILushort	Height;						// 01A0 
+	ILushort	Width;						// 01A2
+	ILushort	Height2;					// 01A4
+	ILushort	Width2;						// 01A6
 	ILubyte		Bpp;
 	//ILubyte		Reserved3[598];
 } PIXHEAD;
@@ -53,6 +54,8 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
 	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
 		return IL_FALSE;
 
+	Head.Reserved1[2] = 1;
+
 	UShort(&Head.Height);
 	UShort(&Head.Width);
 
@@ -79,6 +82,67 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
 	return IL_TRUE;
 }
 
+static ILboolean iSavePxrInternal(ILimage *Image) {
+	PIXHEAD		Head;
+	SIO *     io;
+	ILimage * TempImage = Image;
+	ILuint    Written;
+
+  if (Image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &Image->io;
+
+	if (Image->Type != IL_UNSIGNED_BYTE) {
+		TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
+	}
+
+	imemclear(&Head, sizeof(Head));
+	Head.Signature[0] = 0x80;
+	Head.Signature[1] = 0xe8;
+	Head.Height       = TempImage->Height;
+	Head.Width        = TempImage->Width;
+	Head.Height2      = TempImage->Height;
+	Head.Width2       = TempImage->Width;
+
+	switch (TempImage->Format) {
+		case IL_LUMINANCE: 	Head.Bpp = 0x08; break;
+		case IL_RGB: 				Head.Bpp = 0x0E; break;
+		case IL_RGBA: 			Head.Bpp = 0x0F; break;
+		default:
+			TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
+			Head.Bpp = 0x0E;
+	}
+
+	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
+		if (TempImage == Image) {
+			TempImage = ilCopyImage_(Image);
+		}
+		iFlipBuffer((ILubyte *)TempImage->Data, 1, TempImage->Bps, TempImage->Height);
+	}
+
+	UShort(&Head.Height);
+	UShort(&Head.Width);
+	UShort(&Head.Height2);
+	UShort(&Head.Width2);
+
+	Written = SIOwrite(io, &Head, 1, sizeof(Head));
+	if (Written != sizeof(Head)) {
+		iSetError(IL_FILE_WRITE_ERROR);
+		return IL_FALSE;
+	}
+	SIOpad(io, 1024 - Written);
+
+	SIOwrite(io, TempImage->Data, ilGetBppFormat(TempImage->Format), Head.Width * Head.Height);
+
+	if (TempImage != Image)
+		iCloseImage(TempImage);
+
+	return IL_TRUE;
+}
+
 ILconst_string iFormatExtsPXR[] = { 
 	IL_TEXT("pxr"), 
 	NULL 
@@ -87,7 +151,7 @@ ILconst_string iFormatExtsPXR[] = {
 ILformat iFormatPXR = { 
 	/* .Validate = */ iIsValidPxr, 
 	/* .Load     = */ iLoadPxrInternal, 
-	/* .Save     = */ NULL, 
+	/* .Save     = */ iSavePxrInternal, 
 	/* .Exts     = */ iFormatExtsPXR
 };
 
