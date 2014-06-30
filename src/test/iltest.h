@@ -4,7 +4,7 @@
 #include <IL/devil_internal_exports.h>
 #include "IL/il_endian.h"
 #include <IL/ilu.h>
-#include <IL/ilut.h>
+// #include <IL/ilut.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +35,9 @@
   exit(1);  \
 }
 
+#define RUN_TEST(n) if (!strcmp(*argv, #n)) test_##n(); else
+#define TEST(n) static void test_##n()
+
 static inline void charToILchar(const char *in, ILchar *out, size_t len) {
 #ifdef _UNICODE
   mbstowcs(out, in, len);
@@ -48,6 +51,8 @@ static inline ILboolean testLoadImage(const char *file_, ILuint image) {
 
   charToILchar(file_, file, 1024);
 
+  fprintf(stderr, "loading %s\n", file_);
+
   ilBindImage(image);
   return ilLoad(IL_TYPE_UNKNOWN, file);
 }
@@ -56,6 +61,8 @@ static inline ILboolean testSaveImage(const char *file_, ILuint image) {
   ILchar    file[1024];
 
   charToILchar(file_, file, 1024);
+
+  fprintf(stderr, "saving  %s\n", file_);
 
   ilBindImage(image);
   return ilSaveImage(file);

@@ -1,35 +1,22 @@
-#include <IL/devil_internal_exports.h>
-#include "IL/il_endian.h"
-#include <IL/ilu.h>
-
-#include <stdlib.h>
-#include <string.h>
-
-#define CHECK(x) if (!(x)) { fprintf(stderr, "FAILED in line %d: %s\n", __LINE__, #x); return 1; }
-#define CHECK_EQ(x, y) if ((x)!=(y)) { fprintf(stderr, "FAILED in line %d: %s (%d) == %s (%d)\n", __LINE__, #x, x, #y, y); return 1; }
+#include "iltest.h"
 
 static ILuint image;
 
 static void load(const char *file_) {
-#ifdef _UNICODE
-  wchar_t file[1024];
-  mbstowcs(file, file_, sizeof(file)/sizeof(wchar_t));
-#else
-  const char *file = file_;
-#endif
+  ILchar file[1024];
+  charToILchar(file_, file, 1024);
 
   image = iluLoadImage(file);  
+  CHECK(image != 0);
+
   fprintf(stderr, "image: %u\n", image);
+  
   ilBindImage(image);
 }
 
 static void save(const char *file_) {
-#ifdef _UNICODE
-  wchar_t file[1024];
-  mbstowcs(file, file_, sizeof(file)/sizeof(wchar_t));
-#else
-  const char *file = file_;
-#endif
+  ILchar file[1024];
+  charToILchar(file_, file, 1024);
 
   ilBindImage(image);
   ilSetInteger(IL_FILE_MODE, IL_TRUE);
@@ -37,9 +24,7 @@ static void save(const char *file_) {
 }
 
 int main(int argc, char **argv) {
-  ILenum error;
-
-  // test in out filter
+  // syntax: ILtestILU <in> <out> <filter>
   if (argc < 3) {
     return -1;
   }
@@ -156,8 +141,7 @@ int main(int argc, char **argv) {
     CHECK(0);
   }
 
-  error = ilGetError();
-  CHECK_EQ(error, 0);
+  CHECK_ERROR();
 
   save(argv[2]);
  

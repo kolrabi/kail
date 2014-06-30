@@ -1,36 +1,12 @@
-#include <IL/devil_internal_exports.h>
-#include "IL/il_endian.h"
-#include "IL/il_internal.h"
-
-#include <stdlib.h>
-#include <string.h>
-
-#define TEST(n) if (!strcmp(*argv, #n)) result = test_##n(argv+1); else
-#define CHECK(x) if (!(x)) { fprintf(stderr, "FAILED in line %d: %s\n", __LINE__, #x); return 1; }
-#define CHECK_EQ(x, y) if ((x)!=(y)) { fprintf(stderr, "FAILED in line %d: %s (%d) == %s (%d)\n", __LINE__, #x, x, #y, y); return 1; }
+#include "iltest.h"
 
 static ILuint image;
+static ILchar fileName[1024];
+static const char *data;
 
-static int test_open_read(char **argv) {
-  ILimage *ilimage;
+void checkRead(ILimage *ilimage) {
   ILint res;
   ILuint pos;
-#ifdef _UNICODE
-  wchar_t file[1024];
-  mbstowcs(file, *argv, sizeof(file)/sizeof(wchar_t));
-#else
-  const char *file = *argv;
-#endif
-
-  ilBindImage(image);
-  ilimage = iLockCurImage();
-
-  printf("!!! %p\n", ilimage);
-
-  CHECK(ilimage != NULL);
-  CHECK(ilimage->io.openReadOnly != NULL);
-
-  SIOopenRO(&ilimage->io, file);
 
   CHECK(ilimage->io.handle != NULL);
 
@@ -77,27 +53,53 @@ static int test_open_read(char **argv) {
   CHECK_EQ( SIOeof(&ilimage->io), IL_TRUE );
 
   SIOclose(&ilimage->io);
+}
 
-  return 0;
+TEST(open_read) {
+  ILimage *ilimage;
+  ilBindImage(image);
+  ilimage = iLockCurImage();
+
+  CHECK(ilimage != NULL);
+  CHECK(ilimage->io.openReadOnly != NULL);
+
+  SIOopenRO(&ilimage->io, fileName);
+
+  checkRead(ilimage);
+}
+
+TEST(open_read_lump) {
+  ILimage *ilimage;
+  ilBindImage(image);
+  ilimage = iLockCurImage();
+
+  CHECK(ilimage != NULL);
+  iSetInputLump(ilimage, data, strlen(data));
+  CHECK_EQ(ilimage->io.lumpSize, 11);
+
+  checkRead(ilimage);
 }
 
 int main(int argc, char **argv) {
-  int result = 1;
-
-  (void)argc;
-  argv++;
-
-  if (!*argv) return -1;
+  if (argc != 3) {
+    return 1;
+  }
 
   ilInit();
-  ilGenImages(1, &image);
+  iluInit();
 
-  TEST(open_read)
-  // TEST(open_read_lump)
+  ilGenImages(1, &image);
+  charToILchar(argv[2], fileName, 1024);
+  data = argv[2];
+
+  argv++;
+
+  RUN_TEST(open_read)
+  RUN_TEST(open_read_lump)
     fprintf(stderr, "unknown test %s\n", *argv);
 
   ilDeleteImages(1, &image);
   ilShutDown();
 
-  return result;
+  return 0;
 }
