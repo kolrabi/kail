@@ -1,4 +1,4 @@
-2014-??-?? Björn Paetzel <kolrabi@kolrabi.de>, KaIL 1.9.0
+2014-06-29 Björn Paetzel <kolrabi@kolrabi.de>, KaIL 1.9.0
   * Moved build system to CMake
   * Converted several files back to c
   * Rewritten GIF decoder
