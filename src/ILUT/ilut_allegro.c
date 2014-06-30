@@ -14,7 +14,7 @@
 
 #ifdef ILUT_USE_ALLEGRO
 #include "ilut_allegro.h"
-#include "ilut_internal.h" 
+//#include "ilut_internal.h" 
 
 BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
   BITMAP *Bitmap;

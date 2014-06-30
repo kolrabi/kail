@@ -10,19 +10,15 @@
 //
 //-----------------------------------------------------------------------------
 
-// xxxxAllegro.h has to be included before il/il.h!xxx
-//#ifdef ALLEGRO_VERSION  // Check to make sure Allegro is present
 #ifdef ILUT_USE_ALLEGRO
 
 #ifndef ILUT_ALLEG_H
 #define ILUT_ALLEG_H
 
+#include <IL/ilut.h>
+#include <IL/devil_internal_exports.h>
+
 #include <allegro.h>
-#ifdef ILUT_USE_WIN32
-#include <winalleg.h>
-#endif
 
 #endif//ILUT_ALLEG_H
 #endif//ILUT_USE_ALLEGRO
-//#endif//ALLEGRO_VERSION
-

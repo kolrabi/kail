@@ -1,10 +1,10 @@
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
-PROJECT                 ( ILUT C CXX )
+PROJECT                 ( ILUT C )
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 SET                     ( SOURCES
 
-                          ilut_allegro.cc
+                          ilut_allegro.c
                           ilut_directx.c
                           ilut_directx9.c
                           ilut_internal.c
