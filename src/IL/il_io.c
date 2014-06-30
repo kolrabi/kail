@@ -171,23 +171,27 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
           ifree(palFN);
         }
       }
-    }
+    } 
 
     return bRet;
-  } else
+  } else {
+    iSetError(IL_COULD_NOT_OPEN_FILE);
     return IL_FALSE;
+  }
 }
 
 ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
   const ILformat *format = iGetFormat(type);
   ILboolean bRet = IL_FALSE;
 
-  if (type == IL_TYPE_UNKNOWN || !format) {
+  if (type == IL_TYPE_UNKNOWN) {
     iSetError(IL_INVALID_ENUM);
   } else if (format) {
     bRet = format->Load != NULL && 
            format->Load(image) && 
            iFixImages(image);
+  } else {
+    iSetError(IL_FORMAT_NOT_SUPPORTED);
   }
 
   if (!bRet && iGetInt(IL_DEFAULT_ON_FAIL)) {
@@ -203,14 +207,15 @@ ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type) {
 
   if (format) {
     return format->Save != NULL && format->Save(image);
-  }
-
-  iSetError(IL_INVALID_ENUM);
+  } else {
 
   // Try registered procedures
   // @todo: must be ported to use Image->io
   /*if (iRegisterSave(FileName))
     return IL_TRUE;*/
+
+    iSetError(IL_FORMAT_NOT_SUPPORTED);
+  }
 
   return bRet;
 }
@@ -255,6 +260,8 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
   if (SIOopenWR(&Image->io, FileName)) {
     bRet = iSaveFuncs2(Image, Type);
     SIOclose(&Image->io);
+  } else {
+    iSetError(IL_COULD_NOT_OPEN_FILE);
   }
   return bRet;
 }
@@ -306,6 +313,8 @@ ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName) {
   if (SIOopenWR(&Image->io, FileName)) {
     bRet = iSaveFuncs2(Image, Type);
     SIOclose(&Image->io);
+  } else {
+    iSetError(IL_COULD_NOT_OPEN_FILE);
   }
   return bRet;
 }

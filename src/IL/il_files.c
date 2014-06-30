@@ -180,13 +180,18 @@ void ILAPIENTRY iSetInputFile(ILimage *image, ILHANDLE File) {
 }
 
 void iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size) {
+  io->openWrite     = NULL;         // prevent use of ilSaveFuncs (would use wrong io->write)
+  io->openReadOnly  = NULL;         // prevent use of ilLoadFuncs (would use wrong io->read)
+  io->close         = NULL;         // don't do anything to io->handle, it is user provided
   io->eof         = iEofLump;
   io->getchar     = iGetcLump;
+  io->putchar     = iPutcLump;         
   io->read        = iReadLump;
+  io->write       = iWriteLump;
   io->seek        = iSeekLump;
   io->tell        = iTellLump;
   io->lump        = Lump;
-  io->lumpPos     = 0;
+  io->lumpPos     = 0; 
   io->lumpSize    = Size;
   io->WriteFileStart  = 
   io->ReadFileStart   = 0;
@@ -240,13 +245,19 @@ void iSetOutputFake(ILimage *image) {
       }
     }
 
-    image->io.putchar = iSizePutc;
-    image->io.seek = iSizeSeek;
-    image->io.tell = iSizeTell;
-    image->io.write = iSizeWrite;
-    image->io.handle = (ILHANDLE)&image->io;
-    image->io.lumpSize = 0;
-    image->io.lumpPos = 0;
+    image->io.openWrite   = NULL;
+    image->io.openReadOnly = NULL;
+    image->io.close       = NULL;
+    image->io.getchar     = NULL;
+    image->io.read        = NULL;
+
+    image->io.putchar     = iSizePutc;
+    image->io.seek        = iSizeSeek;
+    image->io.tell        = iSizeTell;
+    image->io.write       = iSizeWrite;
+    image->io.handle      = (ILHANDLE)&image->io;
+    image->io.lumpSize    = 0;
+    image->io.lumpPos     = 0;
     image->io.WriteFileStart  = 0;
   }
 }
@@ -268,13 +279,18 @@ void ILAPIENTRY iSetOutputLump(ILimage *image, void *Lump, ILuint Size)
     }
   }
 
-  image->io.putchar  = iPutcLump;
-  image->io.seek = iSeekLump;
-  image->io.tell = iTellLump;
-  image->io.write = iWriteLump;
-  image->io.lump = Lump;
-  image->io.lumpPos = 0;
-  image->io.lumpSize = Size;
+  image->io.openWrite   = NULL;
+  image->io.openReadOnly    = NULL;
+  image->io.close       = NULL;
+  image->io.getchar     = iGetcLump;
+  image->io.putchar     = iPutcLump;
+  image->io.seek        = iSeekLump;
+  image->io.tell        = iTellLump;
+  image->io.write       = iWriteLump;
+  image->io.read        = iReadLump;
+  image->io.lump        = Lump;
+  image->io.lumpPos     = 0;
+  image->io.lumpSize    = Size;
   image->io.WriteFileStart  = 0;
   image->io.handle = (ILHANDLE)&image->io;
 }
@@ -304,7 +320,6 @@ ILint ILAPIENTRY iGetcLump(ILHANDLE h)
   SIO *io = (SIO*)h;
   if (io->lumpSize > 0) {
     if (io->lumpPos + 1 > io->lumpSize) {
-      io->lumpPos--;
       iSetError(IL_FILE_READ_ERROR);
       return IL_EOF;
     }

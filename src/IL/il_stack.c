@@ -90,14 +90,10 @@ IL_TLS_DATA * iGetTLSData() {
 
 static IL_IMAGE_SELECTION *iGetSelection() {
   IL_TLS_DATA *iData = iGetTLSData();
-  iTrace("---- Returning selection %u %u %u %u %u %p", 
-    iData->CurSel.CurName, iData->CurSel.CurFrame, iData->CurSel.CurFace, 
-    iData->CurSel.CurLayer, iData->CurSel.CurMipmap, &iData->CurSel);
   return &iData->CurSel;
 }
 
 static void iSetSelection(ILuint Image, ILuint Frame, ILuint Face, ILuint Layer, ILuint Mipmap) {
-  iTrace("---- Selecting %u %u %u %u %u %p", Image, Frame, Face, Layer, Mipmap, iGetSelection());
   iGetSelection()->CurName    = Image;
   iGetSelection()->CurFrame   = Frame;
   iGetSelection()->CurFace    = Face;
@@ -274,8 +270,6 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
 {
   if (Image == NULL)
     return;
-
-  iTrace("---- iCloseImageReal(%p)", Image);
 
   if (Image->Data != NULL) {
     ifree(Image->Data);
@@ -613,7 +607,6 @@ void iInitIL()
   iStateMutex = CreateMutex(NULL, FALSE, NULL);
   iTlsKey = TlsAlloc();
   #endif
-  iTrace("---- IL TLS key: %08x", iTlsKey);
   
   iSetError(IL_NO_ERROR);
   ilDefaultStates();      // Set states to their defaults.
@@ -705,21 +698,16 @@ static void iBindImageTemp() {
 
 ILAPI void ILAPIENTRY iLockState() {
 #if IL_THREAD_SAFE_PTHREAD
-  iTrace("---- Locking state");
   pthread_mutex_lock(&iStateMutex);
-  iTrace("---- Locked state");
 #elif IL_THREAD_SAFE_WIN32
   WaitForSingleObject(iStateMutex, INFINITE);
-  iTrace("---- Locked state");
 #endif
 }
 
 ILAPI void ILAPIENTRY iUnlockState() {
 #if IL_THREAD_SAFE_PTHREAD
-  iTrace("---- Unlocking state");
   pthread_mutex_unlock(&iStateMutex);
 #elif IL_THREAD_SAFE_WIN32
-  iTrace("---- Unlocking state");
   ReleaseMutex(iStateMutex);
 #endif
 } 
@@ -729,8 +717,6 @@ ILAPI ILimage * ILAPIENTRY iLockCurImage() {
   if (!Image) {
     return NULL;
   }
-
-  iTrace("---- Locking current image %p", Image);
 
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
@@ -746,8 +732,6 @@ ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
     return NULL;
   }
 
-  iTrace("---- Locking image %p", Image);
-
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_lock(&Image->Mutex);
 #elif IL_THREAD_SAFE_WIN32
@@ -759,8 +743,6 @@ ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
 
 ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
   if (!Image) return;
-
-  iTrace("---- Unlocking image %p", Image);
 
 #if IL_THREAD_SAFE_PTHREAD
   pthread_mutex_unlock(&Image->Mutex);
