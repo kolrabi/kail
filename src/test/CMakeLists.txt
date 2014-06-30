@@ -12,23 +12,19 @@ ELSE                    ()
   SET                   ( ILLIB         IL )
 ENDIF                   ()
 
-ADD_EXECUTABLE          ( ILtestMemory      iltest-memory.c )
-TARGET_LINK_LIBRARIES   ( ILtestMemory      ${ILLIB} )
+ADD_EXECUTABLE          ( ILtestFormatLoad  iltest-format-load.c   )
+ADD_EXECUTABLE          ( ILtestFormatSave  iltest-format-save.c   )
+ADD_EXECUTABLE          ( ILtestILU         iltest-ilu.c           )
+ADD_EXECUTABLE          ( ILtestILUError    iltest-ilu_error.c     )
+ADD_EXECUTABLE          ( ILtestIO          iltest-io.c            )
+ADD_EXECUTABLE          ( ILtestMemory      iltest-memory.c        )
 
-ADD_EXECUTABLE          ( ILtestIO          iltest-io.c )
-TARGET_LINK_LIBRARIES   ( ILtestIO          ${ILLIB} )
-
-ADD_EXECUTABLE          ( ILtestFormatLoad  iltest-format-load.c )
 TARGET_LINK_LIBRARIES   ( ILtestFormatLoad  ${ILLIB} ILU )
-
-ADD_EXECUTABLE          ( ILtestFormatSave  iltest-format-save.c )
 TARGET_LINK_LIBRARIES   ( ILtestFormatSave  ${ILLIB} ILU )
-
-ADD_EXECUTABLE          ( ILtestILU         iltest-ilu.c )
 TARGET_LINK_LIBRARIES   ( ILtestILU         ${ILLIB} ILU )
-
-ADD_EXECUTABLE          ( ILtestILUError     iltest-ilu_error.c )
-TARGET_LINK_LIBRARIES   ( ILtestILUError     ${ILLIB} ILU )
+TARGET_LINK_LIBRARIES   ( ILtestILUError    ${ILLIB} ILU )
+TARGET_LINK_LIBRARIES   ( ILtestIO          ${ILLIB} ILU )
+TARGET_LINK_LIBRARIES   ( ILtestMemory      ${ILLIB} ILU )
 
 ADD_TEST                ( MemoryDefault     ILtestMemory      default_alloc )
 ADD_TEST                ( MemoryCustom      ILtestMemory      custom_alloc  )
@@ -38,7 +34,7 @@ ADD_TEST                ( MemoryEndian      ILtestMemory      endian        )
 ADD_TEST                ( ILUErrorStrings   ILtestILUError                  )
 
 ADD_TEST                ( IOOpenFile        ILtestIO          open_read ${CMAKE_CURRENT_SOURCE_DIR}/TestFile.txt )
-# ADD_TEST                ( IOOpenLump        ILtestIO          open_read_lump ABCDefghijk )
+ADD_TEST                ( IOOpenLump        ILtestIO          open_read_lump ABCDefghijk )
 
 SET                     ( ILU_IMAGE ${CMAKE_SOURCE_DIR}/images/dougie.png )
 ADD_TEST                ( ILUAlienify       ILtestILU         ${ILU_IMAGE} ilu_alienify.png alienify )
