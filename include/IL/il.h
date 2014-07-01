@@ -513,6 +513,11 @@ enum {
 #define IL_IMAGE_ORIGIN          0x0DFE
 #define IL_IMAGE_CHANNELS        0x0DFF
 
+// kaIL 1.10.0
+#define IL_IMAGE_SELECTION_MODE     0x0650
+#define IL_RELATIVE                 0x0651
+#define IL_ABSOLUTE                 0x0652
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // IO section

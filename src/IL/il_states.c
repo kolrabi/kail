@@ -90,6 +90,8 @@ void ilDefaultStates() {
   ilStates[ilCurrentPos].ilUseNVidiaDXT = IL_FALSE;
   ilStates[ilCurrentPos].ilUseSquishDXT = IL_FALSE;
 
+  ilStates[ilCurrentPos].ilImageSelectionMode = IL_RELATIVE;
+
   StateStruct->ilHints.MemVsSpeedHint = IL_FASTEST;
   StateStruct->ilHints.CompressHint   = IL_USE_COMPRESSION;
 
@@ -575,6 +577,8 @@ ILint iGetInteger(ILenum Mode) {
     case IL_SQUISH_COMPRESS:
       return ilStates[ilCurrentPos].ilUseSquishDXT;
 
+    case IL_IMAGE_SELECTION_MODE:
+      return ilStates[ilCurrentPos].ilImageSelectionMode;
   }
 
   return iGetIntegerImage(CurImage, Mode);
@@ -768,7 +772,7 @@ void iPushAttrib(ILuint Bits) {
     ilStates[ilCurrentPos].ilCHeader = iStrDup(ilStates[ilCurrentPos-1].ilCHeader);
   }
 
-  return;
+  ilStates[ilCurrentPos].ilImageSelectionMode = ilStates[ilCurrentPos-1].ilImageSelectionMode;
 }
 
 
@@ -1089,6 +1093,14 @@ void iSetInteger(ILimage *CurImage , ILenum Mode, ILint Param) {
     case IL_FILE_OVERWRITE: // deprecated: unused, IL_FILE_MODE is used instead
       ilStates[ilCurrentPos].ilOverWriteFiles = !!Param;
       return;
+
+    case IL_IMAGE_SELECTION_MODE:
+      if (Param == IL_RELATIVE || Param == IL_ABSOLUTE) {
+        ilStates[ilCurrentPos].ilImageSelectionMode = Param;
+        return;
+      }
+      break;
+
 
     default:
       iSetError(IL_INVALID_ENUM);

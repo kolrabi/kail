@@ -1,3 +1,7 @@
+2014-??-?? Björn Paetzel <kolrabi@kolrabi.de>, kaIL ?
+  * Added IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOLUTE ), 
+    changes behaviour of ilActive*(); 
+
 2014-06-29 Björn Paetzel <kolrabi@kolrabi.de>, KaIL 1.9.0
   * Moved build system to CMake
   * Converted several files back to c

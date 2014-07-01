@@ -114,7 +114,9 @@ typedef struct IL_STATES
   ILchar*   ilTifDocumentName;
   ILchar*   ilTifAuthName;
   ILchar*   ilCHeader;
-  
+
+  // image selection
+  ILenum    ilImageSelectionMode;
 } IL_STATES;
 
 typedef struct IL_HINTS
@@ -123,7 +125,6 @@ typedef struct IL_HINTS
   ILenum    MemVsSpeedHint;
   // Compression hints
   ILenum    CompressHint;
-
 } IL_HINTS;
 
 void iKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);

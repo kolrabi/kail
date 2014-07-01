@@ -362,7 +362,10 @@ ILboolean iActiveMipmap(ILuint Number) {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
   ILimage *Image;
 
-  CurSel.CurMipmap += Number; // FIXME: this is for compatibility
+  if (iGetInt(IL_IMAGE_SELECTION_MODE) == IL_ABSOLUTE)
+    CurSel.CurMipmap = Number;
+  else
+    CurSel.CurMipmap += Number; // FIXME: this is for compatibility
   
   Image = iGetSelectedImage(&CurSel);
   if (!Image) {
@@ -410,8 +413,12 @@ ILboolean iActiveImage(ILuint Number)
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
   ILimage *Image;
 
-  CurSel.CurFrame += Number; // FIXME: this is for compatibility
-  
+  if (iGetInt(IL_IMAGE_SELECTION_MODE) == IL_ABSOLUTE)
+    CurSel.CurFrame = Number;
+  else    
+    CurSel.CurFrame += Number; // this is for compatibility
+ 
+
   Image = iGetSelectedImage(&CurSel);
   if (!Image) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -453,7 +460,10 @@ ILboolean iActiveFace(ILuint Number) {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
   ILimage *Image;
 
-  CurSel.CurFace += Number; // FIXME: this is for compatibility
+  if (iGetInt(IL_IMAGE_SELECTION_MODE) == IL_ABSOLUTE)
+    CurSel.CurFace = Number;
+  else    
+    CurSel.CurFace += Number; // this is for compatibility
   
   Image = iGetSelectedImage(&CurSel);
   if (!Image) {
@@ -471,7 +481,10 @@ ILboolean iActiveLayer(ILuint Number)
   IL_IMAGE_SELECTION CurSel = *iGetSelection();
   ILimage *Image;
 
-  CurSel.CurLayer += Number; // FIXME: this is for compatibility
+  if (iGetInt(IL_IMAGE_SELECTION_MODE) == IL_ABSOLUTE)
+    CurSel.CurLayer = Number;
+  else    
+    CurSel.CurLayer += Number; // this is for compatibility
   
   Image = iGetSelectedImage(&CurSel);
   if (!Image) {

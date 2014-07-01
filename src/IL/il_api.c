@@ -69,7 +69,8 @@
 
 /**
  * Sets the current face if the currently bound image is a cubemap.
- * @note The @a Number is the number of sub images down the chain, NOT the
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @a Number is the number of sub images down the chain, NOT the
  * absolute face index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
  */
@@ -80,7 +81,8 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
 
 /**
  * Sets the current animation frame.
- * @note The @a Number is the number of sub images down the chain, NOT the
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @a Number is the number of sub images down the chain, NOT the
  * absolute frame index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
  */
@@ -91,7 +93,8 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number) {
 
 /**
  * Sets the current image layer.
- * @note The @a Number is the number of sub images down the chain, NOT the
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @a Number is the number of sub images down the chain, NOT the
  * absolute layer index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
  */
@@ -102,7 +105,8 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number) {
 
 /**
  * Sets the current mipmap level.
- * @note The @a Number is the number of sub images down the chain, NOT the
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @a Number is the number of sub images down the chain, NOT the
  * absolute mipmap level. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
  */
@@ -110,6 +114,7 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number) {
   // image selection is thread local, no lock necessary
   return iActiveMipmap(Number);
 }
+
 /**
  * Adds an opaque alpha channel to the currently bound image. 
  * If IL_USE_KEY_COLOUR is enabled, the colour set with ilKeyColour will 

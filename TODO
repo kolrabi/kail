@@ -1,10 +1,6 @@
-2.0.0:
+1.10.0:
 
-
-  - Add IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOULTE ), 
-    changes behaviour of ilActive*(); 
-
-  - iluHistogram(ILfloat *Values);
+  - iluHistogram(ILfloat *Values, ILuint len);
 
   - ILU_SIMILARITY_MODE:
     - ILU_SIMILARITY_PIXELS
@@ -14,9 +10,11 @@
 
   - ilIsEnabled(IL_PNG) etc. to check for supported formats.
 
+  - WebP
   - JBIG, JBIG2
-
   - FLI/FLC?
+  - select file format based on content for files with extensions that are
+    shared among formats (eg. .iff, .pal)
 
 future:
 
@@ -35,3 +33,4 @@ future:
   - vector formats (svg)
   - eps
   - camera raw formats (dng, .nef, .crw, .orf ...)
+  - support n-dimensional images (eg. for fits)
