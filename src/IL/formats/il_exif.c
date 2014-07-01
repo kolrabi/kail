@@ -48,7 +48,10 @@ ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum IFD, ILb
 
   SIOseek(io, Offset + Start, IL_SEEK_SET);
 
-  if (SIOread(io, &Num, 1, 2) != 2) return 0;
+  if (SIOread(io, &Num, 1, 2) != 2) {
+    iTrace("**** could not read dir entry num @%08x", Offset + Start);
+    return 0;
+  }
   if (BigEndian) {
     BigUShort(&Num);
   } else {
@@ -63,11 +66,8 @@ ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum IFD, ILb
 
     Size = iExifGetEntrySize(&Entry);
 
-    if (Size <= 4) {
-      Entry.Offset = SIOtell(io) - Start - 4;
-    }
-
     if (Entry.Tag == IL_TIFF_IFD_EXIF || Entry.Tag == IL_TIFF_IFD_GPS || Entry.Tag == IL_TIFF_IFD_INTEROP) {
+      iTrace("---- %04x", Entry.Tag);
       ILuint Back = SIOtell(io);
       Offset = Entry.Offset;
       while(Offset) {
@@ -75,12 +75,15 @@ ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum IFD, ILb
       }
       SIOseek(io, Back, IL_SEEK_SET);
     } else {
-      // TODO: Interoperability IFD, GPS IFD
+      if (Size <= 4) {
+        Entry.Offset = SIOtell(io) - Start - 4;
+      }
+
       ILuint Back = SIOtell(io);
       ILexif *Exif = ioalloc(ILexif);
       if (!Exif) return 0;
 
-      Exif->Data = ialloc(Size);
+      Exif->Data = ialloc(Size + 1);
       if (!Exif->Data) {
         ifree(Exif);
         return 0;
@@ -90,6 +93,7 @@ ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum IFD, ILb
       Exif->ID  = Entry.Tag;
       Exif->Type = Entry.Type;
       Exif->Size = Size;
+      Exif->Length = Entry.Length;
       Exif->Next = Image->ExifTags;
 
       SIOseek(io, Start + Entry.Offset, IL_SEEK_SET);
@@ -99,6 +103,21 @@ ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum IFD, ILb
         return 0;
       }
 
+      if (BigEndian) {
+        switch(Entry.Type) {
+          case IL_EXIF_TYPE_WORD:     BigUShort(Exif->Data); break;          
+          case IL_EXIF_TYPE_DWORD:    BigUInt(Exif->Data); break;          
+          case IL_EXIF_TYPE_RATIONAL: BigUInt(Exif->Data); BigUInt(((ILuint*)Exif->Data)+1); break;
+        }
+      } else {
+        switch(Entry.Type) {
+          case IL_EXIF_TYPE_WORD:     UShort(Exif->Data); break;          
+          case IL_EXIF_TYPE_DWORD:    UInt(Exif->Data); break;          
+          case IL_EXIF_TYPE_RATIONAL: UInt(Exif->Data); UInt(((ILuint*)Exif->Data)+1); break;
+        }
+      }
+
+      ((ILubyte*)Exif->Data)[Size] = 0;
       Image->ExifTags = Exif;
       SIOseek(io, Back, IL_SEEK_SET);
     }

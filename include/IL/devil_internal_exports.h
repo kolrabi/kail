@@ -284,6 +284,7 @@ ILAPI void      ILAPIENTRY iCloseImageReal  (ILimage *Image);
 ILAPI void      ILAPIENTRY iFlipBuffer      (ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
 ILAPI void      ILAPIENTRY iGetClear        (void *Colours, ILenum Format, ILenum Type);
 ILAPI void*     ILAPIENTRY iConvertBuffer   (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
+ILAPI ILimage * ILAPIENTRY iGetBaseImage    (void);
 
 #define iCloseImage(img)    { iCloseImageReal(img); img = NULL; }
 

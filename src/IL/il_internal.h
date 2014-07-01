@@ -209,6 +209,7 @@ ILboolean ilLoadWdpF(ILHANDLE File);
 ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 */
 
+ILboolean iGetMetadata(ILimage *Image, ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 #ifdef __cplusplus
 }
 #endif

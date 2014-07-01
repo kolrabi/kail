@@ -449,6 +449,17 @@ ILint ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode)
                       return IL_BGRA;
              }
              break;
+
+        case IL_IMAGE_METADATA_COUNT: {
+          ILint Count = 0;
+          ILexif *Exif = Image->ExifTags;
+          while(Exif) {
+            Count ++;
+            Exif = Exif->Next;
+          }
+          return Count;
+        } break;
+
         default:
              iSetError(IL_INVALID_ENUM);
     }
@@ -462,6 +473,7 @@ ILint iGetInteger(ILenum Mode) {
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
   ILimage *CurImage = iGetSelectedImage(Selection);
+  ILimage *BaseImage = iGetBaseImage();
 
   switch (Mode) {
     // Integer values
@@ -579,6 +591,9 @@ ILint iGetInteger(ILenum Mode) {
 
     case IL_IMAGE_SELECTION_MODE:
       return ilStates[ilCurrentPos].ilImageSelectionMode;
+
+    case IL_IMAGE_METADATA_COUNT:
+      return iGetIntegerImage(BaseImage, Mode);
   }
 
   return iGetIntegerImage(CurImage, Mode);

@@ -35,7 +35,8 @@
 
 #define IL_VERSION_1_9_0
 #define IL_VERSION_1_9_0
-#define IL_VERSION              190
+#define IL_VERSION_1_10_0
+#define IL_VERSION              11000
 
 #define IL_VARIANT_KAIL
 
@@ -517,6 +518,7 @@ enum {
 #define IL_IMAGE_SELECTION_MODE     0x0650
 #define IL_RELATIVE                 0x0651
 #define IL_ABSOLUTE                 0x0652
+#define IL_IMAGE_METADATA_COUNT     0x0E01
 
 //
 // Exif
@@ -570,6 +572,8 @@ enum {
 // IL_TAG_TIFF_COLOR_LIST 0x013F ?
 #define IL_TAG_TIFF_COLOUR_MAP                0x0140
 #define IL_TAG_TIFF_COLOR_MAP                 0x0140
+#define IL_TAG_TIFF_EXTRA_SAMPLES             0x0152
+#define IL_TAG_TIFF_COPYRIGHT                 0x8298
 
 // Interoperability IFD
 #define IL_TAG_INTEROP_INDEX                  0x0001
@@ -844,6 +848,10 @@ ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 #ifdef IL_VERSION_1_9_0
 ILAPI ILboolean ILAPIENTRY ilAddAlpha(void);
 ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
+#endif
+
+#ifdef IL_VERSION_1_10_0
+ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 #endif 
 
 

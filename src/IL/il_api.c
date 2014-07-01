@@ -693,6 +693,13 @@ ILuint64 ILAPIENTRY ilGetLumpPos() {
 }
 
 /**
+ * Retrieve image metadata.
+ */
+ILboolean ILAPIENTRY ilGetMetadata(ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
+  SIMPLE_FUNC(Image, ILboolean, iGetMetadata(Image, Index, Category, ID, Type, Count, Size, Data));
+}
+
+/**
  * Returns a pointer to the current image's palette data.
  * The pointer to the image palette data returned by this function is only valid until
  * any operations are done on the image.  After any operations, this function should be

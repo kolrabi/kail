@@ -768,3 +768,22 @@ ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
   ReleaseMutex(Image->Mutex);
 #endif
 }
+
+ILboolean iGetMetadata(ILimage *Image, ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
+  ILexif *Exif = Image->ExifTags;
+  while(Index) {
+    if (Exif == NULL) return IL_FALSE;
+    Index--;
+    Exif = Exif->Next;
+  }
+
+  if (Category) *Category = Exif->IFD;
+  if (ID)       *ID       = Exif->ID;
+  if (Type)     *Type     = Exif->Type;
+  if (Count)    *Count    = Exif->Length;
+  if (Size)     *Size     = Exif->Size;
+  if (Data)     *Data     = Exif->Data;
+
+  return IL_TRUE;
+}
+
