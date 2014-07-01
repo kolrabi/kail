@@ -172,7 +172,7 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
 		}
 		else  // Create next image in list
 		{
-			(*Image)->Next = ilNewImage(Width, Width, 1, 4, 1);
+			(*Image)->Next = iNewImage(Width, Width, 1, 4, 1);
 			*Image = (*Image)->Next;
 			(*Image)->Format = IL_RGBA;
 			(*Image)->Origin = IL_ORIGIN_UPPER_LEFT;

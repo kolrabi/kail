@@ -23,7 +23,7 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
   r = 0;
 
   if (Image->Format == IL_COLOUR_INDEX)
-    iConvertImages(Image, ilGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
+    iConvertImages(Image, iGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
 
   RegionMask = iScanFill(Image);
 
@@ -418,7 +418,7 @@ ILboolean iApplyFilter(ILimage *Image, ILuint Iter, const ILint *Kernel, ILint S
 
   if (Image->Format == IL_COLOUR_INDEX) {
     Palette = IL_TRUE;
-    TempImage = iConvertImage(Image, ilGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
+    TempImage = iConvertImage(Image, iGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
   }
   else if (Image->Type > IL_UNSIGNED_BYTE) {
     Converted = IL_TRUE;
@@ -473,7 +473,7 @@ ILboolean iApplyFilter2(ILimage *Image, ILuint Iter,
 
   if (Image->Format == IL_COLOUR_INDEX) {
     Palette = IL_TRUE;
-    TempImage = iConvertImage(Image, ilGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
+    TempImage = iConvertImage(Image, iGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
   }
   else if (Image->Type > IL_UNSIGNED_BYTE) {
     Converted = IL_TRUE;
@@ -1006,7 +1006,7 @@ void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
     return IL_FALSE;
   }
 
-  Black = ilNewImage(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Bpc);
+  Black = iNewImage(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Bpc);
   if (Black == NULL) {
     return IL_FALSE;
   }
@@ -1032,7 +1032,7 @@ ILboolean iContrast(ILimage *Image, ILfloat Contrast) {
     return IL_FALSE;
   }
 
-  Grey = ilNewImage(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Bpc);
+  Grey = iNewImage(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Bpc);
   if (Grey == NULL) {
     return IL_FALSE;
   }
@@ -1057,7 +1057,7 @@ ILboolean iSharpen(ILimage *Image, ILfloat Factor, ILuint Iter) {
     return IL_FALSE;
   }
 
-  Blur = ilCopyImage_(Image);
+  Blur = iCloneImage(Image);
   if (Blur == NULL) {
     return IL_FALSE;
   }

@@ -40,6 +40,8 @@
 static char*     iMakeString(void);
 static TIFF*     iTIFFOpen(SIO *io, char *Mode);
 
+ILboolean iExifLoad(ILimage *Image);
+
 /*----------------------------------------------------------------------------*/
 
 static ILboolean iIsValidTiff(SIO* io) {
@@ -93,11 +95,10 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 	void	 *Buffer;
 	ILimage  *Image, *TempImage;
 	ILushort si;
-    ILfloat  x_position, x_resolution, y_position, y_resolution;
-    SIO *    io;
-	//TIFFRGBAImage img;
-	//char emsg[1024];
-
+  ILfloat  x_position, x_resolution, y_position, y_resolution;
+  SIO *    io;
+  ILuint   Start, End;
+	
 	// to avoid high order bits garbage when used as shorts
 	w = h = d = linesize = tilewidth = tilelength = 0;
 
@@ -107,6 +108,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 	}
 
 	io = &image->io;
+	Start = SIOtell(io);
 
 	TIFFSetWarningHandler(warningHandler);
 	TIFFSetErrorHandler(errorHandler);
@@ -177,7 +179,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 				Image = image;
 			}
 			else {
-				Image->Next = ilNewImage(w, h, 1, 1, 1);
+				Image->Next = iNewImage(w, h, 1, 1, 1);
 				if (Image->Next == NULL) {
 					TIFFClose(tif);
 					return IL_FALSE;
@@ -322,7 +324,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 				Image = image;
 			}
 			else {
-				Image->Next = ilNewImage(w, h, 1, 1, 1);
+				Image->Next = iNewImage(w, h, 1, 1, 1);
 				if(Image->Next == NULL) {
 					TIFFClose(tif);
 					return IL_FALSE;
@@ -382,7 +384,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 				Image = image;
 			}
 			else {
-				Image->Next = ilNewImage(w, h, 1, 4, 1);
+				Image->Next = iNewImage(w, h, 1, 4, 1);
 				if(Image->Next == NULL) {
 					TIFFClose(tif);
 					return IL_FALSE;
@@ -398,7 +400,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 				}
 			}
 			/*
-			 if (!ilResizeImage(Image, Image->Width, Image->Height, 1, 4, 1)) {
+			 if (!iResizeImage(Image, Image->Width, Image->Height, 1, 4, 1)) {
 				 TIFFClose(tif);
 				 return IL_FALSE;
 			 }
@@ -520,6 +522,11 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 	} //for tiff directories
 
 	TIFFClose(tif);
+
+	End = SIOtell(io);
+	SIOseek(io, Start, IL_SEEK_SET);
+	iExifLoad(Image);
+	SIOseek(io, End, IL_SEEK_SET);
 
 	return IL_TRUE;
 }
@@ -707,7 +714,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
 		Compression = COMPRESSION_NONE;
 
 	if (image->Format == IL_COLOUR_INDEX) {
-		if (ilGetBppPal(image->Pal.PalType) == 4)  // Preserve the alpha.
+		if (iGetBppPal(image->Pal.PalType) == 4)  // Preserve the alpha.
 			TempImage = iConvertImage(image, IL_RGBA, IL_UNSIGNED_BYTE);
 		else
 			TempImage = iConvertImage(image, IL_RGB, IL_UNSIGNED_BYTE);
@@ -744,8 +751,8 @@ ILboolean iSaveTiffInternal(ILimage* image)
 		TIFFSetField(File, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
 	TIFFSetField(File, TIFFTAG_BITSPERSAMPLE, TempImage->Bpc << 3);
 	TIFFSetField(File, TIFFTAG_SAMPLESPERPIXEL, TempImage->Bpp);
-	if ((TempImage->Bpp == ilGetBppFormat(IL_RGBA)) ||
-			(TempImage->Bpp == ilGetBppFormat(IL_LUMINANCE_ALPHA)))
+	if ((TempImage->Bpp == iGetBppFormat(IL_RGBA)) ||
+			(TempImage->Bpp == iGetBppFormat(IL_LUMINANCE_ALPHA)))
 		TIFFSetField(File, TIFFTAG_EXTRASAMPLES, EXTRASAMPLE_ASSOCALPHA);
 	TIFFSetField(File, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(File, TIFFTAG_ROWSPERSTRIP, 1);

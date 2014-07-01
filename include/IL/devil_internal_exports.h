@@ -144,6 +144,15 @@ INLINE ILboolean SIOeof(SIO *io) {
 ILAPI char *    ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen);
 ILAPI char *    ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
 
+typedef struct ILexif {
+  ILenum      IFD;
+  ILenum      ID;
+  ILushort    Type;
+  ILuint      Length, Size;
+  void *      Data;
+  struct ILexif *Next;
+} ILexif;
+
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.
  * @internal
@@ -171,11 +180,13 @@ typedef struct ILimage {
     void*           Profile;     //!< colour profile
     ILuint          ProfileSize; //!< colour profile size
     ILuint          OffX;        //!< x-offset of the image
-    ILuint                  OffY;        //!< y-offset of the image
+    ILuint          OffY;        //!< y-offset of the image
     ILubyte*        DxtcData;    //!< compressed data
     ILenum          DxtcFormat;  //!< compressed data format
     ILuint          DxtcSize;    //!< compressed data size
-    SIO                     io;
+    SIO             io;
+
+    ILexif *        ExifTags;
 
 #if IL_THREAD_SAFE_PTHREAD
     pthread_mutex_t Mutex;
@@ -186,11 +197,13 @@ typedef struct ILimage {
 
 // Memory functions
 ILAPI void*         ILAPIENTRY ialloc   (ILsizei Size);
-ILAPI void          ILAPIENTRY ifree        (void *Ptr);
+ILAPI void          ILAPIENTRY ifreeReal(void *Ptr);
 ILAPI void*         ILAPIENTRY icalloc  (const ILsizei Size, const ILsizei Num);
 #ifdef ALTIVEC_GCC
 ILAPI void*         ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
 #endif
+
+#define                    ifree(x) { ifreeReal(x); (x) = 0; }
 
 /** Allocate an array of type @a T with @a n elements. */
 #define                    iaalloc(T, n) (T*)icalloc(sizeof(T), (n))
@@ -218,15 +231,16 @@ ILAPI void      ILAPIENTRY iUnlockImage(ILimage *Image);
 //
 // Utility functions
 //
-ILAPI ILubyte ILAPIENTRY ilGetBppFormat(ILenum Format);
-ILAPI ILenum  ILAPIENTRY ilGetFormatBpp(ILubyte Bpp);
-ILAPI ILubyte ILAPIENTRY ilGetBpcType(ILenum Type);
-ILAPI ILenum  ILAPIENTRY ilGetTypeBpc(ILubyte Bpc);
-ILAPI ILubyte ILAPIENTRY ilGetBppPal(ILenum PalType);
-ILAPI ILenum  ILAPIENTRY ilGetPalBaseType(ILenum PalType);
-ILAPI ILuint  ILAPIENTRY ilNextPower2(ILuint Num);
-ILAPI ILenum  ILAPIENTRY ilTypeFromExt(ILconst_string FileName);
-ILAPI void    ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
+ILAPI ILubyte   ILAPIENTRY iGetBppFormat(ILenum Format);
+ILAPI ILenum    ILAPIENTRY iGetFormatBpp(ILubyte Bpp);
+ILAPI ILubyte   ILAPIENTRY iGetBpcType(ILenum Type);
+ILAPI ILenum    ILAPIENTRY iGetTypeBpc(ILubyte Bpc);
+ILAPI ILubyte   ILAPIENTRY iGetBppPal(ILenum PalType);
+ILAPI ILenum    ILAPIENTRY iGetPalBaseType(ILenum PalType);
+
+ILAPI ILuint    ILAPIENTRY iNextPower2(ILuint Num);
+ILAPI ILenum    ILAPIENTRY iTypeFromExt(ILconst_string FileName);
+ILAPI void      ILAPIENTRY iMemSwap(ILubyte *, ILubyte *, const ILuint);
 
 ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
 ILAPI char *    ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
@@ -246,39 +260,43 @@ ILAPI ILboolean ILAPIENTRY iSaveFuncs2(ILimage* image, ILenum type);
 // Image functions
 //
 
-ILAPI ILboolean ILAPIENTRY iMirrorImage     (ILimage *Image);
-ILAPI ILboolean ILAPIENTRY iFlipImage       (ILimage *Image);
 ILAPI ILboolean ILAPIENTRY iClearImage      (ILimage *Image);
-ILAPI ILboolean ILAPIENTRY iCopyImage       (ILimage *DestImage, ILimage *SrcImage);;
-ILAPI ILuint    ILAPIENTRY iCopyPixels      (ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
-ILAPI ILboolean ILAPIENTRY ilCopyImageAttr  (ILimage *Dest, ILimage *Src);
 ILAPI ILboolean ILAPIENTRY iConvertImages   (ILimage *BaseImage, ILenum DestFormat, ILenum DestType);
-ILAPI ILboolean ILAPIENTRY ilInitImage      (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
-ILAPI ILboolean ILAPIENTRY ilIsValidPal     (ILpal *Palette);
-ILAPI ILboolean ILAPIENTRY ilResizeImage    (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
+ILAPI ILboolean ILAPIENTRY iCopyImage       (ILimage *DestImage, ILimage *SrcImage);
+ILAPI ILboolean ILAPIENTRY iCopyImageAttr   (ILimage *Dest, ILimage *Src);
+ILAPI ILboolean ILAPIENTRY iFlipImage       (ILimage *Image);
+ILAPI ILboolean ILAPIENTRY iInitImage       (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
+ILAPI ILboolean ILAPIENTRY iMirrorImage     (ILimage *Image);
+ILAPI ILboolean ILAPIENTRY iResizeImage     (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
 ILAPI ILboolean ILAPIENTRY iTexImage        (ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
-ILAPI ILboolean ILAPIENTRY ilTexSubImage_   (ILimage *Image, void *Data);
 ILAPI ILimage * ILAPIENTRY iGetMipmap       (ILimage *Image, ILuint Number);
 ILAPI ILimage * ILAPIENTRY iGetSubImage     (ILimage *Image, ILuint Number);
+ILAPI ILimage*  ILAPIENTRY iCloneImage      (ILimage *Src);
 ILAPI ILimage*  ILAPIENTRY iConvertImage    (ILimage *Image, ILenum DestFormat, ILenum DestType);
-ILAPI ILimage*  ILAPIENTRY ilCopyImage_     (ILimage *Src); // TODO: rename to iCloneImage
-ILAPI ILimage*  ILAPIENTRY ilNewImage       (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
-ILAPI ILimage*  ILAPIENTRY ilNewImageFull   (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
+ILAPI ILimage*  ILAPIENTRY iNewImage        (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
+ILAPI ILimage*  ILAPIENTRY iNewImageFull    (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILint     ILAPIENTRY iGetIntegerImage (ILimage *Image, ILenum Mode);
-ILAPI ILpal*    ILAPIENTRY iConvertPal      (ILpal *Pal, ILenum DestFormat);
-ILAPI ILboolean ILAPIENTRY iConvertImagePal (ILimage *Image, ILenum DestFormat);
-ILAPI ILpal*    ILAPIENTRY iCopyPal        (ILimage *Image); // TODO: rename to iCopyPalFromImage
-ILAPI ILubyte*  ILAPIENTRY iGetFlipped     (ILimage *Image);
-ILAPI ILuint    ILAPIENTRY ilGetCurName    (void);
-ILAPI void      ILAPIENTRY iFlipBuffer(ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
-ILAPI void      ILAPIENTRY iCloseImageReal (ILimage *Image);
-ILAPI void      ILAPIENTRY ilClosePal      (ILpal *Palette);
-ILAPI void      ILAPIENTRY ilGetClear      (void *Colours, ILenum Format, ILenum Type);
-ILAPI void*     ILAPIENTRY ilConvertBuffer (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
-
-ILAPI ILuint    ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
+ILAPI ILubyte*  ILAPIENTRY iGetFlipped      (ILimage *Image);
+ILAPI ILuint    ILAPIENTRY iCopyPixels      (ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
+ILAPI ILuint    ILAPIENTRY iGetCurName      (void);
+ILAPI ILuint    ILAPIENTRY iGetDXTCData     (ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat);
+ILAPI void      ILAPIENTRY iCloseImageReal  (ILimage *Image);
+ILAPI void      ILAPIENTRY iFlipBuffer      (ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
+ILAPI void      ILAPIENTRY iGetClear        (void *Colours, ILenum Format, ILenum Type);
+ILAPI void*     ILAPIENTRY iConvertBuffer   (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
 
 #define iCloseImage(img)    { iCloseImageReal(img); img = NULL; }
+
+//
+// Palette functions
+//
+
+ILAPI ILboolean ILAPIENTRY iConvertImagePal (ILimage *Image, ILenum DestFormat);
+ILAPI ILboolean ILAPIENTRY iIsValidPal      (ILpal *Palette);
+ILAPI ILpal*    ILAPIENTRY iConvertPal      (ILpal *Pal, ILenum DestFormat);
+ILAPI ILpal*    ILAPIENTRY iCopyPal         (ILimage *Image); // TODO: rename to iCopyPalFromImage
+ILAPI void      ILAPIENTRY iClosePalReal    (ILpal *Palette);
+#define iClosePal(pal)      { iClosePalReal(pal);   pal = NULL; }
 
 #ifdef _UNICODE
   #ifndef _WIN32  // At least in Linux, fopen works fine, and wcsicmp is not defined.

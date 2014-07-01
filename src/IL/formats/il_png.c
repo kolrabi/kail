@@ -247,7 +247,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 			return IL_FALSE;
 	}
 
-	if (!iTexImage(image, width, height, 1, (ILubyte)channels, format, ilGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
+	if (!iTexImage(image, width, height, 1, (ILubyte)channels, format, iGetTypeBpc((ILubyte)(bit_depth >> 3)), NULL)) {
 		png_destroy_read_struct(&data->png_ptr, &data->info_ptr, NULL);
 		return IL_FALSE;
 	}
@@ -463,7 +463,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 		// set the palette if there is one.  REQUIRED for indexed-color images.
 		TempPal = iConvertPal(&image->Pal, IL_PAL_RGB24);
 		png_set_PLTE(png_ptr, info_ptr, (png_colorp)TempPal->Palette,
-			TempPal->PalSize / ilGetBppPal(TempPal->PalType));
+			TempPal->PalSize / iGetBppPal(TempPal->PalType));
 
 		//XIX alpha
 		trans = iGetInt(IL_PNG_ALPHA_INDEX);
@@ -577,7 +577,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 
 	if (Temp != image)
 		iCloseImage(Temp);
-	ilClosePal(TempPal);
+	iClosePal(TempPal);
 
 	return IL_TRUE;
 
@@ -586,7 +586,7 @@ error_label:
 	ifree(RowPtr);
 	if (Temp != image)
 		iCloseImage(Temp);
-	ilClosePal(TempPal);
+	iClosePal(TempPal);
 	return IL_FALSE;
 }
 

@@ -1,5 +1,7 @@
 1.10.0:
 
+  - metadata (exif)
+
   - iluHistogram(ILfloat *Values, ILuint len);
 
   - ILU_SIMILARITY_MODE:

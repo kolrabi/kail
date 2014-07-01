@@ -177,7 +177,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				return IL_FALSE;
 			BaseImage = Image;
 		}	else {
-			Image->Mipmaps = ilNewImageFull(MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL);
+			Image->Mipmaps = iNewImageFull(MipWidth, MipHeight, 1, Channels, FormatIL, IL_UNSIGNED_BYTE, NULL);
 			Image = Image->Mipmaps;
 		}
 

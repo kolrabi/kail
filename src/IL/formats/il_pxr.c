@@ -19,18 +19,18 @@
 #include "pack_push.h"
 typedef struct PIXHEAD
 {
-  ILubyte   Signature[2];     // 0000
-  ILubyte   Reserved1[414];   // 0002
-  ILushort  Height;           // 01A0 
-  ILushort  Width;            // 01A2
-  ILushort  Height2;          // 01A4
-  ILushort  Width2;           // 01A6
-  ILubyte   Bpp;              // 01A8
+  ILubyte   Signature[2];     // 0000 80 e8
+  ILubyte   Reserved1[414];   // 0002 padding
+  ILushort  Height;           // 01A0 height of image in pixels
+  ILushort  Width;            // 01A2 width of image in pixels
+  ILushort  Height2;          // 01A4 height again?
+  ILushort  Width2;           // 01A6 width again?
+  ILubyte   Bpp;              // 01A8 8 = grayscale, 14 = rgb, 15 = rgba
   ILuint    Offset;           // 01A9 pointing to Offset2
-  ILushort  Unknown;          // 01AD
-  ILubyte   Reserved2[1+80];  // 01AF
-  ILuint    Offset2;          // 0200
-  ILuint    Size;
+  ILushort  Unknown;          // 01AD = 4?
+  ILubyte   Reserved2[1+80];  // 01AF probably some padding
+  ILuint    Offset2;          // 0200 pointing to image data 0400
+  ILuint    Size;             // 0204 size of image data in bytes
 
   //ILubyte   Reserved3[592];
 } PIXHEAD;
@@ -78,6 +78,7 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
       return IL_FALSE;
   }
 
+  // FIXME: should we use offsets in header?
   SIOseek(io, 1024 - sizeof(Head), IL_SEEK_CUR);
   if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData) 
     return IL_FALSE;
@@ -127,12 +128,12 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
 
   if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
     if (TempImage == Image) {
-      TempImage = ilCopyImage_(Image);
+      TempImage = iCloneImage(Image);
     }
     iFlipBuffer((ILubyte *)TempImage->Data, 1, TempImage->Bps, TempImage->Height);
   }
 
-  Head.Size = TempImage->Height * TempImage->Width * ilGetBppFormat(TempImage->Format);
+  Head.Size = TempImage->Height * TempImage->Width * iGetBppFormat(TempImage->Format);
 
   UShort(&Head.Height);
   UShort(&Head.Width);
@@ -150,7 +151,7 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
   }
   SIOpad(io, 1024 - Written);
 
-  SIOwrite(io, TempImage->Data, ilGetBppFormat(TempImage->Format), Head.Width * Head.Height);
+  SIOwrite(io, TempImage->Data, iGetBppFormat(TempImage->Format), Head.Width * Head.Height);
 
   if (TempImage != Image)
     iCloseImage(TempImage);

@@ -266,9 +266,9 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     } else {
       // next icon
       if (IconImages[i].Head.Size == 0) { // PNG compressed icon
-        Image->Next = ilNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, 1);
+        Image->Next = iNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height, 1, 4, 1);
       } else {
-        Image->Next = ilNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, 1);
+        Image->Next = iNewImage(IconImages[i].Head.Width, IconImages[i].Head.Height / 2, 1, 4, 1);
       }
       Image         = Image->Next;
       Image->Format = IL_BGRA;

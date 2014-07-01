@@ -183,7 +183,7 @@ ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header)
 	// Cannot handle more than 4 channels in an image.
 	if (Header->Samples > 4)
 		return IL_FALSE;
-	Header->Format = ilGetFormatBpp(Header->Samples);
+	Header->Format = iGetFormatBpp(Header->Samples);
 
 	return IL_TRUE;
 }
@@ -202,10 +202,10 @@ ILboolean iCheckDicom(DICOMHEAD *Header)
 	if (Header->BitsAllocated % 8)
 		return IL_FALSE;
 	// Check for an invalid format being set (or not set at all).
-	if (ilGetBppFormat(Header->Format) == 0)
+	if (iGetBppFormat(Header->Format) == 0)
 		return IL_FALSE;
 	// Check for an invalid type being set (or not set at all).
-	if (ilGetBpcType(Header->Type) == 0)
+	if (iGetBpcType(Header->Type) == 0)
 		return IL_FALSE;
 	return IL_TRUE;
 }
@@ -445,7 +445,7 @@ static ILboolean iLoadDicomInternal(ILimage* image)
 	if (!iCheckDicom(&Header))
 		return IL_FALSE;
 
-	if (!iTexImage(image, Header.Width, Header.Height, Header.Depth, ilGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
+	if (!iTexImage(image, Header.Width, Header.Height, Header.Depth, iGetBppFormat(Header.Format), Header.Format, Header.Type, NULL))
 		return IL_FALSE;
 	//@TODO: Find out if the origin is always in the upper left.
 	image->Origin = IL_ORIGIN_UPPER_LEFT;

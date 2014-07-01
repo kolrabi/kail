@@ -96,7 +96,7 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFile(IDirect3DDevice9 *Device, ILconst_strin
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -133,7 +133,7 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFile(IDirect3DDevice9 *Device,
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp         = ilNewImage(1,1,1, 1,1);
+  Temp         = iNewImage(1,1,1, 1,1);
   Temp->io              = ilutCurImage->io;
   Temp->io.handle       = NULL;
   iUnlockImage(ilutCurImage);
@@ -160,7 +160,7 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileInMemory(IDirect3DDevice9 *Device,
   ILUT_TEXTURE_SETTINGS_DX9 Settings;
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -185,7 +185,7 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromResource(IDirect3DDevice9 *Device,
   ILubyte *Data;
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -213,7 +213,7 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileHandle(IDirect3DDevice9 *Device,
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
@@ -337,7 +337,7 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFile(IDirect3DDevice9 *Device, ILconst_st
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -364,7 +364,7 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFileInMemory(IDirect3DDevice9 *Device, void 
   ILimage * Temp;
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -386,7 +386,7 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFileInMemory(IDirect3DDevice9 *Device, vo
   ILimage * Temp;
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -414,7 +414,7 @@ ILboolean ILAPIENTRY ilutD3D9TexFromResource(IDirect3DDevice9 *Device, HMODULE S
   Data = (ILubyte*)LockResource(Resource);
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -442,7 +442,7 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromResource(IDirect3DDevice9 *Device, HMODUL
   Data = (ILubyte*)LockResource(Resource);
 
   iLockState();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   GetSettings(&Settings);
   iUnlockState();
 
@@ -467,7 +467,7 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFileHandle(IDirect3DDevice9 *Device, ILHANDL
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
@@ -495,7 +495,7 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFileHandle(IDirect3DDevice9 *Device, ILHA
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
@@ -869,11 +869,11 @@ static ILimage *MakeD3D9Compliant(ILimage *ilutCurImage, IDirect3DDevice9 *Devic
   }
 
   // Images must have powers-of-2 dimensions.
-  if (ilNextPower2(ilutCurImage->Width)  != ilutCurImage->Width ||
-      ilNextPower2(ilutCurImage->Height) != ilutCurImage->Height ||
-      ilNextPower2(ilutCurImage->Depth)  != ilutCurImage->Depth) {
-      Scaled = iluScale_(Converted, ilNextPower2(ilutCurImage->Width),
-            ilNextPower2(ilutCurImage->Height), ilNextPower2(ilutCurImage->Depth), Settings->Filter);
+  if (iNextPower2(ilutCurImage->Width)  != ilutCurImage->Width ||
+      iNextPower2(ilutCurImage->Height) != ilutCurImage->Height ||
+      iNextPower2(ilutCurImage->Depth)  != ilutCurImage->Depth) {
+      Scaled = iluScale_(Converted, iNextPower2(ilutCurImage->Width),
+            iNextPower2(ilutCurImage->Height), iNextPower2(ilutCurImage->Depth), Settings->Filter);
       if (Converted != ilutCurImage) {
         iCloseImage(Converted);
       }
@@ -906,7 +906,7 @@ static ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, 
   MipImage = Image;
   srcMips = Settings->MipLevels;;
   if ( srcMips != NumMips-1) {
-    MipImage = ilCopyImage_(Image);
+    MipImage = iCloneImage(Image);
     if (!iBuildMipmaps(MipImage, MipImage->Width >> 1, MipImage->Height >> 1, MipImage->Depth >> 1)) {
       iCloseImage(MipImage);
       return IL_FALSE;

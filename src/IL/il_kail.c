@@ -20,7 +20,7 @@
 ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data);
 
-ILAPI ILboolean ILAPIENTRY ilInitImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
+ILAPI ILboolean ILAPIENTRY iInitImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data)
 {
   memset(Image, 0, sizeof(ILimage));
@@ -39,7 +39,7 @@ ILAPI ILboolean ILAPIENTRY ilInitImage(ILimage *Image, ILuint Width, ILuint Heig
 
 
 // Creates a new ILimage based on the specifications given
-ILAPI ILimage* ILAPIENTRY ilNewImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc)
+ILAPI ILimage* ILAPIENTRY iNewImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc)
 {
   ILimage *Image;
 
@@ -52,7 +52,7 @@ ILAPI ILimage* ILAPIENTRY ilNewImage(ILuint Width, ILuint Height, ILuint Depth, 
     return NULL;
   }
 
-  if (!ilInitImage(Image, Width, Height, Depth, Bpp, ilGetFormatBpp(Bpp), ilGetTypeBpc(Bpc), NULL)) {
+  if (!iInitImage(Image, Width, Height, Depth, Bpp, iGetFormatBpp(Bpp), iGetTypeBpc(Bpc), NULL)) {
     if (Image->Data != NULL) {
       ifree(Image->Data);
     }
@@ -65,7 +65,7 @@ ILAPI ILimage* ILAPIENTRY ilNewImage(ILuint Width, ILuint Height, ILuint Depth, 
 
 
 // Same as above but allows specification of Format and Type
-ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data)
+ILAPI ILimage* ILAPIENTRY iNewImageFull(ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data)
 {
   ILimage *Image;
 
@@ -78,7 +78,7 @@ ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Dep
     return NULL;
   }
 
-  if (!ilInitImage(Image, Width, Height, Depth, Bpp, Format, Type, Data)) {
+  if (!iInitImage(Image, Width, Height, Depth, Bpp, Format, Type, Data)) {
     if (Image->Data != NULL) {
       ifree(Image->Data);
     }
@@ -96,7 +96,7 @@ ILAPI ILimage* ILAPIENTRY ilNewImageFull(ILuint Width, ILuint Height, ILuint Dep
 ILAPI ILboolean ILAPIENTRY iTexImage(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, 
   ILenum Format, ILenum Type, void *Data)
 {
-  ILubyte BpcType = ilGetBpcType(Type);
+  ILubyte BpcType = iGetBpcType(Type);
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -227,7 +227,7 @@ void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha)
 }
 
 
-ILAPI void ILAPIENTRY ilGetClear(void *Colours, ILenum Format, ILenum Type)
+ILAPI void ILAPIENTRY iGetClear(void *Colours, ILenum Format, ILenum Type)
 {
   ILubyte   *BytePtr;
   ILushort  *ShortPtr;
@@ -513,7 +513,7 @@ ILboolean ILAPIENTRY iClearImage(ILimage *Image)
   }
   
   NumBytes = Image->Bpp * Image->Bpc;
-  ilGetClear(Colours, Image->Format, Image->Type);
+  iGetClear(Colours, Image->Format, Image->Type);
   
   if (Image->Format != IL_COLOUR_INDEX) {
     switch (Image->Type)
@@ -635,7 +635,7 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
   }
   
   // convert source image to match the destination image type and format
-  Converted = (ILubyte*)ilConvertBuffer(Src->SizeOfData, Src->Format, Dest->Format, Src->Type, Dest->Type, NULL, SrcTemp);
+  Converted = (ILubyte*)iConvertBuffer(Src->SizeOfData, Src->Format, Dest->Format, Src->Type, Dest->Type, NULL, SrcTemp);
   if (Converted == NULL)
     return IL_FALSE;
   
@@ -776,7 +776,7 @@ ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
   SrcTemp = Src;
   
   do {
-    ilCopyImageAttr(DestTemp, SrcTemp);
+    iCopyImageAttr(DestTemp, SrcTemp);
     DestTemp->Data = (ILubyte*)ialloc(SrcTemp->SizeOfData);
     if (DestTemp->Data == NULL) {
       return IL_FALSE;
@@ -844,7 +844,7 @@ ILboolean iCopySubImages(ILimage *Dest, ILimage *Src)
 
 
 // Copies everything but the Data from Src to Dest.
-ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
+ILAPI ILboolean ILAPIENTRY iCopyImageAttr(ILimage *Dest, ILimage *Src)
 {
   if (Dest == NULL || Src == NULL) {
     iSetError(IL_INVALID_PARAM);
@@ -901,6 +901,8 @@ ILAPI ILboolean ILAPIENTRY ilCopyImageAttr(ILimage *Dest, ILimage *Src)
   else {
     Dest->Pal.Palette = NULL;
   }
+
+  // TODO: exif
   
   Dest->Pal.PalSize = Src->Pal.PalSize;
   Dest->Pal.PalType = Src->Pal.PalType;
@@ -932,7 +934,7 @@ ILboolean ILAPIENTRY iCopyImage(ILimage *DestImage, ILimage *SrcImage)
   }
   
   iTexImage(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
-  ilCopyImageAttr(DestImage, SrcImage);
+  iCopyImageAttr(DestImage, SrcImage);
   
   return IL_TRUE;
 }
@@ -940,7 +942,7 @@ ILboolean ILAPIENTRY iCopyImage(ILimage *DestImage, ILimage *SrcImage)
 
 // Creates a copy of Src and returns it.
 // TODO: rename to iCloneImage
-ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
+ILAPI ILimage* ILAPIENTRY iCloneImage(ILimage *Src)
 {
   ILimage *Dest;
   
@@ -949,12 +951,12 @@ ILAPI ILimage* ILAPIENTRY ilCopyImage_(ILimage *Src)
     return NULL;
   }
   
-  Dest = ilNewImage(Src->Width, Src->Height, Src->Depth, Src->Bpp, Src->Bpc);
+  Dest = iNewImage(Src->Width, Src->Height, Src->Depth, Src->Bpp, Src->Bpc);
   if (Dest == NULL) {
     return NULL;
   }
   
-  if (ilCopyImageAttr(Dest, Src) == IL_FALSE)
+  if (iCopyImageAttr(Dest, Src) == IL_FALSE)
     return NULL;
   
   memcpy(Dest->Data, Src->Data, Src->SizeOfData);
@@ -978,14 +980,14 @@ ILuint iDuplicateImage(ILimage *SrcImage) {
   
   DestImage = iLockImage(DestName);
   iTexImage(DestImage, SrcImage->Width, SrcImage->Height, SrcImage->Depth, SrcImage->Bpp, SrcImage->Format, SrcImage->Type, SrcImage->Data);
-  ilCopyImageAttr(DestImage, SrcImage);
+  iCopyImageAttr(DestImage, SrcImage);
   iUnlockImage(DestImage);
   return DestName;
 }
 
 
 // Like ilTexImage but doesn't destroy the palette.
-ILAPI ILboolean ILAPIENTRY ilResizeImage(ILimage *Image, ILuint Width, ILuint Height, 
+ILAPI ILboolean ILAPIENTRY iResizeImage(ILimage *Image, ILuint Width, ILuint Height, 
   ILuint Depth, ILubyte Bpp, ILubyte Bpc)
 {
   if (Image == NULL) {
@@ -996,14 +998,14 @@ ILAPI ILboolean ILAPIENTRY ilResizeImage(ILimage *Image, ILuint Width, ILuint He
   if (Image->Data != NULL)
     ifree(Image->Data);
   
-  Image->Depth = Depth;
-  Image->Width = Width;
-  Image->Height = Height;
-  Image->Bpp = Bpp;
-  Image->Bpc = Bpc;
-  Image->Bps = Bpp * Bpc * Width;
-  Image->SizeOfPlane = Image->Bps * Height;
-  Image->SizeOfData = Image->SizeOfPlane * Depth;
+  Image->Depth        = Depth;
+  Image->Width        = Width;
+  Image->Height       = Height;
+  Image->Bpp          = Bpp;
+  Image->Bpc          = Bpc;
+  Image->Bps          = Bpp * Bpc * Width;
+  Image->SizeOfPlane  = Image->Bps * Height;
+  Image->SizeOfData   = Image->SizeOfPlane * Depth;
   
   Image->Data = (ILubyte*)ialloc(Image->SizeOfData);
   if (Image->Data == NULL) {

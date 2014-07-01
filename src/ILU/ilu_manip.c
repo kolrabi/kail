@@ -431,7 +431,7 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *img) {
   }
 
   if (img->Bpp == 1) {
-    if (ilGetBppPal(img->Pal.PalType) == 0 || img->Format != IL_COLOUR_INDEX) {
+    if (iGetBppPal(img->Pal.PalType) == 0 || img->Format != IL_COLOUR_INDEX) {
       iSetError(ILU_ILLEGAL_OPERATION);  // Can be luminance.
       return IL_FALSE;
     }
@@ -633,8 +633,8 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
       return 0.0f;
   }
 
-  Bpp = IL_MAX(ilGetBppFormat(Original->Format), ilGetBppFormat(Image->Format));
-  Format = ilGetFormatBpp(Bpp);
+  Bpp = IL_MAX(iGetBppFormat(Original->Format), iGetBppFormat(Image->Format));
+  Format = iGetFormatBpp(Bpp);
 
   Image1 = iConvertImage(Image, Format, IL_FLOAT);
   if (!Image1) return 0.0;
@@ -761,8 +761,8 @@ ILboolean iEqualize(ILimage *Image) {
   }
 
   if (Image->Format == IL_COLOUR_INDEX) {
-    NumPixels = Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType);
-    Bpp = ilGetBppPal(Image->Pal.PalType);
+    NumPixels = Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType);
+    Bpp = iGetBppPal(Image->Pal.PalType);
   } else {
     NumPixels = Image->Width * Image->Height * Image->Depth;
     Bpp = Image->Bpp;
@@ -896,7 +896,7 @@ ILboolean iNormalize(ILimage *Image) {
 
   if (Image->Format == IL_COLOUR_INDEX) {
     NumData = Image->Pal.PalSize;
-    // Bpp = ilGetBppPal(Image->Pal.PalType);
+    // Bpp = iGetBppPal(Image->Pal.PalType);
   } else {
     NumData = Image->SizeOfData;
     // Bpp = Image->Bpp;

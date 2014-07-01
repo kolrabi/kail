@@ -195,8 +195,6 @@ void      iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc 
 void      iResetRead(ILimage *image);
 void      iResetWrite(ILimage *image);
 
-ILenum    iTypeFromExt(ILconst_string FileName);
-
 ILboolean iLoadData(ILimage *Image, ILconst_string FileName, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILboolean iLoadDataF(ILimage *Image, ILHANDLE File, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);
 ILboolean iLoadDataInternal(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp);

@@ -14,8 +14,8 @@
 #include "il_internal.h"
 
 
-// Returns the bpp of any Format
-ILAPI ILubyte ILAPIENTRY ilGetBppFormat(ILenum Format)
+/** Returns the channel count of any Format. */
+ILAPI ILubyte ILAPIENTRY iGetBppFormat(ILenum Format)
 {
 	switch (Format)
 	{
@@ -36,8 +36,8 @@ ILAPI ILubyte ILAPIENTRY ilGetBppFormat(ILenum Format)
 }
 
 
-// Returns the format of any bpp
-ILAPI ILenum ILAPIENTRY ilGetFormatBpp(ILubyte Bpp)
+/** Returns the format of any channel count. */
+ILAPI ILenum ILAPIENTRY iGetFormatBpp(ILubyte Bpp)
 {
 	switch (Bpp)
 	{
@@ -55,7 +55,7 @@ ILAPI ILenum ILAPIENTRY ilGetFormatBpp(ILubyte Bpp)
 
 
 // Returns the bpc of any Type
-ILAPI ILubyte ILAPIENTRY ilGetBpcType(ILenum Type)
+ILAPI ILubyte ILAPIENTRY iGetBpcType(ILenum Type)
 {
 	switch (Type)
 	{
@@ -78,7 +78,7 @@ ILAPI ILubyte ILAPIENTRY ilGetBpcType(ILenum Type)
 
 
 // Returns the type matching a bpc
-ILAPI ILenum ILAPIENTRY ilGetTypeBpc(ILubyte Bpc)
+ILAPI ILenum ILAPIENTRY iGetTypeBpc(ILubyte Bpc)
 {
 	switch (Bpc)
 	{
@@ -96,7 +96,7 @@ ILAPI ILenum ILAPIENTRY ilGetTypeBpc(ILubyte Bpc)
 
 
 // Returns the bpp of any palette type (PalType)
-ILAPI ILubyte ILAPIENTRY ilGetBppPal(ILenum PalType)
+ILAPI ILubyte ILAPIENTRY iGetBppPal(ILenum PalType)
 {
 	switch (PalType)
 	{
@@ -113,7 +113,7 @@ ILAPI ILubyte ILAPIENTRY ilGetBppPal(ILenum PalType)
 }
 
 // Returns the base format of a palette type (PalType)
-ILAPI ILenum ILAPIENTRY ilGetPalBaseType(ILenum PalType)
+ILAPI ILenum ILAPIENTRY iGetPalBaseType(ILenum PalType)
 {
 	switch (PalType)
 	{
@@ -136,7 +136,7 @@ ILAPI ILenum ILAPIENTRY ilGetPalBaseType(ILenum PalType)
 
 
 // Returns the next power of 2 if Num isn't 2^n or returns Num if Num is 2^n
-ILAPI ILuint ILAPIENTRY ilNextPower2(ILuint n)
+ILAPI ILuint ILAPIENTRY iNextPower2(ILuint n)
 {	
 	ILuint power = 1;
 	while( power < n ) {

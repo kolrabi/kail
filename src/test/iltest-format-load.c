@@ -18,6 +18,9 @@ int main(int argc, char **argv) {
   ilInit();
   iluInit();
 
+  ilEnable(IL_ORIGIN_SET);    // flip image on load if necessary
+  ilEnable(IL_FILE_MODE);     // overwrite files
+
   // load reference
   ilGenImages(1, &reference);
   CHECK(reference != 0);
@@ -27,6 +30,7 @@ int main(int argc, char **argv) {
   ilGenImages(1, &image);
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
+  CHECK(testSaveImage("test.png", image));
 
   // check parameters
   ilBindImage(image);

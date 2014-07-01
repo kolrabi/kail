@@ -79,7 +79,7 @@ void* ILAPIENTRY ialloc(ILsizei Size) {
 	return (void*)(Ptr + 1);
 }
 
-void ILAPIENTRY ifree(void *Ptr) {
+void ILAPIENTRY ifreeReal(void *Ptr) {
 	void **pptr = (void **)Ptr;
 
 	if (Ptr == NULL)

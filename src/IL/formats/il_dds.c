@@ -205,7 +205,7 @@ ILboolean iLoadDdsCubemapInternal(DDS_CONTEXT *ctx, ILuint CompFormat)
 		ctx->Depth = ctx->Head.Depth;
 		if (ctx->Head.ddsCaps2 & CubemapDirections[i]) {
 			if (i != 0) {
-				ctx->Image->Faces = ilNewImage(ctx->Width, ctx->Height, ctx->Depth, Channels, Bpc);
+				ctx->Image->Faces = iNewImage(ctx->Width, ctx->Height, ctx->Depth, Channels, Bpc);
 				if (ctx->Image->Faces == NULL)
 					return IL_FALSE;
 
@@ -626,7 +626,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 
 		case PF_A16B16G16R16:
 			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
-				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_UNSIGNED_SHORT, NULL))
+				iGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_UNSIGNED_SHORT, NULL))
 				return IL_FALSE;
 			break;
 
@@ -637,7 +637,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 		case PF_G32R32F:
 		case PF_A32B32G32R32F:
 			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, iCompFormatToChannelCount(CompFormat),
-				ilGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_FLOAT, NULL))
+				iGetFormatBpp(iCompFormatToChannelCount(CompFormat)), IL_FLOAT, NULL))
 				return IL_FALSE;
 			break;
 
@@ -804,7 +804,7 @@ ILboolean ReadMipmaps(DDS_CONTEXT *ctx, ILuint CompFormat)
 		if (ctx->Height == 0) 
 			ctx->Height = 1;
 
-		ctx->Image->Mipmaps = ilNewImage(ctx->Width, ctx->Height, ctx->Depth, Channels, Bpc);
+		ctx->Image->Mipmaps = iNewImage(ctx->Width, ctx->Height, ctx->Depth, Channels, Bpc);
 		if (ctx->Image->Mipmaps == NULL)
 			goto mip_fail;
 
@@ -2050,7 +2050,7 @@ ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFor
 	ILint xBlocks, yBlocks, BlockSize, LineSize, DataSize;
 
 
-	//The next few lines are copied from iTexImage() and ilInitImage() -
+	//The next few lines are copied from iTexImage() and iInitImage() -
 	//should be factored in more reusable functions...
 	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);

@@ -68,7 +68,7 @@ char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide)
   return Temp;
 }
 
-ILenum iTypeFromExt(ILconst_string FileName) {
+ILenum ILAPIENTRY iTypeFromExt(ILconst_string FileName) {
   ILenum    Type;
   ILstring  Ext;
 
@@ -290,7 +290,7 @@ ILboolean ILAPIENTRY iSaveImage(ILimage *Image, ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  Type = ilTypeFromExt(FileName);
+  Type = iTypeFromExt(FileName);
 
   if (Type == IL_TYPE_UNKNOWN) {
     iSetError(IL_INVALID_PARAM);

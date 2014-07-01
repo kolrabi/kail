@@ -18,7 +18,7 @@
 #include <limits.h>
 
 ILboolean iLoadPal(ILimage *Image, ILconst_string FileName) {
-  ILenum type = ilTypeFromExt(FileName);
+  ILenum type = iTypeFromExt(FileName);
 
   // TODO: general check if type is a palette
   if ( type == IL_JASC_PAL
@@ -36,7 +36,7 @@ ILboolean iLoadPal(ILimage *Image, ILconst_string FileName) {
 
 ILboolean iSavePal(ILimage *Image, ILconst_string FileName)
 {
-  ILenum type = ilTypeFromExt(FileName);
+  ILenum type = iTypeFromExt(FileName);
 
   // TODO: general check if type is a palette
   if (type == IL_JASC_PAL) {
@@ -126,7 +126,7 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
           if (NewPal->Palette == NULL)
             goto alloc_error;
           if (DestFormat == IL_PAL_BGR24) {
-            j = ilGetBppPal(Pal->PalType);
+            j = iGetBppPal(Pal->PalType);
             for (i = 0; i < Pal->PalSize; i += j) {
               NewPal->Palette[i] = Pal->Palette[i+2];
               NewPal->Palette[i+1] = Pal->Palette[i+1];
@@ -144,7 +144,7 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
           if (NewPal->Palette == NULL)
             goto alloc_error;
           if (DestFormat == IL_PAL_RGB24) {
-            j = ilGetBppPal(Pal->PalType);
+            j = iGetBppPal(Pal->PalType);
             for (i = 0; i < Pal->PalSize; i += j) {
               NewPal->Palette[i] = Pal->Palette[i+2];
               NewPal->Palette[i+1] = Pal->Palette[i+1];
@@ -450,7 +450,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
     return IL_FALSE;
   }
 
-  NumPix = CurImage->SizeOfData / ilGetBppFormat(CurImage->Format);
+  NumPix = CurImage->SizeOfData / iGetBppFormat(CurImage->Format);
   switch (CurImage->Format)
   {
     case IL_COLOUR_INDEX:
@@ -460,7 +460,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
         return IL_FALSE;
       }
 
-      NumPix = CurImage->Pal.PalSize / ilGetBppPal(CurImage->Pal.PalType);
+      NumPix = CurImage->Pal.PalSize / iGetBppPal(CurImage->Pal.PalType);
       for (i = 0; i < NumPix; i++) {
         for (j = 0; j < Image.Pal.PalSize; j += 3) {
           // No need to perform a sqrt.

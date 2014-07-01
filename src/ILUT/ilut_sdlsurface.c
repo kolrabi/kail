@@ -129,7 +129,7 @@ SDL_Surface * iConvertToSDLSurface(ILimage *ilutCurImage, unsigned int flags)
     SDL_UnlockSurface(Bitmap);
 
   if (Image->Format == IL_COLOR_INDEX) {
-    BppPal = ilGetBppPal(Image->Pal.PalType);
+    BppPal = iGetBppPal(Image->Pal.PalType);
     switch (ilutCurImage->Pal.PalType)
     {
       case IL_PAL_RGB24:
@@ -191,7 +191,7 @@ SDL_Surface* ILAPIENTRY ilutSDLSurfaceLoadImage(ILstring FileName)
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1,1,1);
+  Temp = iNewImage(1,1,1,1,1);
   Temp->io = ilutCurImage->io;
   iUnlockImage(ilutCurImage);
   iUnlockState();

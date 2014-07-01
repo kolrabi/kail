@@ -435,7 +435,7 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
     ifree(NewImage);
     return NULL;
   }
-  ilCopyImageAttr(NewImage, Image);
+  iCopyImageAttr(NewImage, Image);
 
   NewImage->Bpp         = 1;
   NewImage->Bps         = Image->Width;

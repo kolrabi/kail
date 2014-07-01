@@ -28,7 +28,7 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 	if (Image->Format == IL_COLOUR_INDEX) {
 		PalType = Image->Pal.PalType;
 		CurImage = Image;
-		Image = iConvertImage(CurImage, ilGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
+		Image = iConvertImage(CurImage, iGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
 	}
 
 	Temp = iluRotate_(Image, Angle);
@@ -98,12 +98,12 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 	Rotated = (ILimage*)icalloc(1, sizeof(ILimage));
 	if (Rotated == NULL)
 		return NULL;
-	if (ilCopyImageAttr(Rotated, Image) == IL_FALSE) {
+	if (iCopyImageAttr(Rotated, Image) == IL_FALSE) {
 		iCloseImage(Rotated);
 		return NULL;
 	}
 
-	if (ilResizeImage(Rotated, abs(MaxX) - MinX, abs(MaxY) - MinY, 1, Image->Bpp, Image->Bpc) == IL_FALSE) {
+	if (iResizeImage(Rotated, abs(MaxX) - MinX, abs(MaxY) - MinY, 1, Image->Bpp, Image->Bpc) == IL_FALSE) {
 		iCloseImage(Rotated);
 		return IL_FALSE;
 	}

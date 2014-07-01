@@ -591,7 +591,7 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
 
   if (Src->Pal.Palette != NULL && Src->Pal.PalSize != 0 && Src->Pal.PalType != IL_PAL_NONE) {
     //ilSetCurImage(Src);
-    Dest = iConvertImage(Src, ilGetPalBaseType(Src->Pal.PalType), IL_UNSIGNED_BYTE);
+    Dest = iConvertImage(Src, iGetPalBaseType(Src->Pal.PalType), IL_UNSIGNED_BYTE);
     //Dest = iConvertImage(IL_BGR);
     //ilSetCurImage(ilutCurImage);
     if (Dest == NULL)
@@ -607,8 +607,8 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
   }
 
   if (HasNonPowerOfTwoHardware == IL_FALSE && 
-      (Src->Width  != ilNextPower2(Src->Width)  ||
-       Src->Height != ilNextPower2(Src->Height)  )) {
+      (Src->Width  != iNextPower2(Src->Width)  ||
+       Src->Height != iNextPower2(Src->Height)  )) {
         need_resize = IL_TRUE;
       }
 
@@ -616,11 +616,11 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
     need_resize = IL_TRUE;
 
   if (need_resize == IL_TRUE) {
-    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : ilNextPower2(Dest->Width)  );
-    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : ilNextPower2(Dest->Height) );
+    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : iNextPower2(Dest->Width)  );
+    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : iNextPower2(Dest->Height) );
 
     if (!Created) {
-      Dest = ilCopyImage_(Src);
+      Dest = iCloneImage(Src);
       if (Dest == NULL) {
         return NULL;
       }
@@ -659,7 +659,7 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
   ILboolean   need_resize = IL_FALSE;
 
   if (Src->Pal.Palette != NULL && Src->Pal.PalSize != 0 && Src->Pal.PalType != IL_PAL_NONE) {
-    Dest = iConvertImage(Src, ilGetPalBaseType(Src->Pal.PalType), IL_UNSIGNED_BYTE);
+    Dest = iConvertImage(Src, iGetPalBaseType(Src->Pal.PalType), IL_UNSIGNED_BYTE);
 
     if (Dest == NULL)
       return NULL;
@@ -673,9 +673,9 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
   }
 
   if (HasNonPowerOfTwoHardware == IL_FALSE && 
-      (Src->Width  != ilNextPower2(Src->Width)  ||
-       Src->Height != ilNextPower2(Src->Height) ||
-       Src->Depth  != ilNextPower2(Src->Depth) )) {
+      (Src->Width  != iNextPower2(Src->Width)  ||
+       Src->Height != iNextPower2(Src->Height) ||
+       Src->Depth  != iNextPower2(Src->Depth) )) {
         need_resize = IL_TRUE;
       }
 
@@ -683,11 +683,11 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
     need_resize = IL_TRUE;
 
   if (need_resize == IL_TRUE) {
-    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : ilNextPower2(Dest->Width)  );
-    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : ilNextPower2(Dest->Height) );
+    ILuint DestW = IL_MIN( Settings->MaxTexW, HasNonPowerOfTwoHardware ? Dest->Width  : iNextPower2(Dest->Width)  );
+    ILuint DestH = IL_MIN( Settings->MaxTexH, HasNonPowerOfTwoHardware ? Dest->Height : iNextPower2(Dest->Height) );
 
     if (!Created) {
-      Dest = ilCopyImage_(Src);
+      Dest = iCloneImage(Src);
       if (Dest == NULL) {
         return NULL;
       }
@@ -730,7 +730,7 @@ GLuint ILAPIENTRY ilutGLLoadImage(ILstring FileName)
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1,1,1);
+  Temp = iNewImage(1,1,1,1,1);
   Temp->io = ilutCurImage->io;
   iUnlockImage(ilutCurImage);
   GetSettings(&Settings);
@@ -757,7 +757,7 @@ ILboolean ILAPIENTRY ilutGLSaveImage(ILstring FileName, GLuint TexID) {
   
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1,1,1);
+  Temp = iNewImage(1,1,1,1,1);
   Temp->io = ilutCurImage->io;
   iUnlockImage(ilutCurImage);
   GetSettings(&Settings);
@@ -836,7 +836,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
     return IL_FALSE;
   }
 
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
 
   if (!ilutGLScreen_(Temp)) {
     ReturnVal = IL_FALSE;

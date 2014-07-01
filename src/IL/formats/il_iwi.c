@@ -78,8 +78,8 @@ ILboolean iCheckIwi(IWIHEAD *Header) {
 	if ( Header->Format == IWI_DXT1 
 	  || Header->Format == IWI_DXT3  
 	  || Header->Format == IWI_DXT5 )
-		if ( Header->Width  != ilNextPower2(Header->Width) 
-			|| Header->Height != ilNextPower2(Header->Height))
+		if ( Header->Width  != iNextPower2(Header->Width) 
+			|| Header->Height != iNextPower2(Header->Height))
 			return IL_FALSE;
 
 	// Format must be valid
@@ -187,13 +187,13 @@ static ILboolean IwiInitMipmaps(ILimage *BaseImage, ILuint *NumMips)
 		Width  = (Width  >> 1) == 0 ? 1 : (Width >> 1);
 		Height = (Height >> 1) == 0 ? 1 : (Height >> 1);
 
-		Image->Mipmaps = ilNewImageFull(Width, Height, 1, BaseImage->Bpp, BaseImage->Format, BaseImage->Type, NULL);
+		Image->Mipmaps = iNewImageFull(Width, Height, 1, BaseImage->Bpp, BaseImage->Format, BaseImage->Type, NULL);
 		if (Image->Mipmaps == NULL)
 			return IL_FALSE;
 		Image = Image->Mipmaps;
 
-		// ilNewImage does not set these.
-		/* ilNewImageFull does...
+		// iNewImage does not set these.
+		/* iNewImageFull does...
 		Image->Format = BaseImage->Format;
 		Image->Type   = BaseImage->Type;
 		*/

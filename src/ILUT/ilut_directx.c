@@ -93,7 +93,7 @@ static void CheckFormatsDX8(IDirect3DDevice8 *Device) {
 ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -125,7 +125,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_strin
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -161,7 +161,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void 
   GetSettings(&Settings);
   iUnlockState();
 
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
 
   iSetInputLump(Temp, Lump, Size);
   if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
@@ -183,7 +183,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, void 
  */
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   ILUT_TEXTURE_SETTINGS_DX8 Settings;
   GetSettings(&Settings);
   iUnlockState();
@@ -218,7 +218,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
   Data = (ILubyte*)LockResource(Resource);
 
   iLockState();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   ILUT_TEXTURE_SETTINGS_DX8 Settings;
   GetSettings(&Settings);
   iUnlockState();
@@ -250,7 +250,7 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
   Data = (ILubyte*)LockResource(Resource);
 
   iLockState();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   ILUT_TEXTURE_SETTINGS_DX8 Settings;
   GetSettings(&Settings);
   iUnlockState();
@@ -280,7 +280,7 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
 ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
@@ -309,7 +309,7 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDL
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DVolumeTexture8 **Texture) {
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = File;
   iUnlockImage(ilutCurImage);
@@ -549,13 +549,13 @@ static ILimage *MakeD3D8Compliant(ILimage *ilutCurImage, IDirect3DDevice8 *Devic
   }
 
   // Images must have powers-of-2 dimensions.
-  if (ilNextPower2(ilutCurImage->Width)   != ilutCurImage->Width  ||
-      ilNextPower2(ilutCurImage->Height)  != ilutCurImage->Height ||
-      ilNextPower2(ilutCurImage->Depth)   != ilutCurImage->Depth) {
+  if (iNextPower2(ilutCurImage->Width)   != ilutCurImage->Width  ||
+      iNextPower2(ilutCurImage->Height)  != ilutCurImage->Height ||
+      iNextPower2(ilutCurImage->Depth)   != ilutCurImage->Depth) {
     Scaled = iluScale_(Converted, 
-      ilNextPower2(ilutCurImage->Width),
-      ilNextPower2(ilutCurImage->Height), 
-      ilNextPower2(ilutCurImage->Depth),
+      iNextPower2(ilutCurImage->Width),
+      iNextPower2(ilutCurImage->Height), 
+      iNextPower2(ilutCurImage->Depth),
       Settings->Filter
     );
     if (Converted != ilutCurImage) {
@@ -581,7 +581,7 @@ static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image) 
   Width     = Image->Width;
   Height    = Image->Height;
 
-  MipImage = ilCopyImage_(Image);
+  MipImage = iCloneImage(Image);
 
   if (!iBuildMipmaps(MipImage, MipImage->Width >> 1, MipImage->Height >> 1, MipImage->Depth >> 1)) {
     iCloseImage(MipImage);

@@ -101,10 +101,6 @@ static void iSetSelection(ILuint Image, ILuint Frame, ILuint Face, ILuint Layer,
   iGetSelection()->CurMipmap  = Mipmap;
 }
 
-static ILuint iGetCurName() {
-  return iGetSelection()->CurName;
-}
-
 ILimage * iGetImage(ILuint Image) {
   if (ImageStack == NULL || StackSize == 0) {
     return NULL;
@@ -159,7 +155,7 @@ void iGenImages(ILsizei Num, ILuint *Images) {
     if (FreeNames != NULL) {  // If any have been deleted, then reuse their image names.
       TempFree = (iFree*)FreeNames->Next;
       Images[Index] = FreeNames->Name;
-      ImageStack[FreeNames->Name] = ilNewImage(1, 1, 1, 1, 1);
+      ImageStack[FreeNames->Name] = iNewImage(1, 1, 1, 1, 1);
       ifree(FreeNames);
       FreeNames = TempFree;
     } else {
@@ -168,7 +164,7 @@ void iGenImages(ILsizei Num, ILuint *Images) {
           return;
       Images[Index] = LastUsed;
       // Must be all 1's instead of 0's, because some functions would divide by 0.
-      ImageStack[LastUsed] = ilNewImage(1, 1, 1, 1, 1);
+      ImageStack[LastUsed] = iNewImage(1, 1, 1, 1, 1);
       LastUsed++;
     }
   } while (++Index < Num);
@@ -189,7 +185,7 @@ void iBindImage(ILuint Image) {
   }
 
   if (ImageStack[Image] == NULL) {
-    ImageStack[Image] = ilNewImage(1, 1, 1, 1, 1);
+    ImageStack[Image] = iNewImage(1, 1, 1, 1, 1);
     if (Image >= LastUsed) // >= ?
       LastUsed = Image + 1;
   }
@@ -314,6 +310,15 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
     Image->DxtcSize = 0;
   }
 
+  // clear old exif data first
+  while(Image->ExifTags) {
+    ILexif *NextExif = Image->ExifTags->Next;
+    ifree(Image->ExifTags->Data);
+    ifree(Image->ExifTags);
+    Image->ExifTags = NextExif;
+  }
+  Image->ExifTags = NULL;
+
   ifree(Image);
   Image = NULL;
 
@@ -342,7 +347,7 @@ ILAPI ILboolean ILAPIENTRY ilIsValidPal(ILpal *Palette)
 
 
 //! Closes Palette and frees all memory associated with it.
-ILAPI void ILAPIENTRY ilClosePal(ILpal *Palette)
+ILAPI void ILAPIENTRY iClosePalReal(ILpal *Palette)
 {
   if (Palette == NULL)
     return;
@@ -354,7 +359,7 @@ ILAPI void ILAPIENTRY ilClosePal(ILpal *Palette)
 }
 
 ILAPI ILimage * ILAPIENTRY iGetBaseImage() {
-  return ImageStack[ilGetCurName()];
+  return ImageStack[iGetCurName()];
 }
 
 //! Sets the current mipmap level
@@ -514,21 +519,21 @@ ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num) {
     case IL_SUB_NEXT:
       if (Image->Next)
         iCloseImage(Image->Next);
-      Image->Next = ilNewImage(1, 1, 1, 1, 1);
+      Image->Next = iNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Next;
       break;
 
     case IL_SUB_MIPMAP:
       if (Image->Mipmaps)
         iCloseImage(Image->Mipmaps);
-      Image->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
+      Image->Mipmaps = iNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Mipmaps;
       break;
 
     case IL_SUB_LAYER:
       if (Image->Layers)
         iCloseImage(Image->Layers);
-      Image->Layers = ilNewImage(1, 1, 1, 1, 1);
+      Image->Layers = iNewImage(1, 1, 1, 1, 1);
       SubImage = Image->Layers;
       break;
 
@@ -542,7 +547,7 @@ ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num) {
   }
 
   for (Count = 1; Count < Num; Count++) {
-    ILimage *Next = ilNewImage(1, 1, 1, 1, 1);
+    ILimage *Next = iNewImage(1, 1, 1, 1, 1);
     if (!Next) break;
     switch (Type) {
       case IL_SUB_NEXT:     SubImage->Next    = Next; break;
@@ -556,7 +561,7 @@ ILuint iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num) {
 }
 
 // Returns the current index.
-ILAPI ILuint ILAPIENTRY ilGetCurName() {
+ILAPI ILuint ILAPIENTRY iGetCurName() {
   return iGetSelection()->CurName;
 }
 
@@ -684,7 +689,7 @@ static void iSetImage0() {
   LastUsed = 1;
   iSetSelection(0, 0,0,0,0);
   if (!ImageStack[0])
-    ImageStack[0] = ilNewImage(1, 1, 1, 1, 1);
+    ImageStack[0] = iNewImage(1, 1, 1, 1, 1);
   iDefaultImage(ImageStack[0]);
 }
 
@@ -702,7 +707,7 @@ static void iBindImageTemp() {
   iSetSelection(1, 0,0,0,0);
 
   if (!ImageStack[1])
-    ImageStack[1] = ilNewImage(1, 1, 1, 1, 1);
+    ImageStack[1] = iNewImage(1, 1, 1, 1, 1);
 
   if (lastImage)
     iGetSelectedImage(iGetSelection())->io = lastImage->io;

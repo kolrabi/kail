@@ -94,12 +94,12 @@ ILboolean iRemoveLoad(ILconst_string Ext) {
     if (!iStrCmp(Ext, TempNode->Ext)) {
       if (PrevNode == NULL) {  // first node in the list
         LoadProcs = TempNode->Next;
-        ifree((void*)TempNode->Ext);
+        ifree(TempNode->Ext);
         ifree(TempNode);
       }
       else {
         PrevNode->Next = TempNode->Next;
-        ifree((void*)TempNode->Ext);
+        ifree(TempNode->Ext);
         ifree(TempNode);
       }
 
@@ -120,12 +120,12 @@ ILboolean iRemoveSave(ILconst_string Ext) {
     if (!iStrCmp(Ext, TempNode->Ext)) {
       if (PrevNode == NULL) {  // first node in the list
         SaveProcs = TempNode->Next;
-        ifree((void*)TempNode->Ext);
+        ifree(TempNode->Ext);
         ifree(TempNode);
       }
       else {
         PrevNode->Next = TempNode->Next;
-        ifree((void*)TempNode->Ext);
+        ifree(TempNode->Ext);
         ifree(TempNode);
       }
 
@@ -148,14 +148,14 @@ void ilRemoveRegistered()
 
   while (LoadProcs != NULL) {
     TempNodeL = LoadProcs->Next;
-    ifree((void*)LoadProcs->Ext);
+    ifree(LoadProcs->Ext);
     ifree(LoadProcs);
     LoadProcs = TempNodeL;
   }
 
   while (SaveProcs != NULL) {
     TempNodeS = SaveProcs->Next;
-    ifree((void*)SaveProcs->Ext);
+    ifree(SaveProcs->Ext);
     ifree(SaveProcs);
     SaveProcs = TempNodeS;
   }
@@ -260,7 +260,7 @@ ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num) {
   if (Num == 0)  // Just gets rid of all the mipmaps.
     return IL_TRUE;
 
-  Image->Faces = ilNewImage(1, 1, 1, 1, 1);
+  Image->Faces = iNewImage(1, 1, 1, 1, 1);
   if (Image->Faces == NULL)
     return IL_FALSE;
 
@@ -268,7 +268,7 @@ ILboolean iRegisterNumFaces(ILimage *Image, ILuint Num) {
   Num--;
 
   while (Num) {
-    Next->Faces = ilNewImage(1, 1, 1, 1, 1);
+    Next->Faces = iNewImage(1, 1, 1, 1, 1);
     if (Next->Faces == NULL) {
       // Clean up before we error out.
       Prev = Image->Faces;
@@ -296,14 +296,14 @@ ILboolean iRegisterMipNum(ILimage *Image, ILuint Num) {
   if (Num == 0)  // Just gets rid of all the mipmaps.
     return IL_TRUE;
 
-  Image->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
+  Image->Mipmaps = iNewImage(1, 1, 1, 1, 1);
   if (Image->Mipmaps == NULL)
     return IL_FALSE;
   Next = Image->Mipmaps;
   Num--;
 
   while (Num) {
-    Next->Mipmaps = ilNewImage(1, 1, 1, 1, 1);
+    Next->Mipmaps = iNewImage(1, 1, 1, 1, 1);
     if (Next->Mipmaps == NULL) {
       // Clean up before we error out.
       Prev = Image->Mipmaps;
@@ -331,14 +331,14 @@ ILboolean iRegisterNumImages(ILimage *Image, ILuint Num) {
   if (Num == 0)  // Just gets rid of all the "next" images.
     return IL_TRUE;
 
-  Image->Next = ilNewImage(1, 1, 1, 1, 1);
+  Image->Next = iNewImage(1, 1, 1, 1, 1);
   if (Image->Next == NULL)
     return IL_FALSE;
   Next = Image->Next;
   Num--;
 
   while (Num) {
-    Next->Next = ilNewImage(1, 1, 1, 1, 1);
+    Next->Next = iNewImage(1, 1, 1, 1, 1);
     if (Next->Next == NULL) {
       // Clean up before we error out.
       Prev = Image->Next;

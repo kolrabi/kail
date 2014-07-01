@@ -167,7 +167,7 @@ static HBITMAP iConvertSliceToHBitmap(ILimage *ilutCurImage, HDC hDC, ILuint sli
         palImg = iConvertPal(&TempImage->Pal, IL_PAL_BGR32);
         if (palImg != NULL) {
           memcpy(pal, palImg->Palette, palImg->PalSize);
-          ilClosePal(palImg);
+          iClosePal(palImg);
         }
         else {
           //iSetError(IL_INVALID_PARAM);
@@ -374,7 +374,7 @@ HBITMAP ILAPIENTRY ilutWinLoadImage(ILconst_string filename_, HDC hDC)
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -410,7 +410,7 @@ ILboolean ILAPIENTRY ilutWinSaveImage(ILstring filename_, HBITMAP Bitmap)
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -702,7 +702,7 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   iUnlockState();
 
   if (ilutCurImage == NULL) {
@@ -926,7 +926,7 @@ ILboolean ILAPIENTRY ilutWinLoadUrl(ILstring Url)
   }
 
   if (!Is404) {
-    if (!ilLoadL(ilTypeFromExt(Url), Buffer, BufferSize)) {
+    if (!ilLoadL(iTypeFromExt(Url), Buffer, BufferSize)) {
       if (!ilLoadL(IL_TYPE_UNKNOWN, Buffer, BufferSize)) {
         ifree(Buffer);
         return IL_FALSE;

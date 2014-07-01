@@ -425,12 +425,12 @@ ILint ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode)
              return Image->Pal.PalType;
 
         case IL_PALETTE_BPP:
-             return ilGetBppPal(Image->Pal.PalType);
+             return iGetBppPal(Image->Pal.PalType);
 
         case IL_PALETTE_NUM_COLS:
              if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE)
                   return 0;
-             return Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType);
+             return Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType);
 
         case IL_PALETTE_BASE_TYPE:
              switch (Image->Pal.PalType)

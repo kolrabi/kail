@@ -46,8 +46,8 @@ BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
   if (ilutCurImage->Bpp == 8 && ilutCurImage->Pal.PalType != IL_PAL_NONE) {
     // Use the image's palette if there is one
     // @TODO:  Use new ilCopyPal!!!
-    TempImage = ilNewImage(ilutCurImage->Width, ilutCurImage->Height, ilutCurImage->Depth, ilutCurImage->Bpp, 1);
-    ilCopyImageAttr(TempImage, ilutCurImage);
+    TempImage = iNewImage(ilutCurImage->Width, ilutCurImage->Height, ilutCurImage->Depth, ilutCurImage->Bpp, 1);
+    iCopyImageAttr(TempImage, ilutCurImage);
 
     if (!iConvertImagePal(TempImage, IL_PAL_RGB24)) {
       destroy_bitmap(Bitmap);
@@ -86,7 +86,7 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
   BITMAP *Alleg;
 
   iLockState();
-  Image = ilNewImage(1,1,1,1,1);
+  Image = iNewImage(1,1,1,1,1);
   iUnlockState();
 
   if (!iLoad(Image, IL_TYPE_UNKNOWN, FileName)) {

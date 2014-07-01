@@ -26,6 +26,7 @@ SET                     ( SOURCES
                           formats/il_dicom.c
                           formats/il_doom.c
                           formats/il_dpx.c
+                          formats/il_exif.c
                           formats/il_exr.cc
                           formats/il_fits.c
                           formats/il_ftx.c

@@ -248,7 +248,7 @@ XImage * ILAPIENTRY ilutXLoadImage( Display * dpy, char * filename_ )
 
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -276,7 +276,7 @@ Pixmap ILAPIENTRY ilutXLoadPixmap( Display * dpy, Drawable draw, char * filename
 
   iLockState();
   ILimage *ilutCurImage = iLockCurImage();
-  ILimage* Temp = ilNewImage(1,1,1, 1,1);
+  ILimage* Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -436,7 +436,7 @@ XImage * ILAPIENTRY ilutXShmLoadImage( Display * dpy, char* filename_, XShmSegme
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);
@@ -471,7 +471,7 @@ Pixmap ILAPIENTRY ilutXShmLoadPixmap( Display * dpy, Drawable draw, char* filena
 
   iLockState();
   ilutCurImage = iLockCurImage();
-  Temp = ilNewImage(1,1,1, 1,1);
+  Temp = iNewImage(1,1,1, 1,1);
   Temp->io = ilutCurImage->io;
   Temp->io.handle = NULL;
   iUnlockImage(ilutCurImage);

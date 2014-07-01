@@ -160,7 +160,7 @@ static ILboolean
 GifHandleDisposal(
 	GifLoadingContext *Ctx
 ) {
-	Ctx->Image->Next = ilNewImageFull(Ctx->Target->Width, Ctx->Target->Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+	Ctx->Image->Next = iNewImageFull(Ctx->Target->Width, Ctx->Target->Height, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 	if (Ctx->Image->Next == NULL) {
 		iTrace("**** failed to create new image for frame!\n");
 		return IL_FALSE;

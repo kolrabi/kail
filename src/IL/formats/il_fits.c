@@ -287,6 +287,7 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 			return CARD_READ_FAIL;
 //@TODO: Should I do this check from the calling function?  Does it really matter?
 		if (Header->NumAxes < 1 || Header->NumAxes > 3) {
+			iTrace("**** FITS file has %d axes", Header->NumAxes);
 			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return CARD_READ_FAIL;
 		}

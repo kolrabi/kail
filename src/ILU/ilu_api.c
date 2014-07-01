@@ -408,7 +408,7 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
 
   iLockState();
   Image = iLockCurImage();
-  Id    = ilGetCurName();
+  Id    = iGetCurName();
   iUnlockState();
 
   if (Image == NULL) {
@@ -627,7 +627,7 @@ void ILAPIENTRY iluRegioniv(ILUpointi *Points, ILuint n) {
  */
 ILboolean ILAPIENTRY iluReplaceColour(ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance) {
   ILubyte ClearCol[4];
-  ilGetClear(ClearCol, IL_RGBA, IL_UNSIGNED_BYTE);
+  iGetClear(ClearCol, IL_RGBA, IL_UNSIGNED_BYTE);
   SIMPLE_FUNC(Image, ILboolean, iReplaceColour(Image, Red, Green, Blue, Tolerance, ClearCol));
 }
 

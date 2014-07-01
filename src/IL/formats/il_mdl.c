@@ -96,7 +96,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 			Image->Origin = IL_ORIGIN_LOWER_LEFT;
 			BaseImage 		= Image;
 		} else {
-			Image->Next 	= ilNewImage(TexHead.Width, TexHead.Height, 1, 1, 1);
+			Image->Next 	= iNewImage(TexHead.Width, TexHead.Height, 1, 1, 1);
 			Image 				= Image->Next;
 			Image->Format = IL_COLOUR_INDEX;
 			Image->Type 	= IL_UNSIGNED_BYTE;

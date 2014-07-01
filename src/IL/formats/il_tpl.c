@@ -152,7 +152,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 		/* WrapT =*/  GetBigUInt(io);
 		if (WrapS == TPL_REPEAT || WrapS == TPL_MIRROR) {
 			// By the specs, repeated and mirrored textures must have dimensions of power of 2.
-			if ((Width != ilNextPower2(Width)) || (Height != ilNextPower2(Height))) {
+			if ((Width != iNextPower2(Width)) || (Height != iNextPower2(Height))) {
 				iSetError(IL_ILLEGAL_FILE_VALUE);
 				return IL_FALSE;
 			}
@@ -210,7 +210,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 				return IL_FALSE;
 		}
 		else {
-			Image->Next = ilNewImageFull(Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL);
+			Image->Next = iNewImageFull(Width, Height, 1, Bpp, Format, IL_UNSIGNED_BYTE, NULL);
 			if (Image->Next == NULL)
 				return IL_FALSE;
 			Image = Image->Next;

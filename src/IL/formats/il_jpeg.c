@@ -19,6 +19,9 @@
 #include "il_internal.h"
 
 #ifndef IL_NO_JPG
+
+ILboolean iExifLoad(ILimage *Image);
+
 	#ifndef IL_USE_IJL
 		#ifdef RGB_RED
 			#undef RGB_RED
@@ -92,6 +95,40 @@ static ILboolean iIsValidJpeg(SIO* io) {
 	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
 
 	return read == 2 && iCheckJpg(Head);
+}
+
+static ILboolean iJpegSeekToExif(SIO *io) {
+	static ILubyte SOI [2] = { 0xFF, 0xD8 };
+	static ILubyte APP1[2] = { 0xFF, 0xE1 };
+
+	ILubyte marker[2];
+  if (SIOread(io, marker, 1, 2) != 2) return IL_FALSE;
+  if (memcmp(marker, SOI, 2)) return IL_FALSE;
+
+  do {
+  	ILushort Size = 0;
+
+  	if (SIOread(io, marker, 1, 2) != 2) return IL_FALSE;
+  	if (SIOread(io, &Size, 1, 2) != 2) return IL_FALSE;
+
+  	BigUShort(&Size);
+
+  	if (memcmp(marker, APP1, 2)) {
+  		SIOseek(io, Size-2, IL_SEEK_CUR);
+  	} else {
+  		ILuint pos = SIOtell(io);
+  		ILubyte hdr[8];
+
+	  	if (SIOread(io, hdr, 1, 8) != 8) return IL_FALSE;
+	  	if (memcmp(hdr, "Exif\0\0MM", 8)) {
+	  		SIOseek(io, pos + Size - 2, IL_SEEK_SET);
+	  	} else {
+	  		SIOseek(io, -2, IL_SEEK_CUR);
+	  		return IL_TRUE;
+	  	}
+  	}
+  } while (!SIOeof(io));
+  return IL_FALSE;
 }
 
 #ifndef IL_USE_IJL // Use libjpeg instead of the IJL.
@@ -222,11 +259,14 @@ ILboolean iLoadJpegInternal(ILimage* image)
 	struct jpeg_error_mgr			Error;
 	struct jpeg_decompress_struct	JpegInfo;
 	ILboolean						result;
+	ILuint Start;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	Start = SIOtell(&image->io);
 
 	JpegInfo.err = jpeg_std_error(&Error);		// init standard error handlers
 	Error.error_exit = iJpegErrorExit;				// add our exit handler
@@ -251,6 +291,18 @@ ILboolean iLoadJpegInternal(ILimage* image)
 	else
 	{
 		jpeg_destroy_decompress(&JpegInfo);
+	}
+
+	if (result) {
+		ILuint End = SIOtell(&image->io);
+		SIOseek(&image->io, Start, IL_SEEK_SET);
+		if (iJpegSeekToExif(&image->io)) {
+			iTrace("Exif header at %08x", SIOtell(&image->io));
+			iExifLoad(image);
+		} else {
+			iTrace("Exif header not found");
+		}
+		SIOseek(&image->io, End, IL_SEEK_SET);
 	}
 
 	//return IL_TRUE;  // No need to call it again (called first in ilLoadFromJpegStruct).

@@ -518,6 +518,164 @@ enum {
 #define IL_RELATIVE                 0x0651
 #define IL_ABSOLUTE                 0x0652
 
+//
+// Exif
+//
+
+// TIFF IFDs
+#define IL_TIFF_IFD_EXIF                      0x8769
+#define IL_TIFF_IFD_GPS                       0x8825
+#define IL_TIFF_IFD_INTEROP                   0xA005
+
+// TIFF tags
+#define IL_TAG_TIFF_NEW_SUBFILE_TYPE          0x00FE
+#define IL_TAG_TIFF_SUBFILE_TYPE              0x00FF
+#define IL_TAG_TIFF_IMAGE_WIDTH               0x0100
+#define IL_TAG_TIFF_IMAGE_LENGTH              0x0101
+#define IL_TAG_TIFF_BITS_PER_SAMPLE           0x0102
+#define IL_TAG_TIFF_COMPRESSION               0x0103
+#define IL_TAG_TIFF_PHOTOMETRIC_INTERPRETATION 0x0106
+#define IL_TAG_TIFF_THRESHOLDING              0x0107
+#define IL_TAG_TIFF_DOCUMENT_NAME             0x010D
+#define IL_TAG_TIFF_IMAGE_DESCRIPTION         0x010E
+#define IL_TAG_TIFF_MAKE                      0x010F
+#define IL_TAG_TIFF_MODEL                     0x0110
+#define IL_TAG_TIFF_STRIP_OFFSETS             0x0111
+#define IL_TAG_TIFF_ORIENTATION               0x0112
+#define IL_TAG_TIFF_SAMPLES_PER_PIXEL         0x0115
+#define IL_TAG_TIFF_ROWS_PER_STRIP            0x0116
+#define IL_TAG_TIFF_STRIP_BYTE_COUNTS         0x0117
+#define IL_TAG_TIFF_X_RESOLUTION              0x011A
+#define IL_TAG_TIFF_Y_RESOLUTION              0x011B
+#define IL_TAG_TIFF_PLANAR_CONFIGURATION      0x011C
+#define IL_TAG_TIFF_PAGE_NAME                 0x011D
+#define IL_TAG_TIFF_X_POSITION                0x011E
+#define IL_TAG_TIFF_Y_POSITION                0x011F
+#define IL_TAG_TIFF_GRAY_RESPONSE_UNIT        0x0122
+#define IL_TAG_TIFF_GRAY_RESPONSE_CURVE       0x0123
+#define IL_TAG_TIFF_GROUP3_OPTIONS            0x0124
+#define IL_TAG_TIFF_GROUP4_OPTIONS            0x0125
+#define IL_TAG_TIFF_RESOLUTION_UNIT           0x0128
+#define IL_TAG_TIFF_PAGE_NUMBER               0x0129
+#define IL_TAG_TIFF_COLOUR_RESPONSE_CURVES    0x012D
+#define IL_TAG_TIFF_COLOR_RESPONSE_CURVES     0x012D
+#define IL_TAG_TIFF_SOFTWARE                  0x0131
+#define IL_TAG_TIFF_DATETIME                  0x0132
+#define IL_TAG_TIFF_ARTIST                    0x013B
+#define IL_TAG_TIFF_HOST_COMPUTER             0x013C
+#define IL_TAG_TIFF_PREDICTOR                 0x013D
+#define IL_TAG_TIFF_WHITE_POINT               0x013E
+// IL_TAG_TIFF_COLOR_IMAGE_TYPE 0x013E ?
+#define IL_TAG_TIFF_PRIMARY_CHROMATICITIES    0x013F
+// IL_TAG_TIFF_COLOR_LIST 0x013F ?
+#define IL_TAG_TIFF_COLOUR_MAP                0x0140
+#define IL_TAG_TIFF_COLOR_MAP                 0x0140
+
+// Interoperability IFD
+#define IL_TAG_INTEROP_INDEX                  0x0001
+
+// GPS IFD
+#define IL_TAG_GPS_VERSION_ID                 0x0000
+#define IL_TAG_GPS_LATITUDE_REF               0x0001
+#define IL_TAG_GPS_LATITUDE                   0x0002
+#define IL_TAG_GPS_LONGITUDE_REF              0x0003
+#define IL_TAG_GPS_LONGITUDE                  0x0004
+#define IL_TAG_GPS_ALTITUDE_REF               0x0005
+#define IL_TAG_GPS_ALTITUDE                   0x0006
+#define IL_TAG_GPS_TIMESTAMP                  0x0007
+#define IL_TAG_GPS_SATELLITES                 0x0008
+#define IL_TAG_GPS_STATUS                     0x0009
+#define IL_TAG_GPS_MEASURE_MODE               0x000A
+#define IL_TAG_GPS_DOP                        0x000B
+#define IL_TAG_GPS_SPEED_REF                  0x000C
+#define IL_TAG_GPS_SPEED                      0x000D
+#define IL_TAG_GPS_TRACK_REF                  0x000E
+#define IL_TAG_GPS_TRACK                      0x000F
+#define IL_TAG_GPS_IMAGE_DIRECTION_REF        0x0010
+#define IL_TAG_GPS_IMAGE_DIRECTION            0x0011
+#define IL_TAG_GPS_MAP_DATUM                  0x0012
+#define IL_TAG_GPS_DESTINATION_LATITUDE_REF   0x0013
+#define IL_TAG_GPS_DESTINATION_LATITUDE       0x0014
+#define IL_TAG_GPS_DESTINATION_LONGITUDE_REF  0x0015
+#define IL_TAG_GPS_DESTINATION_LONGITUDE      0x0016
+#define IL_TAG_GPS_DESTINATION_BEARING_REF    0x0017
+#define IL_TAG_GPS_DESTINATION_BEARING        0x0018
+#define IL_TAG_GPS_DESTINATION_DISTANCE_REF   0x0019
+#define IL_TAG_GPS_DESTINATION_DISTANCE       0x001A
+#define IL_TAG_GPS_PROCESSING_METHOD          0x001B
+#define IL_TAG_GPS_AREA_INFORMATION           0x001C
+#define IL_TAG_GPS_DATESTAMP                  0x001D
+#define IL_TAG_GPS_DIFFERENTIAL               0x001E
+
+// Exif IFD
+#define IL_TAG_EXIF_EXPOSURE_TIME             0x829A
+#define IL_TAG_EXIF_FSTOP                     0x829D
+#define IL_TAG_EXIF_EXPOSURE_PROGRAM          0x8822
+#define IL_TAG_EXIF_SPECTRAL_SENSITIVITY      0x8824
+#define IL_TAG_EXIF_ISO_RATING                0x8827
+#define IL_TAG_EXIF_OECF                      0x8828
+#define IL_TAG_EXIF_EXIF_VERSION              0x9000
+#define IL_TAG_EXIF_DATETIME_ORIGINAL         0x9003
+#define IL_TAG_EXIF_DATETIME_DIGITIZED        0x9004
+#define IL_TAG_EXIF_COMPONENTS_CONFIGURATION  0x9101
+#define IL_TAG_EXIF_APERTURE                  0x9202
+#define IL_TAG_EXIF_BRIGHTNESS                0x9203
+#define IL_TAG_EXIF_EXPOSURE_BIAS             0x9204
+#define IL_TAG_EXIF_MAX_APERTURE              0x9205
+#define IL_TAG_EXIF_SUBJECT_DISTANCE          0x9206
+#define IL_TAG_EXIF_METERING_MODE             0x9207
+#define IL_TAG_EXIF_LIGHT_SOURCE              0x9208
+#define IL_TAG_EXIF_FLASH                     0x9209
+#define IL_TAG_EXIF_FOCAL_LENGTH              0x920A
+#define IL_TAG_EXIF_SUBJECT_AREA              0x9214
+#define IL_TAG_EXIF_MAKER_NOTE                0x927C
+#define IL_TAG_EXIF_USER_COMMENT              0x9286
+#define IL_TAG_EXIF_SUB_SECOND_TIME           0x9290
+#define IL_TAG_EXIF_SUB_SECOND_TIME_ORIGINAL  0x9291
+#define IL_TAG_EXIF_SUB_SECOND_TIME_DIGITIZED 0x9292
+
+#define IL_TAG_EXIF_FLASHPIX_VERSION          0xA000
+#define IL_TAG_EXIF_COLOUR_SPACE              0xA001
+#define IL_TAG_EXIF_COLOR_SPACE               0xA001
+#define IL_TAG_EXIF_PIXEL_X_DIMENSION         0xA002
+#define IL_TAG_EXIF_PIXEL_Y_DIMENSION         0xA003
+#define IL_TAG_EXIF_RELATED_SOUND_FILE        0xA004
+
+#define IL_TAG_EXIF_FLASH_ENERGY              0xA20B
+#define IL_TAG_EXIF_SPATIAL_FREQUENCY_RESPONSE 0xA20C
+#define IL_TAG_EXIF_FOCAL_PLANE_X_RESOLUTION  0xA20E
+#define IL_TAG_EXIF_FOCAL_PLANE_Y_RESOLUTION  0xA20F
+#define IL_TAG_EXIF_FOCAL_PLANE_RESOULTION_UNIT 0xA210
+#define IL_TAG_EXIF_SUBJECT_LOCATION          0xA214
+#define IL_TAG_EXIF_EXPOSURE_INDEX            0xA215
+#define IL_TAG_EXIF_SENSING_METHOD            0xA217
+#define IL_TAG_EXIF_FILE_SOURCE               0xA300
+#define IL_TAG_EXIF_SCENE_TYPE                0xA301
+#define IL_TAG_EXIF_CFA_PATTERN               0xA302
+#define IL_TAG_EXIF_CUSTOM_RENDERED           0xA401
+#define IL_TAG_EXIF_EXPOSURE_MODE             0xA402
+#define IL_TAG_EXIF_WHITE_BALANCE             0xA403
+#define IL_TAG_EXIF_DIGITAL_ZOOM_RATIO        0xA404
+#define IL_TAG_EXIF_FOCAL_LENGTH_35MM         0xA405
+#define IL_TAG_EXIF_SCENE_CAPTURE_TYPE        0xA406
+#define IL_TAG_EXIF_GAIN_CONTROL              0xA407
+#define IL_TAG_EXIF_CONTRAST                  0xA408
+#define IL_TAG_EXIF_SATURATION                0xA409
+#define IL_TAG_EXIF_SHARPNESS                 0xA40A
+#define IL_TAG_EXIF_DEVICE_SETTING_DESCRIPTION 0xA40B
+#define IL_TAG_EXIF_SUBJECT_DISTANCE_RANGE    0xA40C
+#define IL_TAG_EXIF_IMAGE_UNIQUE_ID           0xA420
+
+// Tag data types
+#define IL_EXIF_TYPE_NONE     0
+#define IL_EXIF_TYPE_BYTE     1
+#define IL_EXIF_TYPE_ASCII    2
+#define IL_EXIF_TYPE_WORD     3
+#define IL_EXIF_TYPE_DWORD    4
+#define IL_EXIF_TYPE_RATIONAL 5
+
+
+
 ///////////////////////////////////////////////////////////////////////////
 //
 // IO section

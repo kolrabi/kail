@@ -317,7 +317,7 @@ ILuint ILAPIENTRY iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Z
     iSetError(IL_ILLEGAL_OPERATION);
     return 0;
   }
-  DestSize = Width * Height * Depth * ilGetBppFormat(Format) * ilGetBpcType(Type);
+  DestSize = Width * Height * Depth * iGetBppFormat(Format) * iGetBpcType(Type);
   if (DestSize == 0) {
     return DestSize;
   }
@@ -357,7 +357,7 @@ ILuint ILAPIENTRY iCopyPixels(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Z
     return DestSize;
   }
 
-  Converted = ilConvertBuffer(SrcSize, Image->Format, Format, Image->Type, Type, &Image->Pal, TempBuff);
+  Converted = iConvertBuffer(SrcSize, Image->Format, Format, Image->Type, Type, &Image->Pal, TempBuff);
   if (Converted == NULL)
     goto failed;
 
@@ -566,7 +566,7 @@ void iSetPixels(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width
     Converted = (void*)Data;
   }
   else {
-    Converted = ilConvertBuffer(Width * Height * Depth * ilGetBppFormat(Format) * ilGetBpcType(Type), Format, Image->Format, Type, Image->Type, NULL, Data);
+    Converted = iConvertBuffer(Width * Height * Depth * iGetBppFormat(Format) * iGetBpcType(Type), Format, Image->Format, Type, Image->Type, NULL, Data);
     if (!Converted)
       return;
   }
@@ -664,7 +664,7 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
     return NULL;
   }
 
-  Bpc = ilGetBpcType(Type);
+  Bpc = iGetBpcType(Type);
   if (Bpc == 0) {
     iSetError(IL_INVALID_PARAM);
     return NULL;

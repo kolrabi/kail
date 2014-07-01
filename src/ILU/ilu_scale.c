@@ -120,7 +120,7 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
   Format = Image->Format;
   if (Format == IL_COLOUR_INDEX) {
     // PalType = Image->Pal.PalType;
-    ToScale = iConvertImage(Image, ilGetPalBaseType(Image->Pal.PalType), Image->Type);
+    ToScale = iConvertImage(Image, iGetPalBaseType(Image->Pal.PalType), Image->Type);
   }
   else {
     ToScale = Image;
@@ -128,13 +128,13 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
 
   // So we don't replicate this 3 times (one in each iluScalexD_() function.
   Scaled = (ILimage*)icalloc(1, sizeof(ILimage));
-  if (ilCopyImageAttr(Scaled, ToScale) == IL_FALSE) {
+  if (iCopyImageAttr(Scaled, ToScale) == IL_FALSE) {
     iCloseImage(Scaled);
     if (ToScale != Image)
       iCloseImage(ToScale);
     return NULL;
   }
-  if (ilResizeImage(Scaled, Width, Height, Depth, ToScale->Bpp, ToScale->Bpc) == IL_FALSE) {
+  if (iResizeImage(Scaled, Width, Height, Depth, ToScale->Bpp, ToScale->Bpc) == IL_FALSE) {
     iCloseImage(Scaled);
     if (ToScale != Image)
       iCloseImage(ToScale);

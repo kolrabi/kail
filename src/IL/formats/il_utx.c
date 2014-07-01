@@ -444,7 +444,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
 				Image = image;
 			}
 			else {
-				Image->Next = ilNewImageFull(Width, Height, 1, UtxFormatToBpp(Format), UtxFormatToDevIL(Format), IL_UNSIGNED_BYTE, NULL);
+				Image->Next = iNewImageFull(Width, Height, 1, UtxFormatToBpp(Format), UtxFormatToDevIL(Format), IL_UNSIGNED_BYTE, NULL);
 				if (Image->Next == NULL)
 					return IL_FALSE;
 				Image = Image->Next;

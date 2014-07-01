@@ -611,7 +611,7 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 	if (NewImage == NULL) {
 		return NULL;
 	}
-	ilCopyImageAttr(NewImage, Image);
+	iCopyImageAttr(NewImage, Image);
 	NewImage->Bpp = 1;
 	NewImage->Bps = Image->Width;
 	NewImage->SizeOfPlane = NewImage->Bps * Image->Height;

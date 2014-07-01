@@ -470,7 +470,7 @@ ILuint iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter
 		//case 'h': f=filter; s=filter_support; break;
 	}
 
-	Dest = ilNewImage(Width, Height, 1, Image->Bpp, 1);
+	Dest = iNewImage(Width, Height, 1, Image->Bpp, 1);
 	Dest->Origin = Image->Origin;
 	Dest->Duration = Image->Duration;
 	for (c = 0; c < (ILuint)Image->Bpp; c++) {

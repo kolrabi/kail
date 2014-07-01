@@ -123,7 +123,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 	// Header needed on all .pal files
 	SIOputs(io, "JASC-PAL\n0100\n256\n");
 
-	PalBpp = ilGetBppPal(ConvPal->PalType);
+	PalBpp = iGetBppPal(ConvPal->PalType);
 	for (i = 0; i < ConvPal->PalSize; i += PalBpp) {
 		char tmp[256];
 		snprintf(tmp, sizeof(tmp), "%d %d %d\n",

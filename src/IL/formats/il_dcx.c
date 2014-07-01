@@ -158,7 +158,7 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 		return iUncompressDcxSmall(io, Header);
 	}
 
-	Image = ilNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
+	Image = iNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
 	if (Image == NULL)
 		return NULL;
 
@@ -286,7 +286,7 @@ iUncompressDcxSmall(SIO *io, DCXHEAD *Header) {
 	ILubyte	HeadByte, Colour, Data = 0, *ScanLine = NULL;
 	ILimage	*Image;
 
-	Image = ilNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
+	Image = iNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
 	if (Image == NULL)
 		return NULL;
 

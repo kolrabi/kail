@@ -99,12 +99,12 @@ static ILboolean iCheckVtf(VTFHEAD *Header) {
 	if (Header->Width == 0 || Header->Height == 0)
 		return IL_FALSE;
 	// Width and Height must be powers of 2.
-	if ((ilNextPower2(Header->Width) != Header->Width) || (ilNextPower2(Header->Height) != Header->Height))
+	if ((iNextPower2(Header->Width) != Header->Width) || (iNextPower2(Header->Height) != Header->Height))
 		return IL_FALSE;
 	// It looks like width and height of zero are valid - i.e. no low res image.
 	if (Header->LowResImageWidth != 0 && Header->LowResImageHeight != 0) {
-		if ((ilNextPower2(Header->LowResImageWidth) != Header->LowResImageWidth)
-			|| (ilNextPower2(Header->LowResImageHeight) != Header->LowResImageHeight))
+		if ((iNextPower2(Header->LowResImageWidth) != Header->LowResImageWidth)
+			|| (iNextPower2(Header->LowResImageHeight) != Header->LowResImageHeight))
 			return IL_FALSE;
 	}
 	// In addition, the LowResImage has to have dimensions no greater than 16.
@@ -280,7 +280,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	// Create our animation chain
 	Image = BaseImage;  // Top-level image
 	for (i = 1; i < Head.Frames; i++) {
-		Image->Next = ilNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
+		Image->Next = iNewImageFull(Head.Width, Head.Height, Head.Depth, Channels, Format, Type, NULL);
 		if (Image->Next == NULL)
 			return IL_FALSE;
 		Image = Image->Next;
@@ -571,7 +571,7 @@ ILboolean VtfInitFacesMipmaps(ILimage *BaseImage, ILuint NumFaces, VTFHEAD *Head
 	}
 
 	for (Face = 1; Face < NumFaces; Face++) {
-		Image->Faces = ilNewImageFull(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Format, Image->Type, NULL);
+		Image->Faces = iNewImageFull(Image->Width, Image->Height, Image->Depth, Image->Bpp, Image->Format, Image->Type, NULL);
 		if (Image->Faces == NULL)
 			return IL_FALSE;
 		Image = Image->Faces;
@@ -603,12 +603,12 @@ ILboolean VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header)
 		Height = (Height >> 1) == 0 ? 1 : (Height >> 1);
 		Depth = (Depth >> 1) == 0 ? 1 : (Depth >> 1);
 
-		Image->Mipmaps = ilNewImageFull(Width, Height, Depth, BaseImage->Bpp, BaseImage->Format, BaseImage->Type, NULL);
+		Image->Mipmaps = iNewImageFull(Width, Height, Depth, BaseImage->Bpp, BaseImage->Format, BaseImage->Type, NULL);
 		if (Image->Mipmaps == NULL)
 			return IL_FALSE;
 		Image = Image->Mipmaps;
 
-		// ilNewImage does not set these.
+		// iNewImage does not set these.
 		Image->Format = BaseImage->Format;
 		Image->Type = BaseImage->Type;
 		// The origin should be in the upper left.

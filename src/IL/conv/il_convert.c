@@ -33,7 +33,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
     return IL_FALSE;
   }
 
-  ilCopyImageAttr(NewImage, Image);
+  iCopyImageAttr(NewImage, Image);
 
   if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || Image->Bpp != 1) {
     iCloseImage(NewImage);
@@ -52,11 +52,11 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
       case IL_PAL_RGB24:
       case IL_PAL_RGB32:
       case IL_PAL_RGBA32:
-        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType));
         if (Temp == NULL)
           goto alloc_error;
 
-        Size = ilGetBppPal(Image->Pal.PalType);
+        Size = iGetBppPal(Image->Pal.PalType);
         for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
           Resultf = 0.0f;
           for (c = 0; c < Size; c++) {
@@ -76,11 +76,11 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
       case IL_PAL_BGR24:
       case IL_PAL_BGR32:
       case IL_PAL_BGRA32:
-        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        Temp = (ILubyte*)ialloc(LumBpp * Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType));
         if (Temp == NULL)
           goto alloc_error;
 
-        Size = ilGetBppPal(Image->Pal.PalType);
+        Size = iGetBppPal(Image->Pal.PalType);
         for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += LumBpp) {
           Resultf = 0.0f;  j = 2;
           for (c = 0; c < Size; c++, j--) {
@@ -142,11 +142,11 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
       case IL_PAL_BGRA32:
       case IL_PAL_RGBA32:
         HasAlpha = IL_TRUE;
-        Temp = (ILubyte*)ialloc(1 * Image->Pal.PalSize / ilGetBppPal(Image->Pal.PalType));
+        Temp = (ILubyte*)ialloc(1 * Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType));
         if (Temp == NULL)
           goto alloc_error;
 
-        Size = ilGetBppPal(Image->Pal.PalType);
+        Size = iGetBppPal(Image->Pal.PalType);
         for (i = 0, k = 0; i < Image->Pal.PalSize; i += Size, k += 1) {
           Temp[k] = Image->Pal.Palette[i + 3];
         }
@@ -182,10 +182,10 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
     return NewImage;
   }
 
-  //NewImage->Format = ilGetPalBaseType(iCurImage->Pal.PalType);
+  //NewImage->Format = iGetPalBaseType(iCurImage->Pal.PalType);
   NewImage->Format = DestFormat;
 
-  if (ilGetBppFormat(NewImage->Format) == 0) {
+  if (iGetBppFormat(NewImage->Format) == 0) {
     iCloseImage(NewImage);
     iSetError(IL_ILLEGAL_OPERATION);
     return NULL;
@@ -233,7 +233,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
   }
 
   // Resize to new bpp
-  ilResizeImage(NewImage, NewImage->Width, NewImage->Height, NewImage->Depth, ilGetBppFormat(DestFormat), /*ilGetBpcType(DestType)*/1);
+  iResizeImage(NewImage, NewImage->Width, NewImage->Height, NewImage->Depth, iGetBppFormat(DestFormat), /*iGetBpcType(DestType)*/1);
 
   // ilConvertPal already sets the error message - no need to confuse the user.
   if (!Converted) {
@@ -241,7 +241,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
     return NULL;
   }
 
-  Size = ilGetBppPal(NewImage->Pal.PalType);
+  Size = iGetBppPal(NewImage->Pal.PalType);
   for (i = 0; i < Image->SizeOfData; i++) {
     for (c = 0; c < NewImage->Bpp; c++) {
       NewImage->Data[i * NewImage->Bpp + c] = NewImage->Pal.Palette[Image->Data[i] * Size + c];
@@ -298,7 +298,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
     if (DestType == NewImage->Type)
       return NewImage;
 
-    NewData = (ILubyte*)ilConvertBuffer(NewImage->SizeOfData, NewImage->Format, DestFormat, NewImage->Type, DestType, NULL, NewImage->Data);
+    NewData = (ILubyte*)iConvertBuffer(NewImage->SizeOfData, NewImage->Format, DestFormat, NewImage->Type, DestType, NULL, NewImage->Data);
     if (NewData == NULL) {
       ifree(NewImage);  // iCloseImage not needed.
       return NULL;
@@ -306,11 +306,11 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
     ifree(NewImage->Data);
     NewImage->Data = NewData;
 
-    ilCopyImageAttr(NewImage, Image);
+    iCopyImageAttr(NewImage, Image);
     NewImage->Format = DestFormat;
     NewImage->Type = DestType;
-    NewImage->Bpc = ilGetBpcType(DestType);
-    NewImage->Bpp = ilGetBppFormat(DestFormat);
+    NewImage->Bpc = iGetBpcType(DestType);
+    NewImage->Bpp = iGetBppFormat(DestFormat);
     NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
     NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
     NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
@@ -327,17 +327,17 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
       return NULL;
     }
 
-    if (ilGetBppFormat(DestFormat) == 0) {
+    if (iGetBppFormat(DestFormat) == 0) {
       iSetError(IL_INVALID_PARAM);
       ifree(NewImage);
       return NULL;
     }
 
-    ilCopyImageAttr(NewImage, Image);
+    iCopyImageAttr(NewImage, Image);
     NewImage->Format = DestFormat;
     NewImage->Type = DestType;
-    NewImage->Bpc = ilGetBpcType(DestType);
-    NewImage->Bpp = ilGetBppFormat(DestFormat);
+    NewImage->Bpc = iGetBpcType(DestType);
+    NewImage->Bpp = iGetBppFormat(DestFormat);
     NewImage->Bps = NewImage->Bpp * NewImage->Bpc * NewImage->Width;
     NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
     NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
@@ -359,7 +359,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
       memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
     }
     else {
-      NewImage->Data = (ILubyte*)ilConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
+      NewImage->Data = (ILubyte*)iConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
       if (NewImage->Data == NULL) {
         ifree(NewImage);  // iCloseImage not needed.
         return NULL;
@@ -393,14 +393,14 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
     if (Image == NULL)
       return IL_FALSE;
 
-    //ilCopyImageAttr(BaseImage, Image);  // Destroys subimages.
+    //iCopyImageAttr(BaseImage, Image);  // Destroys subimages.
 
     // We don't copy the colour profile here, since it stays the same.
     //  Same with the DXTC data.
     BaseImage->Format       = DestFormat;
     BaseImage->Type         = DestType;
-    BaseImage->Bpc          = ilGetBpcType(DestType);
-    BaseImage->Bpp          = ilGetBppFormat(DestFormat);
+    BaseImage->Bpc          = iGetBpcType(DestType);
+    BaseImage->Bpp          = iGetBppFormat(DestFormat);
     BaseImage->Bps          = BaseImage->Width * BaseImage->Bpc * BaseImage->Bpp;
     BaseImage->SizeOfPlane  = BaseImage->Bps * BaseImage->Height;
     BaseImage->SizeOfData   = BaseImage->Depth * BaseImage->SizeOfPlane;
@@ -426,7 +426,7 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
 ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 {
   ILuint    i = 0, Size = Image->Bpp * Image->Width * Image->Height;
-  ILbyte    PalBpp = ilGetBppPal(Image->Pal.PalType);
+  ILbyte    PalBpp = iGetBppPal(Image->Pal.PalType);
   ILushort  *ShortPtr;
   ILuint    *IntPtr, Temp;
   ILdouble  *DoublePtr, DoubleTemp;
