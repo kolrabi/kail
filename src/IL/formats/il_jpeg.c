@@ -21,6 +21,7 @@
 #ifndef IL_NO_JPG
 
 ILboolean iExifLoad(ILimage *Image);
+ILboolean iExifSave(ILimage *Image);
 
 	#ifndef IL_USE_IJL
 		#ifdef RGB_RED
@@ -385,21 +386,31 @@ ILboolean iSaveJpegInternal(ILimage* image)
 	JSAMPROW	row_pointer[1];
 	ILimage		*TempImage;
 	ILubyte		*TempData;
-	ILenum		Type = 0;
+	//ILuint APP1Pos, APP1Size;
+	SIO *     io, iobak;
+	ILuint    exifSize;
+	ILubyte * exifData = NULL;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	/*if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION)
-		Quality = 85;  // Not sure how low we should dare go...
-	else
-		Quality = 99;*/
+	io = &image->io;
+	iobak = *io;
+
+	exifSize = iDetermineSize(image, IL_EXIF) + 6;
+	exifData = (ILubyte*)ialloc(exifSize);
+	memcpy(exifData, "Exif\0\0", 6);
+	image->io.handle = NULL;
+	iSetOutputLump(image, exifData + 6, exifSize - 6);
+	iExifSave(image);
+	*io = iobak;
 
 	if ((image->Format != IL_RGB && image->Format != IL_LUMINANCE) || image->Bpc != 1) {
 		TempImage = iConvertImage(image, IL_RGB, IL_UNSIGNED_BYTE);
 		if (TempImage == NULL) {
+			ifree(exifData);
 			return IL_FALSE;
 		}
 	}
@@ -412,6 +423,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 		if (TempData == NULL) {
 			if (TempImage != image)
 				iCloseImage(TempImage);
+			ifree(exifData);
 			return IL_FALSE;
 		}
 	}
@@ -421,6 +433,8 @@ ILboolean iSaveJpegInternal(ILimage* image)
 
 
 	JpegInfo.err = jpeg_std_error(&Error);
+	Error.trace_level = 10;
+
 	// Now we can initialize the JPEG compression object.
 	jpeg_create_compress(&JpegInfo);
 
@@ -439,20 +453,7 @@ ILboolean iSaveJpegInternal(ILimage* image)
 
 	jpeg_set_defaults(&JpegInfo);
 
-/*#ifndef IL_USE_JPEGLIB_UNMODIFIED
-	Type = iGetInt(IL_JPG_SAVE_FORMAT);
-	if (Type == IL_EXIF) {
-		JpegInfo.write_JFIF_header = FALSE;
-		JpegInfo.write_EXIF_header = TRUE;
-	}
-	else if (Type == IL_JFIF) {
-		JpegInfo.write_JFIF_header = TRUE;
-		JpegInfo.write_EXIF_header = FALSE;
-	} //EXIF not present in libjpeg...
-#else*/
-	Type = Type;
 	JpegInfo.write_JFIF_header = TRUE;
-//#endif//IL_USE_JPEGLIB_UNMODIFIED
 
 	// Set the quality output
 	jpeg_set_quality(&JpegInfo, iGetInt(IL_JPG_QUALITY), IL_TRUE);
@@ -461,6 +462,12 @@ ILboolean iSaveJpegInternal(ILimage* image)
 		jpeg_simple_progression(&JpegInfo);
 
 	jpeg_start_compress(&JpegInfo, IL_TRUE);
+
+	// write exif
+
+	jpeg_write_marker(&JpegInfo, JPEG_APP0+1, exifData, exifSize);
+
+	ifree(exifData); exifData = NULL;
 
 	//row_stride = image_width * 3;	// JSAMPLEs per row in image_buffer
 
@@ -484,7 +491,37 @@ ILboolean iSaveJpegInternal(ILimage* image)
 		ifree(TempData);
 	if (TempImage != image)
 		iCloseImage(TempImage);
+/*
+	SIOseek(io, -2, IL_SEEK_CUR);
+	APP1Pos = SIOtell(io);
 
+	// write dummy APP1
+	SIOputc(io, 0xFF);
+	SIOputc(io, 0xE1);
+	SIOputc(io, 0);
+	SIOputc(io, 0);
+	SIOputs(io, "Exif");
+	SIOputc(io, 0);
+	SIOputc(io, 0);
+
+	iExifSave(image);
+
+	APP1Size = SIOtell(io) - APP1Pos;
+
+	// write EOI
+	SIOputc(io, 0xFF);
+	SIOputc(io, 0xD9);
+
+	// go back to APP1 and save size
+	SIOseek(io, APP1Pos, IL_SEEK_SET);
+	SIOputc(io, 0xFF);
+	SIOputc(io, 0xE1);
+	SIOputc(io, (APP1Size >> 8) & 0xFF);
+	SIOputc(io,  APP1Size       & 0xFF);
+
+	SIOseek(io, 0, IL_SEEK_END);
+*/
+	ifree(exifData);
 	return IL_TRUE;
 }
 

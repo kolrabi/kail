@@ -84,7 +84,8 @@ ILuint iDetermineSize(ILimage *Image, ILenum Type) {
     return 0;
 
   io = Image->io;
-  iSetOutputFake(Image);  // Sets iputc, iwrite, etc. to functions above.
+  Image->io.handle = NULL;    // or iSetOutputFake will close it
+  iSetOutputFake(Image);      // Sets iputc, iwrite, etc. to functions above.
   iSaveFuncs2(Image, Type);
   size = Image->io.lumpSize;
   Image->io = io;

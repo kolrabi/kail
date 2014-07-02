@@ -464,6 +464,13 @@ ILboolean ILAPIENTRY ilEnable(ILenum Mode) {
 }
 
 /**
+ * Enumerate over all metadata.
+ */
+ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID) {
+  SIMPLE_FUNC(Image, ILboolean, iEnumMetadata(Image, Index, IFD, ID));
+}
+
+/**
  * Flips the stored DXTC data of the currently bound image vertically.
  * @ingroup data
  */
@@ -695,8 +702,8 @@ ILuint64 ILAPIENTRY ilGetLumpPos() {
 /**
  * Retrieve image metadata.
  */
-ILboolean ILAPIENTRY ilGetMetadata(ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
-  SIMPLE_FUNC(Image, ILboolean, iGetMetadata(Image, Index, Category, ID, Type, Count, Size, Data));
+ILboolean ILAPIENTRY ilGetMetadata(ILenum Category, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
+  SIMPLE_FUNC(Image, ILboolean, iGetMetadata(Image, Category, ID, Type, Count, Size, Data));
 }
 
 /**
@@ -1513,6 +1520,13 @@ void ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc) {
   iLockState();
   iSetMemory(mallocFunc, freeFunc);
   iUnlockState();
+}
+
+/** 
+ * Set an image meta tag.
+ */
+ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data) {
+  SIMPLE_FUNC(Image, ILboolean, iSetMetadata(Image, IFD, ID, Type, Count, Size, Data));
 }
 
 /**

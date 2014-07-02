@@ -2,16 +2,19 @@
 
 void dumpMeta(ILuint image) {
   ILint metaCount = ilGetIntegerImage(image, IL_IMAGE_METADATA_COUNT);
-  ILenum category, id, type;
+  ILenum type;
   ILuint count, size;
   void *data;
   ILint i;
 
   fprintf(stderr, "Image has %d meta tags\n", metaCount);
   for (i=0; i<metaCount; i++) {
-    ilGetMetadata(i, &category, &id, &type, &count, &size, &data);
+    ILenum IFD, ID;
+    if (!ilEnumMetadata(i, &IFD, &ID)) break;
 
-    fprintf(stderr, "    %04x %04x %4u %4u (%2u): ", category, id, count, size, type);
+    ilGetMetadata(IFD, ID, &type, &count, &size, &data);
+
+    fprintf(stderr, "    %04x %04x %4u %4u (%2u): ", IFD, ID, count, size, type);
 
     switch (type) {
       case IL_EXIF_TYPE_BYTE:   fprintf(stderr, "%02x\n", *(ILubyte*)data); break;
@@ -19,6 +22,10 @@ void dumpMeta(ILuint image) {
       case IL_EXIF_TYPE_WORD:   fprintf(stderr, "%04x\n", *(ILushort*)data); break;
       case IL_EXIF_TYPE_DWORD:  fprintf(stderr, "%08x\n", *(ILuint*)data); break;
       case IL_EXIF_TYPE_RATIONAL: fprintf(stderr, "%u/%u\n", ((ILuint*)data)[0], ((ILuint*)data)[1]); break;
+      case IL_EXIF_TYPE_SBYTE:   fprintf(stderr, "%d\n", *(ILbyte*)data); break;
+      case IL_EXIF_TYPE_SWORD:   fprintf(stderr, "%d\n", *(ILshort*)data); break;
+      case IL_EXIF_TYPE_SDWORD:  fprintf(stderr, "%d\n", *(ILint*)data); break;
+      case IL_EXIF_TYPE_SRATIONAL: fprintf(stderr, "%d/%d\n", ((ILint*)data)[0], ((ILint*)data)[1]); break;
       default:
         fprintf(stderr, "?? \n");
     }
@@ -55,7 +62,8 @@ int main(int argc, char **argv) {
   ilGenImages(1, &image);
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
-  CHECK(testSaveImage("test.png", image));
+  CHECK(testSaveImage("test.jpg", image));
+  CHECK(testSaveImage("test.exif", image));
 
   dumpMeta(image);
 

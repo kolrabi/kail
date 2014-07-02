@@ -699,11 +699,14 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	char	*str;
 	ILboolean SwapColors;
 	ILubyte *OldData;
+	// ILexif *Exif;
 
 	if(image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
+
+	//ExiF = image->ExifTags;
 
 	TIFFSetWarningHandler(warningHandler);
 	TIFFSetErrorHandler(errorHandler);
@@ -726,12 +729,6 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	else {
 		TempImage = image;
 	}
-
-	/*#ifndef _UNICODE
-		File = TIFFOpen(Filename, "w");
-	#else
-		File = TIFFOpenW(Filename, "w");
-	#endif*/
 
 	// Control writing functions ourself.
 	File = iTIFFOpen(&image->io, "w");
@@ -757,16 +754,12 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	TIFFSetField(File, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(File, TIFFTAG_ROWSPERSTRIP, 1);
 	TIFFSetField(File, TIFFTAG_SOFTWARE, ilGetString(IL_VERSION_NUM));
-	/*TIFFSetField(File, TIFFTAG_DOCUMENTNAME,
-		iGetString(IL_TIF_DOCUMENTNAME_STRING) ?
-		iGetString(IL_TIF_DOCUMENTNAME_STRING) : FileName);
-*/
+
 	str = iGetString(IL_TIF_DOCUMENTNAME_STRING);
 	if (str) {
 		TIFFSetField(File, TIFFTAG_DOCUMENTNAME, str);
 		ifree(str);
 	}
-
 
 	str = iGetString(IL_TIF_AUTHNAME_STRING);
 	if (iGetString(IL_TIF_AUTHNAME_STRING)) {
@@ -801,11 +794,21 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	else
 		OldData = TempImage->Data;
 
-	/*
-	 TIFFSetField(File, TIFFTAG_ORIENTATION,
-				  TempImage->Origin == IL_ORIGIN_UPPER_LEFT ? ORIENTATION_TOPLEFT : ORIENTATION_BOTLEFT);
-	 */
-
+/*
+	if (Exif) {
+		ILuint64 Offset;
+		TIFFWriteDirectory(File);
+		TIFFCreateExifDirectory(File);
+		while (Exif) {
+			if (Exif->IFD == IL_TIFF_IFD_EXIF) {
+				TIFFSetField(File, Exif->ID, ); // FIXME!?
+			}
+			Exif = Exif->Next;
+		}
+		TIFFWriteCustomDirectory(File, &Offset);
+		TIFFSetField(File, TIFFTAG_EXIFIFD, Offset);
+	}
+*/
 	Format = TempImage->Format;
 	SwapColors = (Format == IL_BGR || Format == IL_BGRA);
 	if (SwapColors)

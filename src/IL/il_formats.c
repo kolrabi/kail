@@ -184,6 +184,8 @@ iInitFormats() {
   ADD_FORMAT(XPM);
 #endif
 
+  ADD_FORMAT(EXIF);
+
   // FIXME: JASC_PAL and HALO_PAL use the same extension!
   ADD_FORMAT(JASC_PAL);
   ADD_FORMAT(HALO_PAL);

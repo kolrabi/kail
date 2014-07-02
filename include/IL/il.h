@@ -525,6 +525,7 @@ enum {
 //
 
 // TIFF IFDs
+#define IL_TIFF_IFD0                          0x0000
 #define IL_TIFF_IFD_EXIF                      0x8769
 #define IL_TIFF_IFD_GPS                       0x8825
 #define IL_TIFF_IFD_INTEROP                   0xA005
@@ -677,8 +678,13 @@ enum {
 #define IL_EXIF_TYPE_WORD     3
 #define IL_EXIF_TYPE_DWORD    4
 #define IL_EXIF_TYPE_RATIONAL 5
-
-
+#define IL_EXIF_TYPE_SBYTE    6
+#define IL_EXIF_TYPE_BLOB     7
+#define IL_EXIF_TYPE_SWORD    8
+#define IL_EXIF_TYPE_SDWORD   9
+#define IL_EXIF_TYPE_SRATIONAL 10
+#define IL_EXIF_TYPE_FLOAT    11
+#define IL_EXIF_TYPE_DOUBLE   12
 
 ///////////////////////////////////////////////////////////////////////////
 //
@@ -851,7 +857,9 @@ ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 #endif
 
 #ifdef IL_VERSION_1_10_0
-ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILuint Index, ILenum *Category, ILenum *ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
+ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID);
+ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
+ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
 #endif 
 
 
