@@ -108,18 +108,18 @@ static ILuint ILAPIENTRY iDefaultRead(ILHANDLE Handle, void *Buffer, ILuint Size
 
 static ILHANDLE ILAPIENTRY iDefaultOpenW(ILconst_string FileName) {
 #ifndef _UNICODE
-  return (ILHANDLE)fopen((char*)FileName, "wb");
+  return (ILHANDLE)fopen((char*)FileName, "w+b");
 #else
   // Windows has a different function, _wfopen, to open UTF16 files,
   //  whereas Linux just uses fopen.
   #ifdef _WIN32
-    return (ILHANDLE)_wfopen(FileName, L"wb");
+    return (ILHANDLE)_wfopen(FileName, L"w+b");
   #else
     size_t length = wcstombs(NULL, FileName, 0);
     char    tmp[length+1];
     length = wcstombs(tmp, FileName, length);
     tmp[length] = 0;
-    return (ILHANDLE)fopen(tmp, "wb");
+    return (ILHANDLE)fopen(tmp, "w+b");
   #endif
 #endif//UNICODE
 }

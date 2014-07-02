@@ -582,15 +582,17 @@ ILenum ILAPIENTRY ilGetError(void) {
  * @see ilGetInteger
  * @ingroup state
  */
-void ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
+ILboolean ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
+  ILboolean bRet;
   if (Param == NULL) {
     iSetError(IL_INVALID_PARAM);
-    return;
+    return IL_FALSE;
   }
 
   iLockState();
-  *Param = iGetInteger(Mode);
+  bRet = iGetIntegerV(Mode, Param);
   iUnlockState();
+  return bRet;
 }
 
 /**

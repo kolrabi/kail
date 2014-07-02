@@ -847,3 +847,31 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
 
   return IL_TRUE;
 }
+
+ILint iMetaToInt(ILimage *Image, ILenum IFD, ILenum ID) {
+  ILuint count, size;
+  ILenum Type;
+  void *data;
+  ILint value = 0;
+
+  if (!iGetMetadata(Image, IFD, ID, &Type, &count, &size, &data)) return 0;
+
+  if (ID == 0x9000) { // EXIF_VERSION
+    value =              ((const char*)data)[0] - 0x30;
+    value = value * 10 + ((const char*)data)[1] - 0x30;
+    value = value * 10 + ((const char*)data)[2] - 0x30;
+    value = value * 10 + ((const char*)data)[3] - 0x30;
+    return value;
+  }
+
+  switch (Type) {
+    case IL_EXIF_TYPE_BYTE:     return *(ILubyte*)  data;
+    case IL_EXIF_TYPE_WORD:     return *(ILushort*) data;
+    case IL_EXIF_TYPE_DWORD:    return *(ILuint*)   data;
+    case IL_EXIF_TYPE_SBYTE:    return *(ILbyte*)   data;
+    case IL_EXIF_TYPE_SWORD:    return *(ILshort*)  data;
+    case IL_EXIF_TYPE_SDWORD:   return *(ILint*)    data; 
+  }
+
+  return 0;
+}

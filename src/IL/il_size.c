@@ -77,6 +77,9 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
 // 2. The uncompressed file handlers are usually not a performance concern here, considering that no data
 //    is actually written to a file
 ILuint iDetermineSize(ILimage *Image, ILenum Type) {
+  // FIXME: some formats (TIFF) need to read from the same stream they write to
+  //        implement kindo some auto resizing lump writing
+  
    SIO io;
    ILuint size;
 

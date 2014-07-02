@@ -15,8 +15,9 @@ static ILuint iExifGetEntrySize(const ExifDirEntry *Entry) {
     case IL_EXIF_TYPE_BYTE:     Size = Entry->Length; break;
     case IL_EXIF_TYPE_ASCII:    Size = Entry->Length; break;
     case IL_EXIF_TYPE_WORD:     Size = Entry->Length * 2; break;
-    case IL_EXIF_TYPE_DWORD:    Size = Entry->Length * 4; break;
-    case IL_EXIF_TYPE_RATIONAL: Size = Entry->Length * 8; break;
+    case IL_EXIF_TYPE_DWORD:
+    case IL_EXIF_TYPE_IFD:       Size = Entry->Length * 4; break;
+    case IL_EXIF_TYPE_RATIONAL:  Size = Entry->Length * 8; break;
     case IL_EXIF_TYPE_SBYTE:     Size = Entry->Length; break;
     case IL_EXIF_TYPE_SWORD:     Size = Entry->Length * 2; break;
     case IL_EXIF_TYPE_SDWORD:    Size = Entry->Length * 4; break;
@@ -278,21 +279,21 @@ ILboolean iExifSave(ILimage *Image) {
 
   if (ExifCount > 0) {
     TmpShort = IL_TIFF_IFD_EXIF;    SIOwrite(io, &TmpShort, 2, 1);
-    TmpShort = IL_EXIF_TYPE_DWORD;  SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_EXIF_TYPE_IFD;  SIOwrite(io, &TmpShort, 2, 1);
     TmpUint  = 1;                   SIOwrite(io, &TmpUint, 4, 1);
     TmpUint  = DataOffset;      SIOwrite(io, &TmpUint, 4, 1);
   }
 
   if (GPSCount > 0) {
     TmpShort = IL_TIFF_IFD_GPS;     SIOwrite(io, &TmpShort, 2, 1);
-    TmpShort = IL_EXIF_TYPE_DWORD;  SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_EXIF_TYPE_IFD;  SIOwrite(io, &TmpShort, 2, 1);
     TmpUint  = 1;                   SIOwrite(io, &TmpUint, 4, 1);
     TmpUint  = DataOffset + ExifDataSize + ExifDirSize;   SIOwrite(io, &TmpUint, 4, 1);
   }
 
   if (InteropCount) {
     TmpShort = IL_TIFF_IFD_INTEROP;     SIOwrite(io, &TmpShort, 2, 1);
-    TmpShort = IL_EXIF_TYPE_DWORD;      SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_EXIF_TYPE_IFD;      SIOwrite(io, &TmpShort, 2, 1);
     TmpUint  = 1;                       SIOwrite(io, &TmpUint, 4, 1);
     TmpUint  = DataOffset + ExifDataSize + ExifDirSize + 
                GPSDataSize + GPSDirSize;   SIOwrite(io, &TmpUint, 4, 1);

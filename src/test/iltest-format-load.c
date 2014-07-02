@@ -7,7 +7,7 @@ void dumpMeta(ILuint image) {
   void *data;
   ILint i;
 
-  fprintf(stderr, "Image has %d meta tags\n", metaCount);
+  fprintf(stderr, "Image has %d meta tags (exif %d)\n", metaCount, ilGetInteger(IL_META_EXIF_VERSION));
   for (i=0; i<metaCount; i++) {
     ILenum IFD, ID;
     if (!ilEnumMetadata(i, &IFD, &ID)) break;
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
   ilGenImages(1, &image);
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
-  CHECK(testSaveImage("test.jpg", image));
+  CHECK(testSaveImage("test.tiff", image));
   CHECK(testSaveImage("test.exif", image));
 
   dumpMeta(image);

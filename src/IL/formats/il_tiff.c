@@ -541,6 +541,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 static tsize_t 
 _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
+	//iTrace("---- reading %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
 	return SIOread((SIO*)fd, pData, 1, tSize);
 }
 
@@ -550,20 +551,21 @@ _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 //  I have seen libtiff call this is at the beginning of writing a tiff, before
 //  anything is ever even written!  Also, we have to return 0, no matter what tSize
 //  is.  If we return tSize like would be expected, then TIFFClientOpen fails.
-static tsize_t 
+/*static tsize_t 
 _tiffFileReadProcW(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
 	(void)fd;
 	(void)pData;
 	(void)tSize;
 	return 0;
-}
+}*/
 
 /*----------------------------------------------------------------------------*/
 
 static tsize_t 
 _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
+	iTrace("---- writing %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
 	return SIOwrite((SIO*)fd, pData, 1, tSize);
 }
 
@@ -582,7 +584,7 @@ _tiffFileSeekProc(thandle_t fd, toff_t tOff, int whence)
 }
 
 /*----------------------------------------------------------------------------*/
-
+#if 0
 static toff_t
 _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 {
@@ -594,6 +596,7 @@ _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 	return SIOtell((SIO*)fd);
 	//return tOff;
 }
+#endif
 
 /*----------------------------------------------------------------------------*/
 
@@ -621,7 +624,7 @@ _tiffFileSizeProc(thandle_t fd)
 }
 
 /*----------------------------------------------------------------------------*/
-
+#if 0 
 static toff_t
 _tiffFileSizeProcW(thandle_t fd)
 {
@@ -635,7 +638,7 @@ _tiffFileSizeProcW(thandle_t fd)
 
 	return Size;
 }
-
+#endif
 /*----------------------------------------------------------------------------*/
 
 static int
@@ -667,9 +670,9 @@ static TIFF *iTIFFOpen(SIO *io, char *Mode)
 	if (Mode[0] == 'w')
 		tif = TIFFClientOpen("TIFFMemFile", Mode,
 							io,
-							_tiffFileReadProcW, _tiffFileWriteProc,
-							_tiffFileSeekProcW, _tiffFileCloseProc,
-							_tiffFileSizeProcW, _tiffDummyMapProc,
+							_tiffFileReadProc, _tiffFileWriteProc,
+							_tiffFileSeekProc, _tiffFileCloseProc,
+							_tiffFileSizeProc, _tiffDummyMapProc,
 							_tiffDummyUnmapProc);
 	else
 		tif = TIFFClientOpen("TIFFMemFile", Mode,
@@ -699,14 +702,14 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	char	*str;
 	ILboolean SwapColors;
 	ILubyte *OldData;
-	// ILexif *Exif;
+	ILexif *Meta;
 
 	if(image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	//ExiF = image->ExifTags;
+	Meta = image->ExifTags;
 
 	TIFFSetWarningHandler(warningHandler);
 	TIFFSetErrorHandler(errorHandler);
@@ -794,21 +797,6 @@ ILboolean iSaveTiffInternal(ILimage* image)
 	else
 		OldData = TempImage->Data;
 
-/*
-	if (Exif) {
-		ILuint64 Offset;
-		TIFFWriteDirectory(File);
-		TIFFCreateExifDirectory(File);
-		while (Exif) {
-			if (Exif->IFD == IL_TIFF_IFD_EXIF) {
-				TIFFSetField(File, Exif->ID, ); // FIXME!?
-			}
-			Exif = Exif->Next;
-		}
-		TIFFWriteCustomDirectory(File, &Offset);
-		TIFFSetField(File, TIFFTAG_EXIFIFD, Offset);
-	}
-*/
 	Format = TempImage->Format;
 	SwapColors = (Format == IL_BGR || Format == IL_BGRA);
 	if (SwapColors)
@@ -830,8 +818,30 @@ ILboolean iSaveTiffInternal(ILimage* image)
 		}
 	}
 
-	//if (SwapColors)
- 		//ilSwapColours();
+	TIFFWriteDirectory(File);
+
+	if (Meta) {
+		ILuint64 Offset;
+		TIFFCreateEXIFDirectory(File);
+		while (Meta) {
+			if (Meta->IFD == IL_TIFF_IFD_EXIF) {
+				const ILuint *		DWORDPtr = (const ILuint  *)Meta->Data;
+				const ILushort *	SHORTPtr = (const ILushort*)Meta->Data;
+				switch(Meta->ID) {
+					case IL_META_EXPOSURE_TIME: 		TIFFSetField(File, EXIFTAG_EXPOSURETIME,    DWORDPtr[0], DWORDPtr[1]); break;
+	        case IL_META_EXPOSURE_PROGRAM:  TIFFSetField(File, EXIFTAG_EXPOSUREPROGRAM, SHORTPtr[0]); break;
+	        case IL_META_METERING_MODE:     TIFFSetField(File, EXIFTAG_METERINGMODE,    SHORTPtr[0]); break;
+	        case IL_META_LIGHT_SOURCE:      TIFFSetField(File, EXIFTAG_LIGHTSOURCE,     SHORTPtr[0]); break;
+	        case IL_META_FLASH:             TIFFSetField(File, EXIFTAG_FLASH,           SHORTPtr[0]); break;
+				}
+			}
+			Meta = Meta->Next;
+		}
+		TIFFWriteCustomDirectory(File, &Offset);
+		TIFFSetDirectory(File, 0);
+		TIFFSetField(File, TIFFTAG_EXIFIFD, (ILuint)Offset);
+	}
+
 
 	if (TempImage->Data != OldData) {
 		ifree(TempImage->Data);
