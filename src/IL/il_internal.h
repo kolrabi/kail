@@ -121,7 +121,7 @@ void          ilDefaultStates(void);
 ILenum        iGetHint(ILenum Target);
 ILint         iGetInt(ILenum Mode);
 
-ILboolean     iGetIntegerV(ILenum Mode, ILint *Param);
+ILuint        iGetIntegerV(ILenum Mode, ILint *Param);
 void          ilRemoveRegistered(void);
 ILenum        iGetError(void);
 ILconst_string iGetILString(ILenum StringName);

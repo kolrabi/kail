@@ -311,13 +311,14 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
   }
 
   // clear old exif data first
-  while(Image->ExifTags) {
-    ILexif *NextExif = Image->ExifTags->Next;
-    ifree(Image->ExifTags->Data);
-    ifree(Image->ExifTags);
-    Image->ExifTags = NextExif;
+  while(Image->MetaTags) {
+    ILmeta *NextExif = Image->MetaTags->Next;
+    ifree(Image->MetaTags->Data);
+    ifree(Image->MetaTags->String);
+    ifree(Image->MetaTags);
+    Image->MetaTags = NextExif;
   }
-  Image->ExifTags = NULL;
+  Image->MetaTags = NULL;
 
   ifree(Image);
   Image = NULL;
@@ -769,109 +770,3 @@ ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
 #endif
 }
 
-ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID) {
-  ILexif *Exif = Image->ExifTags;
-  while(Index) {
-    if (Exif == NULL) return IL_FALSE;
-    Index--;
-    Exif = Exif->Next;
-  }
-
-  if (IFD) *IFD = Exif->IFD;
-  if (ID)  *ID  = Exif->ID;
-  return IL_TRUE;
-}
-
-ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
-  ILexif *Exif = Image->ExifTags;
-  while (Exif) {
-    if (Exif->IFD == IFD && Exif->ID == ID) {
-      if (Type)     *Type     = Exif->Type;
-      if (Count)    *Count    = Exif->Length;
-      if (Size)     *Size     = Exif->Size;
-      if (Data)     *Data     = Exif->Data;
-
-      return IL_TRUE;
-    }
-    Exif = Exif->Next;
-  } while(Exif);
-  return IL_FALSE;
-}
-
-ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data) {
-  ILexif *Exif = Image->ExifTags;
-  ILexif *ExifNew;
-
-  if (Type > IL_EXIF_TYPE_DOUBLE) {
-    iSetError(IL_INVALID_ENUM);
-    return IL_FALSE;
-  }
-
-  while (Exif) {
-    if (Exif->IFD == IFD && Exif->ID == ID) {
-      ifree(Exif->Data);
-
-      Exif->Type = Type;
-      Exif->Length = Count;
-      Exif->Size = Size;
-      Exif->Data = ialloc(Size);
-      memcpy(Exif->Data, Data, Size);
-
-      return IL_TRUE;
-    }
-    if (Exif->Next) {
-      Exif = Exif->Next;
-    } else {
-      break;
-    }
-  }
-
-  if (IFD != IL_TIFF_IFD0 && IFD != IL_TIFF_IFD_EXIF && 
-      IFD != IL_TIFF_IFD_GPS && IFD != IL_TIFF_IFD_INTEROP) {
-    iSetError(IL_INVALID_ENUM);
-    return IL_FALSE;
-  }
-
-  ExifNew           = ioalloc(ILexif);
-  ExifNew->IFD      = IFD;
-  ExifNew->ID       = ID;
-  ExifNew->Length   = Count;
-  ExifNew->Size     = Size;
-  ExifNew->Data     = ialloc(Size);
-  memcpy(Exif->Data, Data, Size);
-
-  if (!Image->ExifTags)
-    Image->ExifTags = ExifNew;
-  else 
-    Exif->Next = ExifNew;
-
-  return IL_TRUE;
-}
-
-ILint iMetaToInt(ILimage *Image, ILenum IFD, ILenum ID) {
-  ILuint count, size;
-  ILenum Type;
-  void *data;
-  ILint value = 0;
-
-  if (!iGetMetadata(Image, IFD, ID, &Type, &count, &size, &data)) return 0;
-
-  if (ID == 0x9000) { // EXIF_VERSION
-    value =              ((const char*)data)[0] - 0x30;
-    value = value * 10 + ((const char*)data)[1] - 0x30;
-    value = value * 10 + ((const char*)data)[2] - 0x30;
-    value = value * 10 + ((const char*)data)[3] - 0x30;
-    return value;
-  }
-
-  switch (Type) {
-    case IL_EXIF_TYPE_BYTE:     return *(ILubyte*)  data;
-    case IL_EXIF_TYPE_WORD:     return *(ILushort*) data;
-    case IL_EXIF_TYPE_DWORD:    return *(ILuint*)   data;
-    case IL_EXIF_TYPE_SBYTE:    return *(ILbyte*)   data;
-    case IL_EXIF_TYPE_SWORD:    return *(ILshort*)  data;
-    case IL_EXIF_TYPE_SDWORD:   return *(ILint*)    data; 
-  }
-
-  return 0;
-}

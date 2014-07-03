@@ -6,8 +6,8 @@ void dumpMeta(ILuint image) {
   ILuint count, size;
   void *data;
   ILint i;
+  ILint tmp[512];
 
-  fprintf(stderr, "Image has %d meta tags (exif %d)\n", metaCount, ilGetInteger(IL_META_EXIF_VERSION));
   for (i=0; i<metaCount; i++) {
     ILenum IFD, ID;
     if (!ilEnumMetadata(i, &IFD, &ID)) break;
@@ -30,6 +30,17 @@ void dumpMeta(ILuint image) {
         fprintf(stderr, "?? \n");
     }
   }
+
+  count = ilGetIntegerv(IL_META_FSTOP, tmp);
+  fprintf(stderr, "FSTOP: %d: %d/%d\n", count, (ILuint)tmp[0], (ILuint)tmp[1]);
+
+  count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
+  fprintf(stderr, "Exp:   %d: %d/%d: %lf\n", count, (ILuint)tmp[0], (ILuint)tmp[1], ((double)(ILuint)tmp[0]) / ((double)(ILuint)tmp[1]));
+
+  fprintf(stderr, "Make:  " IL_SFMT "\n", ilGetString(IL_META_MAKE));
+  fprintf(stderr, "Model: " IL_SFMT "\n", ilGetString(IL_META_MODEL));
+  fprintf(stderr, "SW:    " IL_SFMT "\n", ilGetString(IL_META_SOFTWARE));
+  ilSetString(IL_META_SOFTWARE, IL_TEXT("kaIL"));
 }
 
 int main(int argc, char **argv) {
@@ -62,9 +73,11 @@ int main(int argc, char **argv) {
   ilGenImages(1, &image);
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
+  dumpMeta(image);
   CHECK(testSaveImage("test.tiff", image));
+  CHECK(testSaveImage("test.jpeg", image));
   CHECK(testSaveImage("test.exif", image));
-
+  CHECK(testLoadImage("test.tiff", image));
   dumpMeta(image);
 
   // check parameters

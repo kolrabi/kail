@@ -19,18 +19,46 @@
 #include <time.h>
 #include "il_manip.h"
 
-#define MAGIC_HEADER1	0x4949
-#define MAGIC_HEADER2	0x4D4D
+#define MAGIC_HEADER1 0x4949
+#define MAGIC_HEADER2 0x4D4D
 
+ILuint iMetaToIntV(ILimage *Image, ILenum MetaID, ILint *Param);
+void * iMetaGetBlob(ILimage *Image, ILenum MetaID, ILuint *Size);
+
+#define SetFieldWORD(ID, TID) \
+  if (iMetaToIntV(BaseImage, ID, NULL) == 1) { \
+    iMetaToIntV(BaseImage, ID, TempInts); \
+    TIFFSetField(File, TID, (ILushort)TempInts[0]);\
+  } 
+
+#define SetFieldDWORD2(ID, TID) \
+  if (iMetaToIntV(BaseImage, ID, NULL) == 2) { \
+    iMetaToIntV(BaseImage, ID, TempInts); \
+    TIFFSetField(File, TID, (ILuint)TempInts[0], (ILuint)TempInts[1]);\
+  } 
+
+#define SetFieldRational(ID, TID) \
+  if (iMetaToIntV(BaseImage, ID, NULL) == 2) { \
+    ILdouble v; \
+    iMetaToIntV(BaseImage, ID, TempInts); \
+    v = (double)TempInts[0] / (double)TempInts[1]; \
+    TIFFSetField(File, TID, v);\
+  } 
+
+#define SetFieldString(ID, TID) \
+  { \
+    char *str = iGetString(ID); \
+    if (str) { TIFFSetField(File, TID, str); ifree(str); } \
+  }
 
 #if (defined(_WIN32) || defined(_WIN64)) && defined(IL_USE_PRAGMA_LIBS)
-	#if defined(_MSC_VER) || defined(__BORLANDC__)
-		#ifndef _DEBUG
-			#pragma comment(lib, "libtiff.lib")
-		#else
-			#pragma comment(lib, "libtiff-d.lib")
-		#endif
-	#endif
+  #if defined(_MSC_VER) || defined(__BORLANDC__)
+    #ifndef _DEBUG
+      #pragma comment(lib, "libtiff.lib")
+    #else
+      #pragma comment(lib, "libtiff-d.lib")
+    #endif
+  #endif
 #endif
 
 
@@ -45,40 +73,40 @@ ILboolean iExifLoad(ILimage *Image);
 /*----------------------------------------------------------------------------*/
 
 static ILboolean iIsValidTiff(SIO* io) {
-	ILushort 	Header1 = 0, Header2 = 0;
-	ILuint 		Start = SIOtell(io);
-	ILboolean   bRet = IL_TRUE;
+  ILushort  Header1 = 0, Header2 = 0;
+  ILuint    Start = SIOtell(io);
+  ILboolean   bRet = IL_TRUE;
 
-	Header1 = GetLittleUShort(io);
+  Header1 = GetLittleUShort(io);
 
-	if (Header1 == MAGIC_HEADER1) {
-		Header2 = GetLittleUShort(io);
-	} else if (Header1 == MAGIC_HEADER2) {
-		Header2 = GetBigUShort(io);
-	} else {
-		bRet = IL_FALSE;
-	}
+  if (Header1 == MAGIC_HEADER1) {
+    Header2 = GetLittleUShort(io);
+  } else if (Header1 == MAGIC_HEADER2) {
+    Header2 = GetBigUShort(io);
+  } else {
+    bRet = IL_FALSE;
+  }
 
-	if (Header2 != 42)
-		bRet = IL_FALSE;
+  if (Header2 != 42)
+    bRet = IL_FALSE;
 
-	SIOseek(io, Start, IL_SEEK_SET);
+  SIOseek(io, Start, IL_SEEK_SET);
 
-	return bRet;
+  return bRet;
 }
 
 /*----------------------------------------------------------------------------*/
 
 static void warningHandler(const char* mod, const char* fmt, va_list ap)
 {
-	(void)mod;
-	iTraceV(fmt, ap);
+  (void)mod;
+  iTraceV(fmt, ap);
 }
 
 void errorHandler(const char* mod, const char* fmt, va_list ap)
 {
-	(void)mod;
-	iTraceV(fmt, ap);
+  (void)mod;
+  iTraceV(fmt, ap);
 }
 
 ////
@@ -86,405 +114,405 @@ void errorHandler(const char* mod, const char* fmt, va_list ap)
 
 // Internal function used to load the Tiff.
 static ILboolean iLoadTiffInternal(ILimage* image) {
-	TIFF	 *tif;
-	uint16	 photometric, planarconfig, orientation;
-	uint16	 samplesperpixel, bitspersample, *sampleinfo, extrasamples;
-	uint32	 w, h, d, linesize, tilewidth, tilelength;
-	// ILubyte  *pImageData;
-	ILuint	 i, ProfileLen, DirCount = 0;
-	void	 *Buffer;
-	ILimage  *Image, *TempImage;
-	ILushort si;
+  TIFF   *tif;
+  uint16   photometric, planarconfig, orientation;
+  uint16   samplesperpixel, bitspersample, *sampleinfo, extrasamples;
+  uint32   w, h, d, linesize, tilewidth, tilelength;
+  // ILubyte  *pImageData;
+  ILuint   i, ProfileLen, DirCount = 0;
+  void   *Buffer;
+  ILimage  *Image, *TempImage;
+  ILushort si;
   ILfloat  x_position, x_resolution, y_position, y_resolution;
   SIO *    io;
   ILuint   Start, End;
-	
-	// to avoid high order bits garbage when used as shorts
-	w = h = d = linesize = tilewidth = tilelength = 0;
+  
+  // to avoid high order bits garbage when used as shorts
+  w = h = d = linesize = tilewidth = tilelength = 0;
 
-	if (image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  if (image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	io = &image->io;
-	Start = SIOtell(io);
+  io = &image->io;
+  Start = SIOtell(io);
 
-	TIFFSetWarningHandler(warningHandler);
-	TIFFSetErrorHandler(errorHandler);
+  TIFFSetWarningHandler(warningHandler);
+  TIFFSetErrorHandler(errorHandler);
 
-	tif = iTIFFOpen(io, "r");
-	if (tif == NULL) {
-		iSetError(IL_COULD_NOT_OPEN_FILE);
-		return IL_FALSE;
-	}
+  tif = iTIFFOpen(io, "r");
+  if (tif == NULL) {
+    iSetError(IL_COULD_NOT_OPEN_FILE);
+    return IL_FALSE;
+  }
 
-	do {
-		DirCount++;
-	} while (TIFFReadDirectory(tif));
+  do {
+    DirCount++;
+  } while (TIFFReadDirectory(tif));
 
-	Image = NULL;
-	for (i = 0; i < DirCount; i++) {
-		TIFFSetDirectory(tif, (tdir_t)i);
-		TIFFGetField(tif, TIFFTAG_IMAGEWIDTH,  &w);
-		TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
+  Image = NULL;
+  for (i = 0; i < DirCount; i++) {
+    TIFFSetDirectory(tif, (tdir_t)i);
+    TIFFGetField(tif, TIFFTAG_IMAGEWIDTH,  &w);
+    TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
 
-		TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEDEPTH,		&d); //TODO: d is ignored...
-		TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
-		TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE,	&bitspersample);
-		TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES,	&extrasamples, &sampleinfo);
-		TIFFGetFieldDefaulted(tif, TIFFTAG_ORIENTATION, 	&orientation);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEDEPTH,    &d); //TODO: d is ignored...
+    TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &samplesperpixel);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &bitspersample);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES,  &extrasamples, &sampleinfo);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_ORIENTATION,   &orientation);
 
-		linesize = TIFFScanlineSize(tif);
-		
-		//added 2003-08-31
-		//1 bpp tiffs are not neccessarily greyscale, they can
-		//have a palette (photometric == 3)...get this information
-		TIFFGetFieldDefaulted(tif, TIFFTAG_PHOTOMETRIC,  &photometric);
-		TIFFGetFieldDefaulted(tif, TIFFTAG_PLANARCONFIG, &planarconfig);
+    linesize = TIFFScanlineSize(tif);
+    
+    //added 2003-08-31
+    //1 bpp tiffs are not neccessarily greyscale, they can
+    //have a palette (photometric == 3)...get this information
+    TIFFGetFieldDefaulted(tif, TIFFTAG_PHOTOMETRIC,  &photometric);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_PLANARCONFIG, &planarconfig);
 
-		//special-case code for frequent data cases that may be read more
-		//efficiently than with the TIFFReadRGBAImage() interface.
-		
-		//added 2004-05-12
-		//Get tile sizes and use TIFFReadRGBAImage() for tiled images for now
-		tilewidth = w; tilelength = h;
-		TIFFGetFieldDefaulted(tif, TIFFTAG_TILEWIDTH,  &tilewidth);
-		TIFFGetFieldDefaulted(tif, TIFFTAG_TILELENGTH, &tilelength);
+    //special-case code for frequent data cases that may be read more
+    //efficiently than with the TIFFReadRGBAImage() interface.
+    
+    //added 2004-05-12
+    //Get tile sizes and use TIFFReadRGBAImage() for tiled images for now
+    tilewidth = w; tilelength = h;
+    TIFFGetFieldDefaulted(tif, TIFFTAG_TILEWIDTH,  &tilewidth);
+    TIFFGetFieldDefaulted(tif, TIFFTAG_TILELENGTH, &tilelength);
 
 
-		if (extrasamples == 0
-			&& samplesperpixel == 1  //luminance or palette
-			&& (bitspersample == 8 || bitspersample == 1 || bitspersample == 16)
-			&& (photometric == PHOTOMETRIC_MINISWHITE
-				|| photometric == PHOTOMETRIC_MINISBLACK
-				|| photometric == PHOTOMETRIC_PALETTE)
-			&& (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
-			&& tilewidth == w && tilelength == h
-			) {
-			ILubyte* strip;
-			tsize_t stripsize;
-			ILuint y;
-			uint32 rowsperstrip, j, linesread;
+    if (extrasamples == 0
+      && samplesperpixel == 1  //luminance or palette
+      && (bitspersample == 8 || bitspersample == 1 || bitspersample == 16)
+      && (photometric == PHOTOMETRIC_MINISWHITE
+        || photometric == PHOTOMETRIC_MINISBLACK
+        || photometric == PHOTOMETRIC_PALETTE)
+      && (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
+      && tilewidth == w && tilelength == h
+      ) {
+      ILubyte* strip;
+      tsize_t stripsize;
+      ILuint y;
+      uint32 rowsperstrip, j, linesread;
 
-			//TODO: 1 bit/pixel images should not be stored as 8 bits...
-			//(-> add new format)
-			if (!Image) {
-				int type = IL_UNSIGNED_BYTE;
-				if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-				if (!iTexImage(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = image;
-			}
-			else {
-				Image->Next = iNewImage(w, h, 1, 1, 1);
-				if (Image->Next == NULL) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = Image->Next;
-			}
+      //TODO: 1 bit/pixel images should not be stored as 8 bits...
+      //(-> add new format)
+      if (!Image) {
+        int type = IL_UNSIGNED_BYTE;
+        if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
+        if (!iTexImage(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = image;
+      }
+      else {
+        Image->Next = iNewImage(w, h, 1, 1, 1);
+        if (Image->Next == NULL) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = Image->Next;
+      }
 
-			if (photometric == PHOTOMETRIC_PALETTE) { //read palette
-				uint16 *red, *green, *blue;
-				//ILboolean is16bitpalette = IL_FALSE;
-				ILubyte *entry;
-				uint32 count = 1 << bitspersample, j;
-		
-				TIFFGetField(tif, TIFFTAG_COLORMAP, &red, &green, &blue);
+      if (photometric == PHOTOMETRIC_PALETTE) { //read palette
+        uint16 *red, *green, *blue;
+        //ILboolean is16bitpalette = IL_FALSE;
+        ILubyte *entry;
+        uint32 count = 1 << bitspersample, j;
+    
+        TIFFGetField(tif, TIFFTAG_COLORMAP, &red, &green, &blue);
 
-				Image->Format = IL_COLOUR_INDEX;
-				Image->Pal.PalSize = (count)*3;
-				Image->Pal.PalType = IL_PAL_RGB24;
-				Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
-				entry = Image->Pal.Palette;
-				for (j = 0; j < count; ++j) {
-					entry[0] = (ILubyte)(red[j] >> 8);
-					entry[1] = (ILubyte)(green[j] >> 8);
-					entry[2] = (ILubyte)(blue[j] >> 8);
+        Image->Format = IL_COLOUR_INDEX;
+        Image->Pal.PalSize = (count)*3;
+        Image->Pal.PalType = IL_PAL_RGB24;
+        Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
+        entry = Image->Pal.Palette;
+        for (j = 0; j < count; ++j) {
+          entry[0] = (ILubyte)(red[j] >> 8);
+          entry[1] = (ILubyte)(green[j] >> 8);
+          entry[2] = (ILubyte)(blue[j] >> 8);
 
-					entry += 3;
-				}
-			}
+          entry += 3;
+        }
+      }
 
-			TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-			stripsize = TIFFStripSize(tif);
+      TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+      stripsize = TIFFStripSize(tif);
 
-			strip = (ILubyte*)ialloc(stripsize);
+      strip = (ILubyte*)ialloc(stripsize);
 
-			if (bitspersample == 8 || bitspersample == 16) {
-				ILubyte *dat = Image->Data;
-				for (y = 0; y < h; y += rowsperstrip) {
-					//the last strip may contain less data if the image
-					//height is not evenly divisible by rowsperstrip
-					if (y + rowsperstrip > h) {
-						stripsize = linesize*(h - y);
-						linesread = h - y;
-					}
-					else
-						linesread = rowsperstrip;
+      if (bitspersample == 8 || bitspersample == 16) {
+        ILubyte *dat = Image->Data;
+        for (y = 0; y < h; y += rowsperstrip) {
+          //the last strip may contain less data if the image
+          //height is not evenly divisible by rowsperstrip
+          if (y + rowsperstrip > h) {
+            stripsize = linesize*(h - y);
+            linesread = h - y;
+          }
+          else
+            linesread = rowsperstrip;
 
-					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-						iSetError(IL_LIB_TIFF_ERROR);
-						ifree(strip);
-						TIFFClose(tif);
-						return IL_FALSE;
-					}
+          if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
+            iSetError(IL_LIB_TIFF_ERROR);
+            ifree(strip);
+            TIFFClose(tif);
+            return IL_FALSE;
+          }
 
-					if (photometric == PHOTOMETRIC_MINISWHITE) { //invert channel
-						uint32 k, t2;
-						for (j = 0; j < linesread; ++j) {
-							t2 = j*linesize;
-							//this works for 16bit images as well: the two bytes
-							//making up a pixel can be inverted independently
-							for (k = 0; k < Image->Bps; ++k)
-								dat[k] = ~strip[t2 + k];
-							dat += w;
-						}
-					}
-					else
-						for(j = 0; j < linesread; ++j)
-							memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
-				}
-			}
-			else if (bitspersample == 1) {
-				//TODO: add a native format to devil, so we don't have to
-				//unpack the values here
-				ILubyte mask, curr, *dat = Image->Data;
-				uint32 k, sx, t2;
-				for (y = 0; y < h; y += rowsperstrip) {
-					//the last strip may contain less data if the image
-					//height is not evenly divisible by rowsperstrip
-					if (y + rowsperstrip > h) {
-						stripsize = linesize*(h - y);
-						linesread = h - y;
-					}
-					else
-						linesread = rowsperstrip;
+          if (photometric == PHOTOMETRIC_MINISWHITE) { //invert channel
+            uint32 k, t2;
+            for (j = 0; j < linesread; ++j) {
+              t2 = j*linesize;
+              //this works for 16bit images as well: the two bytes
+              //making up a pixel can be inverted independently
+              for (k = 0; k < Image->Bps; ++k)
+                dat[k] = ~strip[t2 + k];
+              dat += w;
+            }
+          }
+          else
+            for(j = 0; j < linesread; ++j)
+              memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
+        }
+      }
+      else if (bitspersample == 1) {
+        //TODO: add a native format to devil, so we don't have to
+        //unpack the values here
+        ILubyte mask, curr, *dat = Image->Data;
+        uint32 k, sx, t2;
+        for (y = 0; y < h; y += rowsperstrip) {
+          //the last strip may contain less data if the image
+          //height is not evenly divisible by rowsperstrip
+          if (y + rowsperstrip > h) {
+            stripsize = linesize*(h - y);
+            linesread = h - y;
+          }
+          else
+            linesread = rowsperstrip;
 
-					if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-						iSetError(IL_LIB_TIFF_ERROR);
-						ifree(strip);
-						TIFFClose(tif);
-						return IL_FALSE;
-					}
+          if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
+            iSetError(IL_LIB_TIFF_ERROR);
+            ifree(strip);
+            TIFFClose(tif);
+            return IL_FALSE;
+          }
 
-					for (j = 0; j < linesread; ++j) {
-						k = 0;
-						sx = 0;
-						t2 = j*linesize;
-						while (k < w) {
-							curr = strip[t2 + sx];
-							if (photometric == PHOTOMETRIC_MINISWHITE)
-								curr = ~curr;
-							for (mask = 0x80; mask != 0 && k < w; mask >>= 1){
-								if((curr & mask) != 0)
-									dat[k] = 255;
-								else
-									dat[k] = 0;
-								++k;
-							}
-							++sx;
-						}
-						dat += w;
-					}
-				}
-			}
+          for (j = 0; j < linesread; ++j) {
+            k = 0;
+            sx = 0;
+            t2 = j*linesize;
+            while (k < w) {
+              curr = strip[t2 + sx];
+              if (photometric == PHOTOMETRIC_MINISWHITE)
+                curr = ~curr;
+              for (mask = 0x80; mask != 0 && k < w; mask >>= 1){
+                if((curr & mask) != 0)
+                  dat[k] = 255;
+                else
+                  dat[k] = 0;
+                ++k;
+              }
+              ++sx;
+            }
+            dat += w;
+          }
+        }
+      }
 
-			ifree(strip);
+      ifree(strip);
 
-			if(orientation == ORIENTATION_TOPLEFT)
-				Image->Origin = IL_ORIGIN_UPPER_LEFT;
-			else if(orientation == ORIENTATION_BOTLEFT)
-				Image->Origin = IL_ORIGIN_LOWER_LEFT;
-		}
-		//for 16bit rgb images:
-		else if (extrasamples == 0
-			&& samplesperpixel == 3
-			&& (bitspersample == 8 || bitspersample == 16)
-			&& photometric == PHOTOMETRIC_RGB
-			&& planarconfig == 1
-			&& (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
-			&& tilewidth == w && tilelength == h
-			) {
-			ILubyte *strip; //, *dat;
-			tsize_t stripsize;
-			ILuint y;
-			uint32 rowsperstrip, j, linesread;
+      if(orientation == ORIENTATION_TOPLEFT)
+        Image->Origin = IL_ORIGIN_UPPER_LEFT;
+      else if(orientation == ORIENTATION_BOTLEFT)
+        Image->Origin = IL_ORIGIN_LOWER_LEFT;
+    }
+    //for 16bit rgb images:
+    else if (extrasamples == 0
+      && samplesperpixel == 3
+      && (bitspersample == 8 || bitspersample == 16)
+      && photometric == PHOTOMETRIC_RGB
+      && planarconfig == 1
+      && (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
+      && tilewidth == w && tilelength == h
+      ) {
+      ILubyte *strip; //, *dat;
+      tsize_t stripsize;
+      ILuint y;
+      uint32 rowsperstrip, j, linesread;
 
-			if (!Image) {
-				int type = IL_UNSIGNED_BYTE;
-				if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-				if(!iTexImage(image, w, h, 1, 3, IL_RGB, type, NULL)) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = image;
-			}
-			else {
-				Image->Next = iNewImage(w, h, 1, 1, 1);
-				if(Image->Next == NULL) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = Image->Next;
-			}
+      if (!Image) {
+        int type = IL_UNSIGNED_BYTE;
+        if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
+        if(!iTexImage(image, w, h, 1, 3, IL_RGB, type, NULL)) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = image;
+      }
+      else {
+        Image->Next = iNewImage(w, h, 1, 1, 1);
+        if(Image->Next == NULL) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = Image->Next;
+      }
 
-			TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-			stripsize = TIFFStripSize(tif);
+      TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
+      stripsize = TIFFStripSize(tif);
 
-			strip = (ILubyte*)ialloc(stripsize);
+      strip = (ILubyte*)ialloc(stripsize);
 
-			// dat = Image->Data;
-			for (y = 0; y < h; y += rowsperstrip) {
-				//the last strip may contain less data if the image
-				//height is not evenly divisible by rowsperstrip
-				if (y + rowsperstrip > h) {
-					stripsize = linesize*(h - y);
-					linesread = h - y;
-				}
-				else
-					linesread = rowsperstrip;
+      // dat = Image->Data;
+      for (y = 0; y < h; y += rowsperstrip) {
+        //the last strip may contain less data if the image
+        //height is not evenly divisible by rowsperstrip
+        if (y + rowsperstrip > h) {
+          stripsize = linesize*(h - y);
+          linesread = h - y;
+        }
+        else
+          linesread = rowsperstrip;
 
-				if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
-					iSetError(IL_LIB_TIFF_ERROR);
-					ifree(strip);
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
+        if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, y, 0), strip, stripsize) == -1) {
+          iSetError(IL_LIB_TIFF_ERROR);
+          ifree(strip);
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
 
-				for(j = 0; j < linesread; ++j)
-						memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
-			}
+        for(j = 0; j < linesread; ++j)
+            memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
+      }
 
-			ifree(strip);
-			
-			if(orientation == ORIENTATION_TOPLEFT)
-				Image->Origin = IL_ORIGIN_UPPER_LEFT;
-			else if(orientation == ORIENTATION_BOTLEFT)
-				Image->Origin = IL_ORIGIN_LOWER_LEFT;
-		}/*
-		else if (extrasamples == 0 && samplesperpixel == 3  //rgb
-					&& (bitspersample == 8 || bitspersample == 1 || bitspersample == 16)
-					&& photometric == PHOTOMETRIC_RGB
-					&& (planarconfig == PLANARCONFIG_CONTIG || planarcon
-						&& (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
-					) {
-		}
-				*/
-		else {
-				//not direclty supported format
-			if(!Image) {
-				if(!iTexImage(image, w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = image;
-			}
-			else {
-				Image->Next = iNewImage(w, h, 1, 4, 1);
-				if(Image->Next == NULL) {
-					TIFFClose(tif);
-					return IL_FALSE;
-				}
-				Image = Image->Next;
-			}
+      ifree(strip);
+      
+      if(orientation == ORIENTATION_TOPLEFT)
+        Image->Origin = IL_ORIGIN_UPPER_LEFT;
+      else if(orientation == ORIENTATION_BOTLEFT)
+        Image->Origin = IL_ORIGIN_LOWER_LEFT;
+    }/*
+    else if (extrasamples == 0 && samplesperpixel == 3  //rgb
+          && (bitspersample == 8 || bitspersample == 1 || bitspersample == 16)
+          && photometric == PHOTOMETRIC_RGB
+          && (planarconfig == PLANARCONFIG_CONTIG || planarcon
+            && (orientation == ORIENTATION_TOPLEFT || orientation == ORIENTATION_BOTLEFT)
+          ) {
+    }
+        */
+    else {
+        //not direclty supported format
+      if(!Image) {
+        if(!iTexImage(image, w, h, 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL)) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = image;
+      }
+      else {
+        Image->Next = iNewImage(w, h, 1, 4, 1);
+        if(Image->Next == NULL) {
+          TIFFClose(tif);
+          return IL_FALSE;
+        }
+        Image = Image->Next;
+      }
 
-			if (samplesperpixel == 4) {
-				TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES, &extrasamples, &sampleinfo);
-				if (!sampleinfo || sampleinfo[0] == EXTRASAMPLE_UNSPECIFIED) {
-					si = EXTRASAMPLE_ASSOCALPHA;
-					TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, 1, &si);
-				}
-			}
-			/*
-			 if (!iResizeImage(Image, Image->Width, Image->Height, 1, 4, 1)) {
-				 TIFFClose(tif);
-				 return IL_FALSE;
-			 }
-			 */
-			Image->Format = IL_RGBA;
-			Image->Type = IL_UNSIGNED_BYTE;
-	
-			// Siigron: added u_long cast to shut up compiler warning
-			//2003-08-31: changed flag from 1 (exit on error) to 0 (keep decoding)
-			//this lets me view text.tif, but can give crashes with unsupported
-			//tiffs...
-			//2003-09-04: keep flag 1 for official version for now
-			if (!TIFFReadRGBAImage(tif, Image->Width, Image->Height, (uint32*)Image->Data, 0)) {
-				TIFFClose(tif);
-				iSetError(IL_LIB_TIFF_ERROR);
-				return IL_FALSE;
-			}
-			Image->Origin = IL_ORIGIN_LOWER_LEFT;  // eiu...dunno if this is right
+      if (samplesperpixel == 4) {
+        TIFFGetFieldDefaulted(tif, TIFFTAG_EXTRASAMPLES, &extrasamples, &sampleinfo);
+        if (!sampleinfo || sampleinfo[0] == EXTRASAMPLE_UNSPECIFIED) {
+          si = EXTRASAMPLE_ASSOCALPHA;
+          TIFFSetField(tif, TIFFTAG_EXTRASAMPLES, 1, &si);
+        }
+      }
+      /*
+       if (!iResizeImage(Image, Image->Width, Image->Height, 1, 4, 1)) {
+         TIFFClose(tif);
+         return IL_FALSE;
+       }
+       */
+      Image->Format = IL_RGBA;
+      Image->Type = IL_UNSIGNED_BYTE;
+  
+      // Siigron: added u_long cast to shut up compiler warning
+      //2003-08-31: changed flag from 1 (exit on error) to 0 (keep decoding)
+      //this lets me view text.tif, but can give crashes with unsupported
+      //tiffs...
+      //2003-09-04: keep flag 1 for official version for now
+      if (!TIFFReadRGBAImage(tif, Image->Width, Image->Height, (uint32*)Image->Data, 0)) {
+        TIFFClose(tif);
+        iSetError(IL_LIB_TIFF_ERROR);
+        return IL_FALSE;
+      }
+      Image->Origin = IL_ORIGIN_LOWER_LEFT;  // eiu...dunno if this is right
 
 #ifdef __BIG_ENDIAN__ //TIFFReadRGBAImage reads abgr on big endian, convert to rgba
-			EndianSwapData(Image);
+      EndianSwapData(Image);
 #endif
 
-			/*
-			 The following switch() should not be needed,
-			 because we take care of the special cases that needed
-			 these conversions. But since not all special cases
-			 are handled right now, keep it :)
-			 */
-			//TODO: put switch into the loop??
-			TempImage = image;
-			image = Image; //ilConvertImage() converts image
-			switch (samplesperpixel)
-			{
-				case 1:
-					//added 2003-08-31 to keep palettized tiffs colored
-					if(photometric != 3)
-						iConvertImages(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
-					else //strip alpha as tiff supports no alpha palettes
-						iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
-					break;
-					
-				case 3:
-					//TODO: why the ifdef??
+      /*
+       The following switch() should not be needed,
+       because we take care of the special cases that needed
+       these conversions. But since not all special cases
+       are handled right now, keep it :)
+       */
+      //TODO: put switch into the loop??
+      TempImage = image;
+      image = Image; //ilConvertImage() converts image
+      switch (samplesperpixel)
+      {
+        case 1:
+          //added 2003-08-31 to keep palettized tiffs colored
+          if(photometric != 3)
+            iConvertImages(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
+          else //strip alpha as tiff supports no alpha palettes
+            iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
+          break;
+          
+        case 3:
+          //TODO: why the ifdef??
 #ifdef __LITTLE_ENDIAN__
-					iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
-#endif			
-					break; 
-					
-				case 4:
-					// pImageData = Image->Data;
-					//removed on 2003-08-26...why was this here? libtiff should and does
-					//take care of these things???
-					/*			
-					//invert alpha
+          iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
+#endif      
+          break; 
+          
+        case 4:
+          // pImageData = Image->Data;
+          //removed on 2003-08-26...why was this here? libtiff should and does
+          //take care of these things???
+          /*      
+          //invert alpha
 #ifdef __LITTLE_ENDIAN__
-					pImageData += 3;
-#endif			
-					for (i = Image->Width * Image->Height; i > 0; i--) {
-						*pImageData ^= 255;
-						pImageData += 4;
-					}
-					*/
-					break;
-			}
-			image = TempImage;
-			
-		} //else not directly supported format
+          pImageData += 3;
+#endif      
+          for (i = Image->Width * Image->Height; i > 0; i--) {
+            *pImageData ^= 255;
+            pImageData += 4;
+          }
+          */
+          break;
+      }
+      image = TempImage;
+      
+    } //else not directly supported format
 
-		if (TIFFGetField(tif, TIFFTAG_ICCPROFILE, &ProfileLen, &Buffer)) {
-			if (Image->Profile && Image->ProfileSize)
-				ifree(Image->Profile);
-			Image->Profile = (ILubyte*)ialloc(ProfileLen);
-			if (Image->Profile == NULL) {
-				TIFFClose(tif);
-				return IL_FALSE;
-			}
+    if (TIFFGetField(tif, TIFFTAG_ICCPROFILE, &ProfileLen, &Buffer)) {
+      if (Image->Profile && Image->ProfileSize)
+        ifree(Image->Profile);
+      Image->Profile = (ILubyte*)ialloc(ProfileLen);
+      if (Image->Profile == NULL) {
+        TIFFClose(tif);
+        return IL_FALSE;
+      }
 
-			memcpy(Image->Profile, Buffer, ProfileLen);
-			Image->ProfileSize = ProfileLen;
+      memcpy(Image->Profile, Buffer, ProfileLen);
+      Image->ProfileSize = ProfileLen;
 
-			//removed on 2003-08-24 as explained in bug 579574 on sourceforge
-			//_TIFFfree(Buffer);
-		}
+      //removed on 2003-08-24 as explained in bug 579574 on sourceforge
+      //_TIFFfree(Buffer);
+    }
 
                 // dangelo: read offset from tiff tags.
                 //If nothing is stored in these tags, then this must be an "uncropped" TIFF 
@@ -514,21 +542,21 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
                 Image->OffY = (uint32) ((y_position * y_resolution) + 0.49);
                 
 
-		/*
-		 Image = Image->Next;
-		 if (Image == NULL)  // Should never happen except when we reach the end, but check anyway.
-		 break;
-		 */ 
-	} //for tiff directories
+    /*
+     Image = Image->Next;
+     if (Image == NULL)  // Should never happen except when we reach the end, but check anyway.
+     break;
+     */ 
+  } //for tiff directories
 
-	TIFFClose(tif);
+  TIFFClose(tif);
 
-	End = SIOtell(io);
-	SIOseek(io, Start, IL_SEEK_SET);
-	iExifLoad(Image);
-	SIOseek(io, End, IL_SEEK_SET);
+  End = SIOtell(io);
+  SIOseek(io, Start, IL_SEEK_SET);
+  iExifLoad(Image);
+  SIOseek(io, End, IL_SEEK_SET);
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -541,8 +569,8 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 static tsize_t 
 _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	//iTrace("---- reading %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
-	return SIOread((SIO*)fd, pData, 1, tSize);
+  //iTrace("---- reading %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
+  return SIOread((SIO*)fd, pData, 1, tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -554,10 +582,10 @@ _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 /*static tsize_t 
 _tiffFileReadProcW(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	(void)fd;
-	(void)pData;
-	(void)tSize;
-	return 0;
+  (void)fd;
+  (void)pData;
+  (void)tSize;
+  return 0;
 }*/
 
 /*----------------------------------------------------------------------------*/
@@ -565,8 +593,8 @@ _tiffFileReadProcW(thandle_t fd, tdata_t pData, tsize_t tSize)
 static tsize_t 
 _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
-	iTrace("---- writing %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
-	return SIOwrite((SIO*)fd, pData, 1, tSize);
+  // iTrace("---- writing %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
+  return SIOwrite((SIO*)fd, pData, 1, tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -574,13 +602,13 @@ _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 static toff_t
 _tiffFileSeekProc(thandle_t fd, toff_t tOff, int whence)
 {
-	/* we use this as a special code, so avoid accepting it */
-	if (tOff == 0xFFFFFFFF)
-		return 0xFFFFFFFF;
+  /* we use this as a special code, so avoid accepting it */
+  if (tOff == 0xFFFFFFFF)
+    return 0xFFFFFFFF;
 
-	SIOseek((SIO*)fd, tOff, whence);
-	return SIOtell((SIO*)fd);
-	//return tOff;
+  SIOseek((SIO*)fd, tOff, whence);
+  return SIOtell((SIO*)fd);
+  //return tOff;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -588,13 +616,13 @@ _tiffFileSeekProc(thandle_t fd, toff_t tOff, int whence)
 static toff_t
 _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 {
-	/* we use this as a special code, so avoid accepting it */
-	if (tOff == 0xFFFFFFFF)
-		return 0xFFFFFFFF;
+  /* we use this as a special code, so avoid accepting it */
+  if (tOff == 0xFFFFFFFF)
+    return 0xFFFFFFFF;
 
-	SIOseek((SIO*)fd, tOff, whence);
-	return SIOtell((SIO*)fd);
-	//return tOff;
+  SIOseek((SIO*)fd, tOff, whence);
+  return SIOtell((SIO*)fd);
+  //return tOff;
 }
 #endif
 
@@ -603,8 +631,8 @@ _tiffFileSeekProcW(thandle_t fd, toff_t tOff, int whence)
 static int
 _tiffFileCloseProc(thandle_t fd)
 {
-	(void)fd;
-	return (0);
+  (void)fd;
+  return (0);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -612,15 +640,15 @@ _tiffFileCloseProc(thandle_t fd)
 static toff_t
 _tiffFileSizeProc(thandle_t fd)
 {
-	ILint Offset, Size;
-	
-	Offset = SIOtell((SIO*)fd);
-	SIOseek((SIO*)fd, 0, IL_SEEK_END);
+  ILint Offset, Size;
+  
+  Offset = SIOtell((SIO*)fd);
+  SIOseek((SIO*)fd, 0, IL_SEEK_END);
 
-	Size = SIOtell((SIO*)fd);
-	SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
+  Size = SIOtell((SIO*)fd);
+  SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
 
-	return Size;
+  return Size;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -628,15 +656,15 @@ _tiffFileSizeProc(thandle_t fd)
 static toff_t
 _tiffFileSizeProcW(thandle_t fd)
 {
-	ILint Offset, Size;
+  ILint Offset, Size;
 
-	Offset = SIOtell((SIO*)fd);
-	SIOseek((SIO*)fd, 0, IL_SEEK_END);
+  Offset = SIOtell((SIO*)fd);
+  SIOseek((SIO*)fd, 0, IL_SEEK_END);
 
-	Size = SIOtell((SIO*)fd);
-	SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
+  Size = SIOtell((SIO*)fd);
+  SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
 
-	return Size;
+  return Size;
 }
 #endif
 /*----------------------------------------------------------------------------*/
@@ -644,10 +672,10 @@ _tiffFileSizeProcW(thandle_t fd)
 static int
 _tiffDummyMapProc(thandle_t fd, tdata_t* pbase, toff_t* psize)
 {
-	(void)fd;
-	(void)pbase;
-	(void)psize;
-	return 0;
+  (void)fd;
+  (void)pbase;
+  (void)psize;
+  return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -655,34 +683,34 @@ _tiffDummyMapProc(thandle_t fd, tdata_t* pbase, toff_t* psize)
 static void
 _tiffDummyUnmapProc(thandle_t fd, tdata_t base, toff_t size)
 {
-	(void)fd;
-	(void)base;
-	(void)size;
-	return;
+  (void)fd;
+  (void)base;
+  (void)size;
+  return;
 }
 
 /*----------------------------------------------------------------------------*/
 
 static TIFF *iTIFFOpen(SIO *io, char *Mode)
 {
-	TIFF *tif;
+  TIFF *tif;
 
-	if (Mode[0] == 'w')
-		tif = TIFFClientOpen("TIFFMemFile", Mode,
-							io,
-							_tiffFileReadProc, _tiffFileWriteProc,
-							_tiffFileSeekProc, _tiffFileCloseProc,
-							_tiffFileSizeProc, _tiffDummyMapProc,
-							_tiffDummyUnmapProc);
-	else
-		tif = TIFFClientOpen("TIFFMemFile", Mode,
-							io,
-							_tiffFileReadProc, _tiffFileWriteProc,
-							_tiffFileSeekProc, _tiffFileCloseProc,
-							_tiffFileSizeProc, _tiffDummyMapProc,
-							_tiffDummyUnmapProc);
-	
-	return tif;
+  if (Mode[0] == 'w')
+    tif = TIFFClientOpen("TIFFMemFile", Mode,
+              io,
+              _tiffFileReadProc, _tiffFileWriteProc,
+              _tiffFileSeekProc, _tiffFileCloseProc,
+              _tiffFileSizeProc, _tiffDummyMapProc,
+              _tiffDummyUnmapProc);
+  else
+    tif = TIFFClientOpen("TIFFMemFile", Mode,
+              io,
+              _tiffFileReadProc, _tiffFileWriteProc,
+              _tiffFileSeekProc, _tiffFileCloseProc,
+              _tiffFileSizeProc, _tiffDummyMapProc,
+              _tiffDummyUnmapProc);
+  
+  return tif;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -693,167 +721,207 @@ static TIFF *iTIFFOpen(SIO *io, char *Mode)
 // Internal function used to save the Tiff.
 ILboolean iSaveTiffInternal(ILimage* image)
 {
-	ILenum	Format;
-	ILenum	Compression;
-	ILuint	ixLine;
-	TIFF	*File;
-	char	Description[512];
-	ILimage *TempImage;
-	char	*str;
-	ILboolean SwapColors;
-	ILubyte *OldData;
-	ILexif *Meta;
+  ILenum  Format;
+  ILenum  Compression;
+  ILuint  ixLine;
+  TIFF  *File;
+  ILimage *TempImage;
+  ILboolean SwapColors;
+  ILubyte *OldData;
+  ILint   TempInts[512];
+  ILimage *BaseImage = iGetBaseImage();
+  ILuint64 Offset;
 
-	if(image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  if(image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	Meta = image->ExifTags;
+  TIFFSetWarningHandler(warningHandler);
+  TIFFSetErrorHandler(errorHandler);
 
-	TIFFSetWarningHandler(warningHandler);
-	TIFFSetErrorHandler(errorHandler);
+  if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION)
+    Compression = COMPRESSION_LZW;
+  else
+    Compression = COMPRESSION_NONE;
 
-	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION)
-		Compression = COMPRESSION_LZW;
-	else
-		Compression = COMPRESSION_NONE;
+  if (image->Format == IL_COLOUR_INDEX) {
+    if (iGetBppPal(image->Pal.PalType) == 4)  // Preserve the alpha.
+      TempImage = iConvertImage(image, IL_RGBA, IL_UNSIGNED_BYTE);
+    else
+      TempImage = iConvertImage(image, IL_RGB, IL_UNSIGNED_BYTE);
+    
+    if (TempImage == NULL) {
+      return IL_FALSE;
+    }
+  }
+  else {
+    TempImage = image;
+  }
 
-	if (image->Format == IL_COLOUR_INDEX) {
-		if (iGetBppPal(image->Pal.PalType) == 4)  // Preserve the alpha.
-			TempImage = iConvertImage(image, IL_RGBA, IL_UNSIGNED_BYTE);
-		else
-			TempImage = iConvertImage(image, IL_RGB, IL_UNSIGNED_BYTE);
-		
-		if (TempImage == NULL) {
-			return IL_FALSE;
-		}
-	}
-	else {
-		TempImage = image;
-	}
+  // Control writing functions ourself.
+  File = iTIFFOpen(&image->io, "w");
+  if (File == NULL) {
+    iSetError(IL_COULD_NOT_OPEN_FILE);
+    return IL_FALSE;
+  }
 
-	// Control writing functions ourself.
-	File = iTIFFOpen(&image->io, "w");
-	if (File == NULL) {
-		iSetError(IL_COULD_NOT_OPEN_FILE);
-		return IL_FALSE;
-	}
+  TIFFSetField(File, TIFFTAG_IMAGEWIDTH,  TempImage->Width);
+  TIFFSetField(File, TIFFTAG_IMAGELENGTH, TempImage->Height);
+  TIFFSetField(File, TIFFTAG_COMPRESSION, Compression);
 
-	sprintf(Description, "Tiff generated by " IL_SFMT, ilGetString(IL_VERSION_NUM));
+  if((TempImage->Format == IL_LUMINANCE) || (TempImage->Format == IL_LUMINANCE_ALPHA))
+    TIFFSetField(File, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
+  else
+    TIFFSetField(File, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
 
-	TIFFSetField(File, TIFFTAG_IMAGEWIDTH, TempImage->Width);
-	TIFFSetField(File, TIFFTAG_IMAGELENGTH, TempImage->Height);
-	TIFFSetField(File, TIFFTAG_COMPRESSION, Compression);
-	if((TempImage->Format == IL_LUMINANCE) || (TempImage->Format == IL_LUMINANCE_ALPHA))
-		TIFFSetField(File, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-	else
-		TIFFSetField(File, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
-	TIFFSetField(File, TIFFTAG_BITSPERSAMPLE, TempImage->Bpc << 3);
-	TIFFSetField(File, TIFFTAG_SAMPLESPERPIXEL, TempImage->Bpp);
-	if ((TempImage->Bpp == iGetBppFormat(IL_RGBA)) ||
-			(TempImage->Bpp == iGetBppFormat(IL_LUMINANCE_ALPHA)))
-		TIFFSetField(File, TIFFTAG_EXTRASAMPLES, EXTRASAMPLE_ASSOCALPHA);
-	TIFFSetField(File, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
-	TIFFSetField(File, TIFFTAG_ROWSPERSTRIP, 1);
-	TIFFSetField(File, TIFFTAG_SOFTWARE, ilGetString(IL_VERSION_NUM));
+  TIFFSetField(File, TIFFTAG_BITSPERSAMPLE,     TempImage->Bpc << 3);
+  TIFFSetField(File, TIFFTAG_SAMPLESPERPIXEL,   TempImage->Bpp);
 
-	str = iGetString(IL_TIF_DOCUMENTNAME_STRING);
-	if (str) {
-		TIFFSetField(File, TIFFTAG_DOCUMENTNAME, str);
-		ifree(str);
-	}
+  if ((TempImage->Bpp == iGetBppFormat(IL_RGBA)) ||
+      (TempImage->Bpp == iGetBppFormat(IL_LUMINANCE_ALPHA)))
+    TIFFSetField(File, TIFFTAG_EXTRASAMPLES, EXTRASAMPLE_ASSOCALPHA);
 
-	str = iGetString(IL_TIF_AUTHNAME_STRING);
-	if (iGetString(IL_TIF_AUTHNAME_STRING)) {
-		TIFFSetField(File, TIFFTAG_ARTIST, str);
-		ifree(str);
-	}
+  TIFFSetField(File, TIFFTAG_PLANARCONFIG,      PLANARCONFIG_CONTIG);
+  TIFFSetField(File, TIFFTAG_ROWSPERSTRIP,      1);
 
-	str = iGetString(IL_TIF_HOSTCOMPUTER_STRING);
-	if (str) {
-		TIFFSetField(File, TIFFTAG_HOSTCOMPUTER, str);
-		ifree(str);
-	}
+  // meta strings
 
-	str = iGetString(IL_TIF_HOSTCOMPUTER_STRING);
-	if (str) {
-		TIFFSetField(File, TIFFTAG_IMAGEDESCRIPTION, str);
-		ifree(str);
-	}
+  SetFieldString  (IL_META_MAKE,                  TIFFTAG_MAKE);
+  SetFieldString  (IL_META_MODEL,                 TIFFTAG_MODEL);
+  SetFieldString  (IL_VERSION_NUM,                TIFFTAG_SOFTWARE);
+  SetFieldString  (IL_META_SOFTWARE,              TIFFTAG_SOFTWARE);
+  SetFieldString  (IL_META_DOCUMENT_NAME,         TIFFTAG_DOCUMENTNAME);
+  SetFieldString  (IL_META_ARTIST,                TIFFTAG_ARTIST);
+  SetFieldString  (IL_META_HOST_COMPUTER,         TIFFTAG_HOSTCOMPUTER);
+  SetFieldString  (IL_META_IMAGE_DESCRIPTION,     TIFFTAG_IMAGEDESCRIPTION);
+  SetFieldString  (IL_META_COPYRIGHT,             TIFFTAG_COPYRIGHT);
 
-	// Set the date and time string.
-	TIFFSetField(File, TIFFTAG_DATETIME, iMakeString());
+  SetFieldDWORD2  (IL_META_PAGE_NUMBER,           TIFFTAG_PAGENUMBER);
 
-	// 24/4/2003
-	// Orientation flag is not always supported (Photoshop, ...), orient the image data 
-	// and set it always to normal view
-	TIFFSetField(File, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
-	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
-		ILubyte* Data = iGetFlipped(TempImage);
-		OldData = TempImage->Data;
-		TempImage->Data = Data;
-	}
-	else
-		OldData = TempImage->Data;
+  // SetFieldWORD    (IL_META_COMPRESSION,           TIFFTAG_COMPRESSION);
 
-	Format = TempImage->Format;
-	SwapColors = (Format == IL_BGR || Format == IL_BGRA);
-	if (SwapColors)
- 		iSwapColours(TempImage);
+  TIFFSetField(File, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+  SetFieldRational(IL_META_X_RESOLUTION,          TIFFTAG_XRESOLUTION);
+  SetFieldRational(IL_META_Y_RESOLUTION,          TIFFTAG_YRESOLUTION);
+  SetFieldWORD    (IL_META_RESOLUTION_UNIT,       TIFFTAG_RESOLUTIONUNIT);
 
-	for (ixLine = 0; ixLine < TempImage->Height; ++ixLine) {
-		if (TIFFWriteScanline(File, TempImage->Data + ixLine * TempImage->Bps, ixLine, 0) < 0) {
-			TIFFClose(File);
-			iSetError(IL_LIB_TIFF_ERROR);
-			//if (SwapColors)
-			//	ilSwapColours();
-			if (TempImage->Data != OldData) {
-				ifree( TempImage->Data );
-				TempImage->Data = OldData;
-			}
-			if (TempImage != image)
-				iCloseImage(TempImage);
-			return IL_FALSE;
-		}
-	}
+  // Set the date and time string.
+  TIFFSetField(File, TIFFTAG_DATETIME, iMakeString());
 
-	TIFFWriteDirectory(File);
+  // 24/4/2003
+  // Orientation flag is not always supported (Photoshop, ...), orient the image data 
+  // and set it always to normal view
+  if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
+    ILubyte* Data = iGetFlipped(TempImage);
+    OldData = TempImage->Data;
+    TempImage->Data = Data;
+  }
+  else
+    OldData = TempImage->Data;
 
-	if (Meta) {
-		ILuint64 Offset;
-		TIFFCreateEXIFDirectory(File);
-		while (Meta) {
-			if (Meta->IFD == IL_TIFF_IFD_EXIF) {
-				const ILuint *		DWORDPtr = (const ILuint  *)Meta->Data;
-				const ILushort *	SHORTPtr = (const ILushort*)Meta->Data;
-				switch(Meta->ID) {
-					case IL_META_EXPOSURE_TIME: 		TIFFSetField(File, EXIFTAG_EXPOSURETIME,    DWORDPtr[0], DWORDPtr[1]); break;
-	        case IL_META_EXPOSURE_PROGRAM:  TIFFSetField(File, EXIFTAG_EXPOSUREPROGRAM, SHORTPtr[0]); break;
-	        case IL_META_METERING_MODE:     TIFFSetField(File, EXIFTAG_METERINGMODE,    SHORTPtr[0]); break;
-	        case IL_META_LIGHT_SOURCE:      TIFFSetField(File, EXIFTAG_LIGHTSOURCE,     SHORTPtr[0]); break;
-	        case IL_META_FLASH:             TIFFSetField(File, EXIFTAG_FLASH,           SHORTPtr[0]); break;
-				}
-			}
-			Meta = Meta->Next;
-		}
-		TIFFWriteCustomDirectory(File, &Offset);
-		TIFFSetDirectory(File, 0);
-		TIFFSetField(File, TIFFTAG_EXIFIFD, (ILuint)Offset);
-	}
+  Format = TempImage->Format;
+  SwapColors = (Format == IL_BGR || Format == IL_BGRA);
+  if (SwapColors)
+    iSwapColours(TempImage);
 
+  for (ixLine = 0; ixLine < TempImage->Height; ++ixLine) {
+    if (TIFFWriteScanline(File, TempImage->Data + ixLine * TempImage->Bps, ixLine, 0) < 0) {
+      TIFFClose(File);
+      iSetError(IL_LIB_TIFF_ERROR);
+      if (TempImage->Data != OldData) {
+        ifree( TempImage->Data );
+        TempImage->Data = OldData;
+      }
+      if (TempImage != image)
+        iCloseImage(TempImage);
+      return IL_FALSE;
+    }
+  }
 
-	if (TempImage->Data != OldData) {
-		ifree(TempImage->Data);
-		TempImage->Data = OldData;
-	}
+  TIFFWriteDirectory(File);
 
-	if (TempImage != image)
-		iCloseImage(TempImage);
+  TIFFCreateEXIFDirectory(File);
 
-	TIFFClose(File);
+  SetFieldString  (IL_META_SPECTRAL_SENSITIVITY,  EXIFTAG_SPECTRALSENSITIVITY);
+  SetFieldString  (IL_META_DATETIME_ORIGINAL,     EXIFTAG_DATETIMEORIGINAL);
+  SetFieldString  (IL_META_DATETIME_DIGITIZED,    EXIFTAG_DATETIMEDIGITIZED);
 
-	return IL_TRUE;
+  SetFieldRational(IL_META_EXPOSURE_TIME,         EXIFTAG_EXPOSURETIME);
+  SetFieldRational(IL_META_FSTOP,                 EXIFTAG_FNUMBER);
+  SetFieldWORD    (IL_META_EXPOSURE_PROGRAM,      EXIFTAG_EXPOSUREPROGRAM);
+  SetFieldRational(IL_META_SHUTTER_SPEED,         EXIFTAG_SHUTTERSPEEDVALUE);
+  SetFieldRational(IL_META_APERTURE,              EXIFTAG_APERTUREVALUE);
+  SetFieldRational(IL_META_BRIGHTNESS,            EXIFTAG_BRIGHTNESSVALUE);
+  SetFieldRational(IL_META_EXPOSURE_BIAS,         EXIFTAG_EXPOSUREBIASVALUE);
+  SetFieldRational(IL_META_MAX_APERTURE,          EXIFTAG_MAXAPERTUREVALUE);
+  SetFieldRational(IL_META_SUBJECT_DISTANCE,      EXIFTAG_SUBJECTDISTANCE);
+  SetFieldWORD    (IL_META_METERING_MODE,         EXIFTAG_METERINGMODE);
+  SetFieldWORD    (IL_META_LIGHT_SOURCE,          EXIFTAG_LIGHTSOURCE);
+  SetFieldWORD    (IL_META_FLASH,                 EXIFTAG_FLASH);
+  SetFieldRational(IL_META_FOCAL_LENGTH,          EXIFTAG_FOCALLENGTH);
+  SetFieldRational(IL_META_FLASH_ENERGY,          EXIFTAG_FLASHENERGY);
+
+  SetFieldWORD    (IL_META_EXPOSURE_MODE,         EXIFTAG_EXPOSUREMODE);
+  SetFieldWORD    (IL_META_WHITE_BALANCE,         EXIFTAG_WHITEBALANCE);
+  SetFieldWORD    (IL_META_COLOUR_SPACE,          EXIFTAG_COLORSPACE);
+  SetFieldWORD    (IL_META_SENSING_METHOD,        EXIFTAG_SENSINGMETHOD);
+
+  {
+    ILuint size;
+    void *Data;
+
+    Data = iMetaGetBlob(BaseImage, IL_META_MAKER_NOTE, &size);
+    if (Data) {
+      TIFFSetField(File, EXIFTAG_MAKERNOTE, (ILushort)size, Data);
+    }
+
+    Data = iMetaGetBlob(BaseImage, IL_META_FLASHPIX_VERSION, &size);
+    if (Data) {
+      TIFFSetField(File, EXIFTAG_FLASHPIXVERSION, Data);
+    }
+
+    Data = iMetaGetBlob(BaseImage, IL_META_FILESOURCE, &size);
+    if (Data) {
+      TIFFSetField(File, EXIFTAG_FILESOURCE, Data);
+    }
+  }
+
+  // TODO: IL_META_ISO_RATINGS, IL_META_SUBJECT_AREA
+
+  TIFFSetField    (File, EXIFTAG_EXIFVERSION, "0220");
+  
+  TIFFWriteCustomDirectory(File, &Offset);
+
+  TIFFSetDirectory(File, 0);
+  TIFFSetField(File, TIFFTAG_EXIFIFD, Offset);
+
+  // TODO: sub ifd?
+  //TIFFSetDirectory(File, 1);
+  //TIFFCreateDirectory (File);
+  // 24/4/2003
+  // Orientation flag is not always supported (Photoshop, ...), orient the image data 
+  // and set it always to normal view
+  // TIFFSetField(File, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+  // SetFieldRational(IL_META_X_RESOLUTION,          TIFFTAG_XRESOLUTION);
+  // SetFieldRational(IL_META_Y_RESOLUTION,          TIFFTAG_YRESOLUTION);
+  // SetFieldWORD    (IL_META_RESOLUTION_UNIT,       TIFFTAG_RESOLUTIONUNIT);
+
+  // TIFFWriteDirectory(File);
+
+  // TODO: gps ifd
+
+  if (TempImage->Data != OldData) {
+    ifree(TempImage->Data);
+    TempImage->Data = OldData;
+  }
+
+  if (TempImage != image)
+    iCloseImage(TempImage);
+
+  TIFFClose(File);
+
+  return IL_TRUE;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -865,36 +933,36 @@ ILboolean iSaveTiffInternal(ILimage* image)
 // 20 bytes.)
 char *iMakeString()
 {
-	static char TimeStr[20];
-	time_t		Time;
-	struct tm	*CurTime;
+  static char TimeStr[20];
+  time_t    Time;
+  struct tm *CurTime;
 
-	imemclear(TimeStr, 20);
+  imemclear(TimeStr, 20);
 
-	time(&Time);
+  time(&Time);
 #ifdef _WIN32
-	_tzset();
+  _tzset();
 #endif
-	CurTime = localtime(&Time);
+  CurTime = localtime(&Time);
 
-	strftime(TimeStr, 20, "%Y:%m:%d %H:%M:%S", CurTime);
-	
-	return TimeStr;
+  strftime(TimeStr, 20, "%Y:%m:%d %H:%M:%S", CurTime);
+  
+  return TimeStr;
 }
 
 /*----------------------------------------------------------------------------*/
 
 ILconst_string iFormatExtsTIF[] = { 
-	IL_TEXT("tif"), 
-	IL_TEXT("tiff"), 
-	NULL 
+  IL_TEXT("tif"), 
+  IL_TEXT("tiff"), 
+  NULL 
 };
 
 ILformat iFormatTIF = { 
-	/* .Validate = */ iIsValidTiff, 
-	/* .Load     = */ iLoadTiffInternal, 
-	/* .Save     = */ iSaveTiffInternal, 
-	/* .Exts     = */ iFormatExtsTIF
+  /* .Validate = */ iIsValidTiff, 
+  /* .Load     = */ iLoadTiffInternal, 
+  /* .Save     = */ iSaveTiffInternal, 
+  /* .Exts     = */ iFormatExtsTIF
 };
 
 #endif//IL_NO_TIF

@@ -86,6 +86,7 @@ SET                     ( SOURCES
                           il_kail.c
                           il_main.c
                           il_manip.c
+                          il_meta.c
                           il_pal.c
                           il_profiles.c
                           il_register.c

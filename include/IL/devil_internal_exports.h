@@ -144,14 +144,15 @@ INLINE ILboolean SIOeof(SIO *io) {
 ILAPI char *    ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint maxlen);
 ILAPI char *    ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
 
-typedef struct ILexif {
+typedef struct ILmeta {
   ILenum      IFD;
   ILenum      ID;
   ILushort    Type;
   ILuint      Length, Size;
   void *      Data;
-  struct ILexif *Next;
-} ILexif;
+  ILchar *    String;
+  struct ILmeta *Next;
+} ILmeta;
 
 //! The Fundamental Image structure
 /*! Every bit of information about an image is stored in this internal structure.
@@ -186,7 +187,7 @@ typedef struct ILimage {
     ILuint          DxtcSize;    //!< compressed data size
     SIO             io;
 
-    ILexif *        ExifTags;
+    ILmeta *        MetaTags;
 
 #if IL_THREAD_SAFE_PTHREAD
     pthread_mutex_t Mutex;

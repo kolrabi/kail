@@ -440,7 +440,7 @@ enum {
 #define IL_PNG_DESCRIPTION_STRING  0x071C
 #define IL_TIF_DESCRIPTION_STRING  0x071D
 #define IL_TIF_HOSTCOMPUTER_STRING 0x071E
-#define IL_TIF_DOCUMENTNAME_STRING 0x071F
+#define IL_TIF_DOCUMENTNAME_STRING IL_META_DOCUMENT_NAME
 #define IL_TIF_AUTHNAME_STRING     0x0720
 #define IL_JPG_SAVE_FORMAT         0x0721
 #define IL_CHEAD_HEADER_STRING     0x0722
@@ -537,6 +537,13 @@ enum {
 #define IL_META_SPECTRAL_SENSITIVITY          0x10009
 #define IL_META_DATETIME_ORIGINAL             0x1000A
 #define IL_META_DATETIME_DIGITIZED            0x1000B
+#define IL_META_SUB_SECOND_TIME               0x1000C
+#define IL_META_SUB_SECOND_TIME_ORIGINAL      0x1000D
+#define IL_META_SUB_SECOND_TIME_DIGITIZED     0x1000E
+#define IL_META_EXIF_VERSION                  0x1000F // 0220 -> 2.20
+
+#define IL_META_COMPRESSION                   0x10010
+#define IL_META_RESOLUTION_UNIT               0x10011
 
 #define IL_META_GPS_LATITUDE_REF              0x11000 // N / S
 #define IL_META_GPS_LONGITUDE_REF             0x11001 // E / W
@@ -559,9 +566,9 @@ enum {
 #define IL_META_EXPOSURE_TIME                 0x20001 // 2 ints (1 rational)
 #define IL_META_FSTOP                         0x20002 // 2 ints (1 rational)
 #define IL_META_EXPOSURE_PROGRAM              0x20003
-#define IL_META_ISO_RATING_COUNT              0x20004 // number of values returned by IL_META_ISO_RATINGS
-#define IL_META_ISO_RATINGS                   0x20005 // IL_META_ISO_RATING_COUNT ints
-#define IL_META_EXIF_VERSION                  0x20006 // 220 -> 2.20
+#define IL_META_SHUTTER_SPEED                 0x20004 // 2 ints (1 rational)
+#define IL_META_ISO_RATINGS                   0x20005 // variable number of ints
+
 #define IL_META_APERTURE                      0x20007 // 2 ints (1 rational)
 #define IL_META_BRIGHTNESS                    0x20008 // 2 ints (1 signed rational)
 #define IL_META_EXPOSURE_BIAS                 0x20009 // 2 ints (1 signed rational)
@@ -572,6 +579,15 @@ enum {
 #define IL_META_FLASH                         0x2000E 
 #define IL_META_FOCAL_LENGTH                  0x2000F // 2 ints (1 rational)
 #define IL_META_FLASH_ENERGY                  0x20010 // 2 ints (1 rational)
+#define IL_META_SUBJECT_AREA                  0x20011 // 2-3 ints
+
+#define IL_META_X_RESOLUTION                  0x20012 // 2 ints (1 rational)
+#define IL_META_Y_RESOLUTION                  0x20013 // 2 ints (1 rational)
+#define IL_META_COLOUR_SPACE                  0x20014
+#define IL_META_COLOR_SPACE                   0x20014
+#define IL_META_EXPOSURE_MODE                 0x20015
+#define IL_META_WHITE_BALANCE                 0x20016
+#define IL_META_SENSING_METHOD                0x20017
 
 #define IL_META_GPS_VERSION                   0x21000
 #define IL_META_GPS_LATITUDE                  0x21001 // 6 ints (3 rationals: DMS)
@@ -588,6 +604,12 @@ enum {
 #define IL_META_GPS_DEST_BEARING              0x2100C // 2 ints (1 rational)
 #define IL_META_GPS_DEST_DISTANCE             0x2100D // 2 ints (1 rational)
 #define IL_META_GPS_DIFFERENTIAL              0x2100E // 1 int
+
+// blobs
+#define IL_META_MAKER_NOTE                    0x30000
+#define IL_META_FLASHPIX_VERSION              0x30001
+#define IL_META_FILESOURCE                    0x30002
+#define IL_META_USER_COMMENT                  0x30003
 
 #define IL_EXPOSURE_PROGRAM_NOT_DEFINED       0
 #define IL_EXPOSURE_PROGRAM_MANUAL            1
@@ -644,14 +666,7 @@ enum {
 // #define IL_META_OECF                      0x8828
 // #define IL_META_COMPONENTS_CONFIGURATION  0x9101
 // #define IL_META_SUBJECT_AREA              0x9214
-// #define IL_META_MAKER_NOTE                0x927C
-// #define IL_META_USER_COMMENT              0x9286
-// #define IL_META_SUB_SECOND_TIME           0x9290
-// #define IL_META_SUB_SECOND_TIME_ORIGINAL  0x9291
-// #define IL_META_SUB_SECOND_TIME_DIGITIZED 0x9292
 // #define IL_TAG_EXIF_FLASHPIX_VERSION          0xA000
-// #define IL_TAG_EXIF_COLOUR_SPACE              0xA001
-// #define IL_TAG_EXIF_COLOR_SPACE               0xA001
 // #define IL_TAG_EXIF_PIXEL_X_DIMENSION         0xA002
 // #define IL_TAG_EXIF_PIXEL_Y_DIMENSION         0xA003
 // #define IL_TAG_EXIF_RELATED_SOUND_FILE        0xA004
@@ -660,17 +675,12 @@ enum {
 // #define IL_TAG_EXIF_FOCAL_PLANE_X_RESOLUTION  0xA20E
 // #define IL_TAG_EXIF_FOCAL_PLANE_Y_RESOLUTION  0xA20F
 // #define IL_TAG_EXIF_FOCAL_PLANE_RESOULTION_UNIT 0xA210
+// 
 // #define IL_TAG_EXIF_SUBJECT_LOCATION          0xA214
 // #define IL_TAG_EXIF_EXPOSURE_INDEX            0xA215
-// #define IL_TAG_EXIF_SENSING_METHOD            0xA217
 // #define IL_TAG_EXIF_FILE_SOURCE               0xA300
 // #define IL_TAG_EXIF_SCENE_TYPE                0xA301
 // #define IL_TAG_EXIF_CFA_PATTERN               0xA302
-// #define IL_TAG_EXIF_CUSTOM_RENDERED           0xA401
-// #define IL_TAG_EXIF_EXPOSURE_MODE             0xA402
-// #define IL_TAG_EXIF_WHITE_BALANCE             0xA403
-// #define IL_TAG_EXIF_DIGITAL_ZOOM_RATIO        0xA404
-// #define IL_TAG_EXIF_FOCAL_LENGTH_35MM         0xA405
 // #define IL_TAG_EXIF_SCENE_CAPTURE_TYPE        0xA406
 // #define IL_TAG_EXIF_GAIN_CONTROL              0xA407
 // #define IL_TAG_EXIF_CONTRAST                  0xA408
@@ -699,6 +709,7 @@ enum {
 
 // TIFF IFDs
 #define IL_TIFF_IFD0                          0x0000
+#define IL_TIFF_IFD1                          0x0001
 #define IL_TIFF_IFD_EXIF                      0x8769
 #define IL_TIFF_IFD_GPS                       0x8825
 #define IL_TIFF_IFD_INTEROP                   0xA005
@@ -749,7 +760,7 @@ ILAPI ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode);
 ILAPI void      ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param);
 ILAPI ILenum    ILAPIENTRY ilGetError(void);
 ILAPI ILint     ILAPIENTRY ilGetInteger(ILenum Mode);
-ILAPI ILboolean ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param);
+ILAPI ILuint    ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param);
 ILAPI ILconst_string  ILAPIENTRY ilGetString(ILenum StringName);
 ILAPI void      ILAPIENTRY ilHint(ILenum Target, ILenum Mode);
 ILAPI void      ILAPIENTRY ilInit(void);
@@ -877,6 +888,8 @@ ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID);
 ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
+ILAPI ILuint    ILAPIENTRY ilGetIntegerV(ILenum Mode, ILint *Param);
+ILAPI void      ILAPIENTRY ilSetIntegerV(ILenum Mode, ILint *Param);
 #endif 
 
 

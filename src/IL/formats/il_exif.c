@@ -72,7 +72,6 @@ static ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum I
     Size = iExifGetEntrySize(&Entry);
 
     if (Entry.Tag == IL_TIFF_IFD_EXIF || Entry.Tag == IL_TIFF_IFD_GPS || Entry.Tag == IL_TIFF_IFD_INTEROP) {
-      iTrace("---- %04x", Entry.Tag);
       ILuint Back = SIOtell(io);
       Offset = Entry.Offset;
       while(Offset) {
@@ -80,67 +79,49 @@ static ILuint iExifReadDir(ILimage *Image, ILuint Start, ILuint Offset, ILenum I
       }
       SIOseek(io, Back, IL_SEEK_SET);
     } else {
+      ILuint Back = SIOtell(io);
+      void *Data = ialloc(Size + 1);
+      if (!Data) {
+        return 0;
+      }
+
       if (Size <= 4) {
         Entry.Offset = SIOtell(io) - Start - 4;
       }
 
-      ILuint Back = SIOtell(io);
-      ILexif *Exif = ioalloc(ILexif);
-      if (!Exif) return 0;
-
-      Exif->Data = ialloc(Size + 1);
-      if (!Exif->Data) {
-        ifree(Exif);
-        return 0;
-      }
-
-      Exif->IFD = IFD;
-      Exif->ID  = Entry.Tag;
-      Exif->Type = Entry.Type;
-      Exif->Size = Size;
-      Exif->Length = Entry.Length;
-      Exif->Next = NULL;
-
       SIOseek(io, Start + Entry.Offset, IL_SEEK_SET);
-      if (SIOread(io, Exif->Data, 1, Size) != Size) {
-        ifree(Exif->Data);
-        ifree(Exif);
+      if (SIOread(io, Data, 1, Size) != Size) {
+        ifree(Data);
         return 0;
       }
 
       if (BigEndian) {
         switch(Entry.Type) {
-          case IL_EXIF_TYPE_WORD:       BigUShort(Exif->Data); break;          
-          case IL_EXIF_TYPE_DWORD:      BigUInt(Exif->Data); break;          
-          case IL_EXIF_TYPE_RATIONAL:   BigUInt(Exif->Data); BigUInt(((ILuint*)Exif->Data)+1); break;
-          case IL_EXIF_TYPE_SWORD:      BigShort(Exif->Data); break;          
-          case IL_EXIF_TYPE_SDWORD:     BigInt(Exif->Data); break;          
-          case IL_EXIF_TYPE_SRATIONAL:  BigInt(Exif->Data); BigInt(((ILint*)Exif->Data)+1); break;
-          case IL_EXIF_TYPE_FLOAT:      BigFloat(Exif->Data); break;          
-          case IL_EXIF_TYPE_DOUBLE:     BigDouble(Exif->Data); break;          
+          case IL_EXIF_TYPE_WORD:       BigUShort(Data); break;          
+          case IL_EXIF_TYPE_DWORD:      BigUInt(Data); break;          
+          case IL_EXIF_TYPE_RATIONAL:   BigUInt(Data); BigUInt(((ILuint*)Data)+1); break;
+          case IL_EXIF_TYPE_SWORD:      BigShort(Data); break;          
+          case IL_EXIF_TYPE_SDWORD:     BigInt(Data); break;          
+          case IL_EXIF_TYPE_SRATIONAL:  BigInt(Data); BigInt(((ILint*)Data)+1); break;
+          case IL_EXIF_TYPE_FLOAT:      BigFloat(Data); break;          
+          case IL_EXIF_TYPE_DOUBLE:     BigDouble(Data); break;          
         }
       } else {
         switch(Entry.Type) {
-          case IL_EXIF_TYPE_WORD:       UShort(Exif->Data); break;          
-          case IL_EXIF_TYPE_DWORD:      UInt(Exif->Data); break;          
-          case IL_EXIF_TYPE_RATIONAL:   UInt(Exif->Data); UInt(((ILuint*)Exif->Data)+1); break;
-          case IL_EXIF_TYPE_SWORD:      Short(Exif->Data); break;          
-          case IL_EXIF_TYPE_SDWORD:     Int(Exif->Data); break;          
-          case IL_EXIF_TYPE_SRATIONAL:  Int(Exif->Data); Int(((ILint*)Exif->Data)+1); break;
-          case IL_EXIF_TYPE_FLOAT:      Float(Exif->Data); break;          
-          case IL_EXIF_TYPE_DOUBLE:     Double(Exif->Data); break;          
+          case IL_EXIF_TYPE_WORD:       UShort(Data); break;          
+          case IL_EXIF_TYPE_DWORD:      UInt(Data); break;          
+          case IL_EXIF_TYPE_RATIONAL:   UInt(Data); UInt(((ILuint*)Data)+1); break;
+          case IL_EXIF_TYPE_SWORD:      Short(Data); break;          
+          case IL_EXIF_TYPE_SDWORD:     Int(Data); break;          
+          case IL_EXIF_TYPE_SRATIONAL:  Int(Data); Int(((ILint*)Data)+1); break;
+          case IL_EXIF_TYPE_FLOAT:      Float(Data); break;          
+          case IL_EXIF_TYPE_DOUBLE:     Double(Data); break;          
         }
       }
 
-      ((ILubyte*)Exif->Data)[Size] = 0;
+      ((ILubyte*)Data)[Size] = 0;
 
-      if (Image->ExifTags == NULL) {
-        Image->ExifTags = Exif;
-      } else {
-        ILexif *ImageExif = Image->ExifTags;
-        while(ImageExif->Next != NULL) ImageExif = ImageExif->Next;
-        ImageExif->Next = Exif;
-      }
+      iSetMetadata(Image, IFD, Entry.Tag, Entry.Type, Entry.Length, Size, Data);
       SIOseek(io, Back, IL_SEEK_SET);
     }
   }
@@ -161,21 +142,23 @@ ILboolean iExifLoad(ILimage *Image) {
 
   ILubyte hdr[4];
   ILuint  Offset;
-  ILexif *Exif;
+  ILmeta *Meta;
   ILboolean BigEndian;
+  ILuint ifd = 0;
 
   if (SIOread(io, hdr, 1, 4) != 4) return IL_FALSE;
   if (memcmp(hdr, "MM\0\x2a", 4) && memcmp(hdr, "II\x2a\0", 4)) return IL_FALSE;
 
   // clear old exif data first
-  Exif = Image->ExifTags;
-  while(Exif) {
-    ILexif *NextExif = Exif->Next;
-    ifree(Exif->Data);
-    ifree(Exif);
-    Exif = NextExif;
+  Meta = Image->MetaTags;
+  while(Meta) {
+    ILmeta *NextMeta = Meta->Next;
+    ifree(Meta->Data);
+    ifree(Meta->String);
+    ifree(Meta);
+    Meta = NextMeta;
   }
-  Image->ExifTags = NULL;
+  Image->MetaTags = NULL;
 
   BigEndian = (memcmp(hdr, "MM\0\x2a", 4) == 0);
 
@@ -187,7 +170,7 @@ ILboolean iExifLoad(ILimage *Image) {
   }
 
   while(Offset) {
-    Offset = iExifReadDir(Image, Start, Offset, 0, BigEndian);
+    Offset = iExifReadDir(Image, Start, Offset, ifd++, BigEndian);
   }
   return IL_TRUE;
 }
@@ -214,32 +197,32 @@ ILboolean iExifSave(ILimage *Image) {
   ILuint    ExifCount     = 0, ExifDirSize    = 0, ExifDataSize     = 0;
   ILuint    GPSCount      = 0, GPSDirSize     = 0, GPSDataSize      = 0;
   ILuint    InteropCount  = 0, InteropDirSize = 0, InteropDataSize  = 0;
-  ILexif *  Exif          = Image->ExifTags;
+  ILmeta *  Meta          = Image->MetaTags;
   ILushort Num, TmpShort;
 
   ILuint    DataOffset = 0, TmpUint;
 
   // find out directory sizes
-  Exif = Image->ExifTags;
-  while (Exif) {
-    if (Exif->IFD == IL_TIFF_IFD0) {
+  Meta = Image->MetaTags;
+  while (Meta) {
+    if (Meta->IFD == IL_TIFF_IFD0) {
       IFD0Count ++;
       IFD0DirSize += 12;
-      if (Exif->Size > 4) IFD0DataSize += Exif->Size;
-    } else if (Exif->IFD == IL_TIFF_IFD_EXIF) {
+      if (Meta->Size > 4) IFD0DataSize += Meta->Size;
+    } else if (Meta->IFD == IL_TIFF_IFD_EXIF) {
       ExifCount ++;
       ExifDirSize += 12;
-      if (Exif->Size > 4) ExifDataSize += Exif->Size;
-    } else if (Exif->IFD == IL_TIFF_IFD_GPS) {
+      if (Meta->Size > 4) ExifDataSize += Meta->Size;
+    } else if (Meta->IFD == IL_TIFF_IFD_GPS) {
       GPSCount ++;
       GPSDirSize += 12;
-      if (Exif->Size > 4) GPSDataSize += Exif->Size;
-    } else if (Exif->IFD == IL_TIFF_IFD_INTEROP) {
+      if (Meta->Size > 4) GPSDataSize += Meta->Size;
+    } else if (Meta->IFD == IL_TIFF_IFD_INTEROP) {
       InteropCount ++;
       InteropDirSize += 12;
-      if (Exif->Size > 4) InteropDataSize += Exif->Size;
+      if (Meta->Size > 4) InteropDataSize += Meta->Size;
     }
-    Exif = Exif->Next;
+    Meta = Meta->Next;
   }
 
   if (ExifCount   > 0)    { IFD0Count++;  IFD0DirSize += 12; ExifDirSize += 2 + 4; }
@@ -259,22 +242,22 @@ ILboolean iExifSave(ILimage *Image) {
   Num = IFD0Count;
 
   SIOwrite(io, &Num, 2, 1);
-  Exif = Image->ExifTags;
-  while (Exif) {
-    if (Exif->IFD == IL_TIFF_IFD0) {
-      SIOwrite(io, &Exif->ID, 2, 1);
-      SIOwrite(io, &Exif->Type, 2, 1);
-      SIOwrite(io, &Exif->Length, 4, 1);
+  Meta = Image->MetaTags;
+  while (Meta) {
+    if (Meta->IFD == IL_TIFF_IFD0) {
+      SIOwrite(io, &Meta->ID, 2, 1);
+      SIOwrite(io, &Meta->Type, 2, 1);
+      SIOwrite(io, &Meta->Length, 4, 1);
 
-      if (Exif->Size > 4) {
+      if (Meta->Size > 4) {
         SIOwrite(io, &DataOffset, 4, 1);
-        DataOffset += Exif->Size;
+        DataOffset += Meta->Size;
       } else {
-        SIOwrite(io, Exif->Data, Exif->Size, 1);
-        SIOpad(io, 4-Exif->Size);
+        SIOwrite(io, Meta->Data, Meta->Size, 1);
+        SIOpad(io, 4-Meta->Size);
       }
     } 
-    Exif = Exif->Next;
+    Meta = Meta->Next;
   }
 
   if (ExifCount > 0) {
@@ -300,14 +283,14 @@ ILboolean iExifSave(ILimage *Image) {
   }
   TmpUint  = 0; SIOwrite(io, &TmpUint, 4, 1);
 
-  Exif = Image->ExifTags;
-  while (Exif) {
-    if (Exif->IFD == IL_TIFF_IFD0) {
-      if (Exif->Size > 4) {
-        SIOwrite(io, Exif->Data, Exif->Size, 1);
+  Meta = Image->MetaTags;
+  while (Meta) {
+    if (Meta->IFD == IL_TIFF_IFD0) {
+      if (Meta->Size > 4) {
+        SIOwrite(io, Meta->Data, Meta->Size, 1);
       }
     } 
-    Exif = Exif->Next;
+    Meta = Meta->Next;
   }
 
   if (ExifCount > 0) {
@@ -316,32 +299,32 @@ ILboolean iExifSave(ILimage *Image) {
     DataOffset += ExifDirSize;
 
     SIOwrite(io, &Num, 2, 1);
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_EXIF) {
-        SIOwrite(io, &Exif->ID, 2, 1);
-        SIOwrite(io, &Exif->Type, 2, 1);
-        SIOwrite(io, &Exif->Length, 4, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_EXIF) {
+        SIOwrite(io, &Meta->ID, 2, 1);
+        SIOwrite(io, &Meta->Type, 2, 1);
+        SIOwrite(io, &Meta->Length, 4, 1);
 
-        if (Exif->Size > 4) {
+        if (Meta->Size > 4) {
           SIOwrite(io, &DataOffset, 4, 1);
-          DataOffset += Exif->Size;
+          DataOffset += Meta->Size;
         } else {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
-          SIOpad(io, 4-Exif->Size);
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
+          SIOpad(io, 4-Meta->Size);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
     TmpUint  = 0; SIOwrite(io, &TmpUint, 4, 1);
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_EXIF) {
-        if (Exif->Size > 4) {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_EXIF) {
+        if (Meta->Size > 4) {
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
   }
 
@@ -351,33 +334,33 @@ ILboolean iExifSave(ILimage *Image) {
     DataOffset += GPSDirSize;
 
     SIOwrite(io, &Num, 2, 1);
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_GPS) {
-        SIOwrite(io, &Exif->ID, 2, 1);
-        SIOwrite(io, &Exif->Type, 2, 1);
-        SIOwrite(io, &Exif->Length, 4, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_GPS) {
+        SIOwrite(io, &Meta->ID, 2, 1);
+        SIOwrite(io, &Meta->Type, 2, 1);
+        SIOwrite(io, &Meta->Length, 4, 1);
 
-        if (Exif->Size > 4) {
+        if (Meta->Size > 4) {
           SIOwrite(io, &DataOffset, 4, 1);
-          DataOffset += Exif->Size;
+          DataOffset += Meta->Size;
         } else {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
-          SIOpad(io, 4-Exif->Size);
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
+          SIOpad(io, 4-Meta->Size);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
     TmpUint  = 0; SIOwrite(io, &TmpUint, 4, 1);
 
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_GPS) {
-        if (Exif->Size > 4) {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_GPS) {
+        if (Meta->Size > 4) {
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
   }
 
@@ -387,33 +370,33 @@ ILboolean iExifSave(ILimage *Image) {
     DataOffset += InteropDirSize;
 
     SIOwrite(io, &Num, 2, 1);
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_INTEROP) {
-        SIOwrite(io, &Exif->ID, 2, 1);
-        SIOwrite(io, &Exif->Type, 2, 1);
-        SIOwrite(io, &Exif->Length, 4, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_INTEROP) {
+        SIOwrite(io, &Meta->ID, 2, 1);
+        SIOwrite(io, &Meta->Type, 2, 1);
+        SIOwrite(io, &Meta->Length, 4, 1);
 
-        if (Exif->Size > 4) {
+        if (Meta->Size > 4) {
           SIOwrite(io, &DataOffset, 4, 1);
-          DataOffset += Exif->Size;
+          DataOffset += Meta->Size;
         } else {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
-          SIOpad(io, 4-Exif->Size);
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
+          SIOpad(io, 4-Meta->Size);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
     TmpUint  = 0; SIOwrite(io, &TmpUint, 4, 1);
 
-    Exif = Image->ExifTags;
-    while (Exif) {
-      if (Exif->IFD == IL_TIFF_IFD_INTEROP) {
-        if (Exif->Size > 4) {
-          SIOwrite(io, Exif->Data, Exif->Size, 1);
+    Meta = Image->MetaTags;
+    while (Meta) {
+      if (Meta->IFD == IL_TIFF_IFD_INTEROP) {
+        if (Meta->Size > 4) {
+          SIOwrite(io, Meta->Data, Meta->Size, 1);
         }
       } 
-      Exif = Exif->Next;
+      Meta = Meta->Next;
     }
   }
   return IL_TRUE;

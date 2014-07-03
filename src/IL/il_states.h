@@ -23,6 +23,7 @@ ILboolean iGetBoolean(ILenum Mode);
 ILint     iGetInteger(ILenum Mode);
 ILboolean iIsEnabled(ILenum Mode);
 void      iSetInteger(ILimage *CurImage, ILenum Mode, ILint Param);
+void      iSetIntegerV(ILimage *CurImage, ILenum Mode, ILint *Param);
 void      iSetString(ILenum Mode, const char *String_);
 ILboolean iOriginFunc(ILenum Mode);
 ILboolean iTypeFunc(ILenum Mode);

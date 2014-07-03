@@ -578,21 +578,21 @@ ILenum ILAPIENTRY ilGetError(void) {
 }
 
 /**
- * Sets @a Param equal to the current value of the @a Mode.
+ * Gets the current value(s) of the @a Mode.
+ * @param Mode Which value(s) to get
+ * @param Param Where to store the value(s), can be NULL. If not NULL, it must
+ *              point to an array of ILints that is large enough to contain all
+ *              values.
+ * @return Number of integer values.
  * @see ilGetInteger
  * @ingroup state
  */
-ILboolean ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
-  ILboolean bRet;
-  if (Param == NULL) {
-    iSetError(IL_INVALID_PARAM);
-    return IL_FALSE;
-  }
-
+ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
+  ILuint Result;
   iLockState();
-  bRet = iGetIntegerV(Mode, Param);
+  Result = iGetIntegerV(Mode, Param);
   iUnlockState();
-  return bRet;
+  return Result;
 }
 
 /**
@@ -747,10 +747,16 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * Strings marked with RW can also be set using ilSetString();
  * 
  * @param  StringName String to get.
+ * @note   If it belongs to the current image the returned string is valid only
+ *         as long as the image exists!
  * @ingroup state
  */
 ILconst_string ILAPIENTRY ilGetString(ILenum StringName) {
-  return iGetILString(StringName);
+  ILconst_string Result;
+  iLockState();
+  Result = iGetILString(StringName);
+  iUnlockState();
+  return Result;
 }
 
 /**
@@ -1502,6 +1508,21 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
   iLockState();
   Image = iLockCurImage();
   iSetInteger(Image, Mode, Param);
+  iUnlockImage(Image);
+  iUnlockState();
+}
+
+/**
+ * Sets a parameter value for a @a Mode
+ * @see ilGetInteger for a list of valid @a Modes.
+ * @ingroup state
+ */
+void ILAPIENTRY ilSetIntegerV(ILenum Mode, ILint *Param) {
+  ILimage *Image;
+
+  iLockState();
+  Image = iLockCurImage();
+  iSetIntegerV(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
 }
