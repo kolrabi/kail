@@ -142,23 +142,11 @@ ILboolean iExifLoad(ILimage *Image) {
 
   ILubyte hdr[4];
   ILuint  Offset;
-  ILmeta *Meta;
   ILboolean BigEndian;
   ILuint ifd = 0;
 
   if (SIOread(io, hdr, 1, 4) != 4) return IL_FALSE;
   if (memcmp(hdr, "MM\0\x2a", 4) && memcmp(hdr, "II\x2a\0", 4)) return IL_FALSE;
-
-  // clear old exif data first
-  Meta = Image->MetaTags;
-  while(Meta) {
-    ILmeta *NextMeta = Meta->Next;
-    ifree(Meta->Data);
-    ifree(Meta->String);
-    ifree(Meta);
-    Meta = NextMeta;
-  }
-  Image->MetaTags = NULL;
 
   BigEndian = (memcmp(hdr, "MM\0\x2a", 4) == 0);
 
@@ -174,7 +162,7 @@ ILboolean iExifLoad(ILimage *Image) {
   }
   return IL_TRUE;
 }
-
+/*
 static ILboolean iIsValidExif(SIO *io) {
   ILuint Start = SIOtell(io);
   ILubyte hdr[4];
@@ -184,7 +172,7 @@ static ILboolean iIsValidExif(SIO *io) {
 
   return Ok;
 }
-
+*/
 static ILboolean iLoadExifInternal(ILimage *Image) {
   return iExifLoad(Image);
 }
@@ -412,7 +400,7 @@ ILconst_string iFormatExtsEXIF[] = {
 };
 
 ILformat iFormatEXIF = { 
-  /* .Validate = */ iIsValidExif, 
+  /* .Validate = */ NULL, // iIsValidExif, 
   /* .Load     = */ iLoadExifInternal, 
   /* .Save     = */ iSaveExifInternal, 
   /* .Exts     = */ iFormatExtsEXIF

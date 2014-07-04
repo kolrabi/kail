@@ -1,4 +1,4 @@
-#include "il_internal.h"
+#include "il_meta.h"
 
 typedef struct {
   ILenum MetaID;
@@ -234,7 +234,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   return IL_TRUE;
 }
 
-ILint iMetaToInt(ILimage *Image, ILenum MetaID) {
+ILint iGetMetai(ILimage *Image, ILenum MetaID) {
   ILuint count, size;
   ILenum Type;
   void *data;
@@ -268,7 +268,7 @@ ILint iMetaToInt(ILimage *Image, ILenum MetaID) {
   return 0;
 }
 
-ILuint iMetaToIntV(ILimage *Image, ILenum MetaID, ILint *Param) {
+ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param) {
   ILuint count, size;
   ILenum Type;
   void *data;
@@ -322,7 +322,7 @@ ILuint iMetaToIntV(ILimage *Image, ILenum MetaID, ILint *Param) {
   return count;
 }
 
-ILboolean iIntVToMeta(ILimage *Image, ILenum MetaID, ILint *Param) {
+ILboolean iSetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param) {
   void *data;
   ILint i;
   ILint Count;
@@ -370,7 +370,7 @@ ILboolean iIntVToMeta(ILimage *Image, ILenum MetaID, ILint *Param) {
   return IL_TRUE;
 }
 
-void * iMetaGetBlob(ILimage *Image, ILenum MetaID, ILuint *Size) {
+const void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size) {
   ILmeta *Meta = Image->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   if (!Desc) {
@@ -394,7 +394,7 @@ void * iMetaGetBlob(ILimage *Image, ILenum MetaID, ILuint *Size) {
   return NULL;
 }
 
-ILconst_string iMetaToString(ILimage *Image, ILenum MetaID) {
+ILconst_string iGetMetaString(ILimage *Image, ILenum MetaID) {
   ILmeta *Meta = Image->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   if (!Desc) {
@@ -417,7 +417,7 @@ ILconst_string iMetaToString(ILimage *Image, ILenum MetaID) {
   return NULL;
 }
 
-ILboolean iMetaSetString(ILimage *Image, ILenum MetaID, const char *String) {
+ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, const char *String) {
   ILmeta *Meta = Image->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   ILuint Length;

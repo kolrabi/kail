@@ -180,22 +180,33 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
   }
 }
 
-ILboolean ILAPIENTRY iLoadFuncs2(ILimage* image, ILenum type) {
+ILboolean ILAPIENTRY iLoadFuncs2(ILimage* Image, ILenum type) {
   const ILformat *format = iGetFormat(type);
   ILboolean bRet = IL_FALSE;
 
   if (type == IL_TYPE_UNKNOWN) {
     iSetError(IL_INVALID_ENUM);
   } else if (format) {
-    bRet = format->Load != NULL && 
-           format->Load(image) && 
-           iFixImages(image);
+    if (format->Load != NULL) {
+      // clear old meta data first
+      ILmeta *Meta = Image->MetaTags;
+      while(Meta) {
+        ILmeta *NextMeta = Meta->Next;
+        ifree(Meta->Data);
+        ifree(Meta->String);
+        ifree(Meta);
+        Meta = NextMeta;
+      }
+      Image->MetaTags = NULL;
+
+      bRet = format->Load(Image) && iFixImages(Image);
+    }
   } else {
     iSetError(IL_FORMAT_NOT_SUPPORTED);
   }
 
   if (!bRet && iGetInt(IL_DEFAULT_ON_FAIL)) {
-    iDefaultImage(image);
+    iDefaultImage(Image);
   }
 
   return bRet;

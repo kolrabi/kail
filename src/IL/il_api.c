@@ -733,16 +733,19 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * @a IL_LOAD_EXT                 | R   | A string containing extensions of all files that can be loaded.
  * @a IL_SAVE_EXT                 | R   | A string containing extensions of all files that can be saved.
  * @a IL_TGA_ID_STRING            | RW  | Identifier string to be used when writing Targa image files.
- * @a IL_TGA_AUTHNAME_STRING      | RW  | Author name to be used when writing Targa image files.
- * @a IL_TGA_AUTHCOMMENT_STRING   | RW  | Author comment to be used when writing Targa image files.
- * @a IL_PNG_AUTHNAME_STRING      | RW  | Author name to be used when writing PNG image files.
- * @a IL_PNG_TITLE_STRING         | RW  | Image title to be used when writing PNG image files.
- * @a IL_PNG_DESCRIPTION_STRING   | RW  | Image description to be used when writing PNG image files.
- * @a IL_TIF_DESCRIPTION_STRING   | RW  | Image description to be used when writing TIFF image files.
- * @a IL_TIF_HOSTCOMPUTER_STRING  | RW  | Name of host computer to be used when writing TIFF image files.
- * @a IL_TIF_DOCUMENTNAME_STRING  | RW  | Document name to be used when writing TIFF image files.
- * @a IL_TIF_AUTHNAME_STRING      | RW  | Author name to be used when writing TIFF image files.
+ * @a IL_TGA_AUTHNAME_STRING      | RW  | Author name to be used when writing Targa image files. (obsolete: use IL_META_ARTIST)
+ * @a IL_TGA_AUTHCOMMENT_STRING   | RW  | Author comment to be used when writing Targa image files.  (obsolete: use IL_META_USER_COMMENT)
+ * @a IL_PNG_AUTHNAME_STRING      | RW  | Author name to be used when writing PNG image files. (obsolete: use IL_META_ARTIST)
+ * @a IL_PNG_TITLE_STRING         | RW  | Image title to be used when writing PNG image files. (obsolete: use IL_META_DOCUMENT_NAME)
+ * @a IL_PNG_DESCRIPTION_STRING   | RW  | Image description to be used when writing PNG image files. (obsolete: use IL_META_IMAGE_DESCRIPTION)
+ * @a IL_TIF_DESCRIPTION_STRING   | RW  | Image description to be used when writing TIFF image files. (obsolete: use IL_META_IMAGE_DESCRIPTION)
+ * @a IL_TIF_HOSTCOMPUTER_STRING  | RW  | Name of host computer to be used when writing TIFF image files. (obsolete: use IL_META_HOST_COMPUTER)
+ * @a IL_TIF_DOCUMENTNAME_STRING  | RW  | Document name to be used when writing TIFF image files. (obsolete: use IL_META_DOCUMENT_NAME)
+ * @a IL_TIF_AUTHNAME_STRING      | RW  | Author name to be used when writing TIFF image files. (obsolete: use IL_META_ARTIST)
  * @a IL_CHEAD_HEADER_STRING      | RW  | Variable name to use when writing C headers.
+ * @a IL_META_ARTIST              | RW  | Author name meta data to be used when writing images.
+ * @a IL_META_DOCUMENT_NAME       | RW  | Document name meta data to be used when writing images.
+ * @a IL_META_HOST_COMPUTER       | RW  | Host computer name meta data to be used when writing images.
  *
  * Strings marked with RW can also be set using ilSetString();
  * 

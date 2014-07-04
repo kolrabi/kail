@@ -22,25 +22,25 @@
 #define MAGIC_HEADER1 0x4949
 #define MAGIC_HEADER2 0x4D4D
 
-ILuint iMetaToIntV(ILimage *Image, ILenum MetaID, ILint *Param);
-void * iMetaGetBlob(ILimage *Image, ILenum MetaID, ILuint *Size);
+ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param);
+void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size);
 
 #define SetFieldWORD(ID, TID) \
-  if (iMetaToIntV(BaseImage, ID, NULL) == 1) { \
-    iMetaToIntV(BaseImage, ID, TempInts); \
+  if (iGetMetaiv(BaseImage, ID, NULL) == 1) { \
+    iGetMetaiv(BaseImage, ID, TempInts); \
     TIFFSetField(File, TID, (ILushort)TempInts[0]);\
   } 
 
 #define SetFieldDWORD2(ID, TID) \
-  if (iMetaToIntV(BaseImage, ID, NULL) == 2) { \
-    iMetaToIntV(BaseImage, ID, TempInts); \
+  if (iGetMetaiv(BaseImage, ID, NULL) == 2) { \
+    iGetMetaiv(BaseImage, ID, TempInts); \
     TIFFSetField(File, TID, (ILuint)TempInts[0], (ILuint)TempInts[1]);\
   } 
 
 #define SetFieldRational(ID, TID) \
-  if (iMetaToIntV(BaseImage, ID, NULL) == 2) { \
+  if (iGetMetaiv(BaseImage, ID, NULL) == 2) { \
     ILdouble v; \
-    iMetaToIntV(BaseImage, ID, TempInts); \
+    iGetMetaiv(BaseImage, ID, TempInts); \
     v = (double)TempInts[0] / (double)TempInts[1]; \
     TIFFSetField(File, TID, v);\
   } 
@@ -871,17 +871,17 @@ ILboolean iSaveTiffInternal(ILimage* image)
     ILuint size;
     void *Data;
 
-    Data = iMetaGetBlob(BaseImage, IL_META_MAKER_NOTE, &size);
+    Data = iGetMetax(BaseImage, IL_META_MAKER_NOTE, &size);
     if (Data) {
       TIFFSetField(File, EXIFTAG_MAKERNOTE, (ILushort)size, Data);
     }
 
-    Data = iMetaGetBlob(BaseImage, IL_META_FLASHPIX_VERSION, &size);
+    Data = iGetMetax(BaseImage, IL_META_FLASHPIX_VERSION, &size);
     if (Data) {
       TIFFSetField(File, EXIFTAG_FLASHPIXVERSION, Data);
     }
 
-    Data = iMetaGetBlob(BaseImage, IL_META_FILESOURCE, &size);
+    Data = iGetMetax(BaseImage, IL_META_FILESOURCE, &size);
     if (Data) {
       TIFFSetField(File, EXIFTAG_FILESOURCE, Data);
     }

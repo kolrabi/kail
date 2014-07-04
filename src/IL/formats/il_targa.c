@@ -410,8 +410,8 @@ static ILboolean i16BitTarga(ILimage *image) {
 static ILboolean iSaveTargaInternal(ILimage* image)
 {
 	char	*ID 					= iGetString(IL_TGA_ID_STRING);
-	char	*AuthName 		= iGetString(IL_TGA_AUTHNAME_STRING);
-	char	*AuthComment 	= iGetString(IL_TGA_AUTHCOMMENT_STRING);
+	char	*AuthName 		= iGetString(IL_META_ARTIST);
+	char	*AuthComment 	= iGetString(IL_META_USER_COMMENT);
 	ILubyte 	IDLen = 0, UsePal, Type, PalEntSize;
 	ILshort 	ColMapStart = 0, PalSize;
 	ILubyte		Temp;
@@ -423,7 +423,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	ILimage 	*TempImage = NULL;
 	ILuint		ExtOffset, i;
 	char		* Footer = "TRUEVISION-XFILE.\0";
-	char		* idString = "kolrabi's another Image Library (DevIL)";
+	char		* idString = iGetString(IL_META_SOFTWARE);
 	ILuint		Day, Month, Year, Hour, Minute, Second;
 	char		* TempData;
 	SIO *io;
@@ -434,7 +434,13 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	}
 
 	io = &image->io;
-	
+
+	if (ID && iCharStrLen(ID) >= 255) ID[255] = 0;
+	if (AuthName && iCharStrLen(AuthName) >= 40) AuthName[40] = 0;
+	if (AuthComment && iCharStrLen(AuthComment) >= 80) AuthComment[80] = 0;
+	if (!idString) idString = iGetString(IL_VERSION_NUM);
+	if (idString && iCharStrLen(idString) >= 40) idString[40] = 0;
+
 	if (iGetInt(IL_TGA_RLE) == IL_TRUE)
 		Compress = IL_TRUE;
 	else
@@ -486,6 +492,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			ifree(ID);
 			ifree(AuthName);
 			ifree(AuthComment);
+			ifree(idString);
 			return IL_FALSE;
 	}
 	
@@ -520,6 +527,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			ifree(ID);
 			ifree(AuthName);
 			ifree(AuthComment);
+			ifree(idString);
 			PalSize = 0;
 			PalEntSize = 0;
 			return IL_FALSE;
@@ -533,6 +541,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 			ifree(ID);
 			ifree(AuthName);
 			ifree(AuthComment);
+			ifree(idString);
 			return IL_FALSE;
 		}
 	}
@@ -575,6 +584,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 		if (Rle == NULL) {
 			ifree(AuthName);
 			ifree(AuthComment);
+			ifree(idString);
 			return IL_FALSE;
 		}
 		RleLen = ilRleCompress((unsigned char*)TempData, TempImage->Width, TempImage->Height,
@@ -629,6 +639,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 	}
 	SaveLittleUShort(io, IL_VERSION);  // Software version
 	SIOputc(io, ' ');  // Release letter (not beta anymore, so use a space)
+	ifree(idString);
 	
 	SaveLittleUInt(io, 0);	// Key colour
 	SaveLittleUInt(io, 0);	// Pixel aspect ratio

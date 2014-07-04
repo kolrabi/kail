@@ -17,19 +17,13 @@
 #include "il_internal.h"
 #include "il_states.h"
 #include "il_stack.h"
-//#include <malloc.h>
-#include <stdlib.h>
+#include "il_meta.h"
 
-ILint iMetaToInt(ILimage *, ILenum);
-ILuint iMetaToIntV(ILimage *, ILenum, ILint *);
-ILboolean iIntVToMeta(ILimage *, ILenum, ILint *);
-ILconst_string iMetaToString(ILimage *, ILenum);
-ILboolean iMetaSetString(ILimage *, ILenum, const char *);
-ILuint iGetMetaLen(ILenum);
+#include <stdlib.h>
 
 // Global variables
 static ILconst_string _ilVendor    = IL_TEXT("kolrabi");
-static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.9.0");
+static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.10.0");
 
 static IL_STATE_STRUCT *iGetStateStruct() {
   return &iGetTLSData()->CurState;
@@ -76,17 +70,14 @@ void ilDefaultStates() {
   ilStates[ilCurrentPos].ilVtfCompression = IL_DXT_NO_COMP;
 
   ilStates[ilCurrentPos].ilTgaId = NULL;
-  ilStates[ilCurrentPos].ilTgaAuthName = NULL;
-  ilStates[ilCurrentPos].ilTgaAuthComment = NULL;
-  ilStates[ilCurrentPos].ilPngAuthName = NULL;
-  ilStates[ilCurrentPos].ilPngTitle = NULL;
-  ilStates[ilCurrentPos].ilPngDescription = NULL;
+  // ilStates[ilCurrentPos].ilTgaAuthName = NULL;
+  // ilStates[ilCurrentPos].ilTgaAuthComment = NULL;
+  // ilStates[ilCurrentPos].ilPngTitle = NULL;
+  // ilStates[ilCurrentPos].ilPngDescription = NULL;
 
   //2003-09-01: added tiff strings
-  ilStates[ilCurrentPos].ilTifDescription = NULL;
-  ilStates[ilCurrentPos].ilTifHostComputer = NULL;
-  ilStates[ilCurrentPos].ilTifDocumentName = NULL;
-  ilStates[ilCurrentPos].ilTifAuthName = NULL;
+  // ilStates[ilCurrentPos].ilTifDescription = NULL;
+  // ilStates[ilCurrentPos].ilTifHostComputer = NULL;
   ilStates[ilCurrentPos].ilCHeader = NULL;
 
   ilStates[ilCurrentPos].ilQuantMode = IL_WU_QUANT;
@@ -118,24 +109,52 @@ ILconst_string iGetILString(ILenum StringName) {
   ILimage *BaseImage = iGetBaseImage();
 
   switch (StringName) {
-    case IL_VENDOR:                   return (ILconst_string)_ilVendor;
-    case IL_VERSION_NUM:              return (ILconst_string)_ilVersion;
-    case IL_LOAD_EXT:                 return (ILconst_string)_ilLoadExt;
-    case IL_SAVE_EXT:                 return (ILconst_string)_ilSaveExt;
-    case IL_TGA_ID_STRING:            return (ILconst_string)ilStates[ilCurrentPos].ilTgaId;
-    case IL_TGA_AUTHNAME_STRING:      return (ILconst_string)ilStates[ilCurrentPos].ilTgaAuthName;
-    case IL_TGA_AUTHCOMMENT_STRING:   return (ILconst_string)ilStates[ilCurrentPos].ilTgaAuthComment;
-    case IL_PNG_AUTHNAME_STRING:      return (ILconst_string)ilStates[ilCurrentPos].ilPngAuthName;
-    case IL_PNG_TITLE_STRING:         return (ILconst_string)ilStates[ilCurrentPos].ilPngTitle;
-    case IL_PNG_DESCRIPTION_STRING:   return (ILconst_string)ilStates[ilCurrentPos].ilPngDescription;
-    case IL_TIF_DESCRIPTION_STRING:   return (ILconst_string)ilStates[ilCurrentPos].ilTifDescription;
-    case IL_TIF_HOSTCOMPUTER_STRING:  return (ILconst_string)ilStates[ilCurrentPos].ilTifHostComputer;
-    case IL_TIF_DOCUMENTNAME_STRING:  return (ILconst_string)ilStates[ilCurrentPos].ilTifDocumentName;
-    case IL_TIF_AUTHNAME_STRING:      return (ILconst_string)ilStates[ilCurrentPos].ilTifAuthName;
+    case IL_VENDOR:                   return _ilVendor;
+    case IL_VERSION_NUM:              return _ilVersion;
+    case IL_LOAD_EXT:                 return _ilLoadExt;
+    case IL_SAVE_EXT:                 return _ilSaveExt;
+    case IL_TGA_ID_STRING:            return ilStates[ilCurrentPos].ilTgaId;
+
+    case IL_TGA_AUTHNAME_STRING:
+      iTrace("---- IL_TGA_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      return iGetMetaString(BaseImage, IL_META_ARTIST);
+
+    case IL_PNG_AUTHNAME_STRING:
+      iTrace("---- IL_PNG_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      return iGetMetaString(BaseImage, IL_META_ARTIST);
+
+    case IL_TIF_AUTHNAME_STRING:
+      iTrace("---- IL_TIF_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      return iGetMetaString(BaseImage, IL_META_ARTIST);
+
+    case IL_PNG_TITLE_STRING:
+      iTrace("---- IL_PNG_TITLE_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      return iGetMetaString(BaseImage, IL_META_DOCUMENT_NAME);
+
+    case IL_TIF_DOCUMENTNAME_STRING:
+      iTrace("---- IL_TIF_DOCUMENTNAME_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      return iGetMetaString(BaseImage, IL_META_DOCUMENT_NAME);
+
+    case IL_PNG_DESCRIPTION_STRING:
+      iTrace("---- IL_PNG_DESCRIPTION_STRING is obsolete, use IL_META_IMAGE_DESCRIPTION instead");
+      return iGetMetaString(BaseImage, IL_META_IMAGE_DESCRIPTION);
+
+    case IL_TIF_DESCRIPTION_STRING:
+      iTrace("---- IL_TIF_DESCRIPTION_STRING is obsolete, use IL_META_IMAGE_DESCRIPTION instead");
+      return iGetMetaString(BaseImage, IL_META_IMAGE_DESCRIPTION);
+
+    case IL_TGA_AUTHCOMMENT_STRING:
+      iTrace("---- IL_TGA_AUTHCOMMENT_STRING is obsolete, use IL_META_USER_COMMENT instead");
+      return iGetMetaString(BaseImage, IL_META_USER_COMMENT);
+
+    case IL_TIF_HOSTCOMPUTER_STRING:
+      iTrace("---- IL_TIF_HOSTCOMPUTER_STRING is obsolete, use IL_META_HOST_COMPUTER instead");
+      return iGetMetaString(BaseImage, IL_META_HOST_COMPUTER);
+
     case IL_CHEAD_HEADER_STRING:      return (ILconst_string)ilStates[ilCurrentPos].ilCHeader;
 
     default:
-      return iMetaToString(BaseImage, StringName);
+      return iGetMetaString(BaseImage, StringName);
   }
 }
 
@@ -169,28 +188,10 @@ char *iGetString(ILenum StringName) {
   switch (StringName)   {
     case IL_TGA_ID_STRING:
       return iClipString(ilStates[ilCurrentPos].ilTgaId, 254);
-    case IL_TGA_AUTHNAME_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTgaAuthName, 40);
-    case IL_TGA_AUTHCOMMENT_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTgaAuthComment, 80);
-    case IL_PNG_AUTHNAME_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilPngAuthName, 255);
-    case IL_PNG_TITLE_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilPngTitle, 255);
-    case IL_PNG_DESCRIPTION_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilPngDescription, 255);
 
-    //changed 2003-08-31...here was a serious copy and paste bug ;-)
-    case IL_TIF_DESCRIPTION_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTifDescription, 255);
-    case IL_TIF_HOSTCOMPUTER_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTifHostComputer, 255);
-    case IL_TIF_DOCUMENTNAME_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTifDocumentName, 255);
-    case IL_TIF_AUTHNAME_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTifAuthName, 255);
     case IL_CHEAD_HEADER_STRING:
       return iClipString(ilStates[ilCurrentPos].ilCHeader, 32);
+
     default:
       return iClipString(iGetILString(StringName), 65535);
   }
@@ -203,43 +204,19 @@ ILboolean iAble(ILenum Mode, ILboolean Flag) {
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
   switch (Mode) {
-    case IL_ORIGIN_SET:
-      ilStates[ilCurrentPos].ilOriginSet = Flag;
-      break;
-    case IL_FORMAT_SET:
-      ilStates[ilCurrentPos].ilFormatSet = Flag;
-      break;
-    case IL_TYPE_SET:
-      ilStates[ilCurrentPos].ilTypeSet = Flag;
-      break;
-    case IL_FILE_MODE: 
-    case IL_FILE_OVERWRITE: // deprecated: unused, IL_FILE_MODE is used instead
-      ilStates[ilCurrentPos].ilOverWriteFiles = Flag;
-      break;
-    case IL_CONV_PAL:
-      ilStates[ilCurrentPos].ilAutoConvPal = Flag;
-      break;
-    case IL_DEFAULT_ON_FAIL:
-      ilStates[ilCurrentPos].ilDefaultOnFail = Flag;
-      break;
-    case IL_USE_KEY_COLOUR:
-      ilStates[ilCurrentPos].ilUseKeyColour = Flag;
-      break;
-    case IL_BLIT_BLEND:
-      ilStates[ilCurrentPos].ilBlitBlend = Flag;
-      break;
-    case IL_SAVE_INTERLACED:
-      ilStates[ilCurrentPos].ilInterlace = Flag;
-      break;
-    case IL_JPG_PROGRESSIVE:
-      ilStates[ilCurrentPos].ilJpgProgressive = Flag;
-      break;
-    case IL_NVIDIA_COMPRESS:
-      ilStates[ilCurrentPos].ilUseNVidiaDXT = Flag;
-      break;
-    case IL_SQUISH_COMPRESS:
-      ilStates[ilCurrentPos].ilUseSquishDXT = Flag;
-      break;
+    case IL_ORIGIN_SET:       ilStates[ilCurrentPos].ilOriginSet      = Flag;     break;
+    case IL_FORMAT_SET:       ilStates[ilCurrentPos].ilFormatSet      = Flag;     break;
+    case IL_TYPE_SET:         ilStates[ilCurrentPos].ilTypeSet        = Flag;     break;
+    case IL_FILE_OVERWRITE:   // deprecated: unused, IL_FILE_MODE is used instead
+    case IL_FILE_MODE:        ilStates[ilCurrentPos].ilOverWriteFiles = Flag;     break;
+    case IL_CONV_PAL:         ilStates[ilCurrentPos].ilAutoConvPal    = Flag;     break;
+    case IL_DEFAULT_ON_FAIL:  ilStates[ilCurrentPos].ilDefaultOnFail  = Flag;     break;
+    case IL_USE_KEY_COLOUR:   ilStates[ilCurrentPos].ilUseKeyColour   = Flag;     break;
+    case IL_BLIT_BLEND:       ilStates[ilCurrentPos].ilBlitBlend      = Flag;     break;
+    case IL_SAVE_INTERLACED:  ilStates[ilCurrentPos].ilInterlace      = Flag;     break;
+    case IL_JPG_PROGRESSIVE:  ilStates[ilCurrentPos].ilJpgProgressive = Flag;     break;
+    case IL_NVIDIA_COMPRESS:  ilStates[ilCurrentPos].ilUseNVidiaDXT   = Flag;     break;
+    case IL_SQUISH_COMPRESS:  ilStates[ilCurrentPos].ilUseSquishDXT   = Flag;     break;
 
     default:
       iSetError(IL_INVALID_ENUM);
@@ -257,31 +234,19 @@ ILboolean iIsEnabled(ILenum Mode) {
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
   switch (Mode)   {
-    case IL_ORIGIN_SET:
-      return ilStates[ilCurrentPos].ilOriginSet;
-    case IL_FORMAT_SET:
-      return ilStates[ilCurrentPos].ilFormatSet;
-    case IL_TYPE_SET:
-      return ilStates[ilCurrentPos].ilTypeSet;
+    case IL_ORIGIN_SET:       return ilStates[ilCurrentPos].ilOriginSet;
+    case IL_FORMAT_SET:       return ilStates[ilCurrentPos].ilFormatSet;
+    case IL_TYPE_SET:         return ilStates[ilCurrentPos].ilTypeSet;
     case IL_FILE_MODE: 
-    case IL_FILE_OVERWRITE:
-      return ilStates[ilCurrentPos].ilOverWriteFiles;
-    case IL_CONV_PAL:
-      return ilStates[ilCurrentPos].ilAutoConvPal;
-    case IL_DEFAULT_ON_FAIL:
-      return ilStates[ilCurrentPos].ilDefaultOnFail;
-    case IL_USE_KEY_COLOUR:
-      return ilStates[ilCurrentPos].ilUseKeyColour;
-    case IL_BLIT_BLEND:
-      return ilStates[ilCurrentPos].ilBlitBlend;
-    case IL_SAVE_INTERLACED:
-      return ilStates[ilCurrentPos].ilInterlace;
-    case IL_JPG_PROGRESSIVE:
-      return ilStates[ilCurrentPos].ilJpgProgressive;
-    case IL_NVIDIA_COMPRESS:
-      return ilStates[ilCurrentPos].ilUseNVidiaDXT;
-    case IL_SQUISH_COMPRESS:
-      return ilStates[ilCurrentPos].ilUseSquishDXT;
+    case IL_FILE_OVERWRITE:   return ilStates[ilCurrentPos].ilOverWriteFiles;
+    case IL_CONV_PAL:         return ilStates[ilCurrentPos].ilAutoConvPal;
+    case IL_DEFAULT_ON_FAIL:  return ilStates[ilCurrentPos].ilDefaultOnFail;
+    case IL_USE_KEY_COLOUR:   return ilStates[ilCurrentPos].ilUseKeyColour;
+    case IL_BLIT_BLEND:       return ilStates[ilCurrentPos].ilBlitBlend;
+    case IL_SAVE_INTERLACED:  return ilStates[ilCurrentPos].ilInterlace;
+    case IL_JPG_PROGRESSIVE:  return ilStates[ilCurrentPos].ilJpgProgressive;
+    case IL_NVIDIA_COMPRESS:  return ilStates[ilCurrentPos].ilUseNVidiaDXT;
+    case IL_SQUISH_COMPRESS:  return ilStates[ilCurrentPos].ilUseSquishDXT;
 
     default:
       iSetError(IL_INVALID_ENUM);
@@ -296,17 +261,10 @@ ILuint iGetActiveNum(ILenum Type) {
   IL_TLS_DATA *TLSData = iGetTLSData();
 
   switch (Type) {
-    case IL_ACTIVE_IMAGE:
-      return TLSData->CurSel.CurFrame;
-
-    case IL_ACTIVE_MIPMAP:
-      return TLSData->CurSel.CurMipmap;
-
-    case IL_ACTIVE_LAYER:
-      return TLSData->CurSel.CurLayer;
-
-    case IL_ACTIVE_FACE:
-      return TLSData->CurSel.CurFace;
+    case IL_ACTIVE_IMAGE:     return TLSData->CurSel.CurFrame;
+    case IL_ACTIVE_MIPMAP:    return TLSData->CurSel.CurMipmap;
+    case IL_ACTIVE_LAYER:     return TLSData->CurSel.CurLayer;
+    case IL_ACTIVE_FACE:      return TLSData->CurSel.CurFace;
   }
 
   //@TODO: Any error needed here?
@@ -388,7 +346,7 @@ ILuint ILAPIENTRY iGetIntegerImageV(ILimage *Image, ILenum Mode, ILint *Param) {
       } 
 
     default:
-      return iMetaToIntV(Image, Mode, Param);
+      return iGetMetaiv(Image, Mode, Param);
     }
   return 0;
 }
@@ -632,44 +590,12 @@ void iPushAttrib(ILuint Bits) {
     // Strings
     if (ilStates[ilCurrentPos].ilTgaId)
       ifree(ilStates[ilCurrentPos].ilTgaId);
-    if (ilStates[ilCurrentPos].ilTgaAuthName)
-      ifree(ilStates[ilCurrentPos].ilTgaAuthName);
-    if (ilStates[ilCurrentPos].ilTgaAuthComment)
-      ifree(ilStates[ilCurrentPos].ilTgaAuthComment);
-    if (ilStates[ilCurrentPos].ilPngAuthName)
-      ifree(ilStates[ilCurrentPos].ilPngAuthName);
-    if (ilStates[ilCurrentPos].ilPngTitle)
-      ifree(ilStates[ilCurrentPos].ilPngTitle);
-    if (ilStates[ilCurrentPos].ilPngDescription)
-      ifree(ilStates[ilCurrentPos].ilPngDescription);
-
-    //2003-09-01: added tif strings
-    if (ilStates[ilCurrentPos].ilTifDescription)
-      ifree(ilStates[ilCurrentPos].ilTifDescription);
-    if (ilStates[ilCurrentPos].ilTifHostComputer)
-      ifree(ilStates[ilCurrentPos].ilTifHostComputer);
-    if (ilStates[ilCurrentPos].ilTifDocumentName)
-      ifree(ilStates[ilCurrentPos].ilTifDocumentName);
-    if (ilStates[ilCurrentPos].ilTifAuthName)
-      ifree(ilStates[ilCurrentPos].ilTifAuthName);
 
     if (ilStates[ilCurrentPos].ilCHeader)
       ifree(ilStates[ilCurrentPos].ilCHeader);
 
-    ilStates[ilCurrentPos].ilTgaId = iStrDup(ilStates[ilCurrentPos-1].ilTgaId);
-    ilStates[ilCurrentPos].ilTgaAuthName = iStrDup(ilStates[ilCurrentPos-1].ilTgaAuthName);
-    ilStates[ilCurrentPos].ilTgaAuthComment = iStrDup(ilStates[ilCurrentPos-1].ilTgaAuthComment);
-    ilStates[ilCurrentPos].ilPngAuthName = iStrDup(ilStates[ilCurrentPos-1].ilPngAuthName);
-    ilStates[ilCurrentPos].ilPngTitle = iStrDup(ilStates[ilCurrentPos-1].ilPngTitle);
-    ilStates[ilCurrentPos].ilPngDescription = iStrDup(ilStates[ilCurrentPos-1].ilPngDescription);
-
-    //2003-09-01: added tif strings
-    ilStates[ilCurrentPos].ilTifDescription = iStrDup(ilStates[ilCurrentPos-1].ilTifDescription);
-    ilStates[ilCurrentPos].ilTifHostComputer = iStrDup(ilStates[ilCurrentPos-1].ilTifHostComputer);
-    ilStates[ilCurrentPos].ilTifDocumentName = iStrDup(ilStates[ilCurrentPos-1].ilTifDocumentName);
-    ilStates[ilCurrentPos].ilTifAuthName = iStrDup(ilStates[ilCurrentPos-1].ilTifAuthName);
-
-    ilStates[ilCurrentPos].ilCHeader = iStrDup(ilStates[ilCurrentPos-1].ilCHeader);
+    ilStates[ilCurrentPos].ilTgaId    = iStrDup(ilStates[ilCurrentPos-1].ilTgaId);
+    ilStates[ilCurrentPos].ilCHeader  = iStrDup(ilStates[ilCurrentPos-1].ilCHeader);
   }
 
   ilStates[ilCurrentPos].ilImageSelectionMode = ilStates[ilCurrentPos-1].ilImageSelectionMode;
@@ -789,53 +715,6 @@ void iSetString(ILenum Mode, const char *String_) {
         ifree(ilStates[ilCurrentPos].ilTgaId);
       ilStates[ilCurrentPos].ilTgaId = String;
       return;
-    case IL_TGA_AUTHNAME_STRING:
-      if (ilStates[ilCurrentPos].ilTgaAuthName)
-        ifree(ilStates[ilCurrentPos].ilTgaAuthName);
-      ilStates[ilCurrentPos].ilTgaAuthName = String;
-      return;
-    case IL_TGA_AUTHCOMMENT_STRING:
-      if (ilStates[ilCurrentPos].ilTgaAuthComment)
-        ifree(ilStates[ilCurrentPos].ilTgaAuthComment);
-      ilStates[ilCurrentPos].ilTgaAuthComment = String;
-      return;
-    case IL_PNG_AUTHNAME_STRING:
-      if (ilStates[ilCurrentPos].ilPngAuthName)
-        ifree(ilStates[ilCurrentPos].ilPngAuthName);
-      ilStates[ilCurrentPos].ilPngAuthName = String;
-      return;
-    case IL_PNG_TITLE_STRING:
-      if (ilStates[ilCurrentPos].ilPngTitle)
-        ifree(ilStates[ilCurrentPos].ilPngTitle);
-      ilStates[ilCurrentPos].ilPngTitle = String;
-      return;
-    case IL_PNG_DESCRIPTION_STRING:
-      if (ilStates[ilCurrentPos].ilPngDescription)
-        ifree(ilStates[ilCurrentPos].ilPngDescription);
-      ilStates[ilCurrentPos].ilPngDescription = String;
-      return;
-
-    //2003-09-01: added tif strings
-    case IL_TIF_DESCRIPTION_STRING:
-      if (ilStates[ilCurrentPos].ilTifDescription)
-        ifree(ilStates[ilCurrentPos].ilTifDescription);
-      ilStates[ilCurrentPos].ilTifDescription = String;
-      return;
-    case IL_TIF_HOSTCOMPUTER_STRING:
-      if (ilStates[ilCurrentPos].ilTifHostComputer)
-        ifree(ilStates[ilCurrentPos].ilTifHostComputer);
-      ilStates[ilCurrentPos].ilTifHostComputer = String;
-      return;
-    case IL_TIF_DOCUMENTNAME_STRING:
-            if (ilStates[ilCurrentPos].ilTifDocumentName)
-        ifree(ilStates[ilCurrentPos].ilTifDocumentName);
-      ilStates[ilCurrentPos].ilTifDocumentName = String;
-      break;
-    case IL_TIF_AUTHNAME_STRING:
-      if (ilStates[ilCurrentPos].ilTifAuthName)
-        ifree(ilStates[ilCurrentPos].ilTifAuthName);
-      ilStates[ilCurrentPos].ilTifAuthName = String;
-      return;
 
     case IL_CHEAD_HEADER_STRING:
       if (ilStates[ilCurrentPos].ilCHeader)
@@ -844,7 +723,7 @@ void iSetString(ILenum Mode, const char *String_) {
       return;
 
     default:
-      iMetaSetString(BaseImage, Mode, String_);
+      iSetMetaString(BaseImage, Mode, String_);
       //iSetError(IL_INVALID_ENUM);
   }
 
@@ -994,7 +873,7 @@ void iSetIntegerV(ILimage *CurImage, ILenum Mode, ILint *Param) {
       break;
 
     default:
-      iIntVToMeta(BaseImage, Mode, Param);
+      iSetMetaiv(BaseImage, Mode, Param);
   }
 }
 
@@ -1045,8 +924,8 @@ void iGetKeyColour(ILclampf *Red, ILclampf *Green, ILclampf *Blue, ILclampf *Alp
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
-  *Red = ilStates[ilCurrentPos].ilKeyColourRed;
-  *Green = ilStates[ilCurrentPos].ilKeyColourGreen;
-  *Blue = ilStates[ilCurrentPos].ilKeyColourBlue;
-  *Alpha = ilStates[ilCurrentPos].ilKeyColourAlpha; 
+  *Red    = ilStates[ilCurrentPos].ilKeyColourRed;
+  *Green  = ilStates[ilCurrentPos].ilKeyColourGreen;
+  *Blue   = ilStates[ilCurrentPos].ilKeyColourBlue;
+  *Alpha  = ilStates[ilCurrentPos].ilKeyColourAlpha; 
 }

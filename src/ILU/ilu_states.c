@@ -15,7 +15,7 @@
 #include "ilu_states.h"
 
 static ILconst_string _iluVendor  = IL_TEXT("kolrabi");
-static ILconst_string _iluVersion = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.9.0");
+static ILconst_string _iluVersion = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.10.0");
 
 ILconst_string iGetString(ILenum StringName) {
   switch (StringName)   {

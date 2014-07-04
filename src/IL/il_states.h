@@ -105,15 +105,15 @@ typedef struct IL_STATES
   //
 
   ILchar*   ilTgaId;
-  ILchar*   ilTgaAuthName;
+  // ILchar*   ilTgaAuthName;
   ILchar*   ilTgaAuthComment;
-  ILchar*   ilPngAuthName;
-  ILchar*   ilPngTitle;
-  ILchar*   ilPngDescription;
-  ILchar*   ilTifDescription;
-  ILchar*   ilTifHostComputer;
-  ILchar*   ilTifDocumentName;
-  ILchar*   ilTifAuthName;
+  // ILchar*   ilPngAuthName;
+  // ILchar*   ilPngTitle;
+  // ILchar*   ilPngDescription;
+  // ILchar*   ilTifDescription;
+  // ILchar*   ilTifHostComputer;
+  // ILchar*   ilTifDocumentName;
+  // ILchar*   ilTifAuthName;
   ILchar*   ilCHeader;
 
   // image selection

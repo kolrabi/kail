@@ -26,7 +26,7 @@
 #include "ilut_opengl.h"
 
 static ILconst_string _ilutVendor  = IL_TEXT("kolrabi");
-static ILconst_string _ilutVersion = IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.9.0");
+static ILconst_string _ilutVersion = IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.10.0");
 
 #if IL_THREAD_SAFE_PTHREAD
 #include <pthread.h>

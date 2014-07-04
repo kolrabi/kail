@@ -40,7 +40,7 @@ void dumpMeta(ILuint image) {
   fprintf(stderr, "Make:  " IL_SFMT "\n", ilGetString(IL_META_MAKE));
   fprintf(stderr, "Model: " IL_SFMT "\n", ilGetString(IL_META_MODEL));
   fprintf(stderr, "SW:    " IL_SFMT "\n", ilGetString(IL_META_SOFTWARE));
-  ilSetString(IL_META_SOFTWARE, IL_TEXT("kaIL"));
+  ilSetString(IL_META_SOFTWARE, ilGetString(IL_VERSION_NUM));
 }
 
 int main(int argc, char **argv) {
@@ -74,11 +74,15 @@ int main(int argc, char **argv) {
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
   dumpMeta(image);
+  /*
   CHECK(testSaveImage("test.tiff", image));
   CHECK(testSaveImage("test.jpeg", image));
+  CHECK(testSaveImage("test.tga", image));
+  CHECK(testSaveImage("test.png", image));
   CHECK(testSaveImage("test.exif", image));
   CHECK(testLoadImage("test.tiff", image));
   dumpMeta(image);
+  */
 
   // check parameters
   ilBindImage(image);
