@@ -322,6 +322,7 @@ ILAPI void      ILAPIENTRY iClosePalReal    (ILpal *Palette);
 
 #define iCharStrLen strlen
 #define iCharStrCpy strcpy
+#define iCharStrNCpy strncpy
 #ifdef _WIN32
   #define iCharStrICmp stricmp
 #else

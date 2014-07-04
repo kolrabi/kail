@@ -139,7 +139,9 @@ iInitFormats() {
   ADD_FORMAT(PNG);
 #endif
 #ifndef IL_NO_PNM
-  ADD_FORMAT(PNM);
+  ADD_FORMAT(PNM_PPM); // used to be IL_PNM
+  ADD_FORMAT(PNM_PBM);
+  ADD_FORMAT(PNM_PGM);
 #endif
 #ifndef IL_NO_PSD
   ADD_FORMAT(PSD);

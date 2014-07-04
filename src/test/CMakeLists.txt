@@ -77,6 +77,7 @@ ADD_TEST                ( ILUWave           ILtestILU         ${ILU_IMAGE} ilu_w
 
 SET                     ( REF_CLR    ${CMAKE_SOURCE_DIR}/images/dougie.png )
 SET                     ( REF_BW     ${CMAKE_SOURCE_DIR}/images/dougie-bw.png )
+SET                     ( REF_BL     ${CMAKE_SOURCE_DIR}/images/dougie-bl.png )
 SET                     ( REF_ANI    ${CMAKE_SOURCE_DIR}/images/animated-ref.png )
 SET                     ( FMT_PFX    ${CMAKE_SOURCE_DIR}/images )
 SET                     ( TMP_PFX    ${CMAKE_BINARY_DIR} )
@@ -112,6 +113,9 @@ ADD_TEST                ( FormatLoadPCX     ILtestFormatLoad  ${REF_CLR} ${FMT_P
 ADD_TEST                ( FormatLoadPIC     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pic    600 400 1 0 )
 ADD_TEST                ( FormatLoadPIX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pix    600 400 1 0 )
 ADD_TEST                ( FormatLoadPNG     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.png    600 400 1 0 )
+ADD_TEST                ( FormatLoadPBM     ILtestFormatLoad  ${REF_BL}  ${FMT_PFX}/dougie.pbm    600 400 1 0 )
+ADD_TEST                ( FormatLoadPGM     ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.pgm    600 400 1 0 )
+ADD_TEST                ( FormatLoadPPM     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.ppm    600 400 1 0 )
 ADD_TEST                ( FormatLoadPNM     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pnm    600 400 1 0 )
 ADD_TEST                ( FormatLoadPSD     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.psd    600 400 1 0 )
 ADD_TEST                ( FormatLoadPSP     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.psp    600 400 1 0 )
@@ -127,7 +131,7 @@ ADD_TEST                ( FormatLoadTIFF    ILtestFormatLoad  ${REF_CLR} ${FMT_P
 # UTX
 # VTF
 # WAL
-ADD_TEST                ( FormatLoadWBMP    ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.wbmp   600 400 1 0 )
+ADD_TEST                ( FormatLoadWBMP    ILtestFormatLoad  ${REF_BL}  ${FMT_PFX}/dougie.wbmp   600 400 1 0 )
 # WDP TODO
 ADD_TEST                ( FormatLoadXPM     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.xpm    600 400 1 0 )
 
@@ -164,6 +168,9 @@ ADD_TEST                ( FormatSavePCX     ILtestFormatSave  ${REF_CLR} ${TMP_P
 ADD_TEST                ( FormatSavePIC     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.pic    )
 ADD_TEST                ( FormatSavePIX     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.pix    )
 ADD_TEST                ( FormatSavePNG     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.png    )
+ADD_TEST                ( FormatSavePPM     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.ppm    )
+ADD_TEST                ( FormatSavePGM     ILtestFormatSave  ${REF_BW}  ${TMP_PFX}/dougie.pgm    )
+ADD_TEST                ( FormatSavePBM     ILtestFormatSave  ${REF_BL}  ${TMP_PFX}/dougie.pbm    )
 ADD_TEST                ( FormatSavePNM     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.pnm    )
 ADD_TEST                ( FormatSavePSD     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.psd    )
 ADD_TEST                ( FormatSavePSP     ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.psp    )

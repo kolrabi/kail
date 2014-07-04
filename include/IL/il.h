@@ -280,7 +280,7 @@ enum {
 #define IL_PCX                  0x0428  //!< ZSoft PCX - .pcx extension
 #define IL_PIC                  0x0429  //!< PIC - .pic extension
 #define IL_PNG                  0x042A  //!< Portable Network Graphics - .png extension
-#define IL_PNM                  0x042B  //!< Portable Any Map - .pbm, .pgm, .ppm and .pnm extensions
+
 #define IL_SGI                  0x042C  //!< Silicon Graphics - .sgi, .bw, .rgb and .rgba extensions
 #define IL_TGA                  0x042D  //!< TrueVision Targa File - .tga, .vda, .icb and .vst extensions
 #define IL_TIF                  0x042E  //!< Tagged Image File Format - .tif and .tiff extensions
@@ -320,6 +320,11 @@ enum {
 #define IL_DPX                  0x0450  //!< Digital Picture Exchange - .dpx extension
 #define IL_UTX                  0x0451  //!< Unreal (and Unreal Tournament) Texture - .utx extension
 #define IL_MP3                  0x0452  //!< MPEG-1 Audio Layer 3 - .mp3 extension
+
+#define IL_PNM                  0x042B  //!< Portable Any Map - .pbm, .pgm, .ppm and .pnm extensions
+#define IL_PNM_PBM              0x042B  //!< Portable Any Map - .pbm extension
+#define IL_PNM_PGM              0x0453  //!< Portable Any Map - .pgm extension
+#define IL_PNM_PPM              0x0454  //!< Portable Any Map - .ppm extension
 
 // Palette file format types
 #define IL_JASC_PAL             0x0475  //!< PaintShop Pro Palette

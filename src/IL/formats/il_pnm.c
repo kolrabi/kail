@@ -27,17 +27,8 @@ static ILboolean	iCheckPnm(char Header[2]);
 static ILboolean	ilReadAsciiPpm(ILimage *, PPMINFO *Info);
 static ILboolean	ilReadBinaryPpm(ILimage *, PPMINFO *Info);
 static ILboolean	ilReadBitPbm(ILimage *, PPMINFO *Info);
-static ILboolean	iGetWord(SIO *io, ILboolean);
+static ILboolean	iGetWord(SIO *io, ILboolean, 	ILbyte *SmallBuff);
 static void				PbmMaximize(ILimage *Image);
-
-// Global variables FIXME: remove global state
-static ILbyte LineBuffer[MAX_BUFFER];
-static ILbyte SmallBuff[MAX_BUFFER];
-ILstring FName = NULL;
-
-// Can't read direct bits from a lump yet
-ILboolean IsLump = IL_FALSE;
-
 
 // Internal function to get the header and check it.
 static ILboolean iIsValidPnm(SIO *io) {
@@ -79,6 +70,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	PPMINFO		Info;
 	ILboolean PmImage = IL_FALSE;
 //	ILuint		LineInc = 0, SmallInc = 0;
+	ILbyte SmallBuff[MAX_BUFFER];
 
 	Info.Type = 0;
 
@@ -88,7 +80,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	}
 
 	// Find out what type of pgm/ppm this is
-	if (iGetWord(&Image->io, IL_FALSE) == IL_FALSE)
+	if (iGetWord(&Image->io, IL_FALSE, SmallBuff) == IL_FALSE)
 		return IL_FALSE;
 
 	if (SmallBuff[0] != 'P') {
@@ -108,10 +100,6 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 			break;
 		case '4':
 			Info.Type = IL_PBM_BINARY;
-			if (IsLump) {
-				iSetError(IL_FORMAT_NOT_SUPPORTED);
-				return IL_FALSE;
-			}
 			break;
 		case '5':
 			Info.Type = IL_PGM_BINARY;
@@ -125,7 +113,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	}
 	
 	// Retrieve the width and height
-	if (iGetWord(&Image->io, IL_FALSE) == IL_FALSE)
+	if (iGetWord(&Image->io, IL_FALSE, SmallBuff) == IL_FALSE)
 		return IL_FALSE;
 	Info.Width = atoi((const char*)SmallBuff);
 	if (Info.Width == 0) {
@@ -133,7 +121,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	if (iGetWord(&Image->io, IL_FALSE) == IL_FALSE)
+	if (iGetWord(&Image->io, IL_FALSE, SmallBuff) == IL_FALSE)
 		return IL_FALSE;
 	Info.Height = atoi((const char*)SmallBuff);
 	if (Info.Height == 0) {
@@ -143,7 +131,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 
 	// Retrieve the maximum colour component value
 	if (Info.Type != IL_PBM_ASCII && Info.Type != IL_PBM_BINARY) {
-		if (iGetWord(&Image->io, IL_TRUE) == IL_FALSE)
+		if (iGetWord(&Image->io, IL_TRUE, SmallBuff) == IL_FALSE)
 			return IL_FALSE;
 
 		if ((Info.MaxColour = atoi((const char*)SmallBuff)) == 0) {
@@ -213,6 +201,9 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 {
 	ILint	LineInc = 0, SmallInc = 0, DataInc = 0, Size;
+	ILbyte LineBuffer[MAX_BUFFER];
+	ILbyte SmallBuff[MAX_BUFFER];
+
 //	ILint	BytesRead = 0;
 
 	if (Info->MaxColour > 255)
@@ -253,6 +244,9 @@ static ILboolean ilReadAsciiPpm(ILimage *Image, PPMINFO *Info)
 			}
 			SmallBuff[SmallInc] = NUL;
 			Image->Data[DataInc] = atoi((const char*)SmallBuff);  // Convert from string to colour
+			if (Info->Type == IL_PBM_ASCII) {
+				Image->Data[DataInc] = 1 - Image->Data[DataInc];
+			}
 
 			// PSP likes to put whitespace at the end of lines...figures. =/
 			while (!isalnum(LineBuffer[LineInc]) && LineBuffer[LineInc] != NUL) {  // Skip any whitespace
@@ -329,7 +323,7 @@ static ILboolean ilReadBitPbm(ILimage *Image, PPMINFO *Info) {
 }
 
 
-static ILboolean iGetWord(SIO *io, ILboolean final) {
+static ILboolean iGetWord(SIO *io, ILboolean final,	ILbyte *SmallBuff) {
 	ILint WordPos = 0;
 	ILint Current = 0;
 	ILboolean Started = IL_FALSE;
@@ -386,13 +380,12 @@ static ILboolean iGetWord(SIO *io, ILboolean final) {
 	return IL_TRUE;
 }
 
-// Internal function used to save the Pnm.
-static ILboolean iSavePnmInternal(ILimage *Image)
+static ILboolean iSavePbmInternal(ILimage *Image)
 {
 	ILuint		Bpp, MaxVal = UCHAR_MAX, i = 0, j;
 	ILenum		Type = 0;
 	ILuint		LinePos = 0;  // Cannot exceed 70 for pnm's!
-	ILboolean	Binary;
+	ILboolean	Binary = IL_FALSE;
 	ILimage		*TempImage;
 	ILubyte		*TempData;
 	char tmp[512];
@@ -405,27 +398,15 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 
 	io = &Image->io;
 
-	if (iCheckExtension(FName, IL_TEXT("pbm")))
-		Type = IL_PBM_ASCII;
-	else if (iCheckExtension(FName, IL_TEXT("pgm")))
-		Type = IL_PGM_ASCII;
-	else if (iCheckExtension(FName, IL_TEXT("ppm")))
-		Type = IL_PPM_ASCII;
-	else
-		Type = IL_PPM_ASCII;
-
-	/*if (!Type) {
-		iSetError(IL_INVALID_EXTENSION);
-		return IL_FALSE;
-	}*/
-
+	Type = IL_PBM_ASCII;
+/*
 	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION) {
 		Type += 3;
 		Binary = IL_TRUE;
 	}
 	else {
 		Binary = IL_FALSE;
-	}
+	}*/
 
 	if (Image->Type == IL_UNSIGNED_BYTE) {
 		MaxVal = UCHAR_MAX;
@@ -456,16 +437,222 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 		case IL_PBM_BINARY:
 			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
+		default:
+			iSetError(IL_INTERNAL_ERROR);
+			return IL_FALSE;
+	}
+
+	if (TempImage == NULL)
+		return IL_FALSE;
+
+	if (Bpp != TempImage->Bpp) {
+		iSetError(IL_INVALID_CONVERSION);
+		return IL_FALSE;
+	}
+
+	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
+		TempData = iGetFlipped(TempImage);
+		if (TempData == NULL) {
+			iCloseImage(TempImage);
+			return IL_FALSE;
+		}
+	}
+	else {
+		TempData = TempImage->Data;
+	}
+
+	snprintf(tmp, sizeof(tmp), "%d %d\n", TempImage->Width, TempImage->Height);
+	SIOputs(io, tmp);
+
+	while (i < TempImage->SizeOfPlane) {
+		for (j = 0; j < Bpp; j++) {
+			if (Binary) {
+				Image->io.putchar((ILubyte)(TempData[i] < 68 ? 1 : 0), Image->io.handle);
+			}	else {
+				if (TempData[i] < 68)
+					SIOputs(io, "1 ");
+				else
+					SIOputs(io, "0 ");
+				LinePos += 2;
+			}
+
+			if (TempImage->Type == IL_UNSIGNED_SHORT)
+				i++;
+			i++;
+		}
+
+		if (LinePos > 65) {  // Just a good number =]
+			SIOputs(io, "\n");
+			LinePos = 0;
+		}
+	}
+
+	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT)
+		ifree(TempData);
+	iCloseImage(TempImage);
+
+	return IL_TRUE;
+}
+
+static ILboolean iSavePgmInternal(ILimage *Image)
+{
+	ILuint		Bpp, MaxVal = UCHAR_MAX, i = 0, j;
+	ILenum		Type = 0;
+	ILuint		LinePos = 0;  // Cannot exceed 70 for pnm's!
+	ILboolean	Binary;
+	ILimage		*TempImage;
+	ILubyte		*TempData;
+	char tmp[512];
+	SIO *io;
+
+	if (Image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &Image->io;
+
+	Type = IL_PGM_ASCII;
+
+	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION) {
+		Type += 3;
+		Binary = IL_TRUE;
+	}
+	else {
+		Binary = IL_FALSE;
+	}
+
+	if (Image->Type == IL_UNSIGNED_BYTE) {
+		MaxVal = UCHAR_MAX;
+	}
+	else if (Image->Type == IL_UNSIGNED_SHORT) {
+		MaxVal = USHRT_MAX;
+	}
+	else {
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
+		return IL_FALSE;
+	}
+	if (MaxVal > UCHAR_MAX && Type >= IL_PBM_BINARY) {  // binary cannot be higher than 255
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
+		return IL_FALSE;
+	}
+
+	switch (Type)
+	{
 		case IL_PGM_ASCII:
 			Bpp = 1;
 			SIOputs(io, "P2\n");
-			TempImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
+			TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
 			break;
 		case IL_PGM_BINARY:
 			Bpp = 1;
 			SIOputs(io, "P5\n");
-			TempImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
+			TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
 			break;
+		default:
+			iSetError(IL_INTERNAL_ERROR);
+			return IL_FALSE;
+	}
+
+	if (TempImage == NULL)
+		return IL_FALSE;
+
+	if (Bpp != TempImage->Bpp) {
+		iSetError(IL_INVALID_CONVERSION);
+		return IL_FALSE;
+	}
+
+	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT) {
+		TempData = iGetFlipped(TempImage);
+		if (TempData == NULL) {
+			iCloseImage(TempImage);
+			return IL_FALSE;
+		}
+	}
+	else {
+		TempData = TempImage->Data;
+	}
+
+	snprintf(tmp, sizeof(tmp), "%d %d\n", TempImage->Width, TempImage->Height);
+	SIOputs(io, tmp);
+
+	snprintf(tmp, sizeof(tmp), "%d\n", MaxVal);
+	SIOputs(io, tmp);
+
+	while (i < TempImage->SizeOfPlane) {
+		for (j = 0; j < Bpp; j++) {
+			if (Binary) {
+				Image->io.putchar(TempData[i], Image->io.handle);
+			}
+			else {
+				char tmp[32];
+				LinePos += snprintf(tmp, sizeof(tmp), "%d ", TempData[i]);
+				SIOputs(io, tmp);
+			}
+
+			if (TempImage->Type == IL_UNSIGNED_SHORT)
+				i++;
+			i++;
+		}
+
+		if (LinePos > 65) {  // Just a good number =]
+			SIOputs(io, "\n");
+			LinePos = 0;
+		}
+	}
+
+	if (TempImage->Origin != IL_ORIGIN_UPPER_LEFT)
+		ifree(TempData);
+	iCloseImage(TempImage);
+
+	return IL_TRUE;
+}
+
+static ILboolean iSavePpmInternal(ILimage *Image)
+{
+	ILuint		Bpp, MaxVal = UCHAR_MAX, i = 0, j;
+	ILenum		Type = 0;
+	ILuint		LinePos = 0;  // Cannot exceed 70 for pnm's!
+	ILboolean	Binary;
+	ILimage		*TempImage;
+	ILubyte		*TempData;
+	char tmp[512];
+	SIO *io;
+
+	if (Image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &Image->io;
+
+	Type = IL_PPM_ASCII;
+
+	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION) {
+		Type += 3;
+		Binary = IL_TRUE;
+	}
+	else {
+		Binary = IL_FALSE;
+	}
+
+	if (Image->Type == IL_UNSIGNED_BYTE) {
+		MaxVal = UCHAR_MAX;
+	}
+	else if (Image->Type == IL_UNSIGNED_SHORT) {
+		MaxVal = USHRT_MAX;
+	}
+	else {
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
+		return IL_FALSE;
+	}
+	if (MaxVal > UCHAR_MAX && Type >= IL_PBM_BINARY) {  // binary cannot be higher than 255
+		iSetError(IL_FORMAT_NOT_SUPPORTED);
+		return IL_FALSE;
+	}
+
+	switch (Type)
+	{
 		case IL_PPM_ASCII:
 			Bpp = 3;
 			SIOputs(io, "P3\n");
@@ -503,40 +690,17 @@ static ILboolean iSavePnmInternal(ILimage *Image)
 	snprintf(tmp, sizeof(tmp), "%d %d\n", TempImage->Width, TempImage->Height);
 	SIOputs(io, tmp);
 
-	if (Type != IL_PBM_BINARY && Type != IL_PBM_ASCII) { // not needed for .pbm's (only 0 and 1) 
-		snprintf(tmp, sizeof(tmp), "%d\n", MaxVal);
-		SIOputs(io, tmp);
-	}
+	snprintf(tmp, sizeof(tmp), "%d\n", MaxVal);
+	SIOputs(io, tmp);
 
 	while (i < TempImage->SizeOfPlane) {
 		for (j = 0; j < Bpp; j++) {
 			if (Binary) {
-				if (Type == IL_PBM_BINARY) {
-					Image->io.putchar((ILubyte)(TempData[i] > 127 ? 1 : 0), Image->io.handle);
-				}
-				else {
-					Image->io.putchar(TempData[i], Image->io.handle);
-				}
-			}
-			else {
-				/*
-				if (TempImage->Type == IL_UNSIGNED_BYTE)
-					k = TempData[i];
-				else  // IL_UNSIGNED_SHORT
-					k = *((ILushort*)TempData + i);
-				*/
-				if (Type == IL_PBM_ASCII) {
-					if (TempData[i] > 127)
-						SIOputs(io, "1 ");
-					else
-						SIOputs(io, "0 ");
-					LinePos += 2;
-				}
-				else {
-					char tmp[32];
-					LinePos += snprintf(tmp, sizeof(tmp), "%d ", TempData[i]);
-					SIOputs(io, tmp);
-				}
+				Image->io.putchar(TempData[i], Image->io.handle);
+			}	else {
+				char tmp[32];
+				LinePos += snprintf(tmp, sizeof(tmp), "%d ", TempData[i]);
+				SIOputs(io, tmp);
 			}
 
 			if (TempImage->Type == IL_UNSIGNED_SHORT)
@@ -568,19 +732,41 @@ void PbmMaximize(ILimage *Image)
 	return;
 }
 
-ILconst_string iFormatExtsPNM[] = { 
+ILconst_string iFormatExtsPBM[] = { 
   IL_TEXT("pbm"), 
-  IL_TEXT("pgm"), 
-  IL_TEXT("pnm"), 
-  IL_TEXT("ppm"), 
   NULL 
 };
 
-ILformat iFormatPNM = { 
+ILformat iFormatPNM_PBM = { 
   /* .Validate = */ iIsValidPnm, 
   /* .Load     = */ iLoadPnmInternal, 
-  /* .Save     = */ iSavePnmInternal, 
-  /* .Exts     = */ iFormatExtsPNM
+  /* .Save     = */ iSavePbmInternal, 
+  /* .Exts     = */ iFormatExtsPBM
+};
+
+ILconst_string iFormatExtsPGM[] = { 
+  IL_TEXT("pgm"), 
+  NULL 
+};
+
+ILformat iFormatPNM_PGM = { 
+  /* .Validate = */ iIsValidPnm, 
+  /* .Load     = */ iLoadPnmInternal, 
+  /* .Save     = */ iSavePgmInternal, 
+  /* .Exts     = */ iFormatExtsPGM
+};
+
+ILconst_string iFormatExtsPPM[] = { 
+  IL_TEXT("ppm"), 
+  IL_TEXT("pnm"), 
+  NULL 
+};
+
+ILformat iFormatPNM_PPM = { 
+  /* .Validate = */ iIsValidPnm, 
+  /* .Load     = */ iLoadPnmInternal, 
+  /* .Save     = */ iSavePpmInternal, 
+  /* .Exts     = */ iFormatExtsPPM
 };
 
 #endif//IL_NO_PNM
