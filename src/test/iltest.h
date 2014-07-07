@@ -59,13 +59,19 @@ static inline ILboolean testLoadImage(const char *file_, ILuint image) {
 
 static inline ILboolean testSaveImage(const char *file_, ILuint image) {
   ILchar    file[1024];
+  ILboolean bRet;
 
   charToILchar(file_, file, 1024);
 
   fprintf(stderr, "saving  %s\n", file_);
 
   ilBindImage(image);
-  return ilSaveImage(file);
+  bRet = ilSaveImage(file);
+
+  if (bRet) {
+    fprintf(stderr, "Saved size should be: %u\n", ilDetermineSize(ilDetermineType(file)));
+  }
+  return bRet;
 }
 
 #endif

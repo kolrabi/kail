@@ -35,19 +35,19 @@ typedef struct DICOMHEAD
 	ILenum	Type;
 } DICOMHEAD;
 
-ILboolean	SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum);
-ILboolean	GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILuint *Number);
-ILboolean	GetUID(SIO *io, ILubyte *UID);
-ILuint		GetGroupNum(SIO *io,DICOMHEAD *Header);
-ILuint		GetShort(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
-ILuint		GetInt(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
-ILfloat		GetFloat(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
+static ILboolean	SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum);
+static ILboolean	GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILuint *Number);
+static ILboolean	GetUID(SIO *io, ILubyte *UID);
+static ILuint			GetGroupNum(SIO *io,DICOMHEAD *Header);
+static ILuint			GetShort(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
+static ILuint64		GetInt(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
+static ILfloat		GetFloat(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
 
 
 // Internal function used to get the DICOM header from the current file.
-ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header)
-{
-	ILushort	GroupNum, ElementNum;
+static ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header) {
+	ILuint    GroupNum;
+	ILushort	ElementNum;
 	ILboolean	ReachedData = IL_FALSE;
 	ILubyte		Var2, UID[65];
 
@@ -60,7 +60,7 @@ ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header)
 
 	do {
 		GroupNum = GetGroupNum(io, Header);
-		ElementNum = GetShort(io, Header, GroupNum);;
+		ElementNum = GetShort(io, Header, GroupNum);
 
 		switch (GroupNum)
 		{
@@ -152,6 +152,10 @@ ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header)
 				}
 				break;
 
+			case ~0:
+				// read error
+				return IL_FALSE;
+
 			default:
 				if (!SkipElement(io, Header, GroupNum, ElementNum))  // We do not understand this entry, so we just skip it.
 					return IL_FALSE;
@@ -189,8 +193,7 @@ ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header)
 }
 
 // Internal function used to check if the HEADER is a valid DICOM header.
-ILboolean iCheckDicom(DICOMHEAD *Header)
-{
+static ILboolean iCheckDicom(DICOMHEAD *Header) {
 	// Always has the signature "DICM" at position 0x80.
 	if (strncmp((const char*)Header->Signature, "DICM", 4))
 		return IL_FALSE;
@@ -212,8 +215,7 @@ ILboolean iCheckDicom(DICOMHEAD *Header)
 
 
 // Internal function to get the header and check it.
-static ILboolean iIsValidDicom(SIO* io)
-{
+static ILboolean iIsValidDicom(SIO* io) {
 	char Sig[4];
     ILint Read;
 
@@ -223,15 +225,17 @@ static ILboolean iIsValidDicom(SIO* io)
 	return Read == 4 && memcmp(Sig, "DICM", 4) == 0;
 }
 
-ILboolean SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum)
-{
-	ILubyte	VR1, VR2;
+static ILboolean SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum) {
+	ILubyte	VR1 = 0, VR2 = 0;
 	ILuint	ValLen;
 
 	// 2 byte character string telling what type this element is ('OB', 'UI', etc.)
-	// FIXME: check for eof
 	VR1 = SIOgetc(io);
 	VR2 = SIOgetc(io);
+
+	if (SIOeof(io)) {
+		return IL_FALSE;
+	}
 
 	if ((VR1 == 'O' && VR2 == 'B') || (VR1 == 'O' && VR2 == 'W') || (VR1 == 'O' && VR2 == 'F') ||
 	  	(VR1 == 'S' && VR2 == 'Q') || (VR1 == 'U' && VR2 == 'T') || (VR1 == 'U' && VR2 == 'N')) {
@@ -260,12 +264,12 @@ ILboolean SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort El
 }
 
 
-ILuint GetGroupNum(SIO* io, DICOMHEAD *Header)
-{
+static ILuint GetGroupNum(SIO* io, DICOMHEAD *Header) {
 	ILushort GroupNum;
 
-	// FIXME: check result
-	SIOread(io, &GroupNum, 1, 2);
+	if (SIOread(io, &GroupNum, 1, 2) != 2) {
+		return ~0;
+	}
 
 	// The 0x02 group is always little endian.
 	if (GroupNum == 0x02) {
@@ -283,12 +287,12 @@ ILuint GetGroupNum(SIO* io, DICOMHEAD *Header)
 }
 
 
-ILuint GetShort(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
-{
+static ILuint GetShort(SIO *io, DICOMHEAD *Header, ILushort GroupNum) {
 	ILushort Num;
 
-	// FIXME: check result
-	SIOread(io, &Num, 1, 2);
+	if (SIOread(io, &Num, 1, 2) != 2) {
+		return ~0;
+	}
 
 	// The 0x02 group is always little endian.
 	if (GroupNum == 0x02) {
@@ -306,12 +310,12 @@ ILuint GetShort(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
 }
 
 
-ILuint GetInt(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
-{
+static ILuint64 GetInt(SIO *io, DICOMHEAD *Header, ILushort GroupNum) {
 	ILuint Num;
 
-	// FIXME: check result
-	SIOread(io, &Num, 1, 4);
+	if (SIOread(io, &Num, 1, 4) != 4) {
+		return ~0ULL;
+	}
 
 	// The 0x02 group is always little endian.
 	if (GroupNum == 0x02) {
@@ -329,12 +333,11 @@ ILuint GetInt(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
 }
 
 
-ILfloat GetFloat(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
-{
+static ILfloat GetFloat(SIO *io, DICOMHEAD *Header, ILushort GroupNum) {
 	ILfloat Num;
 
-	// FIXME: check result
-	SIOread(io, &Num, 1, 4);
+	if (SIOread(io, &Num, 1, 4) != 4)
+		return NAN;
 
 	// The 0x02 group is always little endian.
 	if (GroupNum == 0x02) {
@@ -352,15 +355,16 @@ ILfloat GetFloat(SIO *io, DICOMHEAD *Header, ILushort GroupNum)
 }
 
 
-ILboolean GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILuint *Number)
-{
+static ILboolean GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILuint *Number) {
 	ILubyte		VR1, VR2;
 	ILushort	ValLen;
 
 	// 2 byte character string telling what type this element is ('OB', 'UI', etc.)
-	// FIXME: check for eof
 	VR1 = SIOgetc(io);
 	VR2 = SIOgetc(io);
+
+	if (SIOeof(io))
+		return IL_FALSE;
 
 	if (VR1 == 'U' && VR2 == 'S') {  // Unsigned short
 		ValLen = GetShort(io, Header, GroupNum);//GetLittleUShort();
@@ -395,15 +399,16 @@ ILboolean GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILuint 
 }
 
 
-ILboolean GetUID(SIO *io, ILubyte *UID)
-{
+static ILboolean GetUID(SIO *io, ILubyte *UID) {
 	ILubyte		VR1, VR2;
 	ILushort	ValLen;
 
 	// 2 byte character string telling what type this element is ('OB', 'UI', etc.)
-	// FIXME: check for eof
 	VR1 = SIOgetc(io);
 	VR2 = SIOgetc(io);
+
+	if (SIOeof(io)) 
+		return IL_FALSE;
 
 	if (VR1 != 'U' || VR2 != 'I')  // 'UI' == UID
 		return IL_FALSE;
@@ -418,14 +423,13 @@ ILboolean GetUID(SIO *io, ILubyte *UID)
 
 
 // Internal function used to load the DICOM.
-static ILboolean iLoadDicomInternal(ILimage* image)
-{
+static ILboolean iLoadDicomInternal(ILimage* image) {
 	DICOMHEAD	Header;
 	ILuint		i;
 	ILushort	TempS, *ShortPtr;
 	ILfloat		TempF, *FloatPtr;
 	ILboolean	Swizzle = IL_FALSE;
-    SIO *io;
+  SIO *			io;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);

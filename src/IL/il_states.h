@@ -54,7 +54,7 @@ typedef struct IL_STATES
   ILboolean ilDefaultOnFail;
 
   // Key colour states
-  ILboolean ilUseKeyColour;
+  ILboolean   ilUseKeyColour;
   ILfloat     ilKeyColourRed;
   ILfloat     ilKeyColourGreen;
   ILfloat     ilKeyColourBlue;
@@ -79,6 +79,9 @@ typedef struct IL_STATES
   ILboolean ilUseNVidiaDXT;
   ILboolean ilUseSquishDXT;
 
+  // clear colour
+  ILfloat ClearColour[4];
+  ILuint  ClearIndex;
 
   //
   // Format-specific states
@@ -95,8 +98,8 @@ typedef struct IL_STATES
   ILenum    ilDxtcFormat;
   ILenum    ilPcdPicNum;
 
-  ILint   ilPngAlphaIndex;  // this index should be treated as an alpha key (most formats use this rather than having alpha in the palette), -1 for none
-                  // currently only used when writing out .png files and should obviously be set to -1 most of the time
+  ILint     ilPngAlphaIndex;    // this index should be treated as an alpha key (most formats use this rather than having alpha in the palette), -1 for none
+                                // currently only used when writing out .png files and should obviously be set to -1 most of the time
   ILenum    ilVtfCompression;
 
 
@@ -104,16 +107,6 @@ typedef struct IL_STATES
   // Format-specific strings
   //
 
-  ILchar*   ilTgaId;
-  // ILchar*   ilTgaAuthName;
-  ILchar*   ilTgaAuthComment;
-  // ILchar*   ilPngAuthName;
-  // ILchar*   ilPngTitle;
-  // ILchar*   ilPngDescription;
-  // ILchar*   ilTifDescription;
-  // ILchar*   ilTifHostComputer;
-  // ILchar*   ilTifDocumentName;
-  // ILchar*   ilTifAuthName;
   ILchar*   ilCHeader;
 
   // image selection

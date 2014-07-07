@@ -15,19 +15,18 @@
 
 #include "il_internal.h"
 
-ILboolean iLoadJpegInternal(ILimage *);
-
-/*
-ILboolean iCheckJpg(ILubyte Header[2]);
-ILboolean iIsValidJpeg(SIO* io);
-
-#ifndef IL_USE_IJL
-	ILboolean iLoadJpegInternal(ILimage *);
-	ILboolean iSaveJpegInternal(ILimage *);
-#else
-	ILboolean iLoadJpegInternal(ILconst_string FileName, ILvoid *Lump, ILuint Size);
-	ILboolean iSaveJpegInternal(ILconst_string FileName, ILvoid *Lump, ILuint Size);
+#if defined(_MSC_VER)
+  #pragma warning(push)
+  #pragma warning(disable : 4005)  // Redefinitions in
+  #pragma warning(disable : 4142)  //  jmorecfg.h
 #endif
 
-*/
+#include "jpeglib.h"
+
+#if JPEG_LIB_VERSION < 62
+  #warning DevIL was designed with libjpeg 6b or higher in mind.  Consider upgrading at www.ijg.org
+#endif
+
+ILboolean iLoadJpegInternal(ILimage *);
+
 #endif//JPEG_H

@@ -1,7 +1,6 @@
 1.10.0:
 
   - ilGetFloat(v)
-  - fix iDetermineSize
 
 next:
 

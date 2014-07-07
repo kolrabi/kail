@@ -371,7 +371,7 @@ ILboolean iActiveMipmap(ILuint Number) {
   if (iGetInt(IL_IMAGE_SELECTION_MODE) == IL_ABSOLUTE)
     CurSel.CurMipmap = Number;
   else
-    CurSel.CurMipmap += Number; // FIXME: this is for compatibility
+    CurSel.CurMipmap += Number; // this is for compatibility
   
   Image = iGetSelectedImage(&CurSel);
   if (!Image) {
@@ -649,18 +649,12 @@ void iShutDownIL()
   if (!IsInit)
     return;
 
-  if (!IsInit) {  // Prevent from being called when not initialized.
-    iSetError(IL_ILLEGAL_OPERATION);
-    return;
-  }
-
   while (TempFree != NULL) {
     FreeNames = (iFree*)TempFree->Next;
     ifree(TempFree);
     TempFree = FreeNames;
   }
 
-  //for (i = 0; i < LastUsed; i++) {
   for (i = 0; i < StackSize; i++) {
     if (ImageStack[i] != NULL)
       iCloseImage(ImageStack[i]);
@@ -668,6 +662,7 @@ void iShutDownIL()
 
   if (ImageStack)
     ifree(ImageStack);
+
   ImageStack = NULL;
   LastUsed = 0;
   StackSize = 0;
@@ -675,6 +670,10 @@ void iShutDownIL()
   iDeinitFormats();
 
   if (iTraceOut && iTraceOut != stderr) fclose(iTraceOut);
+
+  #if IL_THREAD_SAFE_WIN32
+  CloseHandle(iStateMutex);
+  #endif
 
   IsInit = IL_FALSE;
   return;
@@ -693,27 +692,6 @@ static void iSetImage0() {
     ImageStack[0] = iNewImage(1, 1, 1, 1, 1);
   iDefaultImage(ImageStack[0]);
 }
-
-/*
-static void iBindImageTemp() {
-  if (ImageStack == NULL || StackSize <= 1)
-    if (!iEnlargeStack())
-      return;
-
-  ILimage *lastImage = iGetSelectedImage(iGetSelection());
-
-  if (LastUsed < 2)
-    LastUsed = 2;
-
-  iSetSelection(1, 0,0,0,0);
-
-  if (!ImageStack[1])
-    ImageStack[1] = iNewImage(1, 1, 1, 1, 1);
-
-  if (lastImage)
-    iGetSelectedImage(iGetSelection())->io = lastImage->io;
-}
-*/
 
 ILAPI void ILAPIENTRY iLockState() {
 #if IL_THREAD_SAFE_PTHREAD

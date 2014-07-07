@@ -39,7 +39,7 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 			iCloseImage(Temp);
 			Temp = Temp1;
 		}
-		// FIXME:
+
 		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);
 		if (PalType != 0) {
 			Image = BaseImage;

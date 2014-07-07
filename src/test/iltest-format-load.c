@@ -74,6 +74,7 @@ int main(int argc, char **argv) {
   CHECK(image != 0);
   CHECK(testLoadImage(argv[2], image));
   dumpMeta(image);
+
   /*
   CHECK(testSaveImage("test.tiff", image));
   CHECK(testSaveImage("test.jpeg", image));

@@ -151,7 +151,7 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 
   SIOread(io, ID, 1, Header.IDLen);
   ID[Header.IDLen] = 0;
-  iSetString(IL_TGA_ID_STRING, ID); // FIXME: put this in meta tags
+  iSetString(IL_META_DOCUMENT_NAME, ID);
 
   imemclear(&Footer, sizeof(Footer));
   SIOseek(io, sizeof(TARGAFOOTER), IL_SEEK_END);
@@ -438,7 +438,7 @@ static ILboolean i16BitTarga(ILimage *image) {
 // @todo: write header in one read() call
 static ILboolean iSaveTargaInternal(ILimage* image)
 {
-  char  *ID           = iGetString(IL_TGA_ID_STRING);
+  char  *ID           = iGetString(IL_META_DOCUMENT_NAME);
   char  *AuthName     = iGetString(IL_META_ARTIST);
   char  *AuthComment  = iGetString(IL_META_USER_COMMENT);
   ILboolean Compress;

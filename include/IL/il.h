@@ -255,6 +255,8 @@ enum {
 #define IL_COMPRESS_BIT         0x00000020
 #define IL_LOADFAIL_BIT         0x00000040
 #define IL_FORMAT_SPECIFIC_BIT  0x00000080
+#define IL_COLOUR_KEY_BIT       0x00000100 // 1.10
+#define IL_CLEAR_COLOUR_BIT     0x00000200 // 1.10
 #define IL_ALL_ATTRIB_BITS      0x000FFFFF
 
 // Palette types
@@ -386,16 +388,16 @@ enum {
 #define IL_CONV_PAL             0x0630
 
 // Load fail definitions
-#define IL_DEFAULT_ON_FAIL      0x0632 // FIXME: value not used anywhere
+#define IL_DEFAULT_ON_FAIL      0x0632
 
 // Key colour and alpha definitions
-#define IL_USE_KEY_COLOUR       0x0635 // FIXME: value not used anywhere
-#define IL_USE_KEY_COLOR        0x0635 // FIXME: value not used anywhere
-#define IL_BLIT_BLEND           0x0636 // FIXME: value not used anywhere
+#define IL_USE_KEY_COLOUR       0x0635
+#define IL_USE_KEY_COLOR        0x0635
+#define IL_BLIT_BLEND           0x0636
 
 // Interlace definitions
-#define IL_SAVE_INTERLACED      0x0639 // FIXME: value not used anywhere
-#define IL_INTERLACE_MODE       0x063A // FIXME: value not used anywhere
+#define IL_SAVE_INTERLACED      0x0639 // deprecated: not used, use IL_PNG_INTERLACE etc.
+#define IL_INTERLACE_MODE       0x063A // deprecated: not used, use IL_PNG_INTERLACE etc.
 
 // Quantization definitions
 #define IL_QUANTIZATION_MODE    0x0640
@@ -437,8 +439,8 @@ enum {
 #define IL_TGA_RLE                 0x0713
 #define IL_BMP_RLE                 0x0714
 #define IL_SGI_RLE                 0x0715
-#define IL_TGA_ID_STRING           0x0717
 
+#define IL_TGA_ID_STRING           0x0717
 #define IL_TGA_AUTHNAME_STRING     0x0718
 #define IL_TGA_AUTHCOMMENT_STRING  0x0719
 #define IL_PNG_AUTHNAME_STRING     0x071A
@@ -897,6 +899,7 @@ ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, IL
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
 ILAPI ILuint    ILAPIENTRY ilGetIntegerV(ILenum Mode, ILint *Param);
 ILAPI void      ILAPIENTRY ilSetIntegerV(ILenum Mode, ILint *Param);
+ILAPI void      ILAPIENTRY ilClearIndex(ILuint index);
 #endif 
 
 

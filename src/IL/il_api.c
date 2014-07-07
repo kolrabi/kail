@@ -204,6 +204,15 @@ void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILcla
   iClearColour(Red, Green, Blue, Alpha);
 }
 
+/** 
+ * Set a new clear colour index to use by ilClearImage().
+ * @ingroup state
+ */
+void ILAPIENTRY ilClearIndex(ILuint Index) {
+  // state is thread local, no lock necessary
+  iClearIndex(Index);
+}
+
 /**
  * Clears the current bound image to the values specified in ilClearColour().
  * @ingroup image_manip
@@ -405,7 +414,7 @@ ILenum ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size) {
   Image = iLockCurImage();
   iUnlockState();
 
-  iSetInputLump(Image, Lump, Size);
+  iSetInputLump(Image, (void*)Lump, Size);
   Result = iDetermineTypeFuncs(Image);
   iUnlockImage(Image);
   return Result;
@@ -732,7 +741,7 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * @a IL_VERSION_NUM              | R   | Current version string of the IL implementation.
  * @a IL_LOAD_EXT                 | R   | A string containing extensions of all files that can be loaded.
  * @a IL_SAVE_EXT                 | R   | A string containing extensions of all files that can be saved.
- * @a IL_TGA_ID_STRING            | RW  | Identifier string to be used when writing Targa image files.
+ * @a IL_TGA_ID_STRING            | RW  | Identifier string to be used when writing Targa image files. (obsolete: use IL_META_DOCUMENT_NAME)
  * @a IL_TGA_AUTHNAME_STRING      | RW  | Author name to be used when writing Targa image files. (obsolete: use IL_META_ARTIST)
  * @a IL_TGA_AUTHCOMMENT_STRING   | RW  | Author comment to be used when writing Targa image files.  (obsolete: use IL_META_USER_COMMENT)
  * @a IL_PNG_AUTHNAME_STRING      | RW  | Author name to be used when writing PNG image files. (obsolete: use IL_META_ARTIST)
@@ -746,6 +755,8 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * @a IL_META_ARTIST              | RW  | Author name meta data to be used when writing images.
  * @a IL_META_DOCUMENT_NAME       | RW  | Document name meta data to be used when writing images.
  * @a IL_META_HOST_COMPUTER       | RW  | Host computer name meta data to be used when writing images.
+ * @a IL_META_USER_COMMENT        | RW  | User comment about the image.
+ * @a IL_META_IMAGE_DESCRIPTION   | RW  | String describing the image contents.
  *
  * Strings marked with RW can also be set using ilSetString();
  * 
@@ -1131,7 +1142,7 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
     return IL_FALSE;
   }
 
-  iSetInputLump(Image, Lump, Size);
+  iSetInputLump(Image, (void*)Lump, Size);
   Result = iLoadFuncs2(Image, Type); 
   iUnlockImage(Image);
   return Result;

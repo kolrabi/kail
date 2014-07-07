@@ -62,6 +62,10 @@
 #define IL_PI       3.1415926535897932384626
 #define IL_DEGCONV  0.0174532925199432957692
 
+#ifndef NAN
+#define NAN (0.0/0.0)
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -90,8 +94,8 @@ typedef struct SIO {
     ILuint      lumpPos;
     ILHANDLE    handle;
 
-    const void *lump;
-    ILuint      lumpSize, ReadFileStart, WriteFileStart;
+    void *      lump;
+    ILuint      lumpSize, lumpAlloc, ReadFileStart, WriteFileStart;
 } SIO;
 
 #define SIOopenWR(io,       f) ( (io)->handle = ((io)->openWrite    ? (io)->openWrite   (f) : NULL))
@@ -247,7 +251,7 @@ ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
 ILAPI char *    ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
 
 ILAPI ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
-ILAPI void      ILAPIENTRY iSetInputLump(ILimage *, const void *Lump, ILuint Size);
+ILAPI void      ILAPIENTRY iSetInputLump(ILimage *, void *Lump, ILuint Size);
 ILAPI void      ILAPIENTRY iSetInputFile(ILimage *, ILHANDLE File);
 ILAPI ILboolean ILAPIENTRY iLoadFuncs2(ILimage *Image, ILenum Type);
 

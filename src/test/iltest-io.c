@@ -74,7 +74,7 @@ TEST(open_read_lump) {
   ilimage = iLockCurImage();
 
   CHECK(ilimage != NULL);
-  iSetInputLump(ilimage, data, strlen(data));
+  iSetInputLump(ilimage, (void*)data, strlen(data));
   CHECK_EQ(ilimage->io.lumpSize, 11);
 
   checkRead(ilimage);

@@ -18,6 +18,7 @@
 #include "il_states.h"
 #include "il_stack.h"
 #include "il_meta.h"
+#include "il_pixel.h"
 
 #include <stdlib.h>
 
@@ -56,6 +57,15 @@ void ilDefaultStates() {
   ilStates[ilCurrentPos].ilCompression = IL_COMPRESS_ZLIB;
   ilStates[ilCurrentPos].ilInterlace = IL_FALSE;
 
+  // Changed to the colour of the Universe
+  //  (http://www.newscientist.com/news/news.jsp?id=ns99991775)
+  //  *(http://www.space.com/scienceastronomy/universe_color_020308.html)*
+  ilStates[ilCurrentPos].ClearColour[0] = 1.0f;
+  ilStates[ilCurrentPos].ClearColour[1] = 0.972549f;
+  ilStates[ilCurrentPos].ClearColour[2] = 0.90588f;
+  ilStates[ilCurrentPos].ClearColour[3] = 0.0f;
+  ilStates[ilCurrentPos].ClearIndex     = 0;
+
   ilStates[ilCurrentPos].ilTgaCreateStamp = IL_FALSE;
   ilStates[ilCurrentPos].ilJpgQuality = 99;
   ilStates[ilCurrentPos].ilPngInterlace = IL_FALSE;
@@ -69,15 +79,6 @@ void ilDefaultStates() {
   ilStates[ilCurrentPos].ilPngAlphaIndex = -1;
   ilStates[ilCurrentPos].ilVtfCompression = IL_DXT_NO_COMP;
 
-  ilStates[ilCurrentPos].ilTgaId = NULL;
-  // ilStates[ilCurrentPos].ilTgaAuthName = NULL;
-  // ilStates[ilCurrentPos].ilTgaAuthComment = NULL;
-  // ilStates[ilCurrentPos].ilPngTitle = NULL;
-  // ilStates[ilCurrentPos].ilPngDescription = NULL;
-
-  //2003-09-01: added tiff strings
-  // ilStates[ilCurrentPos].ilTifDescription = NULL;
-  // ilStates[ilCurrentPos].ilTifHostComputer = NULL;
   ilStates[ilCurrentPos].ilCHeader = NULL;
 
   ilStates[ilCurrentPos].ilQuantMode = IL_WU_QUANT;
@@ -113,7 +114,10 @@ ILconst_string iGetILString(ILenum StringName) {
     case IL_VERSION_NUM:              return _ilVersion;
     case IL_LOAD_EXT:                 return _ilLoadExt;
     case IL_SAVE_EXT:                 return _ilSaveExt;
-    case IL_TGA_ID_STRING:            return ilStates[ilCurrentPos].ilTgaId;
+
+    case IL_TGA_ID_STRING:            
+      iTrace("---- IL_TGA_ID_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      return iGetMetaString(BaseImage, IL_META_DOCUMENT_NAME);
 
     case IL_TGA_AUTHNAME_STRING:
       iTrace("---- IL_TGA_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
@@ -186,9 +190,6 @@ char *iGetString(ILenum StringName) {
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
   switch (StringName)   {
-    case IL_TGA_ID_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilTgaId, 254);
-
     case IL_CHEAD_HEADER_STRING:
       return iClipString(ilStates[ilCurrentPos].ilCHeader, 32);
 
@@ -546,8 +547,6 @@ void iPushAttrib(ILuint Bits) {
 
   ilDefaultStates();
 
-  // FIXME: colour key data
-
   ilCurrentPos = StateStruct->ilCurrentPos;
 
   if (Bits & IL_ORIGIN_BIT) {
@@ -588,14 +587,22 @@ void iPushAttrib(ILuint Bits) {
     ilStates[ilCurrentPos].ilPngAlphaIndex = ilStates[ilCurrentPos-1].ilPngAlphaIndex;
 
     // Strings
-    if (ilStates[ilCurrentPos].ilTgaId)
-      ifree(ilStates[ilCurrentPos].ilTgaId);
-
     if (ilStates[ilCurrentPos].ilCHeader)
       ifree(ilStates[ilCurrentPos].ilCHeader);
 
-    ilStates[ilCurrentPos].ilTgaId    = iStrDup(ilStates[ilCurrentPos-1].ilTgaId);
     ilStates[ilCurrentPos].ilCHeader  = iStrDup(ilStates[ilCurrentPos-1].ilCHeader);
+  }
+  if (Bits & IL_COLOUR_KEY_BIT) {
+    ilStates[ilCurrentPos].ilUseKeyColour   = ilStates[ilCurrentPos-1].ilUseKeyColour;
+    ilStates[ilCurrentPos].ilKeyColourRed   = ilStates[ilCurrentPos-1].ilKeyColourRed;
+    ilStates[ilCurrentPos].ilKeyColourGreen = ilStates[ilCurrentPos-1].ilKeyColourGreen;
+    ilStates[ilCurrentPos].ilKeyColourBlue  = ilStates[ilCurrentPos-1].ilKeyColourBlue;
+    ilStates[ilCurrentPos].ilKeyColourAlpha = ilStates[ilCurrentPos-1].ilKeyColourAlpha;
+  }
+
+  if (Bits & IL_CLEAR_COLOUR_BIT) {
+    memcpy(ilStates[ilCurrentPos].ClearColour, ilStates[ilCurrentPos-1].ClearColour, sizeof(ilStates[ilCurrentPos].ClearColour));
+    ilStates[ilCurrentPos].ClearIndex = ilStates[ilCurrentPos-1].ClearIndex;
   }
 
   ilStates[ilCurrentPos].ilImageSelectionMode = ilStates[ilCurrentPos-1].ilImageSelectionMode;
@@ -710,11 +717,45 @@ void iSetString(ILenum Mode, const char *String_) {
 
   switch (Mode)
   {
-    case IL_TGA_ID_STRING:
-      if (ilStates[ilCurrentPos].ilTgaId)
-        ifree(ilStates[ilCurrentPos].ilTgaId);
-      ilStates[ilCurrentPos].ilTgaId = String;
-      return;
+    case IL_TGA_ID_STRING:            
+      iTrace("---- IL_TGA_ID_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); return;
+
+    case IL_TGA_AUTHNAME_STRING:
+      iTrace("---- IL_TGA_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      iSetMetaString(BaseImage, IL_META_ARTIST, String_); return;
+
+    case IL_PNG_AUTHNAME_STRING:
+      iTrace("---- IL_PNG_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      iSetMetaString(BaseImage, IL_META_ARTIST, String_); return;
+
+    case IL_TIF_AUTHNAME_STRING:
+      iTrace("---- IL_TIF_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
+      iSetMetaString(BaseImage, IL_META_ARTIST, String_); return;
+
+    case IL_PNG_TITLE_STRING:
+      iTrace("---- IL_PNG_TITLE_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); return;
+
+    case IL_TIF_DOCUMENTNAME_STRING:
+      iTrace("---- IL_TIF_DOCUMENTNAME_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); return;
+
+    case IL_PNG_DESCRIPTION_STRING:
+      iTrace("---- IL_PNG_DESCRIPTION_STRING is obsolete, use IL_META_IMAGE_DESCRIPTION instead");
+      iSetMetaString(BaseImage, IL_META_IMAGE_DESCRIPTION, String_); return;
+
+    case IL_TIF_DESCRIPTION_STRING:
+      iTrace("---- IL_TIF_DESCRIPTION_STRING is obsolete, use IL_META_IMAGE_DESCRIPTION instead");
+      iSetMetaString(BaseImage, IL_META_IMAGE_DESCRIPTION, String_); return;
+
+    case IL_TGA_AUTHCOMMENT_STRING:
+      iTrace("---- IL_TGA_AUTHCOMMENT_STRING is obsolete, use IL_META_USER_COMMENT instead");
+      iSetMetaString(BaseImage, IL_META_USER_COMMENT, String_); return;
+
+    case IL_TIF_HOSTCOMPUTER_STRING:
+      iTrace("---- IL_TIF_HOSTCOMPUTER_STRING is obsolete, use IL_META_HOST_COMPUTER instead");
+      iSetMetaString(BaseImage, IL_META_HOST_COMPUTER, String_); return;
 
     case IL_CHEAD_HEADER_STRING:
       if (ilStates[ilCurrentPos].ilCHeader)
@@ -928,4 +969,109 @@ void iGetKeyColour(ILclampf *Red, ILclampf *Green, ILclampf *Blue, ILclampf *Alp
   *Green  = ilStates[ilCurrentPos].ilKeyColourGreen;
   *Blue   = ilStates[ilCurrentPos].ilKeyColourBlue;
   *Alpha  = ilStates[ilCurrentPos].ilKeyColourAlpha; 
+}
+
+
+void iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  // Clamp to 0.0f - 1.0f.
+  ilStates[ilCurrentPos].ClearColour[0] = IL_CLAMP(Red);
+  ilStates[ilCurrentPos].ClearColour[1] = IL_CLAMP(Green);
+  ilStates[ilCurrentPos].ClearColour[2] = IL_CLAMP(Blue);
+  ilStates[ilCurrentPos].ClearColour[3] = IL_CLAMP(Alpha);
+}
+
+void iClearIndex(ILuint Index) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  // Clamp to 0.0f - 1.0f.
+  ilStates[ilCurrentPos].ClearIndex = Index;
+}
+
+
+ILAPI void ILAPIENTRY iGetClear(void *Colours, ILenum Format, ILenum Type) {
+  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
+  IL_STATES *ilStates = StateStruct->ilStates;
+  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+
+  const void *From = ilStates[ilCurrentPos].ClearColour;
+  const void *To   = Colours;
+  
+  switch (Type) {
+    case IL_BYTE:
+    case IL_UNSIGNED_BYTE:
+      switch (Format) {
+        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
+        case IL_COLOUR_INDEX:     (*(ILubyte*)Colours) = ilStates[ilCurrentPos].ClearIndex; break;
+        default:                  iSetError(IL_INTERNAL_ERROR); return;
+      }
+      break;
+      
+    case IL_SHORT:
+    case IL_UNSIGNED_SHORT:
+      switch (Format) {
+        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
+        case IL_COLOUR_INDEX:     (*(ILushort*)Colours) = ilStates[ilCurrentPos].ClearIndex; break;
+        default:                  iSetError(IL_INTERNAL_ERROR); return;
+      }
+      break;
+      
+    case IL_INT:
+    case IL_UNSIGNED_INT:
+      switch (Format) {
+        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
+        case IL_COLOUR_INDEX:     (*(ILuint*)Colours) = ilStates[ilCurrentPos].ClearIndex; break;
+        default:                  iSetError(IL_INTERNAL_ERROR); return;
+      }
+      break;
+      
+    case IL_FLOAT:
+      switch (Format) {
+        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
+        case IL_COLOUR_INDEX:     
+        default:                  iSetError(IL_INTERNAL_ERROR); return;
+      }        
+      break;
+
+    case IL_DOUBLE:
+      switch (Format) {
+        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
+        case IL_COLOUR_INDEX:     
+        default:                  iSetError(IL_INTERNAL_ERROR); return;
+      }        
+     
+    default:
+      iSetError(IL_INTERNAL_ERROR);
+      return;
+  }
 }

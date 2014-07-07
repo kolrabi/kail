@@ -169,6 +169,7 @@ ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth);
 void      iClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclampf Alpha);
+void      iClearIndex(ILuint Index);
 ILboolean iOverlayImage(ILimage *Dest, ILimage *Src, ILint XCoord, ILint YCoord, ILint ZCoord);
 ILubyte * iGetData(ILimage *Image);
 ILubyte * iGetPalette(ILimage *Image);
@@ -191,7 +192,7 @@ ILenum    iDetermineType(ILimage *Image, ILconst_string FileName);
 ILenum    iDetermineTypeFuncs(ILimage *Image);
 ILuint64  iGetLumpPos(ILimage *Image) ;
 ILboolean iIsValidIO(ILenum Type, SIO* io);
-void      iSetInputLumpIO(SIO *io, const void *Lump, ILuint Size);
+void      iSetInputLumpIO(SIO *io, void *Lump, ILuint Size);
 void      iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, fReadProc aRead, fSeekProc  aSeek, fTellProc aTell);
 void      iSetWrite(ILimage *Image, fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek,  fTellProc Tell,  fWriteProc Write);
 void      iResetRead(ILimage *image);
@@ -214,6 +215,7 @@ ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID);
 ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
+
 #ifdef __cplusplus
 }
 #endif

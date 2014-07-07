@@ -820,7 +820,6 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
   ILimage *Temp;
 
   // Could go above 128 easily...
-  // FIXME: use stat() or similar?
   for (i = 0; i < 128; i++) {
     snprintf(Buff, sizeof(255), "screen%d.tga", i);
     File = fopen(Buff, "rb");

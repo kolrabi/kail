@@ -78,7 +78,7 @@ static ILboolean iLoadPxrInternal(ILimage *Image) {
       return IL_FALSE;
   }
 
-  // FIXME: should we use offsets in header?
+  // FIXME: should we use offsets from header?
   SIOseek(io, 1024 - sizeof(Head), IL_SEEK_CUR);
   if (SIOread(io, Image->Data, 1, Image->SizeOfData) != Image->SizeOfData) 
     return IL_FALSE;
