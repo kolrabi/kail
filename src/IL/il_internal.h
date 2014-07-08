@@ -145,8 +145,6 @@ ILuint    ilRleCompress(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth
 // DXTC compression
 //
 
-ILuint    ilNVidiaCompressDXTFile(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtType);
-ILubyte*  iNVidiaCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
 ILubyte*  iSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize);
 ILubyte*  iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DXTCFormat, ILuint *DXTCSize);
 ILboolean iDxtcDataToImage(ILimage* image);

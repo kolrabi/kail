@@ -417,7 +417,7 @@ enum {
 #define IL_COMPRESSION_HINT     0x0668
 
 // Compression
-#define IL_NVIDIA_COMPRESS      0x0670
+#define IL_NVIDIA_COMPRESS      0x0670 // deprecated: nvidia texture tools now use libsquish anyway
 #define IL_SQUISH_COMPRESS      0x0671
 
 // Subimage types

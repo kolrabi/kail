@@ -12,29 +12,14 @@
 
 
 #include "il_internal.h"
-/*#include "il_dds.h"
-#include "il_manip.h"
-#include <limits.h>*/
-
 
 #ifdef IL_USE_DXTC_SQUISH
 #include <squish.h>
 
-#if defined(_WIN32) && defined(IL_USE_PRAGMA_LIBS)
-	#if defined(_MSC_VER) || defined(__BORLANDC__)
-		#ifndef _DEBUG
-			#pragma comment(lib, "squish.lib")
-		#else
-			#pragma comment(lib, "squish-d.lib")
-		#endif
-	#endif
-#endif
-
-
 //! Compresses data to a DXT format using libsquish.
 //  The data must be in unsigned byte RGBA format.  The alpha channel will be ignored if DxtType is IL_DXT1.
 //  DxtSize is used to return the size in bytes of the DXTC data returned.
-ILAPI ILubyte* ILAPIENTRY ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
+ILubyte* iSquishCompressDXTImpl(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
 	ILuint	Size;  //@TODO: Support larger than 32-bit data?
 	ILint	Flags;
@@ -79,9 +64,15 @@ ILAPI ILubyte* ILAPIENTRY ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuin
 	return DxtcData;
 }
 
+extern "C" {
+ILubyte* iSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize) {
+	return iSquishCompressDXTImpl(Data, Width, Height, Depth, DxtFormat, DxtSize);
+}
+}
 #else
+extern "C" {
 // Let's have this so that the function is always created and exported, even if it does nothing.
-ILAPI ILubyte* ILAPIENTRY ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
+ILubyte* iSquishCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
 	(void)Data;
 	(void)Width;
@@ -94,5 +85,5 @@ ILAPI ILubyte* ILAPIENTRY ilSquishCompressDXT(ILubyte *Data, ILuint Width, ILuin
 	iSetError(IL_INVALID_CONVERSION);
 	return NULL;
 }
-
+}
 #endif//IL_NO_DXTC_SQUISH

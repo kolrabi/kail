@@ -8,10 +8,9 @@ SET                     ( SOURCES
                           # altivec/typeconversion.c
 
                           algo/il_neuquant.c
-                          algo/il_nvidia.cc
                           algo/il_quantizer.c
                           algo/il_rle.c
-                          algo/il_squish.c
+                          algo/il_squish.cc
 
                           conv/il_convbuff.c
                           conv/il_convert.c 
@@ -118,6 +117,10 @@ SET                     ( LINK_LIBS
                           ${X11_LIBRARIES}
                           ${THREADS_LIB}
                         )
+
+IF                      ( LIBSQUISH_FOUND )
+  SET                   ( LINK_LIBS ${LINK_LIBS} ${LIBSQUISH_LIBRARY} )
+ENDIF                   ()
 
 IF                      ( NOT IL_NO_JP2 )
   SET                   ( LINK_LIBS ${LINK_LIBS} ${JASPER_LIBRARIES} )

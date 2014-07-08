@@ -660,38 +660,12 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
   }
   else
   {
-    // We want to try nVidia compression first, because it is the fastest.
-#ifdef IL_USE_DXTC_NVIDIA
-    ILubyte  *ByteData, *BlockData;
-    if (ilIsEnabled(IL_NVIDIA_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
-      if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_DXT3 || DXTCFormat == IL_DXT5) {
-        // NVTT needs data as BGRA 32-bit.
-        if (Image->Format != IL_BGRA || Image->Type != IL_UNSIGNED_BYTE) {  // No need to convert if already this format/type.
-          ByteData = iConvertBuffer(Image->SizeOfData, Image->Format, IL_BGRA, Image->Type, IL_UNSIGNED_BYTE, NULL, Image->Data);
-          if (ByteData == NULL)
-            return 0;
-        }
-        else
-          ByteData = Image->Data;
-
-        // Here's where all the compression and writing goes on.
-        if (!ilNVidiaCompressDXTFile(ByteData, Image->Width, Image->Height, 1, DXTCFormat))
-          return 0;
-
-        if (ByteData != Image->Data)
-          ifree(ByteData);
-
-        return Image->Width * Image->Height * 4;  // Either compresses all or none.
-      }
-    }
-#endif//IL_USE_DXTC_NVIDIA
-
     // libsquish generates better quality output than DevIL does, so we try it next.
 #ifdef IL_USE_DXTC_SQUISH
     ILubyte  *ByteData, *BlockData;
     ILuint DXTCSize;
     
-    if (ilIsEnabled(IL_SQUISH_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
+    if (iGetInt(IL_SQUISH_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
       if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_DXT3 || DXTCFormat == IL_DXT5) {
         // libsquish needs data as RGBA 32-bit.
         if (Image->Format != IL_RGBA || Image->Type != IL_UNSIGNED_BYTE) {  // No need to convert if already this format/type.
@@ -703,11 +677,11 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
           ByteData = Image->Data;
 
         // Get compressed data here.
-        BlockData = ilSquishCompressDXT(ByteData, Image->Width, Image->Height, 1, DXTCFormat, &DXTCSize);
+        BlockData = iSquishCompressDXT(ByteData, Image->Width, Image->Height, 1, DXTCFormat, &DXTCSize);
         if (BlockData == NULL)
           return 0;
 
-        if (iwrite(BlockData, 1, DXTCSize) != DXTCSize) {
+        if ((ILuint)SIOwrite(io, BlockData, 1, DXTCSize) != DXTCSize) {
           if (ByteData != Image->Data)
             ifree(ByteData);
           ifree(BlockData);

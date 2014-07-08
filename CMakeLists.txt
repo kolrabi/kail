@@ -66,6 +66,8 @@ FIND_PACKAGE            ( D3D9 )
 FIND_PACKAGE            ( D3D8 )
 FIND_PACKAGE            ( SDL )
 FIND_PACKAGE            ( X11 )
+FIND_PACKAGE            ( Squish )
+SET                     ( IL_USE_DXTC_SQUISH ${LIBSQUISH_FOUND} )
 
 IF                      ( MINGW )
   FIND_LIBRARY          ( ZLIB_LIBRARY NAMES libz.a ) # HACK for mingw
@@ -245,6 +247,7 @@ IF                      ( NOT IL_NO_LCMS )
     ENDIF               ()
   ENDIF                 ()
 ENDIF                   ()
+
 
 CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/config.h.in ${CMAKE_BINARY_DIR}/IL/config.h )
 CONFIGURE_FILE          ( ${CMAKE_SOURCE_DIR}/include/ilut_config.h.in ${CMAKE_BINARY_DIR}/IL/ilut_config.h )

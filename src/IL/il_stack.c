@@ -26,7 +26,7 @@ pthread_mutex_t iStateMutex;
 #elif IL_THREAD_SAFE_WIN32
 
 static DWORD         iTlsKey = ~0;
-HANDLE iStateMutex = NULL; // FIXME: CloseHandle on exit
+HANDLE iStateMutex = NULL;
 
 #endif
 

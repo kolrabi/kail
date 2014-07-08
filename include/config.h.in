@@ -275,7 +275,6 @@
    #define IL_NO_PNG
    #define IL_NO_TIF
    #define IL_NO_WDP
-   #undef IL_USE_DXTC_NVIDIA
    #undef IL_USE_DXTC_SQUISH
 #endif /* IL_NO_EXTLIBS */
 
@@ -314,21 +313,11 @@
 /* SSE3 extension found */
 #cmakedefine SSE3
 
-/* TODO */
-#if 0
-
-/* Define if you have nvidia texture tools library installed */
-#cmakedefine IL_USE_DXTC_NVIDIA
-
 /* Define if you have libsquish installed */
 #cmakedefine IL_USE_DXTC_SQUISH
 
+/* TODO */
+#if 0
 /* Memory must be vector aligned */
 #cmakedefine VECTORMEM
-
-/* Define to 1 if you have the ANSI C header files. */
-#cmakedefine STDC_HEADERS
-
-/* Define to 1 if the X Window System is missing or not being used. */
-#cmakedefine X_DISPLAY_MISSING
 #endif
