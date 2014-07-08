@@ -199,7 +199,7 @@ ILboolean ILAPIENTRY iLoadFuncs2(ILimage* Image, ILenum type) {
       }
       Image->MetaTags = NULL;
 
-      bRet = format->Load(Image) && iFixImages(Image);
+      bRet = format->Load(Image) && iFixImages(Image, Image);
     }
   } else {
     iSetError(IL_FORMAT_NOT_SUPPORTED);

@@ -103,11 +103,11 @@ void ilDefaultStates() {
 
 
 //! Returns a constant string detailing aspects about this library.
-ILconst_string iGetILString(ILenum StringName) {
+ILconst_string iGetILString(ILimage *Image, ILenum StringName) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
-  ILimage *BaseImage = iGetBaseImage();
+  ILimage *BaseImage = Image->BaseImage;
 
   switch (StringName) {
     case IL_VENDOR:                   return _ilVendor;
@@ -184,18 +184,8 @@ char *iClipString(ILconst_string String_, ILuint MaxLen) {
 
 
 // Returns format-specific strings, converted to UTF8 truncated to MaxLen (not counting the terminating NUL).
-char *iGetString(ILenum StringName) {
-  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
-  IL_STATES *ilStates = StateStruct->ilStates;
-  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
-
-  switch (StringName)   {
-    case IL_CHEAD_HEADER_STRING:
-      return iClipString(ilStates[ilCurrentPos].ilCHeader, 32);
-
-    default:
-      return iClipString(iGetILString(StringName), 65535);
-  }
+char *iGetString(ILimage *Image, ILenum StringName) {
+  return iClipString(iGetILString(Image, StringName), 65535);
 }
 
 // Internal function that sets the Mode equal to Flag
@@ -364,17 +354,16 @@ ILint ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode)
     return Param;
 }
 
-ILuint iGetIntegerV(ILenum Mode, ILint *Param) {
+ILuint iGetIntegerv(ILimage *Image, ILenum Mode, ILint *Param) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_IMAGE_SELECTION *Selection = &iGetTLSData()->CurSel;
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
-  ILimage *CurImage = iGetSelectedImage(Selection);
-  ILimage *BaseImage = iGetBaseImage();
+  ILimage *BaseImage = Image ? Image->BaseImage : NULL;
 
   switch (Mode) {
     case IL_CUR_IMAGE:
-      if (CurImage == NULL) {
+      if (Image == NULL) {
         iSetError(IL_ILLEGAL_OPERATION);
         return 0;
       }
@@ -425,12 +414,12 @@ ILuint iGetIntegerV(ILenum Mode, ILint *Param) {
   if (Mode >= IL_META_MAKE) {
     return iGetIntegerImageV(BaseImage, Mode, Param);
   } else {
-    return iGetIntegerImageV(CurImage, Mode, Param);
+    return iGetIntegerImageV(Image, Mode, Param);
   }
 }
 
 
-ILint iGetInteger(ILenum Mode) {
+ILint iGetInteger(ILimage *Image, ILenum Mode) {
   ILint Param = 0;
 
   if (iGetMetaLen(Mode) > 1) {
@@ -439,7 +428,7 @@ ILint iGetInteger(ILenum Mode) {
     return 0;
   }
 
-  iGetIntegerV(Mode, &Param);
+  iGetIntegerv(Image, Mode, &Param);
   return Param;
 }
 
@@ -692,12 +681,9 @@ ILenum iGetHint(ILenum Target) {
 }
 
 
-void iSetString(ILenum Mode, const char *String_) {
-  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
-  IL_STATES *ilStates = StateStruct->ilStates;
-  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
+void iSetString(ILimage *Image, ILenum Mode, const char *String_) {
   ILchar *String;
-  ILimage *BaseImage = iGetBaseImage();
+  ILimage *BaseImage = Image->BaseImage;
 
   if (String_ == NULL) {
     iSetError(IL_INVALID_PARAM);
@@ -758,10 +744,8 @@ void iSetString(ILenum Mode, const char *String_) {
       iSetMetaString(BaseImage, IL_META_HOST_COMPUTER, String_); return;
 
     case IL_CHEAD_HEADER_STRING:
-      if (ilStates[ilCurrentPos].ilCHeader)
-        ifree(ilStates[ilCurrentPos].ilCHeader);
-      ilStates[ilCurrentPos].ilCHeader = String;
-      return;
+      iTrace("---- IL_CHEAD_HEADER_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
+      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); return;
 
     default:
       iSetMetaString(BaseImage, Mode, String_);
@@ -771,11 +755,11 @@ void iSetString(ILenum Mode, const char *String_) {
   ifree(String);
 }
 
-void iSetIntegerV(ILimage *CurImage, ILenum Mode, ILint *Param) {
+void iSetIntegerv(ILimage *CurImage, ILenum Mode, ILint *Param) {
   IL_STATE_STRUCT * StateStruct   = iGetStateStruct();
   IL_STATES *       ilStates      = StateStruct->ilStates;
   ILuint            ilCurrentPos  = StateStruct->ilCurrentPos;
-  ILimage *         BaseImage = iGetBaseImage();
+  ILimage *         BaseImage     = CurImage->BaseImage;
 
   switch (Mode)
   {
@@ -925,7 +909,7 @@ void iSetInteger(ILimage *CurImage, ILenum Mode, ILint Param) {
     return;
   }
 
-  iSetIntegerV(CurImage, Mode, &Param);
+  iSetIntegerv(CurImage, Mode, &Param);
 }
 
 ILint iGetInt(ILenum Mode) {
@@ -935,14 +919,14 @@ ILint iGetInt(ILenum Mode) {
   ILenum err;
   ILint r = -1;
 
-  ilGetIntegerv(Mode, &r);
+  iGetIntegerv(NULL, Mode, &r);
 
   //check if an error occured, set another error
   err = ilGetError();
   if (r == -1 && err == IL_INVALID_ENUM) {
-    iSetError(IL_INTERNAL_ERROR);
+    iSetErrorReal(IL_INTERNAL_ERROR);
   } else {
-    iSetError(err); //restore error
+    iSetErrorReal(err); //restore error
   }
 
   return r;

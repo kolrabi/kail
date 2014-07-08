@@ -151,7 +151,7 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 
   SIOread(io, ID, 1, Header.IDLen);
   ID[Header.IDLen] = 0;
-  iSetString(IL_META_DOCUMENT_NAME, ID);
+  iSetString(image, IL_META_DOCUMENT_NAME, ID);
 
   imemclear(&Footer, sizeof(Footer));
   SIOseek(io, sizeof(TARGAFOOTER), IL_SEEK_END);
@@ -167,8 +167,8 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
   SIOseek(io, Footer.ExtOff, IL_SEEK_SET);
   SIOread(io, &Ext, 1, sizeof(Ext));
 
-  iSetString(IL_META_ARTIST, Ext.AuthName);
-  iSetString(IL_META_USER_COMMENT, Ext.AuthComments);
+  iSetString(image, IL_META_ARTIST, Ext.AuthName);
+  iSetString(image, IL_META_USER_COMMENT, Ext.AuthComments);
 
   // TODO: other metadata?
 
@@ -438,9 +438,9 @@ static ILboolean i16BitTarga(ILimage *image) {
 // @todo: write header in one read() call
 static ILboolean iSaveTargaInternal(ILimage* image)
 {
-  char  *ID           = iGetString(IL_META_DOCUMENT_NAME);
-  char  *AuthName     = iGetString(IL_META_ARTIST);
-  char  *AuthComment  = iGetString(IL_META_USER_COMMENT);
+  char  *ID           = iGetString(image, IL_META_DOCUMENT_NAME);
+  char  *AuthName     = iGetString(image, IL_META_ARTIST);
+  char  *AuthComment  = iGetString(image, IL_META_USER_COMMENT);
   ILboolean Compress;
   ILuint    RleLen;
   ILubyte   *Rle;
@@ -449,7 +449,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   ILimage   *TempImage = NULL;
   ILuint    ExtOffset;
 //  char    * Footer = "TRUEVISION-XFILE.";
-  char    * idString = iGetString(IL_META_SOFTWARE);
+  char    * idString = iGetString(image, IL_META_SOFTWARE);
   char    * TempData;
   SIO *     io;
 
@@ -477,7 +477,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   if (AuthName)     { iCharStrNCpy(Ext.AuthName,     AuthName,     40); ifree(AuthName);     }
   if (AuthComment)  { iCharStrNCpy(Ext.AuthComments, AuthComment, 324); ifree(AuthComment);  }
   
-  if (!idString) idString = iGetString(IL_VERSION_NUM);
+  if (!idString) idString = iGetString(image, IL_VERSION_NUM);
   if (idString)     { iCharStrNCpy(Ext.SoftwareID,  idString,     40); ifree(idString);   }
 
   Ext.Size = 495;

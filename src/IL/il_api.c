@@ -171,6 +171,12 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
   ILboolean Result;
   ILimage * Image;
   ILimage * SourceImage;
+
+  if (iGetCurName() == Source) {
+    // can't blit unto self
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
   
   iLockState();
   Image       = iLockCurImage();
@@ -297,6 +303,13 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
   ILimage * DestImage;
   ILimage * SrcImage;
   ILboolean Result;
+
+  if (iGetCurName() == Src) {
+    // can't copy unto self
+    // iSetError(IL_INVALID_PARAM); // silently do nothing
+    // return IL_FALSE;
+    return IL_TRUE;
+  }
 
   iLockState();
   DestImage = iLockCurImage();
@@ -534,11 +547,19 @@ ILubyte* ILAPIENTRY ilGetAlpha(ILenum Type) {
  */
 void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
 {
+  ILimage *Image;
+
   if (Param == NULL) {
     iSetError(IL_INVALID_PARAM);
     return;
   }
-  *Param = iGetInteger(Mode);
+
+  iLockState();
+  Image = iLockCurImage();
+  iUnlockState();
+
+  *Param = iGetInteger(Image, Mode);
+  iUnlockImage(Image);  
 }
 
 
@@ -547,7 +568,7 @@ void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
  * @ingroup state
  */
 ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
-  return iGetInteger(Mode);
+  SIMPLE_FUNC(Image, ILboolean, iGetInteger(Image, Mode));
 }
 
 /**
@@ -597,11 +618,7 @@ ILenum ILAPIENTRY ilGetError(void) {
  * @ingroup state
  */
 ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
-  ILuint Result;
-  iLockState();
-  Result = iGetIntegerV(Mode, Param);
-  iUnlockState();
-  return Result;
+  SIMPLE_FUNC(Image, ILuint, iGetIntegerv(Image, Mode, Param));
 }
 
 /**
@@ -638,12 +655,7 @@ ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup state
  */
 ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
-  ILint Result;
-
-  iLockState();  
-  Result = iGetInteger(Mode);
-  iUnlockState();
-  return Result;
+  SIMPLE_FUNC(Image, ILint, iGetInteger(Image, Mode));
 }
 
 /**
@@ -766,11 +778,7 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * @ingroup state
  */
 ILconst_string ILAPIENTRY ilGetString(ILenum StringName) {
-  ILconst_string Result;
-  iLockState();
-  Result = iGetILString(StringName);
-  iUnlockState();
-  return Result;
+  SIMPLE_FUNC(Image, ILconst_string, iGetILString(Image, StringName));
 }
 
 /**
@@ -1186,6 +1194,12 @@ ILboolean ILAPIENTRY ilOverlayImage(ILuint Source, ILint XCoord, ILint YCoord, I
   ILimage * SrcImage;
   ILboolean Result;
 
+  if (iGetCurName() == Source) {
+    // can't overly unto self
+    iSetError(IL_INVALID_PARAM);
+    return IL_FALSE;
+  }
+
   iLockState();
   DestImage = iLockCurImage();
   SrcImage  = iLockImage(Source);
@@ -1531,12 +1545,12 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
  * @see ilGetInteger for a list of valid @a Modes.
  * @ingroup state
  */
-void ILAPIENTRY ilSetIntegerV(ILenum Mode, ILint *Param) {
+void ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param) {
   ILimage *Image;
 
   iLockState();
   Image = iLockCurImage();
-  iSetIntegerV(Image, Mode, Param);
+  iSetIntegerv(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1611,7 +1625,7 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
  * @ingroup state
  */
 void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
-  iSetString(StringName, String);
+  SIMPLE_PROC(Image, iSetString(Image, StringName, String));
 }
 
 /**

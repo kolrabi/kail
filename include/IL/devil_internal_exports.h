@@ -191,7 +191,8 @@ typedef struct ILimage {
     ILuint          DxtcSize;    //!< compressed data size
     SIO             io;
 
-    ILmeta *        MetaTags;
+    struct ILimage* BaseImage;   //!< Top level image (for logging and metadata)
+    ILmeta *        MetaTags;    //!< Metadata chain (only valid in base image)
 
 #if IL_THREAD_SAFE_PTHREAD
     pthread_mutex_t Mutex;

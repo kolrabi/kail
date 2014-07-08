@@ -394,8 +394,8 @@ const void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size) {
   return NULL;
 }
 
-ILconst_string iGetMetaString(ILimage *Image, ILenum MetaID) {
-  ILmeta *Meta = Image->MetaTags;
+ILconst_string iGetMetaString(ILimage *BaseImage, ILenum MetaID) {
+  ILmeta *Meta = BaseImage->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   if (!Desc) {
     iSetError(IL_INVALID_ENUM);

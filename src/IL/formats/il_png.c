@@ -320,19 +320,19 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 		if (text_ptr[j].compression != PNG_TEXT_COMPRESSION_NONE) continue;
 
 		if (!iCharStrICmp(text_ptr[j].key, "Title")) {
-			iSetString(IL_META_DOCUMENT_NAME, text_ptr[j].text);
+			iSetString(image, IL_META_DOCUMENT_NAME, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Author")) {
-			iSetString(IL_META_ARTIST, text_ptr[j].text);
+			iSetString(image, IL_META_ARTIST, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Description")) {
-			iSetString(IL_META_IMAGE_DESCRIPTION, text_ptr[j].text);
+			iSetString(image, IL_META_IMAGE_DESCRIPTION, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Copyright")) {
-			iSetString(IL_META_COPYRIGHT, text_ptr[j].text);
+			iSetString(image, IL_META_COPYRIGHT, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Creation Time")) {
-			iSetString(IL_META_DATETIME, text_ptr[j].text);
+			iSetString(image, IL_META_DATETIME, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Software")) {
-			iSetString(IL_META_SOFTWARE, text_ptr[j].text);
+			iSetString(image, IL_META_SOFTWARE, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Comment")) {
-			iSetString(IL_META_USER_COMMENT, text_ptr[j].text);
+			iSetString(image, IL_META_USER_COMMENT, text_ptr[j].text);
 		}
 	}
 
@@ -521,39 +521,39 @@ ILboolean iSavePngInternal(ILimage* image) {
 	i = 0;
 
 	text[i].key 				= "Title";
-	text[i].text 				= iGetString(IL_META_DOCUMENT_NAME);
+	text[i].text 				= iGetString(image, IL_META_DOCUMENT_NAME);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Author";
-	text[i].text 				= iGetString(IL_META_ARTIST);
+	text[i].text 				= iGetString(image, IL_META_ARTIST);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Description";
-	text[i].text 				= iGetString(IL_META_IMAGE_DESCRIPTION);
+	text[i].text 				= iGetString(image, IL_META_IMAGE_DESCRIPTION);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Copyright";
-	text[i].text 				= iGetString(IL_META_COPYRIGHT);
+	text[i].text 				= iGetString(image, IL_META_COPYRIGHT);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Creation Time";
-	text[i].text 				= iGetString(IL_META_DATETIME);
+	text[i].text 				= iGetString(image, IL_META_DATETIME);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Software";
-	text[i].text 				= iGetString(IL_META_SOFTWARE);
+	text[i].text 				= iGetString(image, IL_META_SOFTWARE);
 	if (text[i].text == NULL)
-		text[i].text 				= iGetString(IL_VERSION_NUM);
+		text[i].text 				= iGetString(image, IL_VERSION_NUM);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
 	text[i].key 				= "Comment";
-	text[i].text 				= iGetString(IL_META_USER_COMMENT);
+	text[i].text 				= iGetString(image, IL_META_USER_COMMENT);
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 

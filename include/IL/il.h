@@ -323,10 +323,10 @@ enum {
 #define IL_UTX                  0x0451  //!< Unreal (and Unreal Tournament) Texture - .utx extension
 #define IL_MP3                  0x0452  //!< MPEG-1 Audio Layer 3 - .mp3 extension
 
-#define IL_PNM                  0x042B  //!< Portable Any Map - .pbm, .pgm, .ppm and .pnm extensions
-#define IL_PNM_PBM              0x042B  //!< Portable Any Map - .pbm extension
-#define IL_PNM_PGM              0x0453  //!< Portable Any Map - .pgm extension
-#define IL_PNM_PPM              0x0454  //!< Portable Any Map - .ppm extension
+#define IL_PNM                  IL_PNM_PPM
+#define IL_PNM_PPM              0x042B  //!< Portable Pix Map - .ppm extension
+#define IL_PNM_PGM              0x0453  //!< Portable Gray Map - .pgm extension
+#define IL_PNM_PBM              0x0454  //!< Portable Bit Map - .pbm extension
 
 // Palette file format types
 #define IL_JASC_PAL             0x0475  //!< PaintShop Pro Palette
@@ -455,7 +455,7 @@ enum {
 #define IL_CHEAD_HEADER_STRING     0x0722
 #define IL_PCD_PICNUM              0x0723
 #define IL_PNG_ALPHA_INDEX         0x0724 //XIX : ILint : the color in the palette at this index value (0-255) is considered transparent, -1 for no trasparent color
-#define IL_JPG_PROGRESSIVE         0x0725 // FIXME: value not used anywhere
+#define IL_JPG_PROGRESSIVE         0x0725
 #define IL_VTF_COMP                0x0726
 
 // DXTC definitions
@@ -897,8 +897,9 @@ ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID);
 ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
-ILAPI ILuint    ILAPIENTRY ilGetIntegerV(ILenum Mode, ILint *Param);
-ILAPI void      ILAPIENTRY ilSetIntegerV(ILenum Mode, ILint *Param);
+ILAPI void      ILAPIENTRY ilClearMetadata(void);
+ILAPI ILuint    ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param);
+ILAPI void      ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param);
 ILAPI void      ILAPIENTRY ilClearIndex(ILuint index);
 #endif 
 

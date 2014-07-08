@@ -30,6 +30,7 @@ ILAPI ILboolean ILAPIENTRY iInitImage(ILimage *Image, ILuint Width, ILuint Heigh
   Image->Duration    = 0;
   Image->DxtcFormat  = IL_DXT_NO_COMP;
   Image->DxtcData    = NULL;
+  Image->BaseImage   = Image; // for locking
 
   iResetWrite(Image);
   iResetRead(Image);

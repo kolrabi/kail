@@ -36,7 +36,7 @@ iSaveCHEADInternal(ILimage* image)
 
 	io = &image->io;
 
-	Name = iGetString(IL_CHEAD_HEADER_STRING);
+	Name = iGetString(image, IL_META_DOCUMENT_NAME);
 	if (Name == NULL)
 		Name = InternalName;
 

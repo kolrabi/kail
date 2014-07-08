@@ -121,10 +121,10 @@ void          ilDefaultStates(void);
 ILenum        iGetHint(ILenum Target);
 ILint         iGetInt(ILenum Mode);
 
-ILuint        iGetIntegerV(ILenum Mode, ILint *Param);
+ILuint        iGetIntegerv(ILimage *Image, ILenum Mode, ILint *Param);
 void          ilRemoveRegistered(void);
 ILenum        iGetError(void);
-ILconst_string iGetILString(ILenum StringName);
+ILconst_string iGetILString(ILimage *Image, ILenum StringName);
 void          iHint(ILenum Target, ILenum Mode);
 
 IL_TLS_DATA * iGetTLSData(void);
@@ -159,11 +159,11 @@ ILboolean iAddAlpha(ILimage *Image);
 ILboolean iRemoveAlpha(ILimage *Image);
 ILboolean iAddAlphaKey(ILimage *Image);
 ILboolean iFastConvert(ILimage *Image, ILenum DestFormat);
-ILboolean iFixImages(ILimage *Image);
+ILboolean iFixImages(ILimage *Image, ILimage *BaseImage);
 ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile);
 
 // Miscellaneous functions
-char*     iGetString(ILenum StringName);  // Internal version of ilGetString
+char*     iGetString(ILimage *Image, ILenum StringName);  // Internal version of ilGetString
 ILuint    iDuplicateImage(ILimage *Image);
 ILboolean iBlit(ILimage *Image, ILimage *Src, ILint DestX,  ILint DestY,   ILint DestZ, 
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,

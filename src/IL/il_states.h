@@ -20,11 +20,11 @@
 ILboolean iAble(ILenum Mode, ILboolean Flag);
 ILboolean iFormatFunc(ILenum Mode);
 ILboolean iGetBoolean(ILenum Mode);
-ILint     iGetInteger(ILenum Mode);
+ILint     iGetInteger(ILimage *Image, ILenum Mode);
 ILboolean iIsEnabled(ILenum Mode);
-void      iSetInteger(ILimage *CurImage, ILenum Mode, ILint Param);
-void      iSetIntegerV(ILimage *CurImage, ILenum Mode, ILint *Param);
-void      iSetString(ILenum Mode, const char *String_);
+void      iSetInteger(ILimage *Image, ILenum Mode, ILint Param);
+void      iSetIntegerv(ILimage *Image, ILenum Mode, ILint *Param);
+void      iSetString(ILimage *Image, ILenum Mode, const char *String_);
 ILboolean iOriginFunc(ILenum Mode);
 ILboolean iTypeFunc(ILenum Mode);
 

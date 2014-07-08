@@ -1,6 +1,12 @@
 2014-??-?? Björn Paetzel <kolrabi@kolrabi.de>, kaIL ?
   * Added IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOLUTE ), 
     changes behaviour of ilActive*(); 
+  * Fixed DPX import
+  * Added PXR export
+  * Added support for Metadata (EXIF)
+  * Fixed PNM/PGM/PBM/PPM export
+  * ilDetermineSize() now works with image formats that need to read 
+    from the file that is being written (eg. TIFF).
 
 2014-06-29 Björn Paetzel <kolrabi@kolrabi.de>, KaIL 1.9.0
   * Moved build system to CMake

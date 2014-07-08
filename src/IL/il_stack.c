@@ -711,14 +711,14 @@ ILAPI void ILAPIENTRY iUnlockState() {
 
 ILAPI ILimage * ILAPIENTRY iLockCurImage() {
   ILimage *Image = iGetCurImage();
-  if (!Image) {
+  if (!Image || !Image->BaseImage) {
     return NULL;
   }
 
 #if IL_THREAD_SAFE_PTHREAD
-  pthread_mutex_lock(&Image->Mutex);
+  pthread_mutex_lock(&Image->BaseImage->Mutex);
 #elif IL_THREAD_SAFE_WIN32
-  WaitForSingleObject(Image->Mutex, INFINITE);
+  WaitForSingleObject(Image->BaseImage->Mutex, INFINITE);
 #endif
   return Image;
 }
@@ -730,21 +730,21 @@ ILAPI ILimage * ILAPIENTRY iLockImage(ILuint Name) {
   }
 
 #if IL_THREAD_SAFE_PTHREAD
-  pthread_mutex_lock(&Image->Mutex);
+  pthread_mutex_lock(&Image->BaseImage->Mutex);
 #elif IL_THREAD_SAFE_WIN32
-  WaitForSingleObject(Image->Mutex, INFINITE);
+  WaitForSingleObject(Image->BaseImage->Mutex, INFINITE);
 #endif
 
   return Image;
 }
 
 ILAPI void ILAPIENTRY iUnlockImage(ILimage *Image) {
-  if (!Image) return;
+  if (!Image || !Image->BaseImage) return;
 
 #if IL_THREAD_SAFE_PTHREAD
-  pthread_mutex_unlock(&Image->Mutex);
+  pthread_mutex_unlock(&Image->BaseImage->Mutex);
 #elif IL_THREAD_SAFE_WIN32
-  ReleaseMutex(Image->Mutex);
+  ReleaseMutex(Image->BaseImage->Mutex);
 #endif
 }
 

@@ -954,8 +954,10 @@ ILboolean iRemoveAlpha(ILimage *Image)
   return IL_TRUE;
 }
 
-ILboolean iFixImage(ILimage *Image) 
+ILboolean iFixImage(ILimage *Image, ILimage *BaseImage) 
 {
+  Image->BaseImage = BaseImage;
+  
   if (ilIsEnabled(IL_ORIGIN_SET)) {
     if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
       if (!iFlipImage(Image)) {
@@ -1000,21 +1002,21 @@ be loaded anyway. Thanks to Chris Lux for pointing this out.
 
 // BP: rewritten to recurse into each and every mipmap, face, and layer
 
-ILboolean iFixImages(ILimage *BaseImage) {
-  while(BaseImage) {
-    if (!iFixImage(BaseImage))
+ILboolean iFixImages(ILimage *Image, ILimage *BaseImage) {
+  while(Image) {
+    if (!iFixImage(Image, BaseImage))
       return IL_FALSE;
 
-    if (!iFixImages(BaseImage->Mipmaps))
+    if (!iFixImages(Image->Mipmaps, BaseImage))
       return IL_FALSE;
 
-    if (!iFixImages(BaseImage->Layers))
+    if (!iFixImages(Image->Layers, BaseImage))
       return IL_FALSE;
 
-    if (!iFixImages(BaseImage->Faces))
+    if (!iFixImages(Image->Faces, BaseImage))
       return IL_FALSE;
 
-    BaseImage = BaseImage->Next;
+    Image = Image->Next;
   }
 
   return IL_TRUE;

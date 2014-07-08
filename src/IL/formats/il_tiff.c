@@ -47,7 +47,7 @@ void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size);
 
 #define SetFieldString(ID, TID) \
   { \
-    char *str = iGetString(ID); \
+    char *str = iGetString(image, ID); \
     if (str) { TIFFSetField(File, TID, str); ifree(str); } \
   }
 
