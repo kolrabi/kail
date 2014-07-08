@@ -27,17 +27,18 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
 {
   ILint indices[] = { -1, -1, -1,  -1, -1, -1 }, i;
   ILimage *img;
-  ILuint  ret = 0, srcMipmapCount, srcImagesCount, mipmapCount;
+  ILuint  ret = 0;
+  ILint   srcMipmapCount = 0, srcImagesCount = 0, mipmapCount;
 
   if (image == NULL)
     return 0;
 
-  srcImagesCount = iGetIntegerImage(image, IL_NUM_IMAGES);
+  iGetiv(image, IL_NUM_IMAGES, &srcImagesCount, 1);
   if (srcImagesCount != 5) //write only complete cubemaps (TODO?)
     return 0;
 
   img = image;
-  srcMipmapCount = iGetIntegerImage(image, IL_NUM_MIPMAPS);
+  iGetiv(image, IL_NUM_MIPMAPS, &srcMipmapCount, 1);
   mipmapCount = srcMipmapCount;
 
   for (i = 0; i < 6; ++i) {
@@ -62,7 +63,7 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
         indices[i] = 5;
         break;
     }
-    srcMipmapCount = iGetIntegerImage(img, IL_NUM_MIPMAPS);
+    iGetiv(image, IL_NUM_MIPMAPS, &srcMipmapCount, 1);
     if (srcMipmapCount != mipmapCount)
       return 0; //equal # of mipmaps required
 
@@ -100,12 +101,14 @@ ILboolean iSaveDdsInternal(ILimage *Image)
   WriteHeader(Image, DXTCFormat, CubeFlags);
 
   if (CubeFlags != 0) {
-    numFaces = iGetIntegerImage(Image, IL_NUM_FACES); // Should always be 5 for now
+    // numFaces = iGetIntegerImage(Image, IL_NUM_FACES); // Should always be 5 for now
+    iGetiv(Image, IL_NUM_FACES, &numFaces, 1);
   } else {
     numFaces = 0;
   }
 
-  numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS); //this assumes all faces have same # of mipmaps
+  // numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS); //this assumes all faces have same # of mipmaps
+  iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
 
   for (i = 0; i <= numFaces; ++i) {
     for (counter = 0; counter <= numMipMaps; counter++) {
@@ -229,7 +232,8 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   else
     SaveLittleUInt(io,0);           // Depth
 
-  numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
+  //numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
+  iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
   SaveLittleUInt(io, numMipMaps + 1);  // MipMapCount
   SaveLittleUInt(io,0);     // AlphaBitDepth
 

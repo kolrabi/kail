@@ -121,7 +121,6 @@ void          ilDefaultStates(void);
 ILenum        iGetHint(ILenum Target);
 ILint         iGetInt(ILenum Mode);
 
-ILuint        iGetIntegerv(ILimage *Image, ILenum Mode, ILint *Param);
 void          ilRemoveRegistered(void);
 ILenum        iGetError(void);
 ILconst_string iGetILString(ILimage *Image, ILenum StringName);
@@ -213,6 +212,7 @@ ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID);
 ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
+void      iClearMetadata(ILimage *Image);
 
 #ifdef __cplusplus
 }

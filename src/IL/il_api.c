@@ -228,6 +228,13 @@ ILboolean ILAPIENTRY ilClearImage() {
 }
 
 /**
+ * Removes all metadata from an image.
+ */
+void ILAPIENTRY ilClearMetadata() {
+  SIMPLE_PROC(Image, iClearMetadata(Image));
+}
+
+/**
  * Creates a duplicate of the currently bound image.
  * @ingroup image_mgt
  */
@@ -548,6 +555,7 @@ ILubyte* ILAPIENTRY ilGetAlpha(ILenum Type) {
 void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
 {
   ILimage *Image;
+  ILint Temp;
 
   if (Param == NULL) {
     iSetError(IL_INVALID_PARAM);
@@ -558,8 +566,10 @@ void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
   Image = iLockCurImage();
   iUnlockState();
 
-  *Param = iGetInteger(Image, Mode);
+  iGetiv(Image, Mode, &Temp, 1);
   iUnlockImage(Image);  
+
+  *Param = Temp;
 }
 
 
@@ -568,7 +578,9 @@ void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
  * @ingroup state
  */
 ILboolean ILAPIENTRY ilGetBoolean(ILenum Mode) {
-  SIMPLE_FUNC(Image, ILboolean, iGetInteger(Image, Mode));
+  ILboolean Result;
+  ilGetBooleanv(Mode, &Result);
+  return Result;
 }
 
 /**
@@ -608,6 +620,94 @@ ILenum ILAPIENTRY ilGetError(void) {
 }
 
 /**
+ * Gets a current value from an image.
+ */
+ILfloat ILAPIENTRY ilGetFloatImage(ILuint ImageName, ILenum Mode) {
+  ILimage *Image;
+  ILfloat Result = 0.0f;
+
+  iLockState();
+  Image = iLockImage(ImageName);
+  iUnlockState();
+
+  if (!Image) {
+    iSetError(IL_INVALID_PARAM);
+    return 0;
+  }
+
+  iGetfv(Image, Mode, &Result, 1);
+  iUnlockImage(Image);
+  return Result;
+}
+
+/**
+ * Gets the current value(s) of the @a Mode.
+ * @param Mode Which value(s) to get
+ * @param Param Where to store the value(s), can be NULL. If not NULL, it must
+ *              point to an array of ILints that is large enough to contain all
+ *              values.
+ * @return Number of float values.
+ * @see ilGetFloat
+ * @ingroup state
+ */
+ILuint ILAPIENTRY ilGetFloatv(ILenum Mode, ILfloat *Param) {
+  SIMPLE_FUNC(Image, ILuint, iGetfv(Image, Mode, Param, 0));
+}
+
+/**
+ * Returns a current float value.
+ *
+ * Valid @a Modes are:
+ *
+ * Mode                   | R/W | Default               | Description
+ * ---------------------- | --- | --------------------- | ---------------------------------------------
+ * IL_META_EXPOSURE_TIME
+ * IL_META_FSTOP
+ * IL_META_SHUTTER_SPEED
+ * IL_META_APERTURE
+ * IL_META_BRIGHTNESS
+ * IL_META_EXPOSURE_BIAS
+ * IL_META_MAX_APERTURE
+ * IL_META_SUBJECT_DISTANCE
+ * IL_META_FOCAL_LENGTH
+ * IL_META_FLASH_ENERGY
+ * IL_META_X_RESOLUTION
+ * IL_META_Y_RESOLUTION
+ * IL_META_GPS_LATITUDE
+ * IL_META_GPS_LONGITUDE
+ * IL_META_GPS_ALTITUDE
+ * IL_META_GPS_DOP
+ * IL_META_GPS_SPEED
+ * IL_META_GPS_TRACK
+ * IL_META_GPS_IMAGE_DIRECTION
+ * IL_META_GPS_DEST_LATITUDE
+ * IL_META_GPS_DEST_LONGITUDE
+ * IL_META_GPS_DEST_ALTITUDE
+ * IL_META_GPS_DEST_BEARING
+ * IL_META_GPS_DEST_DISTANCE
+ *
+ * @see ilGetIntegerImage for image specific modes.
+ * @ingroup state
+ */
+ILfloat ILAPIENTRY ilGetFloat(ILenum Mode) {
+  ILimage *Image;
+  ILfloat Result = 0;
+
+  iLockState();
+  Image = iLockCurImage();
+  iUnlockState();
+
+  if (!Image) {
+    iSetError(IL_INVALID_PARAM);
+    return 0;
+  }
+
+  iGetfv(Image, Mode, &Result, 1);
+  iUnlockImage(Image);
+  return Result;  
+}
+
+/**
  * Gets the current value(s) of the @a Mode.
  * @param Mode Which value(s) to get
  * @param Param Where to store the value(s), can be NULL. If not NULL, it must
@@ -618,7 +718,7 @@ ILenum ILAPIENTRY ilGetError(void) {
  * @ingroup state
  */
 ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
-  SIMPLE_FUNC(Image, ILuint, iGetIntegerv(Image, Mode, Param));
+  SIMPLE_FUNC(Image, ILuint, iGetiv(Image, Mode, Param, -1));
 }
 
 /**
@@ -655,7 +755,21 @@ ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
  * @ingroup state
  */
 ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
-  SIMPLE_FUNC(Image, ILint, iGetInteger(Image, Mode));
+  ILimage *Image;
+  ILint Result = 0;
+
+  iLockState();
+  Image = iLockCurImage();
+  iUnlockState();
+
+  if (!Image) {
+    iSetError(IL_INVALID_PARAM);
+    return 0;
+  }
+
+  iGetiv(Image, Mode, &Result, 1);
+  iUnlockImage(Image);
+  return Result;
 }
 
 /**
@@ -708,7 +822,7 @@ ILint ILAPIENTRY ilGetIntegerImage(ILuint ImageName, ILenum Mode) {
     return 0;
   }
 
-  Result = iGetIntegerImage(Image, Mode);
+  iGetiv(Image, Mode, &Result, 1);
   iUnlockImage(Image);
   return Result;
 }
@@ -1527,6 +1641,36 @@ ILboolean ILAPIENTRY ilSetDuration(ILuint Duration) {
 
 /**
  * Sets a parameter value for a @a Mode
+ * @see ilGetFloat for a list of valid @a Modes.
+ * @ingroup state
+ */
+void ILAPIENTRY ilSetFloat(ILenum Mode, ILfloat Param) {
+  ILimage *Image;
+
+  iLockState();
+  Image = iLockCurImage();
+  iSetfv(Image, Mode, &Param, 1);
+  iUnlockImage(Image);
+  iUnlockState();
+}
+
+/**
+ * Sets a parameter value for a @a Mode
+ * @see ilGetFloat for a list of valid @a Modes.
+ * @ingroup state
+ */
+void ILAPIENTRY ilSetFloatv(ILenum Mode, ILfloat *Param) {
+  ILimage *Image;
+
+  iLockState();
+  Image = iLockCurImage();
+  iSetfv(Image, Mode, Param, 0);
+  iUnlockImage(Image);
+  iUnlockState();
+}
+
+/**
+ * Sets a parameter value for a @a Mode
  * @see ilGetInteger for a list of valid @a Modes.
  * @ingroup state
  */
@@ -1535,7 +1679,7 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetInteger(Image, Mode, Param);
+  iSetiv(Image, Mode, &Param, 1);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1550,7 +1694,7 @@ void ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetIntegerv(Image, Mode, Param);
+  iSetiv(Image, Mode, Param, 0);
   iUnlockImage(Image);
   iUnlockState();
 }

@@ -281,7 +281,10 @@ ILAPI ILimage*  ILAPIENTRY iCloneImage      (ILimage *Src);
 ILAPI ILimage*  ILAPIENTRY iConvertImage    (ILimage *Image, ILenum DestFormat, ILenum DestType);
 ILAPI ILimage*  ILAPIENTRY iNewImage        (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
 ILAPI ILimage*  ILAPIENTRY iNewImageFull    (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
-ILAPI ILint     ILAPIENTRY iGetIntegerImage (ILimage *Image, ILenum Mode);
+ILAPI ILuint    ILAPIENTRY iGetiv           (ILimage *Image, ILenum Mode, ILint *Param, ILuint MaxCount);
+ILAPI ILuint    ILAPIENTRY iGetfv           (ILimage *Image, ILenum Mode, ILfloat *Param, ILuint MaxCount);
+ILAPI void      ILAPIENTRY iSetiv           (ILimage *Image, ILenum Mode, const ILint *Param, ILuint Count);
+ILAPI void      ILAPIENTRY iSetfv           (ILimage *Image, ILenum Mode, const ILfloat *Param, ILuint Count);
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped      (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY iCopyPixels      (ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 ILAPI ILuint    ILAPIENTRY iGetCurName      (void);
@@ -290,7 +293,6 @@ ILAPI void      ILAPIENTRY iCloseImageReal  (ILimage *Image);
 ILAPI void      ILAPIENTRY iFlipBuffer      (ILubyte *buff, ILuint depth, ILuint line_size, ILuint line_num);
 ILAPI void      ILAPIENTRY iGetClear        (void *Colours, ILenum Format, ILenum Type);
 ILAPI void*     ILAPIENTRY iConvertBuffer   (ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer);
-ILAPI ILimage * ILAPIENTRY iGetBaseImage    (void);
 
 #define iCloseImage(img)    { iCloseImageReal(img); img = NULL; }
 

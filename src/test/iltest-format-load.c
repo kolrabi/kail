@@ -7,6 +7,7 @@ void dumpMeta(ILuint image) {
   void *data;
   ILint i;
   ILint tmp[512];
+  ILfloat et = 1.0f;
 
   for (i=0; i<metaCount; i++) {
     ILenum IFD, ID;
@@ -35,7 +36,15 @@ void dumpMeta(ILuint image) {
   fprintf(stderr, "FSTOP: %d: %d/%d\n", count, (ILuint)tmp[0], (ILuint)tmp[1]);
 
   count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
-  fprintf(stderr, "Exp:   %d: %d/%d: %lf\n", count, (ILuint)tmp[0], (ILuint)tmp[1], ((double)(ILuint)tmp[0]) / ((double)(ILuint)tmp[1]));
+  et = ilGetFloat(IL_META_EXPOSURE_TIME);
+  fprintf(stderr, "Exp:   %d: %d/%d: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
+
+  ilSetFloat(IL_META_EXPOSURE_TIME, 1.0/20.0f);
+
+  count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
+  et = ilGetFloat(IL_META_EXPOSURE_TIME);
+  fprintf(stderr, "Exp:   %d: %d/%d: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
+
 
   fprintf(stderr, "Make:  " IL_SFMT "\n", ilGetString(IL_META_MAKE));
   fprintf(stderr, "Model: " IL_SFMT "\n", ilGetString(IL_META_MODEL));

@@ -101,6 +101,10 @@ void ilDefaultStates() {
   return;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// String
+///
 
 //! Returns a constant string detailing aspects about this library.
 ILconst_string iGetILString(ILimage *Image, ILenum StringName) {
@@ -162,31 +166,20 @@ ILconst_string iGetILString(ILimage *Image, ILenum StringName) {
   }
 }
 
-
-// Clips a string to a certain length and returns a new string.
-char *iClipString(ILconst_string String_, ILuint MaxLen) {
-  ILuint  Length;
-
-#ifdef _UNICODE
-  char *Clipped = iMultiByteFromWide(String_);
-#else
-  char *Clipped = iCharStrDup(String_);
-#endif
-
-  if (Clipped == NULL)
-    return NULL;
-
-  Length = iCharStrLen(Clipped);
-  if (Length >= MaxLen)
-    Clipped[MaxLen] = 0;
-  return Clipped;
-}
-
-
-// Returns format-specific strings, converted to UTF8 truncated to MaxLen (not counting the terminating NUL).
+// Returns format-specific strings, converted to UTF8
 char *iGetString(ILimage *Image, ILenum StringName) {
-  return iClipString(iGetILString(Image, StringName), 65535);
+#ifdef _UNICODE
+  char *String = iMultiByteFromWide(iGetILString(Image, StringName));
+#else
+  char *String = iCharStrDup(iGetILString(Image, StringName));
+#endif
+  return String;
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Boolean
+///
 
 // Internal function that sets the Mode equal to Flag
 ILboolean iAble(ILenum Mode, ILboolean Flag) {
@@ -217,7 +210,6 @@ ILboolean iAble(ILenum Mode, ILboolean Flag) {
   return IL_TRUE;
 }
 
-
 //! Checks whether the mode is enabled.
 ILboolean iIsEnabled(ILenum Mode) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
@@ -246,31 +238,68 @@ ILboolean iIsEnabled(ILenum Mode) {
   return IL_FALSE;
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Integer
+///
 
-//! Internal function to figure out where we are in an image chain.
-ILuint iGetActiveNum(ILenum Type) {
-  IL_TLS_DATA *TLSData = iGetTLSData();
-
-  switch (Type) {
-    case IL_ACTIVE_IMAGE:     return TLSData->CurSel.CurFrame;
-    case IL_ACTIVE_MIPMAP:    return TLSData->CurSel.CurMipmap;
-    case IL_ACTIVE_LAYER:     return TLSData->CurSel.CurLayer;
-    case IL_ACTIVE_FACE:      return TLSData->CurSel.CurFace;
-  }
-
-  //@TODO: Any error needed here?
-
-  return 0;
-}
-
-ILuint ILAPIENTRY iGetIntegerImageV(ILimage *Image, ILenum Mode, ILint *Param) {
-  ILimage *SubImage;
-  if (Image == NULL) {
-    iSetError(IL_ILLEGAL_OPERATION);
-    return 0;
-  }
+ILuint ILAPIENTRY iGetiv(ILimage *Image, ILenum Mode, ILint *Param, ILuint MaxCount) {
+  IL_STATE_STRUCT *     StateStruct   = iGetStateStruct();
+  IL_IMAGE_SELECTION *  Selection     = &iGetTLSData()->CurSel;
+  IL_STATES *           ilStates      = StateStruct->ilStates;
+  ILuint                ilCurrentPos  = StateStruct->ilCurrentPos;
+  ILimage *             SubImage      = NULL;
 
   switch (Mode) {
+    case IL_CUR_IMAGE:
+      if (Image == NULL) {
+        iSetError(IL_ILLEGAL_OPERATION);
+        return 0;
+      }
+      if (Param) *Param = Selection->CurName;
+      return 1;
+
+    case IL_COMPRESS_MODE:        if (Param) *Param = ilStates[ilCurrentPos].ilCompression; return 1;
+    case IL_FORMAT_MODE:          if (Param) *Param = ilStates[ilCurrentPos].ilFormatMode; return 1; 
+    case IL_INTERLACE_MODE:       if (Param) *Param = ilStates[ilCurrentPos].ilInterlace; return 1;
+    case IL_KEEP_DXTC_DATA:       if (Param) *Param = ilStates[ilCurrentPos].ilKeepDxtcData; return 1;
+    case IL_ORIGIN_MODE:          if (Param) *Param = ilStates[ilCurrentPos].ilOriginMode; return 1;
+    case IL_MAX_QUANT_INDICES:    if (Param) *Param = ilStates[ilCurrentPos].ilQuantMaxIndexs; return 1;
+    case IL_NEU_QUANT_SAMPLE:     if (Param) *Param = ilStates[ilCurrentPos].ilNeuSample; return 1;
+    case IL_QUANTIZATION_MODE:    if (Param) *Param = ilStates[ilCurrentPos].ilQuantMode; return 1;
+    case IL_TYPE_MODE:            if (Param) *Param = ilStates[ilCurrentPos].ilTypeMode; return 1;
+    case IL_VERSION_NUM:          if (Param) *Param = IL_VERSION; return 1;
+
+    case IL_ACTIVE_IMAGE:         if (Param) *Param = Selection->CurFrame; return 1;
+    case IL_ACTIVE_MIPMAP:        if (Param) *Param = Selection->CurMipmap; return 1;
+    case IL_ACTIVE_LAYER:         if (Param) *Param = Selection->CurLayer; return 1;
+    case IL_ACTIVE_FACE:          if (Param) *Param = Selection->CurFace; return 1;
+
+    case IL_BMP_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilBmpRle; return 1;
+    case IL_DXTC_FORMAT:          if (Param) *Param = ilStates[ilCurrentPos].ilDxtcFormat; return 1;
+    case IL_JPG_QUALITY:          if (Param) *Param = ilStates[ilCurrentPos].ilJpgQuality; return 1;
+    case IL_JPG_SAVE_FORMAT:      if (Param) *Param = ilStates[ilCurrentPos].ilJpgFormat; return 1;
+    case IL_PCD_PICNUM:           if (Param) *Param = ilStates[ilCurrentPos].ilPcdPicNum; return 1;
+    case IL_PNG_ALPHA_INDEX:      if (Param) *Param = ilStates[ilCurrentPos].ilPngAlphaIndex; return 1;
+    case IL_PNG_INTERLACE:        if (Param) *Param = ilStates[ilCurrentPos].ilPngInterlace; return 1;
+    case IL_SGI_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilSgiRle; return 1;
+    case IL_TGA_CREATE_STAMP:     if (Param) *Param = ilStates[ilCurrentPos].ilTgaCreateStamp; return 1;
+    case IL_TGA_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilTgaRle; return 1;
+    case IL_VTF_COMP:             if (Param) *Param = ilStates[ilCurrentPos].ilVtfCompression; return 1;
+
+    case IL_CONV_PAL:             if (Param) *Param = ilStates[ilCurrentPos].ilAutoConvPal; return 1;
+    case IL_DEFAULT_ON_FAIL:      if (Param) *Param = ilStates[ilCurrentPos].ilDefaultOnFail; return 1;
+    case IL_FILE_MODE:            if (Param) *Param = ilStates[ilCurrentPos].ilOverWriteFiles; return 1;
+    case IL_FORMAT_SET:           if (Param) *Param = ilStates[ilCurrentPos].ilFormatSet; return 1;
+    case IL_ORIGIN_SET:           if (Param) *Param = ilStates[ilCurrentPos].ilOriginSet; return 1;
+    case IL_TYPE_SET:             if (Param) *Param = ilStates[ilCurrentPos].ilTypeSet; return 1;
+    case IL_USE_KEY_COLOUR:       if (Param) *Param = ilStates[ilCurrentPos].ilUseKeyColour; return 1;
+    case IL_BLIT_BLEND:           if (Param) *Param = ilStates[ilCurrentPos].ilBlitBlend; return 1;
+    case IL_JPG_PROGRESSIVE:      if (Param) *Param = ilStates[ilCurrentPos].ilJpgProgressive; return 1;
+    case IL_NVIDIA_COMPRESS:      if (Param) *Param = ilStates[ilCurrentPos].ilUseNVidiaDXT; return 1;
+    case IL_SQUISH_COMPRESS:      if (Param) *Param = ilStates[ilCurrentPos].ilUseSquishDXT; return 1;
+    case IL_IMAGE_SELECTION_MODE: if (Param) *Param = ilStates[ilCurrentPos].ilImageSelectionMode; return 1;
+
     case IL_DXTC_DATA_FORMAT:
       if (Image->DxtcData == NULL || Image->DxtcSize == 0) {
         *Param = IL_DXT_NO_COMP;
@@ -329,108 +358,43 @@ ILuint ILAPIENTRY iGetIntegerImageV(ILimage *Image, ILenum Mode, ILint *Param) {
         *Param = Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType);
       return 1;
 
-    case IL_IMAGE_METADATA_COUNT: {
-        ILmeta *Exif = Image->MetaTags;
+    case IL_IMAGE_METADATA_COUNT: 
+      if (Image->BaseImage) {
+        ILmeta *Exif = Image->BaseImage->MetaTags;
         *Param = 0;
         while(Exif) { (*Param)++; Exif = Exif->Next; }
         return 1;
-      } 
-
-    default:
-      return iGetMetaiv(Image, Mode, Param);
-    }
-  return 0;
-}
-
-ILint ILAPIENTRY iGetIntegerImage(ILimage *Image, ILenum Mode)
-{
-    ILint Param = 0;
-    if (iGetMetaLen(Mode) > 1) {
-      // block modes that have multiple values
-      iSetError(IL_INVALID_ENUM);
-      return 0;
-    }
-    iGetIntegerImageV(Image, Mode, &Param);
-    return Param;
-}
-
-ILuint iGetIntegerv(ILimage *Image, ILenum Mode, ILint *Param) {
-  IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
-  IL_IMAGE_SELECTION *Selection = &iGetTLSData()->CurSel;
-  IL_STATES *ilStates = StateStruct->ilStates;
-  ILuint ilCurrentPos = StateStruct->ilCurrentPos;
-  ILimage *BaseImage = Image ? Image->BaseImage : NULL;
-
-  switch (Mode) {
-    case IL_CUR_IMAGE:
-      if (Image == NULL) {
+      } else {
         iSetError(IL_ILLEGAL_OPERATION);
         return 0;
       }
-      if (Param) *Param = Selection->CurName;
-      return 1;
-
-    case IL_COMPRESS_MODE:        if (Param) *Param = ilStates[ilCurrentPos].ilCompression; return 1;
-    case IL_FORMAT_MODE:          if (Param) *Param = ilStates[ilCurrentPos].ilFormatMode; return 1; 
-    case IL_INTERLACE_MODE:       if (Param) *Param = ilStates[ilCurrentPos].ilInterlace; return 1;
-    case IL_KEEP_DXTC_DATA:       if (Param) *Param = ilStates[ilCurrentPos].ilKeepDxtcData; return 1;
-    case IL_ORIGIN_MODE:          if (Param) *Param = ilStates[ilCurrentPos].ilOriginMode; return 1;
-    case IL_MAX_QUANT_INDICES:    if (Param) *Param = ilStates[ilCurrentPos].ilQuantMaxIndexs; return 1;
-    case IL_NEU_QUANT_SAMPLE:     if (Param) *Param = ilStates[ilCurrentPos].ilNeuSample; return 1;
-    case IL_QUANTIZATION_MODE:    if (Param) *Param = ilStates[ilCurrentPos].ilQuantMode; return 1;
-    case IL_TYPE_MODE:            if (Param) *Param = ilStates[ilCurrentPos].ilTypeMode; return 1;
-    case IL_VERSION_NUM:          if (Param) *Param = IL_VERSION; return 1;
-
-    case IL_ACTIVE_IMAGE:
-    case IL_ACTIVE_MIPMAP:
-    case IL_ACTIVE_LAYER:         if (Param) *Param = iGetActiveNum(Mode); return 1;
-
-    case IL_BMP_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilBmpRle; return 1;
-    case IL_DXTC_FORMAT:          if (Param) *Param = ilStates[ilCurrentPos].ilDxtcFormat; return 1;
-    case IL_JPG_QUALITY:          if (Param) *Param = ilStates[ilCurrentPos].ilJpgQuality; return 1;
-    case IL_JPG_SAVE_FORMAT:      if (Param) *Param = ilStates[ilCurrentPos].ilJpgFormat; return 1;
-    case IL_PCD_PICNUM:           if (Param) *Param = ilStates[ilCurrentPos].ilPcdPicNum; return 1;
-    case IL_PNG_ALPHA_INDEX:      if (Param) *Param = ilStates[ilCurrentPos].ilPngAlphaIndex; return 1;
-    case IL_PNG_INTERLACE:        if (Param) *Param = ilStates[ilCurrentPos].ilPngInterlace; return 1;
-    case IL_SGI_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilSgiRle; return 1;
-    case IL_TGA_CREATE_STAMP:     if (Param) *Param = ilStates[ilCurrentPos].ilTgaCreateStamp; return 1;
-    case IL_TGA_RLE:              if (Param) *Param = ilStates[ilCurrentPos].ilTgaRle; return 1;
-    case IL_VTF_COMP:             if (Param) *Param = ilStates[ilCurrentPos].ilVtfCompression; return 1;
-
-    case IL_CONV_PAL:             if (Param) *Param = ilStates[ilCurrentPos].ilAutoConvPal; return 1;
-    case IL_DEFAULT_ON_FAIL:      if (Param) *Param = ilStates[ilCurrentPos].ilDefaultOnFail; return 1;
-    case IL_FILE_MODE:            if (Param) *Param = ilStates[ilCurrentPos].ilOverWriteFiles; return 1;
-    case IL_FORMAT_SET:           if (Param) *Param = ilStates[ilCurrentPos].ilFormatSet; return 1;
-    case IL_ORIGIN_SET:           if (Param) *Param = ilStates[ilCurrentPos].ilOriginSet; return 1;
-    case IL_TYPE_SET:             if (Param) *Param = ilStates[ilCurrentPos].ilTypeSet; return 1;
-    case IL_USE_KEY_COLOUR:       if (Param) *Param = ilStates[ilCurrentPos].ilUseKeyColour; return 1;
-    case IL_BLIT_BLEND:           if (Param) *Param = ilStates[ilCurrentPos].ilBlitBlend; return 1;
-    case IL_JPG_PROGRESSIVE:      if (Param) *Param = ilStates[ilCurrentPos].ilJpgProgressive; return 1;
-    case IL_NVIDIA_COMPRESS:      if (Param) *Param = ilStates[ilCurrentPos].ilUseNVidiaDXT; return 1;
-    case IL_SQUISH_COMPRESS:      if (Param) *Param = ilStates[ilCurrentPos].ilUseSquishDXT; return 1;
-    case IL_IMAGE_SELECTION_MODE: if (Param) *Param = ilStates[ilCurrentPos].ilImageSelectionMode; return 1;
   }
 
-  if (Mode >= IL_META_MAKE) {
-    return iGetIntegerImageV(BaseImage, Mode, Param);
-  } else {
-    return iGetIntegerImageV(Image, Mode, Param);
-  }
-}
-
-
-ILint iGetInteger(ILimage *Image, ILenum Mode) {
-  ILint Param = 0;
-
-  if (iGetMetaLen(Mode) > 1) {
-    // block modes that have multiple values
-    iSetError(IL_INVALID_ENUM);
+  if (MaxCount > 0 && iGetMetaLen(Mode) > MaxCount) {
+    iSetError(IL_INTERNAL_ERROR);
     return 0;
   }
-
-  iGetIntegerv(Image, Mode, &Param);
-  return Param;
+  return iGetMetaiv(Image, Mode, Param, MaxCount);
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Float
+///
+
+ILuint ILAPIENTRY iGetfv(ILimage *Image, ILenum Mode, ILfloat *Param, ILuint MaxCount) {
+  return iGetMetafv(Image, Mode, Param, MaxCount);
+}
+
+void ILAPIENTRY iSetfv(ILimage *Image, ILenum Mode, const ILfloat *Param, ILuint Count) {
+  (void)Count;
+  iSetMetafv(Image, Mode, Param);
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// Misc
+///
 
 ILboolean iOriginFunc(ILenum Mode) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
@@ -516,6 +480,12 @@ ILboolean ILAPIENTRY ilCompressFunc(ILenum Mode) {
   }
   return IL_TRUE;
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////
+///
+/// State stack
+///
 
 void iPushAttrib(ILuint Bits) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
@@ -755,11 +725,18 @@ void iSetString(ILimage *Image, ILenum Mode, const char *String_) {
   ifree(String);
 }
 
-void iSetIntegerv(ILimage *CurImage, ILenum Mode, ILint *Param) {
+void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param, ILuint Count) {
   IL_STATE_STRUCT * StateStruct   = iGetStateStruct();
   IL_STATES *       ilStates      = StateStruct->ilStates;
   ILuint            ilCurrentPos  = StateStruct->ilCurrentPos;
   ILimage *         BaseImage     = CurImage->BaseImage;
+
+  (void) Count;
+
+  if (!Param) {
+    iSetError(IL_INVALID_PARAM);
+    return;
+  }
 
   switch (Mode)
   {
@@ -902,16 +879,6 @@ void iSetIntegerv(ILimage *CurImage, ILenum Mode, ILint *Param) {
   }
 }
 
-void iSetInteger(ILimage *CurImage, ILenum Mode, ILint Param) {
-  if (iGetMetaLen(Mode) > 1) {
-    // block modes that have multiple values
-    iSetError(IL_INVALID_ENUM);
-    return;
-  }
-
-  iSetIntegerv(CurImage, Mode, &Param);
-}
-
 ILint iGetInt(ILenum Mode) {
   //like ilGetInteger(), but sets another error on failure
 
@@ -919,7 +886,7 @@ ILint iGetInt(ILenum Mode) {
   ILenum err;
   ILint r = -1;
 
-  iGetIntegerv(NULL, Mode, &r);
+  iGetiv(NULL, Mode, &r, 1);
 
   //check if an error occured, set another error
   err = ilGetError();

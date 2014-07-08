@@ -359,10 +359,6 @@ ILAPI void ILAPIENTRY iClosePalReal(ILpal *Palette)
   return;
 }
 
-ILAPI ILimage * ILAPIENTRY iGetBaseImage() {
-  return ImageStack[iGetCurName()];
-}
-
 //! Sets the current mipmap level
 ILboolean iActiveMipmap(ILuint Number) {
   IL_IMAGE_SELECTION CurSel = *iGetSelection();

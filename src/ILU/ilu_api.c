@@ -429,9 +429,10 @@ void ILAPIENTRY iluGetImageInfo(ILinfo *Info) {
   Info->Palette     = Image->Pal.Palette;
   Info->PalType     = Image->Pal.PalType;
   Info->PalSize     = Image->Pal.PalSize;
-  Info->NumNext     = iGetIntegerImage(Image, IL_NUM_IMAGES);
-  Info->NumMips     = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
-  Info->NumLayers   = iGetIntegerImage(Image, IL_NUM_LAYERS);
+  
+  iGetiv(Image, IL_NUM_IMAGES,  (ILint*)&Info->NumNext,   1);
+  iGetiv(Image, IL_NUM_MIPMAPS, (ILint*)&Info->NumMips,   1);
+  iGetiv(Image, IL_NUM_LAYERS,  (ILint*)&Info->NumLayers, 1);
 
   iUnlockImage(Image);
 }

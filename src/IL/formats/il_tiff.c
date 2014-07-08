@@ -729,7 +729,7 @@ ILboolean iSaveTiffInternal(ILimage* image)
   ILboolean SwapColors;
   ILubyte *OldData;
   ILint   TempInts[512];
-  ILimage *BaseImage = iGetBaseImage();
+  ILimage *BaseImage = image ? image->BaseImage : NULL;
   ILuint64 Offset;
 
   if(image == NULL) {

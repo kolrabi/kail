@@ -897,10 +897,15 @@ ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID);
 ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
-ILAPI void      ILAPIENTRY ilClearMetadata(void);
+ILAPI ILfloat   ILAPIENTRY ilGetFloat(ILenum Mode);
+ILAPI ILfloat   ILAPIENTRY ilGetFloatImage(ILuint Image, ILenum Mode);
+ILAPI ILuint    ILAPIENTRY ilGetFloatv(ILenum Mode, ILfloat *Param);
 ILAPI ILuint    ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param);
-ILAPI void      ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param);
 ILAPI void      ILAPIENTRY ilClearIndex(ILuint index);
+ILAPI void      ILAPIENTRY ilClearMetadata(void);
+ILAPI void      ILAPIENTRY ilSetFloat(ILenum Mode, ILfloat Param);
+ILAPI void      ILAPIENTRY ilSetFloatv(ILenum Mode, ILfloat *Param);
+ILAPI void      ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param);
 #endif 
 
 
