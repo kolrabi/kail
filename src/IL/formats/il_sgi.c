@@ -27,7 +27,7 @@ static ILboolean	iReadNonRleSgi(ILimage *, iSgiHeader *Head);
 static ILboolean	iReadRleSgi(ILimage *, iSgiHeader *Head);
 static ILboolean 	iSaveRleSgi(SIO *, 	ILubyte *Data, ILuint w, ILuint h, ILuint numChannels, ILuint bps);
 
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
 static void				sgiSwitchData(ILubyte *Data, ILuint SizeOfData);
 #endif
 
@@ -164,7 +164,7 @@ static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 		}
 	}
 
-	#ifdef __LITTLE_ENDIAN__
+	#ifdef WORDS_LITTLEENDIAN
 	if (Head->Bpc == 2)
 		sgiSwitchData(Image->Data, Image->SizeOfData);
 	#endif
@@ -269,7 +269,7 @@ static ILboolean iReadNonRleSgi(ILimage *Image, iSgiHeader *Head)
 
 /*----------------------------------------------------------------------------*/
 
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
 
 static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {	
 	ILubyte	Temp;

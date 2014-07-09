@@ -217,7 +217,7 @@ ILboolean iExifSave(ILimage *Image) {
   if (GPSCount    > 0)    { IFD0Count++;  IFD0DirSize += 12; GPSDirSize += 2 + 4; }
   if (InteropCount > 0)   { IFD0Count++;  IFD0DirSize += 12; InteropDirSize += 2 + 4; }
 
-#ifdef __BIG_ENDIAN__ 
+#ifdef WORDS_BIGENDIAN 
   SIOputs(io, "MM");
 #else
   SIOputs(io, "II");

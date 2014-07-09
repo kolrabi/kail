@@ -58,10 +58,9 @@ ILboolean iGetDdsHead(SIO* io, DDSHEAD *Header)
 	Header->LinearSize = GetLittleUInt(io);
 	Header->Depth = GetLittleUInt(io);
 	Header->MipMapCount = GetLittleUInt(io);
-	Header->AlphaBitDepth = GetLittleUInt(io);
 
-	for (i = 0; i < 10; ++i)
-		Header->NotUsed[i] = GetLittleUInt(io);
+	for (i = 0; i < 11; ++i)
+		Header->Reserved[i] = GetLittleUInt(io);
 
 	Header->Size2 = GetLittleUInt(io);
 	Header->Flags2 = GetLittleUInt(io);
@@ -267,9 +266,12 @@ ILboolean iLoadDdsCubemapInternal(DDS_CONTEXT *ctx, ILuint CompFormat)
 ILuint DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat)
 {
 	ILuint BlockSize;
+	iTrace("---- Flags1: %04x", ctx->Head.Flags1);
+	iTrace("---- Flags2: %04x", ctx->Head.Flags2);
 
 	if (ctx->Head.Flags2 & DDS_FOURCC) {
 		BlockSize = ((ctx->Head.Width + 3)/4) * ((ctx->Head.Height + 3)/4) * ctx->Head.Depth;
+		iTrace("---- FourCC: %08x", ctx->Head.FourCC);
 		switch (ctx->Head.FourCC)
 		{
 			case IL_MAKEFOURCC('D','X','T','1'):
@@ -682,6 +684,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
  */
 ILboolean DdsDecompress(DDS_CONTEXT *ctx, ILuint CompFormat)
 {
+	iTrace("---- CompFormat: %04x", CompFormat);
 	switch (CompFormat)
 	{
 		case PF_ARGB:

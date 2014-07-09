@@ -86,7 +86,16 @@ ADD_TEST                ( FormatLoadBLP     ILtestFormatLoad  ${REF_CLR} ${FMT_P
 ADD_TEST                ( FormatLoadBMP     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.bmp    600 400 1 0 )
 ADD_TEST                ( FormatLoadCUT     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.cut    600 400 1 0 )
 ADD_TEST                ( FormatLoadDCX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dcx    600 400 1 0 )
-ADD_TEST                ( FormatLoadDDS     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dds    600 400 1 0 )
+
+ADD_TEST                ( FormatLoadDDS0    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS1    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS2    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt1.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS3    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt3.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS4    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt5.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS5    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-ati1.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS6    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-ati2.dds    600 400 1 0 )
+ADD_TEST                ( FormatLoadDDS7    ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt5-rxgb.dds    600 400 1 0 )
+
 ADD_TEST                ( FormatLoadDICOM   ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dicom  600 400 1 0 )
 # DOOM
 ADD_TEST                ( FormatLoadDPX     ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dpx    600 400 1 0 )

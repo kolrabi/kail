@@ -235,9 +235,8 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   //numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
   iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
   SaveLittleUInt(io, numMipMaps + 1);  // MipMapCount
-  SaveLittleUInt(io,0);     // AlphaBitDepth
 
-  for (i = 0; i < 10; i++)
+  for (i = 0; i < 11; i++)
     SaveLittleUInt(io,0);   // Not used
 
   SaveLittleUInt(io,32);      // Size2

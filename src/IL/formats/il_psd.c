@@ -475,7 +475,7 @@ static ILuint *GetCompChanLen(SIO *io, PSDHEAD *Head) {
 		ifree(ChanLen);
 		return NULL;
 	}
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
 	for (i = 0; i < Head->Height * ChannelNum; i++) {
 		iSwapUShort(&RleTable[i]);
 	}

@@ -554,7 +554,7 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
   // @TODO:  Determine if we should call png_set_gamma if image_gamma is 1.0.
 
   //fix endianess
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
   if (bit_depth == 16)
     png_set_swap(data->ico_png_ptr);
 #endif

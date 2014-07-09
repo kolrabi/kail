@@ -30,8 +30,8 @@ static IL_STATE_STRUCT *iGetStateStruct() {
   return &iGetTLSData()->CurState;
 }
 
-extern ILchar *_ilLoadExt;
-extern ILchar *_ilSaveExt;
+extern ILchar *iLoadExtensions;
+extern ILchar *iSaveExtensions;
 
 //! Set all states to their defaults.
 void ilDefaultStates() {
@@ -116,8 +116,8 @@ ILconst_string iGetILString(ILimage *Image, ILenum StringName) {
   switch (StringName) {
     case IL_VENDOR:                   return _ilVendor;
     case IL_VERSION_NUM:              return _ilVersion;
-    case IL_LOAD_EXT:                 return _ilLoadExt;
-    case IL_SAVE_EXT:                 return _ilSaveExt;
+    case IL_LOAD_EXT:                 return iLoadExtensions;
+    case IL_SAVE_EXT:                 return iSaveExtensions;
 
     case IL_TGA_ID_STRING:            
       iTrace("---- IL_TGA_ID_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");

@@ -30,7 +30,7 @@ typedef struct BITFILE
 BITFILE* bitfile(SIO *io);
 ILint    bclose(BITFILE *BitFile);
 ILint    btell(BITFILE *BitFile);
-ILint    bseek(BITFILE *BitFile, ILuint Offset, ILuint Mode);
+ILint    bseek(BITFILE *BitFile, ILint Offset, ILuint Mode);
 ILint    bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
 
 // Useful macros for manipulating bits

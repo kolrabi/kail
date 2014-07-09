@@ -1492,6 +1492,14 @@ void ILAPIENTRY ilResetRead() {
 }
 
 /**
+ * Set memory allocation/deallocation functions back to default.
+ * @deprecated Use ilSetMemory(NULL, NULL) instead.
+ */
+void ILAPIENTRY ilResetMemory() {
+  ilSetMemory(NULL, NULL);
+}
+
+/**
  * Reset the file saving functions of the currently bound image to the
  * default.
  * @ingroup file
@@ -1499,7 +1507,6 @@ void ILAPIENTRY ilResetRead() {
 void ILAPIENTRY ilResetWrite() {
   SIMPLE_PROC(Image, iResetWrite(Image));
 }
-
 
 /**
  * Attempts to save an image to a file.  The file format is specified by the user.

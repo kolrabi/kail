@@ -17,8 +17,8 @@ typedef struct ILformatEntry {
 
 static ILformatEntry *FormatHead = NULL;
 
-ILchar* _ilLoadExt = NULL;
-ILchar* _ilSaveExt = NULL;
+ILchar* iLoadExtensions = NULL;
+ILchar* iSaveExtensions = NULL;
 
 #define ADD_FORMAT(name) \
   { extern ILformat iFormat ## name; \
@@ -222,30 +222,33 @@ iInitFormats() {
     entry = entry->next;
   }
 
-  _ilLoadExt = (ILchar*)ialloc(loadExtLen * sizeof(ILchar));
-  imemclear(_ilLoadExt, loadExtLen);
+  iLoadExtensions = (ILchar*)ialloc(loadExtLen * sizeof(ILchar));
+  imemclear(iLoadExtensions, loadExtLen);
 
-  _ilSaveExt = (ILchar*)ialloc(saveExtLen * sizeof(ILchar));
-  imemclear(_ilSaveExt, saveExtLen);
+  iSaveExtensions = (ILchar*)ialloc(saveExtLen * sizeof(ILchar));
+  imemclear(iSaveExtensions, saveExtLen);
 
   entry = FormatHead;
   while (entry) {
     ILconst_string *formatExt = entry->format->Exts;
     while (*formatExt) {
       if (entry->format->Load) {
-        if (_ilLoadExt[0]) iStrCat(_ilLoadExt, IL_TEXT(" "));
-        iStrCat(_ilLoadExt, *formatExt);
+        if (iLoadExtensions[0]) iStrCat(iLoadExtensions, IL_TEXT(" "));
+        iStrCat(iLoadExtensions, *formatExt);
       }
 
       if (entry->format->Save) {
-        if (_ilSaveExt[0]) iStrCat(_ilSaveExt, IL_TEXT(" "));
-        iStrCat(_ilSaveExt, *formatExt);
+        if (iSaveExtensions[0]) iStrCat(iSaveExtensions, IL_TEXT(" "));
+        iStrCat(iSaveExtensions, *formatExt);
       }
 
       formatExt++;
     }
     entry = entry->next;
   }
+
+  iTrace("---- Loadable extensions: " IL_SFMT, iLoadExtensions);
+  iTrace("---- Savable extensions:  " IL_SFMT, iSaveExtensions);
 }
 
 void 
@@ -258,8 +261,8 @@ iDeinitFormats() {
   }
   FormatHead = NULL;
 
-  ifree(_ilLoadExt);
-  ifree(_ilSaveExt);
+  ifree(iLoadExtensions);
+  ifree(iSaveExtensions);
 }
 
 const ILformat *

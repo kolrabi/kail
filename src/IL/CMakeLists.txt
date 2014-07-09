@@ -16,6 +16,12 @@ SET                     ( SOURCES
                           conv/il_convert.c 
                           conv/il_fastconv.c
 
+                          image/il_blit.c
+                          image/il_clear.c
+                          image/il_copy.c
+                          image/il_transform.c
+                          image/il_image.c
+
                           formats/il_blp.c
                           formats/il_bmp.c
                           formats/il_cut.c
@@ -82,7 +88,6 @@ SET                     ( SOURCES
                           il_formats.c
                           il_internal.c
                           il_io.c
-                          il_kail.c
                           il_main.c
                           il_manip.c
                           il_meta.c

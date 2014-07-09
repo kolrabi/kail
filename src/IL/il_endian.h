@@ -15,24 +15,17 @@
 
 #include "il_internal.h"
 
-#ifdef WORDS_BIGENDIAN  // This is defined by ./configure.
-	#ifndef __BIG_ENDIAN__
-	#define __BIG_ENDIAN__ 1
-	#endif
-#else
-	#ifndef __LITTLE_ENDIAN__
-	#define __LITTLE_ENDIAN__ 1
-	#endif
+#ifndef WORDS_BIGENDIAN  // This is defined by cmake
+	#define WORDS_LITTLEENDIAN
 #endif
 
-#if (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) || (defined(__BIG_ENDIAN__) && !defined(__LITTLE_ENDIAN__))
- 	#undef __LITTLE_ENDIAN__
-	#define Short(s) iSwapShort(s)
-	#define UShort(s) iSwapUShort(s)
-	#define Int(i) iSwapInt(i)
-	#define UInt(i) iSwapUInt(i)
-	#define Float(f) iSwapFloat(f)
-	#define Double(d) iSwapDouble(d)
+#if WORDS_BIGENDIAN
+	#define Short(s) 			iSwapShort(s)
+	#define UShort(s) 		iSwapUShort(s)
+	#define Int(i) 				iSwapInt(i)
+	#define UInt(i) 			iSwapUInt(i)
+	#define Float(f) 			iSwapFloat(f)
+	#define Double(d) 		iSwapDouble(d)
  
 	#define BigShort(s)  
 	#define BigUShort(s)  
@@ -41,7 +34,6 @@
 	#define BigFloat(f)  
 	#define BigDouble(d)  
 #else
- 	#undef __BIG_ENDIAN__
 	#define Short(s)  
 	#define UShort(s)  
 	#define Int(i)  
@@ -49,12 +41,12 @@
 	#define Float(f)  
 	#define Double(d)  
 
-	#define BigShort(s) iSwapShort(s)
-	#define BigUShort(s) iSwapUShort(s)
-	#define BigInt(i) iSwapInt(i)
-	#define BigUInt(i) iSwapUInt(i)
-	#define BigFloat(f) iSwapFloat(f)
-	#define BigDouble(d) iSwapDouble(d)
+	#define BigShort(s) 	iSwapShort(s)
+	#define BigUShort(s) 	iSwapUShort(s)
+	#define BigInt(i) 		iSwapInt(i)
+	#define BigUInt(i) 		iSwapUInt(i)
+	#define BigFloat(f) 	iSwapFloat(f)
+	#define BigDouble(d) 	iSwapDouble(d)
 #endif
 
 #ifdef IL_ENDIAN_C // defined when included from il_endian.c
@@ -137,54 +129,42 @@ INLINE void iSwapDouble(ILdouble *d) {
 INLINE ILushort GetLittleUShort(SIO* io) {
 	ILushort s;
 	io->read(io->handle, &s, sizeof(ILushort), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapUShort(&s);
-#endif
+	UShort(&s);
 	return s;
 }
 
 INLINE ILshort GetLittleShort(SIO* io) {
 	ILshort s;
 	io->read(io->handle, &s, sizeof(ILshort), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapShort(&s);
-#endif
+	Short(&s);
 	return s;
 }
 
 INLINE ILuint GetLittleUInt(SIO* io) {
 	ILuint i;
 	io->read(io->handle, &i, sizeof(ILuint), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapUInt(&i);
-#endif
+	UInt(&i);
 	return i;
 }
 
 INLINE ILint GetLittleInt(SIO* io) {
 	ILint i;
 	io->read(io->handle, &i, sizeof(ILint), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapInt(&i);
-#endif
+	Int(&i);
 	return i;
 }
 
 INLINE ILfloat GetLittleFloat(SIO* io) {
 	ILfloat f;
 	io->read(io->handle, &f, sizeof(ILfloat), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapFloat(&f);
-#endif
+	Float(&f);
 	return f;
 }
 
 INLINE ILdouble GetLittleDouble(SIO* io) {
 	ILdouble d;
 	io->read(io->handle, &d, sizeof(ILdouble), 1);
-#ifdef __BIG_ENDIAN__
-	iSwapDouble(&d);
-#endif
+	Double(&d);
 	return d;
 }
 
@@ -192,9 +172,7 @@ INLINE ILdouble GetLittleDouble(SIO* io) {
 INLINE ILushort GetBigUShort(SIO* io) {
 	ILushort s;
 	io->read(io->handle, &s, sizeof(ILushort), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapUShort(&s);
-#endif
+	BigUShort(&s);
 	return s;
 }
 
@@ -202,9 +180,7 @@ INLINE ILushort GetBigUShort(SIO* io) {
 INLINE ILshort GetBigShort(SIO* io) {
 	ILshort s;
 	io->read(io->handle, &s, sizeof(ILshort), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapShort(&s);
-#endif
+	BigShort(&s);
 	return s;
 }
 
@@ -212,9 +188,7 @@ INLINE ILshort GetBigShort(SIO* io) {
 INLINE ILuint GetBigUInt(SIO* io) {
 	ILuint i;
 	io->read(io->handle, &i, sizeof(ILuint), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapUInt(&i);
-#endif
+	BigUInt(&i);
 	return i;
 }
 
@@ -222,9 +196,7 @@ INLINE ILuint GetBigUInt(SIO* io) {
 INLINE ILint GetBigInt(SIO* io) {
 	ILint i;
 	io->read(io->handle, &i, sizeof(ILint), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapInt(&i);
-#endif
+	BigInt(&i);
 	return i;
 }
 
@@ -232,9 +204,7 @@ INLINE ILint GetBigInt(SIO* io) {
 INLINE ILfloat GetBigFloat(SIO* io) {
 	ILfloat f;
 	io->read(io->handle, &f, sizeof(ILfloat), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapFloat(&f);
-#endif
+	BigFloat(&f);
 	return f;
 }
 
@@ -242,102 +212,76 @@ INLINE ILfloat GetBigFloat(SIO* io) {
 INLINE ILdouble GetBigDouble(SIO* io) {
 	ILdouble d;
 	io->read(io->handle, &d, sizeof(ILdouble), 1);
-#ifdef __LITTLE_ENDIAN__
-	iSwapDouble(&d);
-#endif
+	BigDouble(&d);
 	return d;
 }
 
 INLINE ILubyte SaveLittleUShort(SIO* io, ILushort s) {
-#ifdef __BIG_ENDIAN__
-	iSwapUShort(&s);
-#endif
+	UShort(&s);
 	return io->write(&s, sizeof(ILushort), 1, io->handle);
 }
 
 INLINE ILubyte SaveLittleShort(SIO* io, ILshort s) {
-#ifdef __BIG_ENDIAN__
-	iSwapShort(&s);
-#endif
+	Short(&s);
 	return io->write(&s, sizeof(ILshort), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveLittleUInt(SIO* io, ILuint i) {
-#ifdef __BIG_ENDIAN__
-	iSwapUInt(&i);
-#endif
+	UInt(&i);
 	return io->write(&i, sizeof(ILuint), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveLittleInt(SIO* io, ILint i) {
-#ifdef __BIG_ENDIAN__
-	iSwapInt(&i);
-#endif
+	Int(&i);
 	return io->write(&i, sizeof(ILint), 1, io->handle);
 }
 
 INLINE ILubyte SaveLittleFloat(SIO* io, ILfloat f) {
-#ifdef __BIG_ENDIAN__
-	iSwapFloat(&f);
-#endif
+	Float(&f);
 	return io->write(&f, sizeof(ILfloat), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveLittleDouble(SIO* io, ILdouble d) {
-#ifdef __BIG_ENDIAN__
-	iSwapDouble(&d);
-#endif
+	Double(&d);
 	return io->write(&d, sizeof(ILdouble), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigUShort(SIO* io, ILushort s) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapUShort(&s);
-#endif
+	BigUShort(&s);
 	return io->write(&s, sizeof(ILushort), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigShort(SIO* io, ILshort s) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapShort(&s);
-#endif
+	BigShort(&s);
 	return io->write(&s, sizeof(ILshort), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigUInt(SIO* io, ILuint i) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapUInt(&i);
-#endif
+	BigUInt(&i);
 	return io->write(&i, sizeof(ILuint), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigInt(SIO* io, ILint i) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapInt(&i);
-#endif
+	BigInt(&i);
 	return io->write(&i, sizeof(ILint), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigFloat(SIO* io, ILfloat f) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapFloat(&f);
-#endif
+	BigFloat(&f);
 	return io->write(&f, sizeof(ILfloat), 1, io->handle);
 }
 
 
 INLINE ILubyte SaveBigDouble(SIO* io, ILdouble d) {
-#ifdef __LITTLE_ENDIAN__
-	iSwapDouble(&d);
-#endif
+	BigDouble(&d);
 	return io->write(&d, sizeof(ILdouble), 1, io->handle);
 }
 #endif//NOINLINE

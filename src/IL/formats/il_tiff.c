@@ -448,7 +448,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       }
       Image->Origin = IL_ORIGIN_LOWER_LEFT;  // eiu...dunno if this is right
 
-#ifdef __BIG_ENDIAN__ //TIFFReadRGBAImage reads abgr on big endian, convert to rgba
+#ifdef WORDS_BIGENDIAN //TIFFReadRGBAImage reads abgr on big endian, convert to rgba
       EndianSwapData(Image);
 #endif
 
@@ -473,7 +473,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
           
         case 3:
           //TODO: why the ifdef??
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
           iConvertImages(Image, IL_RGB, IL_UNSIGNED_BYTE);
 #endif      
           break; 
@@ -484,7 +484,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
           //take care of these things???
           /*      
           //invert alpha
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
           pImageData += 3;
 #endif      
           for (i = Image->Width * Image->Height; i > 0; i--) {

@@ -215,7 +215,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 	}
 
 	//fix endianess
-#ifdef __LITTLE_ENDIAN__
+#ifdef WORDS_LITTLEENDIAN
 	if (bit_depth == 16)
 		png_set_swap(data->png_ptr);
 #endif
@@ -586,9 +586,9 @@ ILboolean iSavePngInternal(ILimage* image) {
 		png_set_bgr(png_ptr);
 
 	// swap bytes of 16-bit files to most significant byte first
-	#ifdef	__LITTLE_ENDIAN__
+#ifdef	WORDS_LITTLEENDIAN
 	png_set_swap(png_ptr);
-	#endif//__LITTLE_ENDIAN__
+#endif//WORDS_LITTLEENDIAN
 
 	RowPtr = (ILubyte**)ialloc(image->Height * sizeof(ILubyte*));
 	if (RowPtr == NULL)

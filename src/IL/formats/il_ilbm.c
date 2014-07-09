@@ -440,7 +440,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
               finalcolor = pixelcolor;
             }
 
-#if defined( __LITTLE_ENDIAN__ )
+#ifdef WORDS_LITTLEENDIAN
             *ptr++ = (ILubyte)(finalcolor>>16);
             *ptr++ = (ILubyte)(finalcolor>>8);
             *ptr++ = (ILubyte)(finalcolor);

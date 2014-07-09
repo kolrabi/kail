@@ -21,19 +21,26 @@
 
 typedef struct DDSHEAD
 {
+	// 0x0000
 	ILbyte	Signature[4];
 
+	// 0x0004
 	ILuint	Size1;				// size of the structure (minus MagicNum)
 	ILuint	Flags1; 			// determines what fields are valid
 	ILuint	Height; 			// height of surface to be created
+
+	// 0x0010
 	ILuint	Width;				// width of input surface
 	ILuint	LinearSize; 		// Formless late-allocated optimized surface size
 	ILuint	Depth;				// Depth if a volume texture
 	ILuint	MipMapCount;		// number of mip-map levels requested
-	ILuint	AlphaBitDepth;		// depth of alpha buffer requested
 
-	ILuint	NotUsed[10];
+	// 0x0020
+	// ILuint	AlphaBitDepth;		// depth of alpha buffer requested
 
+	ILuint	Reserved[11];
+
+	// 0x004c
 	ILuint	Size2;				// size of structure
 	ILuint	Flags2;				// pixel format flags
 	ILuint	FourCC;				// (FOURCC code)

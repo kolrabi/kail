@@ -8,6 +8,7 @@ void dumpMeta(ILuint image) {
   ILint i;
   ILint tmp[512];
   ILfloat et = 1.0f;
+  memset(tmp, 0, sizeof(tmp));
 
   for (i=0; i<metaCount; i++) {
     ILenum IFD, ID;
@@ -84,11 +85,11 @@ int main(int argc, char **argv) {
   CHECK(testLoadImage(argv[2], image));
   dumpMeta(image);
 
+  CHECK(testSaveImage("test.png", image));
   /*
   CHECK(testSaveImage("test.tiff", image));
   CHECK(testSaveImage("test.jpeg", image));
   CHECK(testSaveImage("test.tga", image));
-  CHECK(testSaveImage("test.png", image));
   CHECK(testSaveImage("test.exif", image));
   CHECK(testLoadImage("test.tiff", image));
   dumpMeta(image);
