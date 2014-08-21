@@ -3,7 +3,7 @@
 void dumpMeta(ILuint image) {
   ILint metaCount = ilGetIntegerImage(image, IL_IMAGE_METADATA_COUNT);
   ILenum type;
-  ILuint count, size;
+  ILuint count, size, j;
   void *data;
   ILint i;
   ILint tmp[512];
@@ -21,7 +21,7 @@ void dumpMeta(ILuint image) {
     switch (type) {
       case IL_EXIF_TYPE_BYTE:   fprintf(stderr, "%02x\n", *(ILubyte*)data); break;
       case IL_EXIF_TYPE_ASCII:  fprintf(stderr, "%s\n",   (const char*)data); break;
-      case IL_EXIF_TYPE_WORD:   fprintf(stderr, "%04x\n", *(ILushort*)data); break;
+      case IL_EXIF_TYPE_WORD:   for (j=0; j<count; j++) fprintf(stderr, "%04x ", ((ILushort*)data)[j]); fprintf(stderr, "\n"); break;
       case IL_EXIF_TYPE_DWORD:  fprintf(stderr, "%08x\n", *(ILuint*)data); break;
       case IL_EXIF_TYPE_RATIONAL: fprintf(stderr, "%u/%u\n", ((ILuint*)data)[0], ((ILuint*)data)[1]); break;
       case IL_EXIF_TYPE_SBYTE:   fprintf(stderr, "%d\n", *(ILbyte*)data); break;

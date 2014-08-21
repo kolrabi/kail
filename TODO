@@ -1,36 +1,44 @@
-1.10.0:
-
-next:
-
-  - iluHistogram(ILfloat *Values, ILuint len);
-
-  - ILU_SIMILARITY_MODE:
-    - ILU_SIMILARITY_PIXELS
-    - ILU_SIMILARITY_HISTOGRAM
-  
-  - iluToneMap()
-
-  - ilIsEnabled(IL_PNG) etc. to check for supported formats. (is that read or write?)
-
-  - WebP
-  - JBIG, JBIG2
-  - FLI/FLC?
-  - select file format based on content for files with extensions that are
-    shared among formats (eg. .iff, .pal)
-
 future:
 
-  - XMP?
-  - Gif save support
-  - Save support for all untested formats, so we can create files to check
-    with other programs, then use them as references for format tests.
-  - SDL2 ILUT
-  - DirectX10/11 support for ILUT?
-  - Make PSD loader handle layers correctly
-  - ILU selection (extension of region)
-    - iluCopySelection()
-  - some kind of iluMixSlices (eg. convert FITS to colour)?
-  - vector formats (svg)
-  - eps
-  - camera raw formats (dng, .nef, .crw, .orf ...)
-  - support n-dimensional images (eg. for fits)
+  - Extend Metadata support
+    - GeoTIFF
+    - XMP? 
+    - IPTC?
+
+  - IL:
+    - ilIsEnabled(IL_PNG) etc. or something similar to check for supported 
+      formats. (is that read or write?)
+    - select file format based on content for files with extensions that are
+      shared among formats (eg. .iff, .pal)
+    - New pixel formats for IL_SHORT: 
+      - IL_RGB_555
+      - IL_RGB_565
+      - IL_ARGB_1555
+    - New formats
+      - FLI/FLC?
+      - JXR/HD Photo
+      - WebP
+      - JBIG, JBIG2
+      - Camera raw formats (dng, .nef, .crw, .orf ...)
+      - vector formats:
+        - SVG
+        - EPS
+    - Gif save support
+    - Save support for all untested formats, so we can create files to check
+      with other programs, then use them as references for format tests.
+    - Make PSD loader handle layers correctly
+    - support n-dimensional images (eg. for fits)
+
+  - ILU:
+    - iluHistogram(ILfloat *Values, ILuint len);
+    - ILU_SIMILARITY_MODE:
+      - ILU_SIMILARITY_PIXELS
+      - ILU_SIMILARITY_HISTOGRAM
+    - iluToneMap()
+    - ILU selection (extension of region)
+      - iluCopySelection() (copy only selected pixels)
+    - some kind of iluMixSlices (eg. convert FITS to colour)?
+
+  - ILUT:
+    - SDL2 backend
+    - Finish DirectX10/11 support

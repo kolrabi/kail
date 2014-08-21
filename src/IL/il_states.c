@@ -651,8 +651,19 @@ ILenum iGetHint(ILenum Target) {
 }
 
 
-void iSetString(ILimage *Image, ILenum Mode, const char *String_) {
+void iSetStringMB(ILimage *Image, ILenum Mode, const char *String_) {
   ILchar *String;
+#ifdef _UNICODE
+  String = iWideFromMultiByte(String_);
+#else
+  String = iCharStrDup(String_);
+#endif
+  iSetString(Image, Mode, String);
+  ifree(String);
+}
+
+
+void iSetString(ILimage *Image, ILenum Mode, ILconst_string String_) {
   ILimage *BaseImage = Image->BaseImage;
 
   if (String_ == NULL) {
@@ -660,22 +671,12 @@ void iSetString(ILimage *Image, ILenum Mode, const char *String_) {
     return;
   }
 
-#ifdef _UNICODE
-  String = iWideFromMultiByte(String_);
-#else
-  String = iCharStrDup(String_);
-#endif
-
-  if (String == NULL) {
-    iSetError(IL_INTERNAL_ERROR);
-    return;
-  }
-
   switch (Mode)
   {
     case IL_TGA_ID_STRING:            
       iTrace("---- IL_TGA_ID_STRING is obsolete, use IL_META_DOCUMENT_NAME instead");
-      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); return;
+      iSetMetaString(BaseImage, IL_META_DOCUMENT_NAME, String_); 
+      return;
 
     case IL_TGA_AUTHNAME_STRING:
       iTrace("---- IL_TGA_AUTHNAME_STRING is obsolete, use IL_META_ARTIST instead");
@@ -721,8 +722,6 @@ void iSetString(ILimage *Image, ILenum Mode, const char *String_) {
       iSetMetaString(BaseImage, Mode, String_);
       //iSetError(IL_INVALID_ENUM);
   }
-
-  ifree(String);
 }
 
 void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param, ILuint Count) {

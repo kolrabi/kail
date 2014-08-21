@@ -778,7 +778,7 @@ ILAPI ILboolean ILAPIENTRY ilIsEnabled(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilIsImage(ILuint Image);
 ILAPI void      ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param);
 ILAPI void      ILAPIENTRY ilSetMemory(mAlloc, mFree);
-ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, const char *String);
+ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, ILconst_string String);
 ILAPI void      ILAPIENTRY ilShutDown(void);
 ILAPI void      ILAPIENTRY IL_DEPRECATED(ilResetMemory(void));
 

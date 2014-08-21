@@ -15,6 +15,8 @@
 
 #include "il_internal.h"
 
+#ifndef IL_NO_JPG
+
 #if defined(_MSC_VER)
   #pragma warning(push)
   #pragma warning(disable : 4005)  // Redefinitions in
@@ -28,5 +30,7 @@
 #endif
 
 ILboolean iLoadJpegInternal(ILimage *);
+
+#endif
 
 #endif//JPEG_H

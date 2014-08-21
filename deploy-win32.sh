@@ -1,20 +1,46 @@
 #!/bin/sh
+#
+# This is a helper script for me to create precompiled binary packages for
+# the Windows operating system. It is written to match my build environment(s)
+# so it might not be useful to anyone else.
+#
+# It uses the following environment variables:
+# 
+#   GLOBAL_OPTIONS            Any option going to cmake.
+#   BITNESS                   Defines the target architecture. 32 (default) or 64
+#   VC_PATH                   Base directory of Visual Studio
+#
 
 # The release we are building
-RELEASE="1.9.0"
-
+RELEASE="1.10.0"
 PACKAGE="kail"
 
 # Would create dependencies on dlls
 GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE -DILUT_USE_ALLEGRO=FALSE" 
 
-# Some useful libraries there
-GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
+# Defined based on the selected toolchain
+case $BITNESS in
+  64)
+    # Segfaults
+    GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DIL_NO_MNG=ON" 
 
-# try guessing where d3d is at
-if [ -z "$DXSDK_DIR" ]; then
-  export DXSDK_DIR="/C/Program Files (x86)/Microsoft SDKs/Windows/v7.1A"
-fi
+    # Some useful libraries there
+    GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/x86_64-w64-mingw32"
+
+    # 64 bit architecture
+    GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_C_FLAGS=-m64"
+    GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_CXX_FLAGS=-m64"
+
+    ARCH="x64"
+  ;;
+
+  *)
+    # Some useful libraries there
+    GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DCMAKE_SYSTEM_PREFIX_PATH=/mingw/i686-w64-mingw32"
+
+    ARCH="x86"
+  ;;
+esac
 
 # try guessing where msvc is
 if [ -z "$VC_PATH" ]; then
@@ -34,6 +60,8 @@ PATH="$PATH:$VC_PATH/VC/bin:$VC_PATH/Common7/IDE"
 
 # msvc library tool
 VC_LIB=lib.exe
+
+# TODO: check if lib.exe can be run, if not, disable building VC package
 
 function build() {
   NAME="$1"
@@ -64,8 +92,9 @@ function build() {
       cmake "$BASE_PATH" -G "MSYS Makefiles" $OPTIONS "-DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH/$BUILD" "-DCMAKE_BUILD_TYPE=$BUILD" &&
       cmake --build . --target install --config "$BUILD" &&
 
-      # add license
+      # add license and changelog
       cp "$BASE_PATH/COPYING" "$DEPLOY_PATH/$BUILD" &&
+      cp "$BASE_PATH/ChangeLog" "$DEPLOY_PATH/$BUILD" &&
       
       # copy includes and dlls
       cp -r "$DEPLOY_PATH/$BUILD/include/"* "$MSVC_PATH/$BUILD/include" &&
@@ -79,6 +108,10 @@ function build() {
           "$VC_LIB" /machine:i386 "/def:$DEF" || exit $?
         done
       ) || exit $?
+
+      # copy licenses
+      cp "$BASE_PATH/COPYING" "$DEPLOY_PATH/$BUILD" &&
+      cp "$BASE_PATH/COPYING.libs" "$DEPLOY_PATH/$BUILD"
     done
   ) || exit $?
 }
@@ -89,12 +122,12 @@ build Unicode    "-DIL_UNICODE=TRUE"
 for BUILD in NonUnicode Unicode; do
 ( 
   cd "$BASE_PATH/deploy/MinGW/$BUILD" &&
-  tar czvf "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-MinGW.tgz" Debug Release
-  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-MinGW.zip" Debug Release
+  tar czvf "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-MinGW.tgz" Debug Release
+  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-MinGW.zip" Debug Release
 )
 
 ( 
   cd "$BASE_PATH/deploy/VC/$BUILD" &&
-  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-x86-$BUILD-VC.zip" Debug Release
+  zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-VC.zip" Debug Release
 )
 done

@@ -151,7 +151,7 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
 
   SIOread(io, ID, 1, Header.IDLen);
   ID[Header.IDLen] = 0;
-  iSetString(image, IL_META_DOCUMENT_NAME, ID);
+  iSetStringMB(image, IL_META_DOCUMENT_NAME, ID);
 
   imemclear(&Footer, sizeof(Footer));
   SIOseek(io, sizeof(TARGAFOOTER), IL_SEEK_END);
@@ -167,8 +167,8 @@ static ILboolean iLoadTargaInternal(ILimage* image) {
   SIOseek(io, Footer.ExtOff, IL_SEEK_SET);
   SIOread(io, &Ext, 1, sizeof(Ext));
 
-  iSetString(image, IL_META_ARTIST, Ext.AuthName);
-  iSetString(image, IL_META_USER_COMMENT, Ext.AuthComments);
+  iSetStringMB(image, IL_META_ARTIST, Ext.AuthName);
+  iSetStringMB(image, IL_META_USER_COMMENT, Ext.AuthComments);
 
   // TODO: other metadata?
 

@@ -16,11 +16,11 @@
 
 #include "il_internal.h"
 
-
 ILboolean iAble(ILenum Mode, ILboolean Flag);
 ILboolean iFormatFunc(ILenum Mode);
 ILboolean iIsEnabled(ILenum Mode);
-void      iSetString(ILimage *Image, ILenum Mode, const char *String_);
+void      iSetString(ILimage *Image, ILenum Mode, ILconst_string String_);
+void      iSetStringMB(ILimage *Image, ILenum Mode, const char *String_);
 ILboolean iOriginFunc(ILenum Mode);
 ILboolean iTypeFunc(ILenum Mode);
 

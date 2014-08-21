@@ -203,7 +203,7 @@ void iSetInputLumpIO(SIO *io, void *Lump, ILuint Size) {
 }
 
 // Tells DevIL that we're reading from a lump, not a file
-void ILAPIENTRY iSetInputLump(ILimage *image, void *Lump, ILuint Size)
+void ILAPIENTRY iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 {
   if (image != NULL) {
     if (image->io.handle != NULL) {
@@ -214,7 +214,7 @@ void ILAPIENTRY iSetInputLump(ILimage *image, void *Lump, ILuint Size)
       }
     }
 
-    iSetInputLumpIO(&image->io, Lump, Size);
+    iSetInputLumpIO(&image->io, (void*)Lump, Size);
 
   }
 }

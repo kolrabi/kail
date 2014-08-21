@@ -1775,7 +1775,7 @@ ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof
  *                   ILchar if necessary.
  * @ingroup state
  */
-void ILAPIENTRY ilSetString(ILenum StringName, const char *String) {
+void ILAPIENTRY ilSetString(ILenum StringName, ILconst_string String) {
   SIMPLE_PROC(Image, iSetString(Image, StringName, String));
 }
 

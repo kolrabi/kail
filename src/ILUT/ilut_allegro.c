@@ -14,61 +14,70 @@
 
 #ifdef ILUT_USE_ALLEGRO
 #include "ilut_allegro.h"
-//#include "ilut_internal.h" 
 
-BITMAP* iConvertToAlleg(ILimage *ilutCurImage, PALETTE Pal) {
+/**
+ * Convert image into an allegro BITMAP.
+ * @param  Image        Image to convert.
+ * @param  Pal          Where to store palette information (if any).
+ * @return              The allegro BITMAP.
+ * @internal
+ */
+BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
   BITMAP *Bitmap;
   ILimage *TempImage;
   ILuint i = 0, j = 0;
 
-  if (ilutCurImage == NULL) {
+  if (Image == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
     return NULL;
   }
 
+  TempImage = iCloneImage(Image);
+
   // Should be IL_BGR(A), but Djgpp screws up somewhere along the line.
-  if (ilutCurImage->Format == IL_RGB || ilutCurImage->Format == IL_RGBA) {
-    iSwapColours(ilutCurImage);
+  if (TempImage->Format == IL_RGB || TempImage->Format == IL_RGBA) {
+    iSwapColours(TempImage);
   }
 
-  if (ilutCurImage->Origin == IL_ORIGIN_LOWER_LEFT)
-    iFlipImage(ilutCurImage);
-  if (ilutCurImage->Type > IL_UNSIGNED_BYTE) {}  // Can't do anything about this right now...
-  if (ilutCurImage->Type == IL_BYTE) {}  // Can't do anything about this right now...
+  if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
+    iFlipImage(TempImage);
+  if (TempImage->Type > IL_UNSIGNED_BYTE || TempImage->Type == IL_BYTE) 
+    iConvertImages(TempImage, TempImage->Format, IL_UNSIGNED_BYTE);
 
-  Bitmap = create_bitmap_ex(ilutCurImage->Bpp * 8, ilutCurImage->Width, ilutCurImage->Height);
+  Bitmap = create_bitmap_ex(TempImage->Bpp * 8, TempImage->Width, TempImage->Height);
   if (Bitmap == NULL) {
+    iCloseImage(TempImage);
     return NULL;
   }
-  memcpy(Bitmap->dat, ilutCurImage->Data, ilutCurImage->SizeOfData);
+  memcpy(Bitmap->dat, TempImage->Data, TempImage->SizeOfData);
 
   // Should we make this toggleable?
-  if (ilutCurImage->Bpp == 8 && ilutCurImage->Pal.PalType != IL_PAL_NONE) {
+  if (TempImage->Format == IL_COLOUR_INDEX && TempImage->Pal.PalType != IL_PAL_NONE && Pal) {
     // Use the image's palette if there is one
-    // @TODO:  Use new ilCopyPal!!!
-    TempImage = iNewImage(ilutCurImage->Width, ilutCurImage->Height, ilutCurImage->Depth, ilutCurImage->Bpp, 1);
-    iCopyImageAttr(TempImage, ilutCurImage);
-
-    if (!iConvertImagePal(TempImage, IL_PAL_RGB24)) {
-      destroy_bitmap(Bitmap);
-      iSetError(ILUT_ILLEGAL_OPERATION);
+    ILpal *TmpPal = iConvertPal(&TempImage->Pal, IL_PAL_RGB24);
+    if (!TmpPal) {
+      iCloseImage(TempImage);
       return NULL;
     }
 
-    for (; i < ilutCurImage->Pal.PalSize && i < 768; i += 3, j++) {
-      Pal[j].r = TempImage->Pal.Palette[i+0];
-      Pal[j].g = TempImage->Pal.Palette[i+1];
-      Pal[j].b = TempImage->Pal.Palette[i+2];
+    for (i=0; i < TmpPal->PalSize && i < 768; i += 3, j++) {
+      Pal[j].r = TmpPal->Palette[i+0];
+      Pal[j].g = TmpPal->Palette[i+1];
+      Pal[j].b = TmpPal->Palette[i+2];
       Pal[j].filler = 255;
     }
 
+    iClosePal(TmpPal);
     iCloseImage(TempImage);
   }
 
   return Bitmap;
 }
 
-// Does not account for converting luminance...
+/**
+ * Convert the currently bound image to an Allegro BITMAP.
+ * @param  Pal Where to store a possible colour palette.
+ */
 BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal) {
   iLockState();
   ILimage *Image = iLockCurImage();
@@ -80,7 +89,12 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal) {
 }
 
 #ifndef _WIN32_WCE
-BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
+/**
+ * Load an Allegro BITMAP from a file.
+ * @param  FileName Name of file to load.
+ * @return          The loaded BITMAP if sucessful, NULL otherwise.
+ */
+BITMAP* ILAPIENTRY ilutAllegLoadImage(ILconst_string FileName) {
   PALETTE Pal;
   ILimage *Image;
   BITMAP *Alleg;
@@ -101,35 +115,43 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILstring FileName) {
 #endif//_WIN32_WCE
 
 
-// Unfinished
-ILboolean ILAPIENTRY ilutAllegFromBitmap(BITMAP *Bitmap) {
-  ILimage *ilutCurImage;
+/**
+ * Copy image data from an Allegro BITMAP into the currently bound image.
+ * Unfinished.
+ * @param  Bitmap BITMAP to use.
+ * @return        Success of the operation.
+ */
+/*
+ILboolean ILAPIENTRY ilutAllegFromBitmap(const BITMAP *Bitmap) {
+  ILimage *Image;
   
   iLockState();
-  ilutCurImage = iLockCurImage();
+  Image = iLockCurImage();
   iUnlockState();
 
-  if (ilutCurImage == NULL) {
+  if (Image == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
   if (Bitmap == NULL || Bitmap->w == 0 || Bitmap->h == 0) {
     iSetError(ILUT_INVALID_PARAM);
-    iUnlockImage(ilutCurImage);
+    iUnlockImage(Image);
     return IL_FALSE;
   }
 
-  if (!iTexImage(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL)) {
-    iUnlockImage(ilutCurImage);
+  if (!iTexImage(Image, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL)) {
+    iUnlockImage(Image);
     return IL_FALSE;
   }
 
-  ilutCurImage->Origin = IL_ORIGIN_LOWER_LEFT;  // I have no idea.
+  Image->Origin = IL_ORIGIN_LOWER_LEFT;  // I have no idea.
 
-  iUnlockImage(ilutCurImage);
+  // TODO
+
+  iUnlockImage(Image);
   return IL_TRUE;
 }
-
+*/
 #endif//ILUT_USE_ALLEGRO
 

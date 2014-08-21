@@ -337,7 +337,7 @@ static ILfloat GetFloat(SIO *io, DICOMHEAD *Header, ILushort GroupNum) {
 	ILfloat Num;
 
 	if (SIOread(io, &Num, 1, 4) != 4)
-		return NAN;
+		return 0.0f;
 
 	// The 0x02 group is always little endian.
 	if (GroupNum == 0x02) {

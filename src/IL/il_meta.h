@@ -15,4 +15,4 @@ ILboolean iSetMetafv(ILimage *Image, ILenum MetaID, const ILfloat *Param);
 
 const void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size);
 ILconst_string iGetMetaString(ILimage *Image, ILenum MetaID);
-ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, const char *String);
+ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, ILconst_string String);

@@ -252,7 +252,7 @@ ILAPI wchar_t * ILAPIENTRY iWideFromMultiByte(const char *Multi);
 ILAPI char *    ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide);
 
 ILAPI ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName);
-ILAPI void      ILAPIENTRY iSetInputLump(ILimage *, void *Lump, ILuint Size);
+ILAPI void      ILAPIENTRY iSetInputLump(ILimage *, const void *Lump, ILuint Size);
 ILAPI void      ILAPIENTRY iSetInputFile(ILimage *, ILHANDLE File);
 ILAPI ILboolean ILAPIENTRY iLoadFuncs2(ILimage *Image, ILenum Type);
 

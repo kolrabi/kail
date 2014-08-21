@@ -1,4 +1,4 @@
-2014-??-?? Björn Paetzel <kolrabi@kolrabi.de>, kaIL ?
+2014-08-21 Björn Paetzel <kolrabi@kolrabi.de>, kaIL 1.10.0
   * Added IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOLUTE ), 
     changes behaviour of ilActive*(); 
   * Fixed DPX import

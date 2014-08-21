@@ -491,7 +491,7 @@ ILconst_string iGetMetaString(ILimage *BaseImage, ILenum MetaID) {
   return NULL;
 }
 
-ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, const char *String) {
+ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, ILconst_string String) {
   ILmeta *Meta = Image->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   ILuint Length;
@@ -515,17 +515,13 @@ ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, const char *String) {
         Meta->Type = IL_EXIF_TYPE_NONE;
       }
 
-      Length = iCharStrLen(String);
+      Length = iStrLen(String) * sizeof(*String);
 
       Meta->Type    = Desc->Type;
       Meta->Length  = Length + 1;
       Meta->Size    = Length + 1;
-      Meta->Data    = iCharStrDup(String);
-#ifdef _UNICODE
-      Meta->String  = iWideFromMultiByte((const char*)Meta->Data);
-#else
-      Meta->String  = iCharStrDup((const char*)Meta->Data);
-#endif
+      Meta->Data    = iStrDup(String);
+      Meta->String  = iStrDup(String);
      
       return IL_TRUE;
     }

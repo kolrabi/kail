@@ -12,7 +12,7 @@
 #define CHECK_ERROR() { \
   ILenum err = ilGetError(); \
   if (err) { \
-    fprintf(stderr, "FAILED in line %d: %s", __LINE__, iluErrorString(err)); \
+    fprintf(stderr, "FAILED in line %d: " IL_SFMT, __LINE__, iluErrorString(err)); \
     exit(1); \
   } \
 }

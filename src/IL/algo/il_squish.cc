@@ -50,7 +50,7 @@ ILubyte* iSquishCompressDXTImpl(ILubyte *Data, ILuint Width, ILuint Height, ILui
 			break;
 		default:  // Does not support DXT2 or DXT4.
 			iSetError(IL_INVALID_PARAM);
-			break;
+			return NULL;
 	}
 
 	Size = squish::GetStorageRequirements(Width, Height, Flags);

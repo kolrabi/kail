@@ -34,202 +34,54 @@ typedef struct {
   ILboolean ForceInteger;
   ILuint    AlphaKey;
   ILenum Filter;
-} ILUT_TEXTURE_SETTINGS_DX9;
+} ILUTtextureSettingsDX9;
 
-static ILimage*  MakeD3D9Compliant(ILimage *Image, IDirect3DDevice9 *Device, D3DFORMAT *DestFormat, ILUT_TEXTURE_SETTINGS_DX9 *Settings);
-static D3DFORMAT D3DGetDXTCNumDX9(ILenum DXTCFormat);
-static ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, ILUT_TEXTURE_SETTINGS_DX9 *Settings);
-static IDirect3DTexture9* iD3DMakeTexture( IDirect3DDevice9 *Device, void *Data, ILuint DLen, ILuint Width, ILuint Height, D3DFORMAT Format, D3DPOOL Pool, ILuint Levels );
-static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings);
-static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings);
-static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings);
+static ILimage*                   iD3D9MakeCompliant(ILimage *Image, IDirect3DDevice9 *Device, D3DFORMAT *DestFormat, ILUTtextureSettingsDX9 *Settings);
+static D3DFORMAT                  iD3D9GetDXTCNum(ILenum DXTCFormat);
+static ILboolean                  iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, ILUTtextureSettingsDX9 *Settings);
+static IDirect3DTexture9 *        iD3DMakeTexture( IDirect3DDevice9 *Device, void *Data, ILuint DLen, ILuint Width, ILuint Height, D3DFORMAT Format, D3DPOOL Pool, ILuint Levels );
+static IDirect3DTexture9 *        iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings);
+static IDirect3DCubeTexture9 *    iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings);
+static IDirect3DVolumeTexture9 *  iD3D9VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings);
 
 #define ILUT_TEXTUREFORMAT_D3D9_COUNT   7
-static ILboolean FormatsDX9Checked = IL_FALSE;
-static ILboolean FormatsDX9supported[ILUT_TEXTUREFORMAT_D3D9_COUNT] =
-  { IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE };
-static D3DFORMAT FormatsDX9[ILUT_TEXTUREFORMAT_D3D9_COUNT] =
-  { D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_L8, D3DFMT_DXT1, D3DFMT_DXT3, D3DFMT_DXT5, D3DFMT_A16B16G16R16F};
+static D3DFORMAT iD3D9Formats[ILUT_TEXTUREFORMAT_D3D9_COUNT]          = { D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_L8, D3DFMT_DXT1, D3DFMT_DXT3, D3DFMT_DXT5, D3DFMT_A16B16G16R16F};
+static ILboolean iD3D9FormatsSupported[ILUT_TEXTUREFORMAT_D3D9_COUNT] = { IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE };
+static ILboolean iD3D9FormatsChecked                                  = IL_FALSE;
 
 // called by ilutInit/ilutRenderer
 ILboolean ilutD3D9Init() {
   return IL_TRUE;
 }
 
-static void GetSettings(ILUT_TEXTURE_SETTINGS_DX9 *settings) {
-  settings->UseDXTC     = ilutGetBoolean(ILUT_D3D_USE_DXTC);
-  settings->MipLevels   = ilutGetInteger(ILUT_D3D_MIPLEVELS);
-  settings->Pool        = (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL);
-  settings->GenDXTC     = ilutGetBoolean(ILUT_D3D_GEN_DXTC);
-  settings->DXTCFormat  = ilutGetInteger(ILUT_DXTC_FORMAT);
-  settings->ForceInteger = ilutGetInteger(ILUT_FORCE_INTEGER_FORMAT);
-  settings->AlphaKey    = ilutGetInteger(ILUT_D3D_ALPHA_KEY_COLOR);
-  settings->Filter = iluGetInteger(ILU_FILTER);
+static void iD3D9GetSettings(ILUTtextureSettingsDX9 *settings) {
+  settings->UseDXTC       = ilutGetBoolean(ILUT_D3D_USE_DXTC);
+  settings->MipLevels     = ilutGetInteger(ILUT_D3D_MIPLEVELS);
+  settings->Pool          = (D3DPOOL)ilutGetInteger(ILUT_D3D_POOL);
+  settings->GenDXTC       = ilutGetBoolean(ILUT_D3D_GEN_DXTC);
+  settings->DXTCFormat    = ilutGetInteger(ILUT_DXTC_FORMAT);
+  settings->ForceInteger  = ilutGetInteger(ILUT_FORCE_INTEGER_FORMAT);
+  settings->AlphaKey      = ilutGetInteger(ILUT_D3D_ALPHA_KEY_COLOR);
+  settings->Filter        = iluGetInteger(ILU_FILTER);
 }
 
-static void CheckFormatsDX9(IDirect3DDevice9 *Device) {
+static void iD3D9CheckFormats(IDirect3DDevice9 *Device) {
   D3DDISPLAYMODE  DispMode;
-  HRESULT     hr;
-  IDirect3D9    *TestD3D9;
-  ILuint      i;
+  HRESULT         hr;
+  IDirect3D9    * TestD3D9;
+  ILuint          i;
 
   IDirect3DDevice9_GetDirect3D(Device, (IDirect3D9**)&TestD3D9);
   IDirect3DDevice9_GetDisplayMode(Device, 0, &DispMode);
 
   for (i = 0; i < ILUT_TEXTUREFORMAT_D3D9_COUNT; i++) {
     hr = IDirect3D9_CheckDeviceFormat(TestD3D9, D3DADAPTER_DEFAULT,
-      D3DDEVTYPE_HAL, DispMode.Format, 0, D3DRTYPE_TEXTURE, FormatsDX9[i]);
-    FormatsDX9supported[i] = (ILboolean)SUCCEEDED(hr);
+      D3DDEVTYPE_HAL, DispMode.Format, 0, D3DRTYPE_TEXTURE, iD3D9Formats[i]);
+    iD3D9FormatsSupported[i] = (ILboolean)SUCCEEDED(hr);
   }
 
   IDirect3D9_Release(TestD3D9);
-  FormatsDX9Checked = IL_TRUE;
-}
-
-
-#ifndef _WIN32_WCE
-ILboolean ILAPIENTRY ilutD3D9TexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DTexture9 **Texture)
-{
-  ILimage *ilutCurImage;
-  ILimage* Temp;
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp = iNewImage(1,1,1, 1,1);
-  Temp->io = ilutCurImage->io;
-  Temp->io.handle = NULL;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-
-  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9Texture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;
-}
-#endif//_WIN32_WCE
-
-#ifndef _WIN32_WCE
-/**
- * Load a cube texture image from a file and store it in @a Texture.
- * Uses the following settings:
- * - ILUT_D3D_MIPLEVELS
- * - ILUT_D3D_POOL
- * @ingroup ilut_dx9
- */
-ILboolean ILAPIENTRY ilutD3D9CubeTexFromFile(IDirect3DDevice9 *Device,
-      ILconst_string FileName, IDirect3DCubeTexture9 **Texture)
-{
-  ILimage *ilutCurImage;
-  ILimage* Temp;
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp         = iNewImage(1,1,1, 1,1);
-  Temp->io              = ilutCurImage->io;
-  Temp->io.handle       = NULL;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-
-  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;
-}
-
-#endif//_WIN32_WCE
-ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileInMemory(IDirect3DDevice9 *Device,
-        void *Lump, ILuint Size, IDirect3DCubeTexture9 **Texture)
-{
-  ILimage* Temp;
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  iSetInputLump(Temp, Lump, Size);
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;   
-}
- 
-ILboolean ILAPIENTRY ilutD3D9CubeTexFromResource(IDirect3DDevice9 *Device,
-    HMODULE SrcModule, ILconst_string SrcResource, IDirect3DCubeTexture9 **Texture)
-{
-  ILimage* Temp;
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  HRSRC   Resource;
-  ILubyte *Data;
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
-  Data = (ILubyte*)LockResource(Resource);
-
-  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;
- }
-
-ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileHandle(IDirect3DDevice9 *Device,
-      ILHANDLE File, IDirect3DCubeTexture9 **Texture)
-{
-  ILimage *ilutCurImage;
-  ILimage* Temp;
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp = iNewImage(1,1,1, 1,1);
-  Temp->io = ilutCurImage->io;
-  Temp->io.handle = File;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-  
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
-
-  iCloseImage(Temp);
-  return IL_TRUE;
+  iD3D9FormatsChecked = IL_TRUE;
 }
 
 static D3DCUBEMAP_FACES iToD3D9Cube(ILuint cube) {
@@ -244,7 +96,7 @@ static D3DCUBEMAP_FACES iToD3D9Cube(ILuint cube) {
   }
 }
  
-static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings) {
+static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings) {
   IDirect3DCubeTexture9 * Texture;
   D3DLOCKED_RECT          Box;
   D3DFORMAT               Format;
@@ -260,10 +112,10 @@ static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DD
     return NULL;
   }
 
-  if (!FormatsDX9Checked)
-    CheckFormatsDX9(Device);
+  if (!iD3D9FormatsChecked)
+    iD3D9CheckFormats(Device);
 
-  Image = MakeD3D9Compliant(ilutCurImage, Device, &Format, Settings);
+  Image = iD3D9MakeCompliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL) {
     return NULL;
   }
@@ -284,7 +136,7 @@ static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DD
         return NULL;
     }
 
-    Image = MakeD3D9Compliant(ilutCurImage, Device, &Format, Settings);
+    Image = iD3D9MakeCompliant(ilutCurImage, Device, &Format, Settings);
     if( Image == NULL ) {
       SAFE_RELEASE(Texture)
       return NULL;
@@ -314,243 +166,16 @@ static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DD
   return Texture;
 }
 
-IDirect3DCubeTexture9* ILAPIENTRY ilutD3D9CubeTexture(IDirect3DDevice9 *Device) {
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * Image;
-  IDirect3DCubeTexture9 * Result;
-
-  iLockState();
-  Image     = iLockCurImage();
-  GetSettings(&Settings);
-  iUnlockState();
-
-  Result = iD3D9CubeTexture(Image, Device, &Settings);
-  iUnlockImage(Image);
-  return Result;
-}
-
-#ifndef _WIN32_WCE
-ILboolean ILAPIENTRY ilutD3D9VolTexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DVolumeTexture9 **Texture) {
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * ilutCurImage;
-  ILimage * Temp;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp = iNewImage(1,1,1, 1,1);
-  Temp->io = ilutCurImage->io;
-  Temp->io.handle = NULL;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-
-  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
+static D3DFORMAT iD3D9GetDXTCNum(ILenum DXTCFormat) {
+  switch (DXTCFormat) {
+    case IL_DXT1:      return D3DFMT_DXT1;
+    case IL_DXT3:      return D3DFMT_DXT3;
+    case IL_DXT5:      return D3DFMT_DXT5;
   }
-
-  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;  
-}
-#endif//_WIN32_WCE
-
-
-ILboolean ILAPIENTRY ilutD3D9TexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * Temp;
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  iSetInputLump(Temp, Lump, Size);
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9Texture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;  }
-
-
-ILboolean ILAPIENTRY ilutD3D9VolTexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * Temp;
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  iSetInputLump(Temp, Lump, Size);
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;  
-}
-
-
-ILboolean ILAPIENTRY ilutD3D9TexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * Temp;
-  HRSRC Resource;
-  ILubyte *Data;
-
-  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
-  Data = (ILubyte*)LockResource(Resource);
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9Texture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;
-}
-
-
-ILboolean ILAPIENTRY ilutD3D9VolTexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DVolumeTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * Temp;
-  HRSRC Resource;
-  ILubyte *Data;
-
-  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
-  Data = (ILubyte*)LockResource(Resource);
-
-  iLockState();
-  Temp = iNewImage(1,1,1, 1,1);
-  GetSettings(&Settings);
-  iUnlockState();
-
-  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;
-}
-
-
-ILboolean ILAPIENTRY ilutD3D9TexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * ilutCurImage;
-  ILimage * Temp;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp = iNewImage(1,1,1, 1,1);
-  Temp->io = ilutCurImage->io;
-  Temp->io.handle = File;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-  
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9Texture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-  
-  return IL_TRUE;
-}
-
-
-ILboolean ILAPIENTRY ilutD3D9VolTexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DVolumeTexture9 **Texture)
-{
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
-  ILimage * ilutCurImage;
-  ILimage * Temp;
-
-  iLockState();
-  ilutCurImage = iLockCurImage();
-  Temp = iNewImage(1,1,1, 1,1);
-  Temp->io = ilutCurImage->io;
-  Temp->io.handle = File;
-  iUnlockImage(ilutCurImage);
-
-  GetSettings(&Settings);
-  iUnlockState();
-  
-  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
-    iCloseImage(Temp);
-    return IL_FALSE;
-  }
-
-  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
-  iCloseImage(Temp);
-
-  return IL_TRUE;  
-}
-
-
-D3DFORMAT D3DGetDXTCNumDX9(ILenum DXTCFormat)
-{
-  switch (DXTCFormat)
-  {
-    case IL_DXT1:
-      return D3DFMT_DXT1;
-    case IL_DXT3:
-      return D3DFMT_DXT3;
-    case IL_DXT5:
-      return D3DFMT_DXT5;
-  }
-
   return D3DFMT_UNKNOWN;
 }
 
-/*
-ILenum D3DGetDXTCFormat(D3DFORMAT DXTCNum)
-{
-  switch (DXTCNum)
-  {
-    case D3DFMT_DXT1:
-      return IL_DXT1;
-    case D3DFMT_DXT3:
-      return IL_DXT3;
-    case D3DFMT_DXT5:
-      return IL_DXT5;
-    default:
-      return D3DFMT_UNKNOWN;
-  }
-
-  return D3DFMT_UNKNOWN;
-}
-*/
-
-IDirect3DTexture9* iD3DMakeTexture( IDirect3DDevice9 *Device, void *Data, ILuint DLen, ILuint Width, ILuint Height, D3DFORMAT Format, D3DPOOL Pool, ILuint Levels )
-{
+static IDirect3DTexture9* iD3DMakeTexture( IDirect3DDevice9 *Device, void *Data, ILuint DLen, ILuint Width, ILuint Height, D3DFORMAT Format, D3DPOOL Pool, ILuint Levels ) {
   IDirect3DTexture9 *Texture;
   D3DLOCKED_RECT Rect;
   
@@ -565,7 +190,7 @@ IDirect3DTexture9* iD3DMakeTexture( IDirect3DDevice9 *Device, void *Data, ILuint
   return Texture;
 }
 
-static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings) {
+static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings) {
   IDirect3DTexture9 * Texture;
   D3DFORMAT           Format;
   ILimage *           Image;
@@ -579,13 +204,13 @@ static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *
 
   Image = ilutCurImage;
 
-  if (!FormatsDX9Checked)
-    CheckFormatsDX9(Device);
+  if (!iD3D9FormatsChecked)
+    iD3D9CheckFormats(Device);
 
-  if (Settings->UseDXTC && FormatsDX9supported[3] && FormatsDX9supported[4] && FormatsDX9supported[5]) {
+  if (Settings->UseDXTC && iD3D9FormatsSupported[3] && iD3D9FormatsSupported[4] && iD3D9FormatsSupported[5]) {
     if (ilutCurImage->DxtcData != NULL && ilutCurImage->DxtcSize != 0) {
       ILuint  dxtcFormat = Settings->DXTCFormat;
-      Format = D3DGetDXTCNumDX9(ilutCurImage->DxtcFormat);
+      Format = iD3D9GetDXTCNum(ilutCurImage->DxtcFormat);
       ilutSetInteger(ILUT_DXTC_FORMAT, ilutCurImage->DxtcFormat);
 
       Texture = iD3DMakeTexture(Device, ilutCurImage->DxtcData, ilutCurImage->DxtcSize,
@@ -626,7 +251,7 @@ static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *
           return NULL;
         }
 
-        Format = D3DGetDXTCNumDX9(Settings->DXTCFormat);
+        Format = iD3D9GetDXTCNum(Settings->DXTCFormat);
         Texture = iD3DMakeTexture(Device, Buffer, Size,
           ilutCurImage->Width, ilutCurImage->Height, Format,
           ((Settings->Pool == D3DPOOL_DEFAULT) ? D3DPOOL_SYSTEMMEM : Settings->Pool), Settings->MipLevels);
@@ -654,7 +279,7 @@ static IDirect3DTexture9* iD3D9Texture(ILimage *ilutCurImage, IDirect3DDevice9 *
     }
   }
 
-  Image = MakeD3D9Compliant(ilutCurImage, Device, &Format, Settings);
+  Image = iD3D9MakeCompliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL) {
     return NULL;
   }
@@ -700,15 +325,360 @@ success:
   return Texture;
 }
 
+#ifndef _WIN32_WCE
+ILboolean ILAPIENTRY ilutD3D9TexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DTexture9 **Texture)
+{
+  ILimage *ilutCurImage;
+  ILimage* Temp;
+  ILUTtextureSettingsDX9 Settings;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = iNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9Texture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;
+}
+#endif//_WIN32_WCE
+
+#ifndef _WIN32_WCE
+/**
+ * Load a cube texture image from a file and store it in @a Texture.
+ * Uses the following settings:
+ * - ILUT_D3D_MIPLEVELS
+ * - ILUT_D3D_POOL
+ * @ingroup ilut_dx9
+ */
+ILboolean ILAPIENTRY ilutD3D9CubeTexFromFile(IDirect3DDevice9 *Device,
+      ILconst_string FileName, IDirect3DCubeTexture9 **Texture)
+{
+  ILimage *ilutCurImage;
+  ILimage* Temp;
+  ILUTtextureSettingsDX9 Settings;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp         = iNewImage(1,1,1, 1,1);
+  Temp->io              = ilutCurImage->io;
+  Temp->io.handle       = NULL;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;
+}
+
+#endif//_WIN32_WCE
+ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileInMemory(IDirect3DDevice9 *Device,
+        void *Lump, ILuint Size, IDirect3DCubeTexture9 **Texture)
+{
+  ILimage* Temp;
+  ILUTtextureSettingsDX9 Settings;
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  iSetInputLump(Temp, Lump, Size);
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;   
+}
+ 
+ILboolean ILAPIENTRY ilutD3D9CubeTexFromResource(IDirect3DDevice9 *Device,
+    HMODULE SrcModule, ILconst_string SrcResource, IDirect3DCubeTexture9 **Texture)
+{
+  ILimage* Temp;
+  ILUTtextureSettingsDX9 Settings;
+  HRSRC   Resource;
+  ILubyte *Data;
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
+  Data = (ILubyte*)LockResource(Resource);
+
+  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;
+ }
+
+ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileHandle(IDirect3DDevice9 *Device,
+      ILHANDLE File, IDirect3DCubeTexture9 **Texture)
+{
+  ILimage *ilutCurImage;
+  ILimage* Temp;
+  ILUTtextureSettingsDX9 Settings;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = iNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = File;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+  
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9CubeTexture(Temp, Device, &Settings);
+
+  iCloseImage(Temp);
+  return IL_TRUE;
+}
+
+IDirect3DCubeTexture9* ILAPIENTRY ilutD3D9CubeTexture(IDirect3DDevice9 *Device) {
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * Image;
+  IDirect3DCubeTexture9 * Result;
+
+  iLockState();
+  Image     = iLockCurImage();
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  Result = iD3D9CubeTexture(Image, Device, &Settings);
+  iUnlockImage(Image);
+  return Result;
+}
+
+#ifndef _WIN32_WCE
+ILboolean ILAPIENTRY ilutD3D9VolTexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DVolumeTexture9 **Texture) {
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * ilutCurImage;
+  ILimage * Temp;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = iNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = NULL;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  if (!iLoad(Temp, IL_TYPE_UNKNOWN, FileName)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;  
+}
+#endif//_WIN32_WCE
+
+
+ILboolean ILAPIENTRY ilutD3D9TexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * Temp;
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  iSetInputLump(Temp, Lump, Size);
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9Texture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;  }
+
+
+ILboolean ILAPIENTRY ilutD3D9VolTexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * Temp;
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  iSetInputLump(Temp, Lump, Size);
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;  
+}
+
+
+ILboolean ILAPIENTRY ilutD3D9TexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * Temp;
+  HRSRC Resource;
+  ILubyte *Data;
+
+  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
+  Data = (ILubyte*)LockResource(Resource);
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9Texture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;
+}
+
+
+ILboolean ILAPIENTRY ilutD3D9VolTexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DVolumeTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * Temp;
+  HRSRC Resource;
+  ILubyte *Data;
+
+  Resource = (HRSRC)LoadResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP));
+  Data = (ILubyte*)LockResource(Resource);
+
+  iLockState();
+  Temp = iNewImage(1,1,1, 1,1);
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+
+  iSetInputLump(Temp, Data, SizeofResource(SrcModule, FindResource(SrcModule, SrcResource, RT_BITMAP)));
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;
+}
+
+
+ILboolean ILAPIENTRY ilutD3D9TexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * ilutCurImage;
+  ILimage * Temp;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = iNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = File;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+  
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9Texture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+  
+  return IL_TRUE;
+}
+
+
+ILboolean ILAPIENTRY ilutD3D9VolTexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DVolumeTexture9 **Texture)
+{
+  ILUTtextureSettingsDX9 Settings;
+  ILimage * ilutCurImage;
+  ILimage * Temp;
+
+  iLockState();
+  ilutCurImage = iLockCurImage();
+  Temp = iNewImage(1,1,1, 1,1);
+  Temp->io = ilutCurImage->io;
+  Temp->io.handle = File;
+  iUnlockImage(ilutCurImage);
+
+  iD3D9GetSettings(&Settings);
+  iUnlockState();
+  
+  if (!iLoadFuncs2(Temp, IL_TYPE_UNKNOWN)) {
+    iCloseImage(Temp);
+    return IL_FALSE;
+  }
+
+  *Texture = iD3D9VolumeTexture(Temp, Device, &Settings);
+  iCloseImage(Temp);
+
+  return IL_TRUE;  
+}
+
 
 IDirect3DTexture9* ILAPIENTRY ilutD3D9Texture(IDirect3DDevice9 *Device) {
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
+  ILUTtextureSettingsDX9 Settings;
   ILimage * Image;
   IDirect3DTexture9 *Result;
 
   iLockState();
   Image = iLockCurImage();
-  GetSettings(&Settings);
+  iD3D9GetSettings(&Settings);
   iUnlockState();
 
   Result = iD3D9Texture(Image, Device, &Settings);
@@ -716,7 +686,7 @@ IDirect3DTexture9* ILAPIENTRY ilutD3D9Texture(IDirect3DDevice9 *Device) {
   return Result;
 }
 
-static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUT_TEXTURE_SETTINGS_DX9 *Settings) {
+static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings) {
   IDirect3DVolumeTexture9 *Texture;
   D3DLOCKED_BOX Box;
   D3DFORMAT   Format;
@@ -727,10 +697,10 @@ static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirec
     return NULL;
   }
 
-  if (!FormatsDX9Checked)
-    CheckFormatsDX9(Device);
+  if (!iD3D9FormatsChecked)
+    iD3D9CheckFormats(Device);
 
-  Image = MakeD3D9Compliant(ilutCurImage, Device, &Format, Settings);
+  Image = iD3D9MakeCompliant(ilutCurImage, Device, &Format, Settings);
   if (Image == NULL)
     return NULL;
 
@@ -764,13 +734,13 @@ static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirec
 
 
 IDirect3DVolumeTexture9* ILAPIENTRY ilutD3D9VolumeTexture(IDirect3DDevice9 *Device) {
-  ILUT_TEXTURE_SETTINGS_DX9 Settings;
+  ILUTtextureSettingsDX9 Settings;
   ILimage *Image;
   IDirect3DVolumeTexture9 *Result;
 
   iLockState();
   Image = iLockCurImage();
-  GetSettings(&Settings);
+  iD3D9GetSettings(&Settings);
   iUnlockState();
 
   Result = iD3D9VolumeTexture(Image, Device, &Settings);
@@ -779,7 +749,7 @@ IDirect3DVolumeTexture9* ILAPIENTRY ilutD3D9VolumeTexture(IDirect3DDevice9 *Devi
 }
 
 
-static ILimage *MakeD3D9Compliant(ILimage *ilutCurImage, IDirect3DDevice9 *Device, D3DFORMAT *DestFormat, ILUT_TEXTURE_SETTINGS_DX9 *Settings) {
+static ILimage *iD3D9MakeCompliant(ILimage *ilutCurImage, IDirect3DDevice9 *Device, D3DFORMAT *DestFormat, ILUTtextureSettingsDX9 *Settings) {
   ILuint  color;
   ILimage *Converted, *Scaled;
   ILuint nConversionType, ilutFormat;
@@ -807,7 +777,7 @@ static ILimage *MakeD3D9Compliant(ILimage *ilutCurImage, IDirect3DDevice9 *Devic
     case IL_FLOAT:
     case IL_DOUBLE:
     case IL_HALF:
-      if (bForceIntegerFormat || (!FormatsDX9supported[6]))
+      if (bForceIntegerFormat || (!iD3D9FormatsSupported[6]))
       {
         *DestFormat     = D3DFMT_A8R8G8B8;
         nConversionType = IL_UNSIGNED_BYTE;
@@ -887,7 +857,7 @@ static ILimage *MakeD3D9Compliant(ILimage *ilutCurImage, IDirect3DDevice9 *Devic
 }
 
 
-static ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, ILUT_TEXTURE_SETTINGS_DX9 *Settings) {
+static ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, ILUTtextureSettingsDX9 *Settings) {
   D3DLOCKED_RECT  Rect;
   D3DSURFACE_DESC Desc;
   ILuint      NumMips,  srcMips, Width, Height, i;
@@ -915,7 +885,7 @@ static ILboolean iD3D9CreateMipmaps(IDirect3DTexture9 *Texture, ILimage *Image, 
 
   Temp = MipImage->Mipmaps;
 
-  if (Settings->UseDXTC && FormatsDX9supported[3] && FormatsDX9supported[4] && FormatsDX9supported[5])
+  if (Settings->UseDXTC && iD3D9FormatsSupported[3] && iD3D9FormatsSupported[4] && iD3D9FormatsSupported[5])
     useDXTC = IL_TRUE;
 
   // Counts the base texture as 1.

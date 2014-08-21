@@ -320,19 +320,19 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 		if (text_ptr[j].compression != PNG_TEXT_COMPRESSION_NONE) continue;
 
 		if (!iCharStrICmp(text_ptr[j].key, "Title")) {
-			iSetString(image, IL_META_DOCUMENT_NAME, text_ptr[j].text);
+			iSetStringMB(image, IL_META_DOCUMENT_NAME, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Author")) {
-			iSetString(image, IL_META_ARTIST, text_ptr[j].text);
+			iSetStringMB(image, IL_META_ARTIST, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Description")) {
-			iSetString(image, IL_META_IMAGE_DESCRIPTION, text_ptr[j].text);
+			iSetStringMB(image, IL_META_IMAGE_DESCRIPTION, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Copyright")) {
-			iSetString(image, IL_META_COPYRIGHT, text_ptr[j].text);
+			iSetStringMB(image, IL_META_COPYRIGHT, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Creation Time")) {
-			iSetString(image, IL_META_DATETIME, text_ptr[j].text);
+			iSetStringMB(image, IL_META_DATETIME, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Software")) {
-			iSetString(image, IL_META_SOFTWARE, text_ptr[j].text);
+			iSetStringMB(image, IL_META_SOFTWARE, text_ptr[j].text);
 		} else if (!iCharStrICmp(text_ptr[j].key, "Comment")) {
-			iSetString(image, IL_META_USER_COMMENT, text_ptr[j].text);
+			iSetStringMB(image, IL_META_USER_COMMENT, text_ptr[j].text);
 		}
 	}
 
