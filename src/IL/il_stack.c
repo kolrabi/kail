@@ -21,12 +21,12 @@
 #include <pthread.h>
 
 static pthread_key_t iTlsKey;
-pthread_mutex_t iStateMutex;
+static pthread_mutex_t iStateMutex;
 
 #elif IL_THREAD_SAFE_WIN32
 
 static DWORD         iTlsKey = ~0;
-HANDLE iStateMutex = NULL;
+static HANDLE iStateMutex = NULL;
 
 #endif
 
@@ -34,10 +34,10 @@ static void iSetImage0();
 ILboolean iDefaultImage(ILimage *Image);
 
 // Global variables for il_stack.c shared among threads
-ILuint      StackSize     = 0;
-ILuint      LastUsed      = 0;
-ILimage **  ImageStack    = NULL;
-iFree   *   FreeNames     = NULL;
+static ILuint      StackSize     = 0;
+static ILuint      LastUsed      = 0;
+static ILimage **  ImageStack    = NULL;
+static iFree   *   FreeNames     = NULL;
 
 static void iInitTlsData(IL_TLS_DATA *Data) {
 
@@ -101,7 +101,7 @@ static void iSetSelection(ILuint Image, ILuint Frame, ILuint Face, ILuint Layer,
   iGetSelection()->CurMipmap  = Mipmap;
 }
 
-ILimage * iGetImage(ILuint Image) {
+static ILimage * iGetImage(ILuint Image) {
   if (ImageStack == NULL || StackSize == 0) {
     return NULL;
   }
@@ -327,7 +327,7 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
 }
 
 
-ILAPI ILboolean ILAPIENTRY ilIsValidPal(ILpal *Palette)
+ILboolean iIsValidPal(ILpal *Palette)
 {
   if (Palette == NULL)
     return IL_FALSE;
@@ -352,7 +352,7 @@ ILAPI void ILAPIENTRY iClosePalReal(ILpal *Palette)
 {
   if (Palette == NULL)
     return;
-  if (!ilIsValidPal(Palette))
+  if (!iIsValidPal(Palette))
     return;
   ifree(Palette->Palette);
   ifree(Palette);
@@ -568,7 +568,7 @@ static ILimage* iGetCurImage() {
 }
 
 // Like realloc but sets new memory to 0.
-void* ILAPIENTRY ilRecalloc(void *Ptr, ILuint OldSize, ILuint NewSize)
+static void* iRecalloc(void *Ptr, ILuint OldSize, ILuint NewSize)
 {
   void *Temp = ialloc(NewSize);
   ILuint CopySize = (OldSize < NewSize) ? OldSize : NewSize;
@@ -592,7 +592,7 @@ void* ILAPIENTRY ilRecalloc(void *Ptr, ILuint OldSize, ILuint NewSize)
 // Internal function to enlarge the image stack by I_STACK_INCREMENT members.
 ILboolean iEnlargeStack()
 {
-  if (!(ImageStack = (ILimage**)ilRecalloc(ImageStack, StackSize * sizeof(ILimage*), (StackSize + I_STACK_INCREMENT) * sizeof(ILimage*)))) {
+  if (!(ImageStack = (ILimage**)iRecalloc(ImageStack, StackSize * sizeof(ILimage*), (StackSize + I_STACK_INCREMENT) * sizeof(ILimage*)))) {
     return IL_FALSE;
   }
   StackSize += I_STACK_INCREMENT;
@@ -667,9 +667,9 @@ void iShutDownIL()
 
   if (iTraceOut && iTraceOut != stderr) fclose(iTraceOut);
 
-  #if IL_THREAD_SAFE_WIN32
+#ifdef IL_THREAD_SAFE_WIN32
   CloseHandle(iStateMutex);
-  #endif
+#endif
 
   IsInit = IL_FALSE;
   return;

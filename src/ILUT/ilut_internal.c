@@ -13,7 +13,7 @@
 
 #include "ilut_internal.h"
 
-void iInitThreads(void);
+void iInitThreads_ilut(void);
 
 /**
  * Initializes the ILUT using all available renderers.
@@ -23,7 +23,7 @@ void iInitThreads(void);
  */
 void ILAPIENTRY ilutInit()
 {
-  iInitThreads();
+  iInitThreads_ilut();
   ilutDefaultStates();  // Set states to their defaults
   // Can cause crashes if DevIL is not initialized yet
 

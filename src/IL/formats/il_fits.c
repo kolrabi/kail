@@ -16,21 +16,22 @@
 #include "il_internal.h"
 #ifndef IL_NO_FITS
 
+#include "pack_push.h"
 typedef struct FITSHEAD
 {
 	ILboolean	IsSimple;
-	ILint		BitsPixel;
-	ILint		NumAxes;  // Number of dimensions / axes
-	ILint		Width;
-	ILint		Height;
-	ILint		Depth;
-	ILint		NumChans;
+	ILuint		BitsPixel;
+	ILuint		NumAxes;  // Number of dimensions / axes
+	ILuint		Width;
+	ILuint		Height;
+	ILuint		Depth;
+	ILubyte		NumChans;
 
 	// Not in the header, but it keeps everything together.
 	ILenum		Type;
 	ILenum		Format;
-
 } FITSHEAD;
+#include "pack_pop.h"
 
 enum {
 	CARD_READ_FAIL = -1,
@@ -43,8 +44,8 @@ enum {
 	CARD_SKIP
 };
 
-static ILenum			GetCardImage(SIO *io, FITSHEAD *Header);
-static ILboolean	GetCardInt(char *Buffer, ILint *Val);
+static ILint 			GetCardImage(SIO *io, FITSHEAD *Header);
+static ILboolean	GetCardInt(char *Buffer, ILuint *Val);
 
 
 // Internal function used to get the FITS header from the current file.
@@ -166,6 +167,7 @@ iLoadFitsInternal(ILimage* image) {
 	ILfloat		MaxF = 0.0f;
 	ILdouble	MaxD = 0.0f;
 	SIO *io;
+	void *Data;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -187,6 +189,8 @@ iLoadFitsInternal(ILimage* image) {
 		return IL_FALSE;*/
 
 	NumPix = Header.Width * Header.Height * Header.Depth;
+	Data = image->Data;
+
 //@TODO: Do some checks while reading to see if we have hit the end of the file.
 	switch (Header.Type)
 	{
@@ -196,45 +200,46 @@ iLoadFitsInternal(ILimage* image) {
 			break;
 		case IL_SHORT:
 			for (i = 0; i < NumPix; i++) {
-				((ILshort*)image->Data)[i] = GetBigShort(io);
+				((ILshort*)Data)[i] = GetBigShort(io);
 			}
 			break;
 		case IL_INT:
 			for (i = 0; i < NumPix; i++) {
-				((ILint*)image->Data)[i] = GetBigInt(io);
+				((ILint*)Data)[i] = GetBigInt(io);
 			}
 			break;
 		case IL_FLOAT:
 			for (i = 0; i < NumPix; i++) {
-				((ILfloat*)image->Data)[i] = GetBigFloat(io);
-				if (((ILfloat*)image->Data)[i] > MaxF)
-					MaxF = ((ILfloat*)image->Data)[i];
+				((ILfloat*)Data)[i] = GetBigFloat(io);
+				if (((ILfloat*)Data)[i] > MaxF)
+					MaxF = ((ILfloat*)Data)[i];
 			}
 
 			// Renormalize to [0..1].
 			for (i = 0; i < NumPix; i++) {
 				// Change all negative numbers to 0.
-				if (((ILfloat*)image->Data)[i] < 0.0f)
-					((ILfloat*)image->Data)[i] = 0.0f;
+				if (((ILfloat*)Data)[i] < 0.0f)
+					((ILfloat*)Data)[i] = 0.0f;
 				// Do the renormalization now, dividing by the maximum value.
-				((ILfloat*)image->Data)[i] = ((ILfloat*)image->Data)[i] / MaxF;
+				((ILfloat*)Data)[i] = ((ILfloat*)Data)[i] / MaxF;
 			}
 			break;
 		case IL_DOUBLE:
 			for (i = 0; i < NumPix; i++) {
-				((ILdouble*)image->Data)[i] = GetBigDouble(io);
-				if (((ILdouble*)image->Data)[i] > MaxD)
-					MaxD = ((ILdouble*)image->Data)[i];
+				((ILdouble*)Data)[i] = GetBigDouble(io);
+				if (((ILdouble*)Data)[i] > MaxD)
+					MaxD = ((ILdouble*)Data)[i];
 			}
 
 			// Renormalize to [0..1].
 			for (i = 0; i < NumPix; i++) {
 				// Change all negative numbers to 0.
-				if (((ILdouble*)image->Data)[i] < 0.0f)
-					((ILdouble*)image->Data)[i] = 0.0f;
+				if (((ILdouble*)Data)[i] < 0.0f)
+					((ILdouble*)Data)[i] = 0.0f;
 				// Do the renormalization now, dividing by the maximum value.
-				((ILdouble*)image->Data)[i] = ((ILdouble*)image->Data)[i] / MaxD;
-			}			break;
+				((ILdouble*)Data)[i] = ((ILdouble*)Data)[i] / MaxD;
+			}			
+			break;
 	}
 
 	return IL_TRUE;
@@ -242,7 +247,7 @@ iLoadFitsInternal(ILimage* image) {
 
 
 //@TODO: NAXISx have to come in order.  Check this!
-static ILenum 
+static ILint 
 GetCardImage(SIO *io, FITSHEAD *Header) {
 	char	Buffer[80];
 
@@ -343,7 +348,7 @@ GetCardImage(SIO *io, FITSHEAD *Header) {
 }
 
 static ILboolean
-GetCardInt(char *Buffer, ILint *Val) {
+GetCardInt(char *Buffer, ILuint *Val) {
 	ILuint	i;
 	char	ValString[22];
 
@@ -361,7 +366,7 @@ GetCardInt(char *Buffer, ILint *Val) {
 	ValString[30-i] = 0;  // Terminate the string.
 
 	//@TODO: Check the return somehow?
-	*Val = atoi(ValString);
+	*Val = (ILuint)atoi(ValString);
 
 	return IL_TRUE;
 }
@@ -370,9 +375,11 @@ GetCardInt(char *Buffer, ILint *Val) {
 static ILboolean
 iIsValidFits(SIO *io) {
   char Sig[7];
-  ILint Read = SIOread(io, &Sig, 1, 7);
+  ILuint Start = SIOtell(io);
+  ILuint Read = SIOread(io, &Sig, 1, 7);
 
-  SIOseek(io, -Read, IL_SEEK_CUR);
+  SIOseek(io, Start, IL_SEEK_SET);
+
   return Read == 7 && memcmp(Sig, "SIMPLE ", 7) == 0;
 
 	/*
@@ -390,7 +397,7 @@ iIsValidFits(SIO *io) {
 	*/
 }
 
-ILconst_string iFormatExtsFITS[] = { 
+static ILconst_string iFormatExtsFITS[] = { 
 	IL_TEXT("fit"),
 	IL_TEXT("fits"),
 	NULL 

@@ -25,8 +25,8 @@
   #pragma comment(lib, "sdl.lib")
 #endif//_MSC_VER
 
-static int isBigEndian;
-static int rmask, gmask, bmask, amask;
+static ILboolean isBigEndian;
+static ILuint rmask, gmask, bmask, amask;
 
 ILboolean InitSDL()
 {
@@ -47,7 +47,7 @@ ILboolean InitSDL()
   return IL_TRUE;
 }
 
-SDL_Surface * iConvertToSDLSurface(ILimage *ilutCurImage, unsigned int flags)
+static SDL_Surface * iConvertToSDLSurface(ILimage *ilutCurImage, unsigned int flags)
 {
   SDL_Surface *Bitmap = NULL;
   ILuint    i = 0, Pad, BppPal;
@@ -103,7 +103,7 @@ SDL_Surface * iConvertToSDLSurface(ILimage *ilutCurImage, unsigned int flags)
       goto done;
   }
 
-  Bitmap = SDL_CreateRGBSurface(flags, Image->Width, Image->Height, Image->Bpp * 8,
+  Bitmap = SDL_CreateRGBSurface(flags, (int)Image->Width, (int)Image->Height, Image->Bpp * 8,
           rmask,gmask,bmask,amask);
 
   if (Bitmap == NULL)
@@ -229,7 +229,7 @@ ILboolean ILAPIENTRY ilutSDLSurfaceFromBitmap(SDL_Surface *Bitmap)
     return IL_FALSE;
   }
 
-  Result = iTexImage(ilutCurImage, Bitmap->w, Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+  Result = iTexImage(ilutCurImage, (ILuint)Bitmap->w, (ILuint)Bitmap->h, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
   iUnlockImage(ilutCurImage);
 
   return Result;

@@ -154,8 +154,8 @@ typedef struct BLOCKHEAD
 
 typedef struct GENATT_CHUNK
 {
-	ILint		Width;
-	ILint		Height;
+	ILuint		Width;
+	ILuint		Height;
 	ILdouble	Resolution;
 	ILubyte		ResMetric;
 	ILushort	Compression;

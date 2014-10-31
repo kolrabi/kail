@@ -61,7 +61,7 @@ typedef struct ILUinfo {
   ILuint  Width;      ///< the image's width
   ILuint  Height;     ///< the image's height
   ILuint  Depth;      ///< the image's depth
-  ILubyte Bpp;        ///< bytes per pixel (not bits) of the image
+  ILuint  Bpp;        ///< bytes per pixel (not bits) of the image
   ILuint  SizeOfData; ///< the total size of the data (in bytes)
   ILenum  Format;     ///< image format (in IL enum style)
   ILenum  Type;       ///< image type (in IL enum style)

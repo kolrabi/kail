@@ -22,7 +22,7 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 	ILubyte	VertOrientation;
 	ILuint	Width, Height, i, Total, x, CurPos = 0;
 	ILubyte	*Y1=NULL, *Y2=NULL, *CbCr=NULL, r = 0, g = 0, b = 0;
-    SIO *io;
+  SIO *io;
 	ILuint Start;
 
 	if (image == NULL) {
@@ -119,7 +119,7 @@ static ILboolean iLoadPcdInternal(ILimage* image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPCD[] = { 
+static ILconst_string iFormatExtsPCD[] = { 
   IL_TEXT("pcd"), 
   NULL 
 };

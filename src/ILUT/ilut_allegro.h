@@ -15,6 +15,10 @@
 #ifndef ILUT_ALLEG_H
 #define ILUT_ALLEG_H
 
+#define _IL_BUILD_LIBRARY
+#define _ILU_BUILD_LIBRARY
+#define _ILUT_BUILD_LIBRARY
+
 #include <IL/ilut.h>
 #include <IL/devil_internal_exports.h>
 

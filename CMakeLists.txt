@@ -34,6 +34,10 @@ INCLUDE                 ( TestBigEndian )
 INCLUDE                 ( CheckCCompilerFlag )
 INCLUDE                 ( TestBigEndian )
 
+IF                  ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
+  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Weverything -Wextra -Wno-documentation-unknown-command -Wno-cast-align" )
+ENDIF()
+
 # HACK: prefer static 
 IF                      ( MINGW )
   FIND_LIBRARY          ( PTHREAD_STATIC_LIB NAMES libpthread.a libpthreads.a )
@@ -91,7 +95,7 @@ CHECK_FUNCTION_EXISTS   ( _mm_malloc        MM_MALLOC )
 CHECK_FUNCTION_EXISTS   ( posix_memalign    POSIX_MEMALIGN )
 CHECK_FUNCTION_EXISTS   ( valloc            VALLOC )
 
-CHECK_C_COMPILER_FLAG   ( "-faltivec -maltivec" ALTIVEC_GCC )
+CHECK_C_COMPILER_FLAG   ( "-faltivec" ALTIVEC_GCC )
 CHECK_C_COMPILER_FLAG   ( "-msse" SSE )
 CHECK_C_COMPILER_FLAG   ( "-msse2" SSE2 )
 CHECK_C_COMPILER_FLAG   ( "-msse3" SSE3 )

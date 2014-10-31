@@ -15,8 +15,10 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-// Global variable: stores the currently used image
-FILE *   iTraceOut = NULL;
+#if defined(_WIN32) && !defined(IL_STATIC_LIB)
+__declspec(dllexport) 
+#endif
+FILE * iTraceOut = NULL;
 
 // Last time I tried, MSVC++'s fgets() was really really screwy
 char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
@@ -30,7 +32,7 @@ char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
 	}
 
 	while ((temp = SIOgetc(io)) && temp != '\n' && temp != IL_EOF && counter < MaxLen) {
-		buffer[counter] = temp;
+		buffer[counter] = (char)temp;
 		counter++;
 	}
 	buffer[counter] = '\0';
@@ -75,7 +77,7 @@ char * ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen) {
 			break;
 		}
 
-		buffer[i] = Temp;
+		buffer[i] = (char)Temp;
 	}
 
 	buffer[i] = '\0';

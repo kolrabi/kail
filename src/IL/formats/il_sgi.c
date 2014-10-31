@@ -12,8 +12,11 @@
 
 #include "il_internal.h"
 #ifndef IL_NO_SGI
+
 #include "il_sgi.h"
 #include "il_manip.h"
+#include "algo/il_rle.h"
+
 #include <limits.h>
 
 // static char *FName = NULL;
@@ -21,7 +24,7 @@
 // Internal functions
 static ILboolean	iCheckSgi(iSgiHeader *Header);
 //void		iExpandScanLine(ILubyte *Dest, ILubyte *Src, ILuint Bpc);
-static ILint		iGetScanLine(SIO *, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length);
+static ILuint			iGetScanLine(SIO *, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length);
 static ILboolean	iNewSgi(ILimage *, iSgiHeader *Head);
 static ILboolean	iReadNonRleSgi(ILimage *, iSgiHeader *Head);
 static ILboolean	iReadRleSgi(ILimage *, iSgiHeader *Head);
@@ -74,9 +77,10 @@ static ILboolean iCheckSgi(iSgiHeader *Header)
 static ILboolean iIsValidSgi(SIO *io)
 {
 	iSgiHeader	Head;
-	ILint 			read = iGetSgiHead(io, &Head);
+	ILuint      Start = SIOtell(io);
+	ILuint 			read = iGetSgiHead(io, &Head);
 	
-	SIOseek(io, -read, IL_SEEK_CUR);  // Restore previous file position
+	SIOseek(io, Start, IL_SEEK_SET);  // Restore previous file position
 
 	return read == sizeof(Head) && iCheckSgi(&Head);
 }
@@ -131,7 +135,7 @@ static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 	for (ixPlane = 0; ixPlane < Head->ZSize; ixPlane++) {
 		for (ixHeight = 0, Cur = 0;	ixHeight < Head->YSize;
 			ixHeight++, Cur += Head->XSize * Head->Bpc) {
-            ILint Scan;
+      ILuint Scan;
 
 			RleOff = OffTable[ixHeight + ixPlane * Head->YSize];
 			RleLen = LenTable[ixHeight + ixPlane * Head->YSize];
@@ -194,7 +198,7 @@ cleanup_error:
 
 /*----------------------------------------------------------------------------*/
 
-static ILint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length) {
+static ILuint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint Length) {
 	ILushort Pixel, Count;  // For current pixel
 	ILuint	 BppRead = 0, CurPos = 0, Bps = Head->XSize * Head->Bpc;
 
@@ -202,7 +206,7 @@ static ILint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint L
 	{
 		Pixel = 0;
 		if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
-			return -1;
+			return ~0UL;
 		
 		UShort(&Pixel);
 
@@ -212,14 +216,14 @@ static ILint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint L
 
 		if (Pixel & 0x80) {  // If top bit set, then it is a "run"
 			if (SIOread(io, ScanLine, Head->Bpc, Count) != Count)
-				return -1;
+				return ~0UL;
 
 			BppRead += Head->Bpc * Count + Head->Bpc;
 			ScanLine += Head->Bpc * Count;
 			CurPos += Head->Bpc * Count;
 		}	else {
 			if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
-				return -1;
+				return ~0UL;
 
 			UShort(&Pixel);
 			if (Head->Bpc == 1) {
@@ -231,7 +235,7 @@ static ILint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint L
 			}
 			else {
 				while (Count--) {
-					*(ILushort*)ScanLine = Pixel;
+					*(ILushort*)(void*)ScanLine = Pixel;
 					ScanLine += 2;
 					CurPos += 2;
 				}
@@ -406,7 +410,7 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 	}
 	
 	//compression of images with 2 bytes per channel doesn't work yet
-	Compress = iGetInt(IL_SGI_RLE) && Temp->Bpc == 1;
+	Compress = ilIsEnabled(IL_SGI_RLE) && Temp->Bpc == 1;
 
 	if (Temp == NULL)
 		return IL_FALSE;
@@ -548,7 +552,7 @@ static ILboolean iSaveRleSgi(SIO *io, ILubyte *Data, ILuint w, ILuint h, ILuint 
 				ScanLine[j] = Data[i];
 			}
 
-			ilRleCompressLine(ScanLine, w, 1, CompLine, LenTable + h * c + y, IL_SGICOMP);
+			iRleCompressLine(ScanLine, w, 1, CompLine, LenTable + h * c + y, IL_SGICOMP);
 			SIOwrite(io, CompLine, 1, *(LenTable + h * c + y));
 		}
 	}
@@ -616,7 +620,7 @@ static ILboolean iLoadSgiInternal(ILimage *Image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsSGI[] = { 
+static ILconst_string iFormatExtsSGI[] = { 
 	IL_TEXT("sgi"), 
 	IL_TEXT("bw"), 
 	IL_TEXT("rgb"), 

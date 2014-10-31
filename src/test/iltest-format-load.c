@@ -1,11 +1,11 @@
 #include "iltest.h"
 
-void dumpMeta(ILuint image) {
-  ILint metaCount = ilGetIntegerImage(image, IL_IMAGE_METADATA_COUNT);
+static void dumpMeta(ILuint image) {
+  ILuint metaCount = (ILuint)ilGetIntegerImage(image, IL_IMAGE_METADATA_COUNT);
   ILenum type;
   ILuint count, size, j;
   void *data;
-  ILint i;
+  ILuint i;
   ILint tmp[512];
   ILfloat et = 1.0f;
   memset(tmp, 0, sizeof(tmp));
@@ -40,7 +40,7 @@ void dumpMeta(ILuint image) {
   et = ilGetFloat(IL_META_EXPOSURE_TIME);
   fprintf(stderr, "Exp:   %d: %d/%d: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
 
-  ilSetFloat(IL_META_EXPOSURE_TIME, 1.0/20.0f);
+  ilSetFloat(IL_META_EXPOSURE_TIME, 1.0f/20.0f);
 
   count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
   et = ilGetFloat(IL_META_EXPOSURE_TIME);
@@ -56,17 +56,17 @@ void dumpMeta(ILuint image) {
 int main(int argc, char **argv) {
   ILuint    image, reference;
   ILfloat   similarity;
-  int       frameCount, width, height, depth;
+  ILuint    frameCount, width, height, depth;
 
   // syntax: ILtestFormatLoad <reference> <image> <width> <height> <depth> <frames>
   if (argc < 7) {
     return -1;
   }
 
-  width       = atoi(argv[3]);
-  height      = atoi(argv[4]);
-  depth       = atoi(argv[5]);
-  frameCount  = atoi(argv[6]);
+  width       = (ILuint)atoi(argv[3]);
+  height      = (ILuint)atoi(argv[4]);
+  depth       = (ILuint)atoi(argv[5]);
+  frameCount  = (ILuint)atoi(argv[6]);
 
   ilInit();
   iluInit();
@@ -97,15 +97,15 @@ int main(int argc, char **argv) {
 
   // check parameters
   ilBindImage(image);
-  CHECK_EQ(ilGetInteger(IL_NUM_IMAGES), frameCount);
+  CHECK_EQ((ILuint)ilGetInteger(IL_NUM_IMAGES), frameCount);
   ilActiveImage(frameCount);
 
-  CHECK_EQ(ilGetInteger(IL_IMAGE_WIDTH),  width);
-  CHECK_EQ(ilGetInteger(IL_IMAGE_HEIGHT), height);
-  CHECK_EQ(ilGetInteger(IL_IMAGE_DEPTH),  depth);
+  CHECK_EQ((ILuint)ilGetInteger(IL_IMAGE_WIDTH),  width);
+  CHECK_EQ((ILuint)ilGetInteger(IL_IMAGE_HEIGHT), height);
+  CHECK_EQ((ILuint)ilGetInteger(IL_IMAGE_DEPTH),  depth);
 
   // check similarity
-  iluScale(ilGetIntegerImage(reference, IL_IMAGE_WIDTH), ilGetIntegerImage(reference, IL_IMAGE_HEIGHT), 1);
+  iluScale((ILuint)ilGetIntegerImage(reference, IL_IMAGE_WIDTH), (ILuint)ilGetIntegerImage(reference, IL_IMAGE_HEIGHT), 1);
   similarity = iluSimilarity(reference);
   fprintf(stderr, "Similarity: %f\n", similarity);
   // CHECK_GREATER(similarity, 0.95);

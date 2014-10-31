@@ -31,7 +31,7 @@ typedef struct IWIHEAD
 #define IWI_RGB8	0x02
 #define IWI_ARGB4	0x03
 #define IWI_A8		0x04
-#define IWI_JPG		0x07
+// #define IWI_JPG		0x07
 #define IWI_DXT1	0x0B
 #define IWI_DXT3	0x0C
 #define IWI_DXT5	0x0D
@@ -210,11 +210,12 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 	ILimage	*Image;
 	ILuint	SizeOfData;
 	ILubyte	*CompData = NULL;
-	ILint	i, j, k, m;
+	ILuint	k, m;
+	ILint   i, j;
 
 	SIO *io = &BaseImage->io;
 
-	for (i = NumMips; i >= 0; i--) {
+	for (i = (ILint)NumMips; i >= 0; i--) {
 		Image = BaseImage;
 		// Go to the ith mipmap level.
 		//  The mipmaps go from smallest to the largest.
@@ -242,12 +243,12 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 					ifree(CompData);
 					return IL_FALSE;
 				}
-				for (k = 0, m = 0; k < (ILint)Image->SizeOfData; k += 4, m += 2) {
+				for (k = 0, m = 0; k < Image->SizeOfData; k += 4, m += 2) {
 					// @TODO: Double the image data into the low and high nibbles for a better range of values.
-					Image->Data[k+0] =  CompData[m  ] & 0xF0;
-					Image->Data[k+1] = (CompData[m  ] & 0x0F) << 4;
-					Image->Data[k+2] =  CompData[m+1] & 0xF0;
-					Image->Data[k+3] = (CompData[m+1] & 0x0F) << 4;
+					Image->Data[k+0] = (ILubyte)( CompData[m  ] & 0xF0);
+					Image->Data[k+1] = (ILubyte)((CompData[m  ] & 0x0F) << 4);
+					Image->Data[k+2] = (ILubyte)( CompData[m+1] & 0xF0);
+					Image->Data[k+3] = (ILubyte)((CompData[m+1] & 0x0F) << 4);
 				}
 				break;
 
@@ -328,7 +329,7 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 }
 
 
-ILconst_string iFormatExtsIWI[] = { 
+static ILconst_string iFormatExtsIWI[] = { 
   IL_TEXT("iwi"), 
   NULL 
 };

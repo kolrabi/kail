@@ -21,6 +21,7 @@
 #include <png.h>
 #include "il_manip.h"
 #include <stdlib.h>
+
 #if PNG_LIBPNG_VER < 10200
 	#warning DevIL was designed with libpng 1.2.0 or higher in mind.  Consider upgrading at www.libpng.org.
 #endif
@@ -56,12 +57,11 @@ static void				readpng_cleanup(struct PNGData * data);
 
 static ILboolean iIsValidPng(SIO* io) {
 	ILubyte 	Signature[8];
-	ILint		Read;
+	ILuint    Start = SIOtell(io);
+	ILuint		Read  = SIOread(io, Signature, 1, 8);
+	SIOseek(io, Start, IL_SEEK_SET);
 
-	Read = io->read(io->handle, Signature, 1, 8);
-	io->seek(io->handle, -Read, IL_SEEK_CUR);
-
-	return png_check_sig(Signature, 8);
+	return Read == 8 && png_check_sig(Signature, 8);
 }
 
 
@@ -99,6 +99,7 @@ static void png_read(png_structp png_ptr, png_bytep data, png_size_t length)
 }
 
 
+static void png_error_func(png_structp png_ptr, png_const_charp message) NORETURN;
 static void png_error_func(png_structp png_ptr, png_const_charp message)
 {
 	iSetError(IL_LIB_PNG_ERROR);
@@ -221,7 +222,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 #endif
 
 	png_read_update_info(data->png_ptr, data->info_ptr);
-	channels = (ILint)png_get_channels(data->png_ptr, data->info_ptr);
+	channels = png_get_channels(data->png_ptr, data->info_ptr);
 	//added 20040224: update png_color_type so that it has the correct value
 	//in iLoadPngInternal
 	data->png_color_type = png_get_color_type(data->png_ptr, data->info_ptr);
@@ -258,7 +259,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 
 	//copy palette
 	if (format == IL_COLOUR_INDEX) {
-		int chans;
+		ILubyte chans;
 		png_bytep trans = NULL;
 		int  num_trans = -1;
 		if (!png_get_PLTE(data->png_ptr, data->info_ptr, &palette, &num_palette)) {
@@ -276,7 +277,7 @@ ILboolean readpng_get_image(ILimage* image, struct PNGData * data, ILdouble disp
 			chans = 4;
 		}
 
-		image->Pal.PalSize = num_palette * chans;
+		image->Pal.PalSize = (ILuint)num_palette * chans;
 
 		image->Pal.Palette = (ILubyte*)ialloc(image->Pal.PalSize);
 
@@ -350,14 +351,14 @@ void readpng_cleanup(struct PNGData* data)
 }
 
 
-void png_write(png_structp png_ptr, png_bytep data, png_size_t length)
+static void png_write(png_structp png_ptr, png_bytep data, png_size_t length)
 {
 	ILimage *Image = (ILimage*)png_get_io_ptr(png_ptr);
 	SIOwrite(&Image->io, data, 1, (ILuint)length);
 	return;
 }
 
-void flush_data(png_structp png_ptr)
+static void flush_data(png_structp png_ptr)
 {
 	(void)png_ptr;
 }
@@ -476,11 +477,11 @@ ILboolean iSavePngInternal(ILimage* image) {
 	//	PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
 	//	currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
 	if (iGetInt(IL_PNG_INTERLACE) == IL_TRUE) {
-		png_set_IHDR(png_ptr, info_ptr, image->Width, image->Height, BitDepth, PngType,
+		png_set_IHDR(png_ptr, info_ptr, image->Width, image->Height, (int)BitDepth, (int)PngType,
 			PNG_INTERLACE_ADAM7, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	}
 	else {
-		png_set_IHDR(png_ptr, info_ptr, image->Width, image->Height, BitDepth, PngType,
+		png_set_IHDR(png_ptr, info_ptr, image->Width, image->Height, (int)BitDepth, (int)PngType,
 			PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 	}
 
@@ -488,7 +489,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 		// set the palette if there is one.  REQUIRED for indexed-color images.
 		TempPal = iConvertPal(&image->Pal, IL_PAL_RGB24);
 		png_set_PLTE(png_ptr, info_ptr, (png_colorp)TempPal->Palette,
-			TempPal->PalSize / iGetBppPal(TempPal->PalType));
+			(int)(TempPal->PalSize / iGetBppPal(TempPal->PalType)));
 
 		//XIX alpha
 		trans = iGetInt(IL_PNG_ALPHA_INDEX);
@@ -557,7 +558,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 	text[i].compression = PNG_TEXT_COMPRESSION_NONE;
 	if (text[i].text) i++;
 
-	png_set_text(png_ptr, info_ptr, text, i);
+	png_set_text(png_ptr, info_ptr, text, (int)i);
 
 	// Write the file header information.  REQUIRED.
 	png_write_info(png_ptr, info_ptr);
@@ -631,7 +632,7 @@ error_label:
 	return IL_FALSE;
 }
 
-ILconst_string iFormatExtsPNG[] = { 
+static ILconst_string iFormatExtsPNG[] = { 
   IL_TEXT("png"), 
   NULL 
 };

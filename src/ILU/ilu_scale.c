@@ -15,11 +15,6 @@
 #include "ilu_states.h"
 
 
-ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter);
-ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter);
-ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
-
-
 ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter) {
   ILimage   *Temp;
   ILboolean UsePal;
@@ -174,7 +169,7 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filte
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
-    return IL_FALSE;
+    return NULL;
   }
 
   ScaleX = (ILdouble)Width / Image->Width;

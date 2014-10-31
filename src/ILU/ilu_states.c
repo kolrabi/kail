@@ -17,7 +17,7 @@
 static ILconst_string _iluVendor  = IL_TEXT("kolrabi");
 static ILconst_string _iluVersion = IL_TEXT("kolrabi's another Image Library Utilities (ILU) 1.10.0");
 
-ILconst_string iGetString(ILenum StringName) {
+ILconst_string iGetString_ilu(ILenum StringName) {
   switch (StringName)   {
     case ILU_VENDOR:
       return _iluVendor;
@@ -31,18 +31,18 @@ ILconst_string iGetString(ILenum StringName) {
   return NULL;
 }
 
-void iGetIntegerv(ILenum Mode, ILint *Param) {  
+void iGetIntegerv_ilu(ILenum Mode, ILint *Param) {  
   switch (Mode) {
     case ILU_VERSION_NUM:
       *Param = ILU_VERSION;
       break;
 
     case ILU_FILTER:
-      *Param = iGetTLSDataILU()->iluFilter;
+      *Param = (ILint)iGetTLSDataILU()->iluFilter;
       break;
 
     case ILU_PLACEMENT:
-      *Param = iGetTLSDataILU()->iluPlacement;
+      *Param = (ILint)iGetTLSDataILU()->iluPlacement;
       break;
 
     default:

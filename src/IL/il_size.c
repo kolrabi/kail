@@ -45,17 +45,17 @@ ILint ILAPIENTRY iSizeSeek(ILHANDLE h, ILint64 Offset, ILuint Mode) {
   switch (Mode)
   {
     case IL_SEEK_SET:
-      io->lumpPos = Offset;
+      io->lumpPos = (ILuint)Offset;
       if (io->lumpPos > io->lumpSize)
         io->lumpSize = io->lumpPos;
       break;
 
     case IL_SEEK_CUR:
-      io->lumpPos = io->lumpPos + Offset;
+      io->lumpPos = (ILuint)(io->lumpPos + Offset);
       break;
 
     case IL_SEEK_END:
-      io->lumpPos = io->lumpSize + Offset;  // Offset should be negative in this case.
+      io->lumpPos = (ILuint)(io->lumpSize + Offset);  // Offset should be negative in this case.
       break;
 
     default:
@@ -95,7 +95,7 @@ ILint ILAPIENTRY iSizeGetc(ILHANDLE h) {
   return ((ILubyte*)io->lump)[io->lumpPos++];
 }
 
-ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h) {
+ILuint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h) {
   SIO *io = (SIO*)h;
 
   if (!iSizeResize(io, io->lumpPos + Size * Number))
@@ -107,7 +107,7 @@ ILint ILAPIENTRY iSizeWrite(const void *Buffer, ILuint Size, ILuint Number, ILHA
   return Number;
 }
 
-ILint ILAPIENTRY iSizeRead(ILHANDLE h, void *Buffer, ILuint Size, ILuint Number) {
+ILuint ILAPIENTRY iSizeRead(ILHANDLE h, void *Buffer, ILuint Size, ILuint Number) {
   SIO *io = (SIO*)h;
   ILuint Count = 0;
 

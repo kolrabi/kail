@@ -62,14 +62,11 @@ static ILboolean iGetVtfHead(SIO* io, VTFHEAD *Header) {
 static ILboolean iIsValidVtf(SIO* io) {
 	VTFHEAD Header;
 
-	ILint oldReadPos = io->tell(io->handle);
+	ILuint oldReadPos = SIOtell(io);
 	ILboolean gotHeader = iGetVtfHead(io, &Header);
-	io->seek(io->handle, oldReadPos, IL_SEEK_SET);
+	SIOseek(io, oldReadPos, IL_SEEK_SET);
 	
-	if (gotHeader)
-		return iCheckVtf(&Header);
-	else
-		return IL_FALSE;
+	return gotHeader && iCheckVtf(&Header);
 }
 
 
@@ -128,8 +125,8 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 	ILboolean	bVtf = IL_TRUE;
 	ILimage		*Image; //, *BaseImage;
 	ILenum		Format, Type;
-	ILuint		SizeOfData, Channels, k;
-	ILubyte		*CompData = NULL, SwapVal, *Data16Bit, *Temp, NumFaces;
+	ILuint		SizeOfData, k;
+	ILubyte		*CompData = NULL, SwapVal, *Data16Bit, *Temp, NumFaces, Channels;
 	ILuint      i;
 	VTFHEAD		Head;
     ILimage *   Frame;
@@ -410,7 +407,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							bVtf = IL_FALSE;
 							break;
 						}
-						bVtf = iConvFloat16ToFloat32((ILuint*)Image->Data, (ILushort*)CompData, SizeOfData / 2);
+						bVtf = iConvFloat16ToFloat32((ILuint*)(void*)Image->Data, (ILushort*)(void*)CompData, SizeOfData / 2);
 						break;
 
 					// Uncompressed 32-bit ARGB and ABGR data.  DevIL does not handle this
@@ -449,9 +446,9 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							break;
 						}
 						for (k = 0; k < Image->SizeOfData; k += 3) {
-							Image->Data[k]   =  (Data16Bit[0] & 0x1F) << 3;
-							Image->Data[k+1] = ((Data16Bit[1] & 0x07) << 5) | ((Data16Bit[0] & 0xE0) >> 3);
-							Image->Data[k+2] =   Data16Bit[1] & 0xF8;
+							Image->Data[k]   = (ILubyte)( (Data16Bit[0] & 0x1F) << 3);
+							Image->Data[k+1] = (ILubyte)(((Data16Bit[1] & 0x07) << 5) | ((Data16Bit[0] & 0xE0) >> 3));
+							Image->Data[k+2] = (ILubyte)(  Data16Bit[1] & 0xF8);
 							Data16Bit += 2;
 						}
 						break;
@@ -470,9 +467,9 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							break;
 						}
 						for (k = 0; k < Image->SizeOfData; k += 4) {
-							Image->Data[k]   =  (Data16Bit[0] & 0x1F) << 3;
-							Image->Data[k+1] = ((Data16Bit[0] & 0xE0) >> 2) | ((Data16Bit[1] & 0x03) << 6);
-							Image->Data[k+2] =  (Data16Bit[1] & 0x7C) << 1;
+							Image->Data[k]   = (ILubyte)( (Data16Bit[0] & 0x1F) << 3);
+							Image->Data[k+1] = (ILubyte)(((Data16Bit[0] & 0xE0) >> 2) | ((Data16Bit[1] & 0x03) << 6));
+							Image->Data[k+2] = (ILubyte)( (Data16Bit[1] & 0x7C) << 1);
 							// 1-bit alpha is either off or on.
 							Image->Data[k+3] = ((Data16Bit[0] & 0x80) == 0x80) ? 0xFF : 0x00;
 							Data16Bit += 2;
@@ -488,9 +485,9 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							break;
 						}
 						for (k = 0; k < Image->SizeOfData; k += 3) {
-							Image->Data[k]   =  (Data16Bit[0] & 0x1F) << 3;
-							Image->Data[k+1] = ((Data16Bit[0] & 0xE0) >> 2) | ((Data16Bit[1] & 0x03) << 6);
-							Image->Data[k+2] =  (Data16Bit[1] & 0x7C) << 1;
+							Image->Data[k]   = (ILubyte)( (Data16Bit[0] & 0x1F) << 3);
+							Image->Data[k+1] = (ILubyte)(((Data16Bit[0] & 0xE0) >> 2) | ((Data16Bit[1] & 0x03) << 6));
+							Image->Data[k+2] = (ILubyte)( (Data16Bit[1] & 0x7C) << 1);
 							Data16Bit += 2;
 						}
 						break;
@@ -507,10 +504,10 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 						}
 						for (k = 0; k < SizeOfData; k += 4) {
 							// We double the data here.
-							Image->Data[k]   = (Temp[0] & 0x0F) << 4 | (Temp[0] & 0x0F);
-							Image->Data[k+1] = (Temp[0] & 0xF0) >> 4 | (Temp[0] & 0xF0);
-							Image->Data[k+2] = (Temp[1] & 0x0F) << 4 | (Temp[1] & 0x0F);
-							Image->Data[k+3] = (Temp[1] & 0xF0) >> 4 | (Temp[1] & 0xF0);
+							Image->Data[k]   = (ILubyte)((Temp[0] & 0x0F) << 4 | (Temp[0] & 0x0F));
+							Image->Data[k+1] = (ILubyte)((Temp[0] & 0xF0) >> 4 | (Temp[0] & 0xF0));
+							Image->Data[k+2] = (ILubyte)((Temp[1] & 0x0F) << 4 | (Temp[1] & 0x0F));
+							Image->Data[k+3] = (ILubyte)((Temp[1] & 0xF0) >> 4 | (Temp[1] & 0xF0));
 							Temp += 2;
 						}
 						break;
@@ -532,24 +529,17 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 }
 
 
-ILuint GetFaceFlag(ILuint FaceNum)
+static ILuint GetFaceFlag(ILuint FaceNum)
 {
 	switch (FaceNum)
 	{
-		case 0:
-			return IL_CUBEMAP_POSITIVEX;
-		case 1:
-			return IL_CUBEMAP_NEGATIVEX;
-		case 2:
-			return IL_CUBEMAP_POSITIVEY;
-		case 3:
-			return IL_CUBEMAP_NEGATIVEY;
-		case 4:
-			return IL_CUBEMAP_POSITIVEZ;
-		case 5:
-			return IL_CUBEMAP_NEGATIVEZ;
-		case 6:
-			return IL_SPHEREMAP;
+		case 0:			return IL_CUBEMAP_POSITIVEX;
+		case 1:			return IL_CUBEMAP_NEGATIVEX;
+		case 2:			return IL_CUBEMAP_POSITIVEY;
+		case 3:			return IL_CUBEMAP_NEGATIVEY;
+		case 4:			return IL_CUBEMAP_POSITIVEZ;
+		case 5:			return IL_CUBEMAP_NEGATIVEZ;
+		case 6:			return IL_SPHEREMAP;
 	}
 
 	return IL_SPHEREMAP;  // Should never reach here!
@@ -627,7 +617,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	SIO *io = &BaseImage->io;
 
 	// Find out if the user has specified to use DXT compression.
-	Compression = ilGetInteger(IL_VTF_COMP);
+	Compression = (ILenum)ilGetInteger(IL_VTF_COMP);
 
 	//@TODO: Other formats
 	if (Compression == IL_DXT_NO_COMP) {
@@ -709,8 +699,8 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	// Write the header size.
 	SaveLittleUInt(io, 80);
 	// Now we write the width and height of the image.
-	SaveLittleUShort(io, TempImage->Width);
-	SaveLittleUShort(io, TempImage->Height);
+	SaveLittleUShort(io, (ILushort)TempImage->Width);
+	SaveLittleUShort(io, (ILushort)TempImage->Height);
 	//@TODO: This is supposed to be the flags used.  What should we use here?  Let users specify?
 	SaveLittleUInt(io, 0);
 	// Number of frames in the animation. - @TODO: Change to use animations.
@@ -790,7 +780,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsVTF[] = { 
+static ILconst_string iFormatExtsVTF[] = { 
 	IL_TEXT("vtf"), 
 	NULL 
 };

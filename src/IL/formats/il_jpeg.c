@@ -28,6 +28,7 @@ ILboolean iExifSave(ILimage *Image);
 #include "il_manip.h"
 #include <setjmp.h>
 
+#include "pack_push.h"
 typedef struct {
 	ILboolean 	jpgErrorOccured; // = IL_FALSE;
   jmp_buf			JpegJumpBuffer;
@@ -50,6 +51,8 @@ typedef struct
 	SIO *               io;
 } iwrite_mgr;
 
+#include "pack_pop.h"
+
 typedef iwrite_mgr *iwrite_ptr;
 typedef iread_mgr * iread_ptr;
 
@@ -59,7 +62,7 @@ typedef iread_mgr * iread_ptr;
 static ILboolean iLoadFromJpegStruct(JpegContext *);
 
 // Internal function used to get the .jpg header from the current file.
-static ILint iGetJpgHead(SIO* io, ILubyte *Header) {
+static ILuint iGetJpgHead(SIO* io, ILubyte *Header) {
 	return SIOread(io, Header, 1, 2);
 }
 
@@ -75,8 +78,9 @@ static ILboolean iCheckJpg(ILubyte Header[2]) {
 static ILboolean iIsValidJpeg(SIO* io) {
 	ILubyte Head[2];
 
-	ILint read = iGetJpgHead(io, Head);
-	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
+	ILuint Start = SIOtell(io);
+	ILuint read  = iGetJpgHead(io, Head);
+	SIOseek(io, Start, IL_SEEK_SET);  // Go ahead and restore to previous state
 
 	return read == 2 && iCheckJpg(Head);
 }
@@ -116,6 +120,7 @@ static ILboolean iJpegSeekToExif(SIO *io) {
 }
 
 // Overrides libjpeg's stupid error/warning handlers. =P
+static void ExitErrorHandle (struct jpeg_common_struct *JpegInfo) NORETURN;
 static void ExitErrorHandle (struct jpeg_common_struct *JpegInfo) {
 	JpegContext *ctx = (JpegContext*)JpegInfo->client_data;
 	ctx->jpgErrorOccured = IL_TRUE;
@@ -142,10 +147,11 @@ static boolean
 fill_input_buffer (j_decompress_ptr cinfo) {
 	iread_ptr 		src 		= (iread_ptr) cinfo->src;
 	JpegContext *	ctx 		= (JpegContext*)cinfo->client_data;
-	ILint 				nbytes 	= SIOread(src->io, src->buffer, 1, INPUT_BUF_SIZE);
+	ILuint 				nbytes 	= SIOread(src->io, src->buffer, 1, INPUT_BUF_SIZE);
 
-	if (nbytes <= 0) {
-		if (src->start_of_file) {  // Treat empty input file as fatal error
+	if (!nbytes) {
+		if (src->start_of_file) {  
+		  // Treat empty input file as fatal error
 			//ERREXIT(cinfo, JERR_INPUT_EMPTY);
 			ctx->jpgErrorOccured = IL_TRUE;
 		}
@@ -308,7 +314,7 @@ static void devil_jpeg_write_init(j_compress_ptr cinfo, SIO *io) {
 }
 
 // Internal function used to save the Jpeg.
-ILboolean iSaveJpegInternal(ILimage* image) {
+static ILboolean iSaveJpegInternal(ILimage* image) {
 	struct		jpeg_compress_struct JpegInfo;
 	struct		jpeg_error_mgr Error;
 	JSAMPROW	row_pointer[1];
@@ -466,7 +472,7 @@ static ILboolean iLoadFromJpegStruct(JpegContext *ctx) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsJPG[] = { 
+static ILconst_string iFormatExtsJPG[] = { 
   IL_TEXT("jfif"), 
   IL_TEXT("jif"), 
   IL_TEXT("jpe"), 

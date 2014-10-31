@@ -24,11 +24,11 @@ typedef struct PIC_HEAD
    ILfloat	Version;		// Version of format
    ILbyte	Comment[80];	// Prototype description
    ILbyte	Id[4];			// 'PICT'
-   ILshort	Width;			// Image width, in pixels
-   ILshort	Height;			// Image height, in pixels
+   ILushort	Width;			// Image width, in pixels
+   ILushort	Height;			// Image height, in pixels
    ILfloat	Ratio;			// Pixel aspect ratio
-   ILshort	Fields;			// Picture field type
-   ILshort	Padding;		// Unused
+   ILushort	Fields;			// Picture field type
+   ILushort	Padding;		// Unused
 } PIC_HEAD;
 
 typedef struct CHANNEL

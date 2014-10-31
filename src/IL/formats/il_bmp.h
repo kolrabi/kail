@@ -19,21 +19,21 @@
 #include "pack_push.h"
 
 typedef struct BMPHEAD {
-	ILbyte		bfType[2];
-	ILint		bfSize;
-	ILuint		bfReserved;
-	ILint		bfDataOff;
-	ILint		biSize;
+	ILbyte	bfType[2];
+	ILuint	bfSize;
+	ILuint	bfReserved;
+	ILuint	bfDataOff;
+	ILuint	biSize;
 	ILint		biWidth;
 	ILint		biHeight;
-	ILshort		biPlanes;
-	ILshort		biBitCount;
-	ILint		biCompression;
-	ILint		biSizeImage;
-	ILint		biXPelsPerMeter;
-	ILint		biYPelsPerMeter;
-	ILint		biClrUsed;
-	ILint		biClrImportant;
+	ILushort	biPlanes;
+	ILushort	biBitCount;
+	ILuint		biCompression;
+	ILuint		biSizeImage;
+	ILuint		biXPelsPerMeter;
+	ILuint		biYPelsPerMeter;
+	ILuint		biClrUsed;
+	ILuint		biClrImportant;
 } BMPHEAD;
 
 typedef struct OS2_HEAD

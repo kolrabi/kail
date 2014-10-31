@@ -65,7 +65,7 @@ static ILboolean iLoadFtxInternal(ILimage *Image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsFTX[] = { 
+static ILconst_string iFormatExtsFTX[] = { 
 	IL_TEXT("ftx"), 
 	NULL 
 };

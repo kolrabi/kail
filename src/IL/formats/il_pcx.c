@@ -39,7 +39,7 @@ static ILboolean iGetPcxHead(SIO* io, PCXHEAD *header) {
 	UShort(&header->HScreenSize);
 	UShort(&header->VScreenSize); 
 
-	return read;
+	return IL_TRUE;
 }
 
 // Check whether given file has a valid .pcx header
@@ -391,7 +391,7 @@ static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header)
 }
 
 // Routine used from ZSoft's pcx documentation
-ILuint encput(SIO* io, ILubyte byt, ILubyte cnt)
+static ILuint encput(SIO* io, ILubyte byt, ILubyte cnt)
 {
 	if (cnt) {
 		if ((cnt == 1) && (0xC0 != (0xC0 & byt))) {
@@ -414,13 +414,13 @@ ILuint encput(SIO* io, ILubyte byt, ILubyte cnt)
 
 // This subroutine encodes one scanline and writes it to a file.
 //  It returns number of bytes written into outBuff, 0 if failed.
-static ILuint encLine(SIO* io, ILubyte *inBuff, ILint inLen, ILubyte Stride) {
+static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 	ILubyte _this, last;
-	ILint srcIndex, i;
-	ILint total;
-	ILubyte runCount;     // max single runlength is 63
-	total = 0;
-	runCount = 1;
+	ILuint srcIndex;
+	ILuint total = 0;
+	ILuint i;
+	ILubyte runCount = 1;     // max single runlength is 63
+
 	last = *(inBuff);
 
 	// Find the pixel dimensions of the image by calculating 
@@ -595,7 +595,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPCX[] = { 
+static ILconst_string iFormatExtsPCX[] = { 
   IL_TEXT("pcx"), 
   NULL 
 };

@@ -54,7 +54,7 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
                     }
                     Image->Data[(z+k) * Image->SizeOfPlane + (y+j)
                       * Image->Bps + (x+i) * Image->Bpp + c] =
-                      Total;
+                      (ILubyte)Total;
                   }
                 }
               }
@@ -87,7 +87,7 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
                     if (RegionMask[r+i]) {
                       ShortPtr[(z+k) * Image->SizeOfPlane + (y+j)
                         * Image->Bps + (x+i) * Image->Bpp + c] =
-                        Total;
+                        (ILushort)Total;
                     }
                   }
                 }
@@ -180,9 +180,9 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
 //  by Ender Wiggen, found at http://www.gamedev.net/reference/programming/features/edf/
 
 // Needs some SERIOUS optimization.
-ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
+static ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
 {
-  ILint   x, y, c, LastX, LastY, Offsets[9];
+  ILuint   x, y, c, LastX, LastY, Offsets[9];
   ILuint    i, Temp, z;
   ILubyte   *Data, *ImgData, *NewData, *RegionMask;
   ILdouble  Num;
@@ -238,11 +238,11 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
             Image->Data[Offsets[7]] * matrix[7]+
             Image->Data[Offsets[8]] * matrix[8];
 
-        Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+        Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
         if (Temp > 255)
           Data[Offsets[4]] = 255;
         else
-          Data[Offsets[4]] = Temp;
+          Data[Offsets[4]] = (ILubyte)Temp;
 
         for (c = 1; c < Image->Bpp; c++) {
           Num =   Image->Data[Offsets[0]+c] * matrix[0]+
@@ -255,11 +255,11 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
               Image->Data[Offsets[7]+c] * matrix[7]+
               Image->Data[Offsets[8]+c] * matrix[8];
 
-          Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+          Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
           if (Temp > 255)
             Data[Offsets[4]+c] = 255;
           else
-            Data[Offsets[4]+c] = Temp;
+            Data[Offsets[4]+c] = (ILubyte)Temp;
         }
       }
     }
@@ -280,7 +280,7 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
     //  rows/columns, duplicating the edge pixels for one side of the "matrix".
 
     // First row
-    for (x = 1; x < (ILint)Image->Width-1; x++) {
+    for (x = 1; x < Image->Width-1; x++) {
       if (RegionMask) {
         if (!RegionMask[x]) {
           Data[y + x * Image->Bpp + c] = Image->Data[y + x * Image->Bpp + c];
@@ -298,17 +298,17 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
             Image->Data[(Image->Width + (x  )) * Image->Bpp + c] * matrix[7]+
             Image->Data[(Image->Width + (x-1)) * Image->Bpp + c] * matrix[8];
 
-          Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+          Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
           if (Temp > 255)
             Data[x * Image->Bpp + c] = 255;
           else
-            Data[x * Image->Bpp + c] = Temp;
+            Data[x * Image->Bpp + c] = (ILubyte)Temp;
       }
     }
 
     // Last row
     y = (Image->Height - 1) * Image->Bps;
-    for (x = 1; x < (ILint)Image->Width-1; x++) {
+    for (x = 1; x < Image->Width-1; x++) {
       if (RegionMask) {
         if (!RegionMask[(Image->Height - 1) * Image->Width + x]) {
           Data[y + x * Image->Bpp + c] = Image->Data[y + x * Image->Bpp + c];
@@ -326,11 +326,11 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
             Image->Data[y + x * Image->Bpp + c] * matrix[7]+
             Image->Data[y + (x-1) * Image->Bpp + c] * matrix[8];
 
-          Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+          Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
           if (Temp > 255)
             Data[y + x * Image->Bpp + c] = 255;
           else
-            Data[y + x * Image->Bpp + c] = Temp;
+            Data[y + x * Image->Bpp + c] = (ILubyte)Temp;
       }
     }
 
@@ -353,11 +353,11 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
             Image->Data[y + Image->Bps + Image->Bpp + c] * matrix[7]+
             Image->Data[y + Image->Bps + 2 * Image->Bpp + c] * matrix[8];
 
-          Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+          Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
           if (Temp > 255)
             Data[y + c] = 255;
           else
-            Data[y + c] = Temp;
+            Data[y + c] = (ILubyte)Temp;
       }
     }
 
@@ -382,11 +382,11 @@ ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
             Image->Data[y + Image->Bps - Image->Bpp + c] * matrix[7]+
             Image->Data[y + Image->Bps - 2 * Image->Bpp + c] * matrix[8];
 
-          Temp = (ILuint)fabs((Num / (ILdouble)scale) + bias);
+          Temp = (ILuint)(fabs((Num / (ILdouble)scale) + bias));
           if (Temp > 255)
             Data[y + c] = 255;
           else
-            Data[y + c] = Temp;
+            Data[y + c] = (ILubyte)Temp;
       }
     }
 
@@ -530,6 +530,7 @@ ILboolean iApplyFilter2(ILimage *Image, ILuint Iter,
 
 ILboolean iScaleAlpha(ILimage *Image, ILfloat scale) {
   ILuint    i;
+  ILuint PalBPP;
   ILint   alpha;
 
   if (Image == NULL) {
@@ -561,7 +562,8 @@ ILboolean iScaleAlpha(ILimage *Image, ILfloat scale) {
       {
         case IL_PAL_RGBA32:
         case IL_PAL_BGRA32:
-          for (i = 0; i < Image->Pal.PalSize; i += ilGetInteger(IL_PALETTE_BPP)) {
+          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             alpha = (ILint)(Image->Pal.Palette[i+3] * scale);
             if (alpha > UCHAR_MAX) alpha = UCHAR_MAX;
             if (alpha < 0) alpha = 0;
@@ -592,7 +594,7 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
   ILuint    i;
   ILint     red, grn, blu, grey;
   ILushort  *ShortPtr;
-  ILuint    *IntPtr, NumPix;
+  ILuint    *IntPtr, NumPix, PalBPP;
   ILdouble  *DblPtr;
 
   if (Image == NULL) {
@@ -693,7 +695,8 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
         case IL_PAL_RGB24:
         case IL_PAL_RGB32:
         case IL_PAL_RGBA32:
-          for (i = 0; i < Image->Pal.PalSize; i += ilGetInteger(IL_PALETTE_BPP)) {
+          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             red = (ILint)(Image->Pal.Palette[i] * r);
             grn = (ILint)(Image->Pal.Palette[i+1] * g);
             blu = (ILint)(Image->Pal.Palette[i+2] * b);
@@ -712,7 +715,8 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
         case IL_PAL_BGR24:
         case IL_PAL_BGR32:
         case IL_PAL_BGRA32:
-          for (i = 0; i < Image->Pal.PalSize; i += ilGetInteger(IL_PALETTE_BPP)) {
+          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             red = (ILint)(Image->Pal.Palette[i+2] * r);
             grn = (ILint)(Image->Pal.Palette[i+1] * g);
             blu = (ILint)(Image->Pal.Palette[i] * b);
@@ -800,7 +804,7 @@ ILboolean iGammaCorrect(ILimage *Image, ILfloat Gamma) {
 //
 
 
-void iApplyMatrix(ILimage *Image, ILfloat Mat[4][4])
+static void iApplyMatrix(ILimage *Image, ILfloat Mat[4][4])
 {
   ILubyte *Data = Image->Data;
   ILuint  i;
@@ -849,7 +853,7 @@ void iApplyMatrix(ILimage *Image, ILfloat Mat[4][4])
 }
 
 
-void iIdentity(ILfloat *Matrix)
+static void iIdentity(ILfloat *Matrix)
 {
     *Matrix++ = 1.0;    // row 1
     *Matrix++ = 0.0;
@@ -968,7 +972,7 @@ ILboolean iAlienify(ILimage *Image) {
 
 
 // blend two images with a weight of a, store result in image2
-void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
+static void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
 {
   ILuint  i;
   ILint d;
@@ -984,7 +988,7 @@ void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
       d = 0;
     else if (d > 255)
       d = 255;
-    *Data2 = d;
+    *Data2 = (ILubyte)d;
 
     Data1++;
     Data2++;

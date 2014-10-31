@@ -14,8 +14,8 @@
 #ifndef STATES_H
 #define STATES_H
 
-void iGetIntegerv(ILenum Mode, ILint *Param);
-ILconst_string iGetString(ILenum StringName);
+void iGetIntegerv_ilu(ILenum Mode, ILint *Param);
+ILconst_string iGetString_ilu(ILenum StringName);
 void iImageParameter(ILenum PName, ILenum Param) ;
 
 #endif//STATES_H

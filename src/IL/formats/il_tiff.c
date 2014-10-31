@@ -96,6 +96,10 @@ static ILboolean iIsValidTiff(SIO* io) {
 }
 
 /*----------------------------------------------------------------------------*/
+#ifdef __clang__
+#pragma clang diagnostic push
+#endif
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
 
 static void warningHandler(const char* mod, const char* fmt, va_list ap)
 {
@@ -103,11 +107,15 @@ static void warningHandler(const char* mod, const char* fmt, va_list ap)
   iTraceV(fmt, ap);
 }
 
-void errorHandler(const char* mod, const char* fmt, va_list ap)
+static void errorHandler(const char* mod, const char* fmt, va_list ap)
 {
   (void)mod;
   iTraceV(fmt, ap);
 }
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 ////
 
@@ -117,7 +125,8 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
   TIFF   *tif;
   uint16   photometric, planarconfig, orientation;
   uint16   samplesperpixel, bitspersample, *sampleinfo, extrasamples;
-  uint32   w, h, d, linesize, tilewidth, tilelength;
+  uint32  w, h, d, tilewidth, tilelength;
+  tmsize_t linesize = 0;
   // ILubyte  *pImageData;
   ILuint   i, ProfileLen, DirCount = 0;
   void   *Buffer;
@@ -128,7 +137,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
   ILuint   Start, End;
   
   // to avoid high order bits garbage when used as shorts
-  w = h = d = linesize = tilewidth = tilelength = 0;
+  w = h = d = tilewidth = tilelength = 0;
 
   if (image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
@@ -191,23 +200,22 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       && tilewidth == w && tilelength == h
       ) {
       ILubyte* strip;
-      tsize_t stripsize;
-      ILuint y;
-      uint32 rowsperstrip, j, linesread;
+      tmsize_t stripsize, j;
+      uint32 y, rowsperstrip, linesread;
 
       //TODO: 1 bit/pixel images should not be stored as 8 bits...
       //(-> add new format)
       if (!Image) {
-        int type = IL_UNSIGNED_BYTE;
+        ILenum type = IL_UNSIGNED_BYTE;
         if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-        if (!iTexImage(image, w, h, 1, 1, IL_LUMINANCE, type, NULL)) {
+        if (!iTexImage(image, (ILuint)w, (ILuint)h, 1, 1, IL_LUMINANCE, type, NULL)) {
           TIFFClose(tif);
           return IL_FALSE;
         }
         Image = image;
       }
       else {
-        Image->Next = iNewImage(w, h, 1, 1, 1);
+        Image->Next = iNewImage((ILuint)w, (ILuint)h, 1, 1, 1);
         if (Image->Next == NULL) {
           TIFFClose(tif);
           return IL_FALSE;
@@ -219,12 +227,12 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
         uint16 *red, *green, *blue;
         //ILboolean is16bitpalette = IL_FALSE;
         ILubyte *entry;
-        uint32 count = 1 << bitspersample, j;
+        tmsize_t count = 1L << bitspersample;
     
         TIFFGetField(tif, TIFFTAG_COLORMAP, &red, &green, &blue);
 
         Image->Format = IL_COLOUR_INDEX;
-        Image->Pal.PalSize = (count)*3;
+        Image->Pal.PalSize = (ILuint)(count)*3;
         Image->Pal.PalType = IL_PAL_RGB24;
         Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
         entry = Image->Pal.Palette;
@@ -240,7 +248,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
       stripsize = TIFFStripSize(tif);
 
-      strip = (ILubyte*)ialloc(stripsize);
+      strip = (ILubyte*)ialloc((ILuint)stripsize);
 
       if (bitspersample == 8 || bitspersample == 16) {
         ILubyte *dat = Image->Data;
@@ -248,7 +256,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
           //the last strip may contain less data if the image
           //height is not evenly divisible by rowsperstrip
           if (y + rowsperstrip > h) {
-            stripsize = linesize*(h - y);
+            stripsize = linesize*(tmsize_t)(h - y);
             linesread = h - y;
           }
           else
@@ -262,31 +270,34 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
           }
 
           if (photometric == PHOTOMETRIC_MINISWHITE) { //invert channel
-            uint32 k, t2;
-            for (j = 0; j < linesread; ++j) {
+            tmsize_t t2, k;
+            for (j = 0; (uint32)j < linesread; ++j) {
               t2 = j*linesize;
               //this works for 16bit images as well: the two bytes
               //making up a pixel can be inverted independently
-              for (k = 0; k < Image->Bps; ++k)
+              for (k = 0; (ILuint)k < Image->Bps; ++k)
                 dat[k] = ~strip[t2 + k];
               dat += w;
             }
           }
-          else
-            for(j = 0; j < linesread; ++j)
-              memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
+          else {
+            uint32 k;
+            for(k = 0; k < linesread; ++k)
+              memcpy(&Image->Data[(y + k)*Image->Bps], &strip[k*(uint32)linesize], Image->Bps);
+          }
         }
       }
       else if (bitspersample == 1) {
         //TODO: add a native format to devil, so we don't have to
         //unpack the values here
         ILubyte mask, curr, *dat = Image->Data;
-        uint32 k, sx, t2;
+        uint32 k;
+        tmsize_t jj, t2, sx;
         for (y = 0; y < h; y += rowsperstrip) {
           //the last strip may contain less data if the image
           //height is not evenly divisible by rowsperstrip
           if (y + rowsperstrip > h) {
-            stripsize = linesize*(h - y);
+            stripsize = linesize*(tmsize_t)(h - y);
             linesread = h - y;
           }
           else
@@ -299,10 +310,10 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
             return IL_FALSE;
           }
 
-          for (j = 0; j < linesread; ++j) {
+          for (jj = 0; (uint32)jj < linesread; ++jj) {
             k = 0;
             sx = 0;
-            t2 = j*linesize;
+            t2 = jj*linesize;
             while (k < w) {
               curr = strip[t2 + sx];
               if (photometric == PHOTOMETRIC_MINISWHITE)
@@ -343,16 +354,16 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       uint32 rowsperstrip, j, linesread;
 
       if (!Image) {
-        int type = IL_UNSIGNED_BYTE;
+        ILenum type = IL_UNSIGNED_BYTE;
         if (bitspersample == 16) type = IL_UNSIGNED_SHORT;
-        if(!iTexImage(image, w, h, 1, 3, IL_RGB, type, NULL)) {
+        if(!iTexImage(image, (ILuint)w, (ILuint)h, 1, 3, IL_RGB, type, NULL)) {
           TIFFClose(tif);
           return IL_FALSE;
         }
         Image = image;
       }
       else {
-        Image->Next = iNewImage(w, h, 1, 1, 1);
+        Image->Next = iNewImage((ILuint)w, (ILuint)h, 1, 1, 1);
         if(Image->Next == NULL) {
           TIFFClose(tif);
           return IL_FALSE;
@@ -363,14 +374,14 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
       stripsize = TIFFStripSize(tif);
 
-      strip = (ILubyte*)ialloc(stripsize);
+      strip = (ILubyte*)ialloc((ILuint)stripsize);
 
       // dat = Image->Data;
       for (y = 0; y < h; y += rowsperstrip) {
         //the last strip may contain less data if the image
         //height is not evenly divisible by rowsperstrip
         if (y + rowsperstrip > h) {
-          stripsize = linesize*(h - y);
+          stripsize = linesize*(tmsize_t)(h - y);
           linesread = h - y;
         }
         else
@@ -384,7 +395,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
         }
 
         for(j = 0; j < linesread; ++j)
-            memcpy(&Image->Data[(y + j)*Image->Bps], &strip[j*linesize], Image->Bps);
+            memcpy(&Image->Data[(y + j)*Image->Bps], &strip[(tmsize_t)j*linesize], Image->Bps);
       }
 
       ifree(strip);
@@ -441,7 +452,7 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
       //this lets me view text.tif, but can give crashes with unsupported
       //tiffs...
       //2003-09-04: keep flag 1 for official version for now
-      if (!TIFFReadRGBAImage(tif, Image->Width, Image->Height, (uint32*)Image->Data, 0)) {
+      if (!TIFFReadRGBAImage(tif, Image->Width, Image->Height, (uint32*)(void*)Image->Data, 0)) {
         TIFFClose(tif);
         iSetError(IL_LIB_TIFF_ERROR);
         return IL_FALSE;
@@ -570,7 +581,7 @@ static tsize_t
 _tiffFileReadProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
   //iTrace("---- reading %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
-  return SIOread((SIO*)fd, pData, 1, tSize);
+  return (tsize_t)SIOread((SIO*)fd, pData, 1, (ILuint)tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -594,7 +605,7 @@ static tsize_t
 _tiffFileWriteProc(thandle_t fd, tdata_t pData, tsize_t tSize)
 {
   // iTrace("---- writing %d @%08x", (ILuint)tSize, SIOtell((SIO*)fd));
-  return SIOwrite((SIO*)fd, pData, 1, tSize);
+  return (tsize_t)SIOwrite((SIO*)fd, pData, 1, (ILuint)tSize);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -606,7 +617,7 @@ _tiffFileSeekProc(thandle_t fd, toff_t tOff, int whence)
   if (tOff == 0xFFFFFFFF)
     return 0xFFFFFFFF;
 
-  SIOseek((SIO*)fd, tOff, whence);
+  SIOseek((SIO*)fd, (ILint64)tOff, (ILenum)whence);
   return SIOtell((SIO*)fd);
   //return tOff;
 }
@@ -640,15 +651,14 @@ _tiffFileCloseProc(thandle_t fd)
 static toff_t
 _tiffFileSizeProc(thandle_t fd)
 {
-  ILint Offset, Size;
+  ILuint Offset, Size;
   
   Offset = SIOtell((SIO*)fd);
   SIOseek((SIO*)fd, 0, IL_SEEK_END);
-
   Size = SIOtell((SIO*)fd);
   SIOseek((SIO*)fd, Offset, IL_SEEK_SET);
 
-  return Size;
+  return (toff_t)Size;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -719,7 +729,7 @@ static TIFF *iTIFFOpen(SIO *io, char *Mode)
 // @TODO:  Accept palettes!
 
 // Internal function used to save the Tiff.
-ILboolean iSaveTiffInternal(ILimage* image)
+static ILboolean iSaveTiffInternal(ILimage* image)
 {
   ILenum  Format;
   ILenum  Compression;
@@ -952,7 +962,7 @@ char *iMakeString()
 
 /*----------------------------------------------------------------------------*/
 
-ILconst_string iFormatExtsTIF[] = { 
+static ILconst_string iFormatExtsTIF[] = { 
   IL_TEXT("tif"), 
   IL_TEXT("tiff"), 
   NULL 

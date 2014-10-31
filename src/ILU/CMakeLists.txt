@@ -18,7 +18,6 @@ SET                     ( SOURCES
                           ilu_scale.c
                           ilu_scale2d.c
                           ilu_scale3d.c
-                          ilu_scaling.c
                           ilu_states.c
                         )
 
@@ -35,8 +34,9 @@ ADD_LIBRARY             ( ILU ${SOURCES} )
 IF                      ( WIN32 )
   # Windows programs need a ILU.dll not libILU.dll
   SET_TARGET_PROPERTIES ( ILU PROPERTIES PREFIX "" )
+  SET_TARGET_PROPERTIES ( ILU PROPERTIES IMPORT_PREFIX "" )
   TARGET_LINK_LIBRARIES ( ILU DevIL )
-ELSE                    ()
+ELSE ()
   TARGET_LINK_LIBRARIES ( ILU IL )
 ENDIF                   ()
 

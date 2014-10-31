@@ -35,7 +35,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 
 	io = &Image->io;
 
-	if (!SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
+	if (SIOread(io, &Head, 1, sizeof(Head)) != sizeof(Head))
 		return IL_FALSE;
 
 	UInt(&Head.Width);
@@ -51,7 +51,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (ilIsEnabled(IL_ORIGIN_SET)) {
-		Image->Origin = ilGetInteger(IL_ORIGIN_MODE);
+		Image->Origin = (ILenum)ilGetInteger(IL_ORIGIN_MODE);
 	}	else {
 		Image->Origin = IL_ORIGIN_UPPER_LEFT;
 	}
@@ -91,11 +91,9 @@ static ILboolean iSaveRawInternal(ILimage *Image)
 
 	return SIOwrite(io, &Head,       sizeof(Head),  		1)	== 1 
 	    && SIOwrite(io, Image->Data, Image->SizeOfData, 1) 	== 1;
-
-	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsRAW[] = { 
+static ILconst_string iFormatExtsRAW[] = { 
 	NULL 
 };
 

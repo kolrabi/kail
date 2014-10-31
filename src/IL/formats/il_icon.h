@@ -20,9 +20,9 @@
 
 typedef struct ICODIR
 {
-	ILshort		Reserved;	// Reserved (must be 0)
-	ILshort		Type;		// Type (1 for icons, 2 for cursors)
-	ILshort		Count;		// How many different images?
+	ILushort		Reserved;	// Reserved (must be 0)
+	ILushort		Type;		// Type (1 for icons, 2 for cursors)
+	ILushort		Count;		// How many different images?
 } ICODIR;
 
 typedef struct ICODIRENTRY
@@ -39,17 +39,17 @@ typedef struct ICODIRENTRY
 
 typedef struct INFOHEAD
 {
-	ILint		Size;
-	ILint		Width;
-	ILint		Height;
-	ILshort	Planes;
-	ILshort	BitCount;
-	ILint		Compression;
-	ILint		SizeImage;
-	ILint		XPixPerMeter;
-	ILint		YPixPerMeter;
-	ILint		ColourUsed;
-	ILint		ColourImportant;
+	ILuint		Size;
+	ILuint		Width;
+	ILuint		Height;
+	ILushort	Planes;
+	ILushort	BitCount;
+	ILuint		Compression;
+	ILuint		SizeImage;
+	ILuint		XPixPerMeter;
+	ILuint		YPixPerMeter;
+	ILuint		ColourUsed;
+	ILuint		ColourImportant;
 } INFOHEAD;
 
 typedef struct ICOIMAGE

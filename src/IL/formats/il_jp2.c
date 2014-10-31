@@ -30,9 +30,7 @@ static ILboolean		iLoadJp2InternalStream(ILimage* image, void *Stream);
 static ILboolean		iSaveJp2Internal(ILimage* image);
 static jas_stream_t	*iJp2ReadStream();
 
-
-
-ILboolean JasperInit = IL_FALSE;
+static ILboolean    JasperInit = IL_FALSE;
 
 // Internal function to get the header and check it.
 static ILboolean iIsValidJp2(SIO* io) {
@@ -61,7 +59,7 @@ static ILboolean iIsValidJp2(SIO* io) {
 }
 
 //! This is separated so that it can be called for other file types, such as .icns.
-ILboolean iLoadJp2Internal(ILimage* Image) {
+static ILboolean iLoadJp2Internal(ILimage* Image) {
 	SIO *io;
 	ILboolean bRet;
     jas_stream_t *Stream = NULL;
@@ -118,7 +116,7 @@ ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
 	}
 
 	// open stream
-	Stream = jas_stream_memopen((char*)Lump, Size);;
+	Stream = jas_stream_memopen((char*)Lump, (ILint)Size);
 	if (!Stream)
 	{
 		iSetError(IL_COULD_NOT_OPEN_FILE);
@@ -170,21 +168,21 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	{
 		//@TODO: Can we do alpha data?  jas_image_cmpttype always returns 0 for this case.
 		case 1:  // Assuming this is luminance data.
-			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, (ILuint)jas_image_width(Jp2Image), (ILuint)jas_image_height(Jp2Image), 1, 1, IL_LUMINANCE, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 
 		case 2:  // Assuming this is luminance-alpha data.
-			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, (ILuint)jas_image_width(Jp2Image), (ILuint)jas_image_height(Jp2Image), 1, 2, IL_LUMINANCE_ALPHA, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 
 		case 3:
-			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, (ILuint)jas_image_width(Jp2Image), (ILuint)jas_image_height(Jp2Image), 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 		case 4:
-			iTexImage(image, jas_image_width(Jp2Image), jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
+			iTexImage(image, (ILuint)jas_image_width(Jp2Image), (ILuint)jas_image_height(Jp2Image), 1, 4, IL_RGBA, IL_UNSIGNED_BYTE, NULL);
 			TempImage = image;
 			break;
 		default:
@@ -198,14 +196,14 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	//  I am assuming RGBA format.  Is it possible for other formats to be included?
 	for (c = 0; c < TempImage->Bpp; c++)
 	{
-		origdata = jas_matrix_create(TempImage->Height, TempImage->Width);
+		origdata = jas_matrix_create((int)TempImage->Height, (int)TempImage->Width);
 		if (!origdata)
 		{
 			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;  // @TODO: Error
 		}
 		// Have to convert data into an intermediate matrix format.
-		if (jas_image_readcmpt(Jp2Image, c, 0, 0, TempImage->Width, TempImage->Height, origdata))
+		if (jas_image_readcmpt(Jp2Image, (int)c, 0, 0, (int)TempImage->Width, (int)TempImage->Height, origdata))
 		{
 			return IL_FALSE;
 		}
@@ -214,7 +212,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 		{
 			for (x = 0; x < TempImage->Width; x++)
 			{
-				TempImage->Data[y * TempImage->Width * TempImage->Bpp + x * TempImage->Bpp + c] = origdata->data_[y * origdata->numcols_ + x];
+				TempImage->Data[y * TempImage->Width * TempImage->Bpp + x * TempImage->Bpp + c] = (ILubyte)origdata->data_[y * (ILuint)origdata->numcols_ + x];
 			}
 		}
 
@@ -231,13 +229,13 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 static int iJp2_file_read(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	SIO *io = (SIO*)obj;
-	return SIOread(io, buf, 1, cnt);
+	return (int)SIOread(io, buf, 1, (ILuint)cnt);
 }
 
 static int iJp2_file_write(jas_stream_obj_t *obj, char *buf, int cnt)
 {
 	SIO *io = (SIO*)obj;
-	return SIOwrite(io, buf, 1, cnt);
+	return (int)SIOwrite(io, buf, 1, (ILuint)cnt);
 }
 
 static long iJp2_file_seek(jas_stream_obj_t *obj, long offset, int origin)
@@ -247,12 +245,9 @@ static long iJp2_file_seek(jas_stream_obj_t *obj, long offset, int origin)
 	// We could just pass origin to iseek, but this is probably more portable.
 	switch (origin)
 	{
-		case SEEK_SET:
-			return SIOseek(io, offset, IL_SEEK_SET);
-		case SEEK_CUR:
-			return SIOseek(io, offset, IL_SEEK_CUR);
-		case SEEK_END:
-			return SIOseek(io, offset, IL_SEEK_END);
+		case SEEK_SET: return SIOseek(io, offset, IL_SEEK_SET);
+		case SEEK_CUR: return SIOseek(io, offset, IL_SEEK_CUR);
+		case SEEK_END: return SIOseek(io, offset, IL_SEEK_END);
 	}
 	return 0;  // Failed
 }
@@ -277,7 +272,7 @@ static void jas_stream_initbuf(jas_stream_t *stream, int bufmode, char *buf, int
 
 // Modified version of jas_stream_fopen and jas_stream_memopen from jas_stream.c of JasPer
 //  so that we can use our own file routines.
-jas_stream_t *iJp2ReadStream(SIO *io)
+static jas_stream_t *iJp2ReadStream(SIO *io)
 {
 	jas_stream_t *stream;
 	//jas_stream_memobj_t *obj;
@@ -428,7 +423,7 @@ static void jas_stream_destroy(jas_stream_t *stream)
 
 
 
-jas_stream_t *iJp2WriteStream(SIO *io)
+static jas_stream_t *iJp2WriteStream(SIO *io)
 {
 	jas_stream_t *stream;
 
@@ -454,7 +449,7 @@ jas_stream_t *iJp2WriteStream(SIO *io)
 
 // Function from OpenSceneGraph (originally called getdata in their sources):
 //  http://openscenegraph.sourcearchive.com/documentation/2.2.0/ReaderWriterJP2_8cpp-source.html
-ILint Jp2ConvertData(jas_stream_t *in, jas_image_t *image)
+static ILint Jp2ConvertData(jas_stream_t *in, jas_image_t *image)
 {
 	int ret;
 	int numcmpts;
@@ -586,8 +581,8 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 
 	// Have to tell JasPer about each channel.  In our case, they all have the same information.
 	for (i = 0; i < NumChans; i++) {
-		cmptparm[i].width = image->Width;
-		cmptparm[i].height = image->Height;
+		cmptparm[i].width = (jas_image_coord_t)image->Width;
+		cmptparm[i].height = (jas_image_coord_t)image->Height;
 		cmptparm[i].hstep = 1;
 		cmptparm[i].vstep = 1;
 		cmptparm[i].tlx = 0;
@@ -598,7 +593,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 
 	// Using the unknown color space, since we have not determined the space yet.
 	//  This is done in the following switch statement.
-	Jp2Image = jas_image_create(NumChans, cmptparm, JAS_CLRSPC_UNKNOWN);
+	Jp2Image = jas_image_create((int)NumChans, cmptparm, JAS_CLRSPC_UNKNOWN);
 	if (Jp2Image == NULL) {
 		iSetError(IL_LIB_JP2_ERROR);
 		return IL_FALSE;
@@ -633,7 +628,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 			break;
 	}
 
-	Mem = jas_stream_memopen((char*)TempImage->Data, TempImage->SizeOfData);
+	Mem = jas_stream_memopen((char*)TempImage->Data, (int)TempImage->SizeOfData);
 	if (Mem == NULL) {
 		jas_image_destroy(Jp2Image);
 		iSetError(IL_LIB_JP2_ERROR);
@@ -673,7 +668,7 @@ static ILboolean iSaveJp2Internal(ILimage* image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsJp2[] = { 
+static ILconst_string iFormatExtsJp2[] = { 
   IL_TEXT("jp2"), 
   IL_TEXT("jpx"), 
   IL_TEXT("j2k"), 

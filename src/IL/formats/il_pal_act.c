@@ -71,7 +71,7 @@ static ILboolean iLoadActPal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsACT_PAL[] = { 
+static ILconst_string iFormatExtsACT_PAL[] = { 
   IL_TEXT("act"),
   NULL 
 };

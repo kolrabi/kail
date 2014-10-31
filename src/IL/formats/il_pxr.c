@@ -107,10 +107,10 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
   imemclear(&Head, sizeof(Head));
   Head.Signature[0] = 0x80;
   Head.Signature[1] = 0xe8;
-  Head.Height       = TempImage->Height;
-  Head.Width        = TempImage->Width;
-  Head.Height2      = TempImage->Height;
-  Head.Width2       = TempImage->Width;
+  Head.Height       = (ILushort)TempImage->Height;
+  Head.Width        = (ILushort)TempImage->Width;
+  Head.Height2      = (ILushort)TempImage->Height;
+  Head.Width2       = (ILushort)TempImage->Width;
   Head.Reserved1[2] = 1;
 
   Head.Offset   = 512;
@@ -159,7 +159,7 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
   return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPXR[] = { 
+static ILconst_string iFormatExtsPXR[] = { 
   IL_TEXT("pxr"), 
   NULL 
 };

@@ -34,23 +34,12 @@
 #include "il_internal.h"
 
 
-// Function definitions
-/*
-
-static void inxbuild();
-static ILubyte  inxsearch(ILint b, ILint g, ILint r);
-static void learn();
-
-*/
 // four primes near 500 - assume no image has a length so large
 // that it is divisible by all four primes
 #define prime1      499
 #define prime2      491
 #define prime3      487
 #define prime4      503
-
-#define minpicturebytes (3*prime4)      // minimum size for input image
-
 
 // Network Definitions
 // -------------------
@@ -64,7 +53,7 @@ static void learn();
 #define intbiasshift       16         // bias for fractions
 #define intbias             (((ILint) 1)<<intbiasshift)
 #define gammashift         10         // gamma = 1024
-#define gamma               (((ILint) 1)<<gammashift)
+//#define gamma               (((ILint) 1)<<gammashift)
 #define betashift          10
 #define beta                (intbias>>betashift)// beta = 1/1024
 #define betagamma           (intbias<<(gammashift-betashift))
@@ -90,38 +79,43 @@ static void learn();
 // Types and Global Variables
 // --------------------------
 
-typedef int     pixel[4];           // BGRc
+typedef struct {
+  ILint r,g,b;
+  ILuint index;
+} NeuPixel;
 
 typedef struct {
-  unsigned char * thepicture;         // the input image itself
-  int             lengthcount;        // lengthcount = H*W*3
-  int             samplefac;          // sampling factor 1..30
-  pixel           network[netsize];   // the network itself
-  int             netindex[256];      // for network lookup - really 256
-  int             bias [netsize];     // bias and freq arrays for learning
-  int             freq [netsize];
-  int             radpower[initrad];  // radpower for precomputation
+  const ILubyte * thepicture;         // the input image itself
+  ILuint          lengthcount;        // lengthcount = H*W*3
+  ILuint          samplefac;          // sampling factor 1..30
+  NeuPixel        network[netsize];   // the network itself
+  ILuint          netindex[256];      // for network lookup - really 256
+  ILint           bias [netsize];     // bias and freq arrays for learning
+  ILint           freq [netsize];
+  ILint           radpower[initrad];  // radpower for precomputation
 
-  int             netsizethink;       // number of colors we want to reduce to, 2-256
+  ILuint          netsizethink;       // number of colors we want to reduce to, 2-256
   ILint           alphadec;           // biased by 10 bits
 } NeuQuantContext;
 
 // Initialise network in range (0,0,0) to (255,255,255) and set parameters
 // -----------------------------------------------------------------------
 
-static void initnet(NeuQuantContext *ctx, ILubyte *thepic, ILint len, ILint sample) {
-  ILint i;
-  ILint *p;
-  
+static void NeuQuantInitNet(NeuQuantContext *ctx, const ILubyte *thepic, ILuint len, ILuint sample, ILuint NumCols) {
+  ILuint i;
+
   ctx->thepicture   = thepic;
   ctx->lengthcount  = len;
   ctx->samplefac    = sample;
+  ctx->netsizethink = NumCols;
+  ctx->alphadec     = 30 + ((ctx->samplefac-1)/3);
   
   for (i=0; i<ctx->netsizethink; i++) {
-    p             = ctx->network[i];
-    p[0]          = p[1] = p[2] = (i << (netbiasshift+8))/netsize;
-    ctx->freq[i]  = intbias / ctx->netsizethink; // 1/netsize
-    ctx->bias[i]  = 0;
+    ctx->network[i].r =
+    ctx->network[i].g =
+    ctx->network[i].b = (ILint)((i << (netbiasshift+8))/netsize);
+    ctx->freq[i]      = intbias / ctx->netsizethink; // 1/netsize
+    ctx->bias[i]      = 0;
   }
 }
 
@@ -129,14 +123,15 @@ static void initnet(NeuQuantContext *ctx, ILubyte *thepic, ILint len, ILint samp
 // Unbias network to give byte values 0..255 and record position i to prepare for sort
 // -----------------------------------------------------------------------------------
 
-void unbiasnet(NeuQuantContext *ctx)
+static void NeuQuantUnbiasNet(NeuQuantContext *ctx)
 {
-  ILint i,j;
+  ILuint i;
 
   for (i=0; i<ctx->netsizethink; i++) {
-    for (j=0; j<3; j++)
-      ctx->network[i][j] >>= netbiasshift;
-    ctx->network[i][3] = i;      // record colour no
+    ctx->network[i].r >>= netbiasshift;
+    ctx->network[i].g >>= netbiasshift;
+    ctx->network[i].b >>= netbiasshift;
+    ctx->network[i].index = i;      // record colour no
   }
 }
 
@@ -144,44 +139,43 @@ void unbiasnet(NeuQuantContext *ctx)
 // Insertion sort of network and building of netindex[0..255] (to do after unbias)
 // -------------------------------------------------------------------------------
 
-void inxbuild(NeuQuantContext *ctx)
+static void NeuQuantBuild(NeuQuantContext *ctx)
 {
-  ILint i,j,smallpos,smallval;
-  ILint *p,*q;
-  ILint previouscol,startpos;
+  ILuint    i, j, smallpos;
+  ILuint    startpos;
+  ILint     previouscol, smallval;
+  NeuPixel *p, *q;
 
   previouscol = 0;
   startpos = 0;
   for (i=0; i<ctx->netsizethink; i++) {
-    p         = ctx->network[i];
+    p         = &ctx->network[i];
     smallpos  = i;
-    smallval  = p[1];      // index on g
+    smallval  = p->g;      // index on g
 
     // find smallest in i..netsize-1
     for (j=i+1; j<ctx->netsizethink; j++) {
-      q = ctx->network[j];
-      if (q[1] < smallval) {  // index on g
+      q = &ctx->network[j];
+      if (q->g < smallval) {  // index on g
         smallpos = j;
-        smallval = q[1];  // index on g
+        smallval = q->g;  // index on g
       }
     }
 
-    q = ctx->network[smallpos];
+    q = &ctx->network[smallpos];
 
     // swap p (i) and q (smallpos) entries
     if (i != smallpos) {
-      j = q[0];   q[0] = p[0];   p[0] = j;
-      j = q[1];   q[1] = p[1];   p[1] = j;
-      j = q[2];   q[2] = p[2];   p[2] = j;
-      j = q[3];   q[3] = p[3];   p[3] = j;
+      NeuPixel tmp = *q;
+      *q = *p;
+      *p = tmp;
     }
 
     // smallval entry is now in position i
     if (smallval != previouscol) {
       ctx->netindex[previouscol] = (startpos+i)>>1;
-
-      for (j=previouscol+1; j<smallval; j++) 
-        ctx->netindex[j] = i;
+      for (previouscol++; previouscol<smallval; previouscol++) 
+        ctx->netindex[previouscol] = i;
 
       previouscol = smallval;
       startpos    = i;
@@ -189,58 +183,53 @@ void inxbuild(NeuQuantContext *ctx)
   }
 
   ctx->netindex[previouscol] = (startpos+maxnetpos(ctx))>>1;
-  for (j=previouscol+1; j<256; j++) 
-    ctx->netindex[j] = maxnetpos(ctx); // really 256
+  for (previouscol++; previouscol<256; previouscol++) 
+    ctx->netindex[previouscol] = maxnetpos(ctx); // really 256
 }
 
 
 // Search for BGR values 0..255 (after net is unbiased) and return colour index
 // ----------------------------------------------------------------------------
 
-ILubyte inxsearch(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
-{
-  ILint i,j,dist,a,bestd;
-  ILint *p;
-  ILint best;
+static ILubyte NeuQuantFindColour(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
+{ 
+  ILuint i,j;
+  ILint dist, bestd;
+  NeuPixel *p;
+  ILuint best;
 
   bestd = 1000;   // biggest possible dist is 256*3
-  best  = -1;
+  best  = 0;
   i     = ctx->netindex[g];  // index on g
-  j     = i-1;      // start at netindex[g] and work outwards
+  j     = i-1;               // start at netindex[g] and work outwards
 
-  while ((i<ctx->netsizethink) || (j>=0)) {
+  while ((i<ctx->netsizethink) || (j<ctx->netsizethink)) {
     if (i<ctx->netsizethink) {
-      p     = ctx->network[i];
-      dist  = p[1] - g;    // inx key
-      if (dist >= bestd) {
-        i = ctx->netsizethink;  // stop iter
-      } else {
-        i++;
-        if (dist<0) dist = -dist;
-        a = p[0] - b;   if (a<0) a = -a;
-        dist += a;
-        if (dist<bestd) {
-          a = p[2] - r;   if (a<0) a = -a;
-          dist += a;
-          if (dist<bestd) {bestd=dist; best=p[3];}
-        }
+      p     = &ctx->network[i];
+      dist  = abs(p->g - g); 
+      dist += abs(p->b - b);
+      dist += abs(p->r - r);
+
+      if (dist < bestd) {
+        bestd = dist; 
+        best  = p->index;
       }
+
+      i++;
     }
-    if (j>=0) {
-      p = ctx->network[j];
-      dist = g - p[1]; // inx key - reverse dif
-      if (dist >= bestd) j = -1; // stop iter
-      else {
-        j--;
-        if (dist<0) dist = -dist;
-        a = p[0] - b;   if (a<0) a = -a;
-        dist += a;
-        if (dist<bestd) {
-          a = p[2] - r;   if (a<0) a = -a;
-          dist += a;
-          if (dist<bestd) {bestd=dist; best=p[3];}
-        }
+
+    if (j<ctx->netsizethink) {
+      p = &ctx->network[j];
+      dist  = abs(p->g - g); 
+      dist += abs(p->b - b);
+      dist += abs(p->r - r);
+
+      if (dist < bestd) {
+        bestd = dist; 
+        best  = p->index;
       }
+
+      j--;
     }
   }
   return (ILubyte)best;
@@ -250,159 +239,171 @@ ILubyte inxsearch(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
 // Search for biased BGR values
 // ----------------------------
 
-ILint contest(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
+static ILuint NeuQuantContest(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
 {
   // finds closest neuron (min dist) and updates freq
   // finds best neuron (min dist-bias) and returns position
   // for frequently chosen neurons, freq[i] is high and bias[i] is negative
   // bias[i] = gamma*((1/netsize)-freq[i])
 
-  ILint i,dist,a,biasdist,betafreq;
-  ILint bestpos,bestbiaspos,bestd,bestbiasd;
-  ILint *p,*f, *n;
+  ILuint i, bestpos, bestbiaspos;
+  ILint  dist, biasdist, betafreq;
+  ILint  bestd, bestbiasd;
+  NeuPixel *n;
+  ILint  *p, *f;
 
-  bestd = ~(((ILint) 1)<<31);
-  bestbiasd = bestd;
-  bestpos = -1;
+  bestd       = 0x7FFFFFFF; // ~(((ILint) 1)<<31);
+  bestbiasd   = bestd;
+  bestpos     = netsize-1;
   bestbiaspos = bestpos;
-  p = ctx->bias;
-  f = ctx->freq;
+  p           = ctx->bias;
+  f           = ctx->freq;
 
   for (i=0; i<ctx->netsizethink; i++) {
-    n = ctx->network[i];
-    dist = n[0] - b;   if (dist<0) dist = -dist;
-    a = n[1] - g;   if (a<0) a = -a;
-    dist += a;
-    a = n[2] - r;   if (a<0) a = -a;
-    dist += a;
-    if (dist<bestd) {bestd=dist; bestpos=i;}
+    n     = &ctx->network[i];
+    dist  = abs(n->b - b);
+    dist += abs(n->g - g);
+    dist += abs(n->r - r);
+
+    if (dist<bestd) {
+      bestd = dist; 
+      bestpos = i;
+    }
+
     biasdist = dist - ((*p)>>(intbiasshift-netbiasshift));
-    if (biasdist<bestbiasd) {bestbiasd=biasdist; bestbiaspos=i;}
+
+    if (biasdist<bestbiasd) {
+      bestbiasd = biasdist; 
+      bestbiaspos = i;
+    }
+
     betafreq = (*f >> betashift);
     *f++ -= betafreq;
     *p++ += (betafreq<<gammashift);
   }
   ctx->freq[bestpos] += beta;
   ctx->bias[bestpos] -= betagamma;
-  return(bestbiaspos);
+
+  return bestbiaspos;
 }
 
 
 // Move neuron i towards biased (b,g,r) by factor alpha
 // ----------------------------------------------------
 
-void altersingle(NeuQuantContext *ctx, ILint alpha, ILint i, ILint b, ILint g, ILint r)
+static void NeuQuantAlterNeuron(NeuQuantContext *ctx, ILint alpha, ILuint i, ILint b, ILint g, ILint r)
 {
-  ILint *n;
-
-  n = ctx->network[i];       // alter hit neuron
-  *n -= (alpha*(*n - b)) / initalpha;
-  n++;
-  *n -= (alpha*(*n - g)) / initalpha;
-  n++;
-  *n -= (alpha*(*n - r)) / initalpha;
-  return;
+  NeuPixel *n = &ctx->network[i];       // alter hit neuron
+  n->r -= (alpha*(n->r - r)) / initalpha;
+  n->g -= (alpha*(n->g - g)) / initalpha;
+  n->b -= (alpha*(n->b - b)) / initalpha;
 }
 
 
 // Move adjacent neurons by precomputed alpha*(1-((i-j)^2/[r]^2)) in radpower[|i-j|]
 // ---------------------------------------------------------------------------------
 
-void alterneigh(NeuQuantContext *ctx, ILint rad, ILint i, ILint b, ILint g, ILint r)
+static void NeuQuantAlterNeighbours(NeuQuantContext *ctx, ILuint rad, ILuint i, ILint b, ILint g, ILint r)
 {
-  ILint j,k,lo,hi,a;
-  ILint *p, *q;
+  ILint   a;
+  ILuint  k, lo;
+  ILuint  j, hi;
+  NeuPixel *p;
+  ILint   *q;
 
-  lo = i-rad;   if (lo<-1) lo=-1;
-  hi = i+rad;   if (hi>ctx->netsizethink) hi=ctx->netsizethink;
+  lo = 0;   
+  if (i > rad) {
+    lo = i - rad;
+  }
+
+  hi = ctx->netsizethink;
+  if (i + rad < ctx->netsizethink) {
+    hi = i + rad;   
+  } 
 
   j = i+1;
   k = i-1;
   q = ctx->radpower;
-  while ((j<hi) || (k>lo)) {
+
+  while ((j<hi) || (k>lo && k<ctx->netsizethink)) {
     a = (*(++q));
     if (j<hi) {
-      p = ctx->network[j];
-      *p -= (a*(*p - b)) / alpharadbias;
-      p++;
-      *p -= (a*(*p - g)) / alpharadbias;
-      p++;
-      *p -= (a*(*p - r)) / alpharadbias;
+      p = &ctx->network[j];
+      p->b -= (a*(p->b - b)) / alpharadbias;
+      p->g -= (a*(p->g - g)) / alpharadbias;
+      p->r -= (a*(p->r - r)) / alpharadbias;
       j++;
     }
-    if (k>lo) {
-      p = ctx->network[k];
-      *p -= (a*(*p - b)) / alpharadbias;
-      p++;
-      *p -= (a*(*p - g)) / alpharadbias;
-      p++;
-      *p -= (a*(*p - r)) / alpharadbias;
+    if (k>=lo && k<ctx->netsizethink) {
+      p = &ctx->network[k];
+      p->b -= (a*(p->b - b)) / alpharadbias;
+      p->g -= (a*(p->g - g)) / alpharadbias;
+      p->r -= (a*(p->r - r)) / alpharadbias;
       k--;
     }
   }
-  return;
 }
 
 
 // Main Learning Loop
 // ------------------
 
-void learn(NeuQuantContext *ctx)
+static void NeuQuantLearn(NeuQuantContext *ctx)
 {
-  ILint i,j,b,g,r;
-  ILint radius,rad,alpha,step,delta,samplepixels;
-  ILubyte *p;
-  ILubyte *lim;
+  ILint           b, g, r;
+  ILuint          i, j, rad;
+  ILint           alpha;
+  ILuint          radius, step, delta, samplepixels;
+  const ILubyte * p;
+  const ILubyte * lim;
 
-  ctx->alphadec = 30 + ((ctx->samplefac-1)/3);
   p             = ctx->thepicture;
   lim           = ctx->thepicture + ctx->lengthcount;
   samplepixels  = ctx->lengthcount/(3*ctx->samplefac);
   delta         = samplepixels/ncycles;
   alpha         = initalpha;
   radius        = initradius;
-  
-  rad     = radius >> radiusbiasshift;
-  if (rad <= 1) rad = 0;
+  rad           = radius >> radiusbiasshift;
+
   for (i=0; i<rad; i++) 
-    ctx->radpower[i] = alpha*(((rad*rad - i*i)*radbias)/(rad*rad));
+    ctx->radpower[i] = alpha*(ILint)(((rad*rad - i*i)*radbias)/(rad*rad));
+  
+  if      ((ctx->lengthcount%prime1) != 0) step = 3*prime1;
+  else if ((ctx->lengthcount%prime2) != 0) step = 3*prime2;
+  else if ((ctx->lengthcount%prime3) != 0) step = 3*prime3;
+  else                                     step = 3*prime4;
   
   // beginning 1D learning: initial radius=rad
-
-  if ((ctx->lengthcount%prime1) != 0) step = 3*prime1;
-  else {
-    if ((ctx->lengthcount%prime2) !=0) step = 3*prime2;
-    else {
-      if ((ctx->lengthcount%prime3) !=0) step = 3*prime3;
-      else step = 3*prime4;
-    }
-  }
-  
-  i = 0;
-  while (i < samplepixels) {
+  for (i=0; i<samplepixels; i++) {
+    // find neuron closest to pixel color (and count frequency)
     b = p[0] << netbiasshift;
     g = p[1] << netbiasshift;
     r = p[2] << netbiasshift;
-    j = contest(ctx, b,g,r);
+    j = NeuQuantContest(ctx, b,g,r);
 
-    altersingle(ctx, alpha,j,b,g,r);
-    if (rad) alterneigh(ctx, rad,j,b,g,r);   // alter neighbours
+    // approximate pixel color succesively
+    NeuQuantAlterNeuron(ctx, alpha, j, b,g,r);
+    if (rad) {
+      NeuQuantAlterNeighbours(ctx, rad, j, b,g,r);   // alter neighbours
+    }
 
+    // select next pixel, wrap around
     p += step;
-    if (p >= lim) p -= ctx->lengthcount;
+    if (p >= lim) {
+      p -= ctx->lengthcount;
+    }
   
-    i++;
+    // update alpha, radius every delta samples
     if (i%delta == 0) { 
       alpha  -= alpha  /  ctx->alphadec;
       radius -= radius /  radiusdec;
       rad     = radius >> radiusbiasshift;
-      if (rad <= 1) rad = 0;
+
       for (j=0; j<rad; j++) 
-        ctx->radpower[j] = alpha*(((rad*rad - j*j)*radbias)/(rad*rad));
+        ctx->radpower[j] = alpha*(ILint)(((rad*rad - j*j)*radbias)/(rad*rad));
     }
   }
   // finished 1D learning: final alpha=alpha/initalpha;
-  return;
 }
 
 
@@ -412,17 +413,15 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
   ILuint  sample, i, j;
   NeuQuantContext ctx;
 
-  ctx.netsizethink = NumCols;
-
   TempImage = iConvertImage(Image, IL_BGR, IL_UNSIGNED_BYTE);
-  sample    = ilGetInteger(IL_NEU_QUANT_SAMPLE);
+  sample    = (ILuint)ilGetInteger(IL_NEU_QUANT_SAMPLE);
 
   if (TempImage == NULL)
     return NULL;
 
-  initnet(&ctx, TempImage->Data, TempImage->SizeOfData, sample);
-  learn(&ctx);
-  unbiasnet(&ctx);
+  NeuQuantInitNet(&ctx, TempImage->Data, TempImage->SizeOfData, sample, NumCols);
+  NeuQuantLearn(&ctx);
+  NeuQuantUnbiasNet(&ctx);
 
   NewImage = (ILimage*)icalloc(sizeof(ILimage), 1);
   if (NewImage == NULL) {
@@ -453,15 +452,15 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
     return NULL;
   }
 
-  for (i = 0, j = 0; i < (unsigned)ctx.netsizethink; i++, j += 3) {
-    NewImage->Pal.Palette[j  ] = ctx.network[i][0];
-    NewImage->Pal.Palette[j+1] = ctx.network[i][1];
-    NewImage->Pal.Palette[j+2] = ctx.network[i][2];
+  for (i = 0, j = 0; i < ctx.netsizethink; i++, j += 3) {
+    NewImage->Pal.Palette[j  ] = (ILubyte)ctx.network[i].b;
+    NewImage->Pal.Palette[j+1] = (ILubyte)ctx.network[i].g;
+    NewImage->Pal.Palette[j+2] = (ILubyte)ctx.network[i].r;
   }
 
-  inxbuild(&ctx);
+  NeuQuantBuild(&ctx);
   for (i = 0, j = 0; j < TempImage->SizeOfData; i++, j += 3) {
-    NewImage->Data[i] = inxsearch(&ctx, 
+    NewImage->Data[i] = NeuQuantFindColour(&ctx, 
       TempImage->Data[j], TempImage->Data[j+1], TempImage->Data[j+2]);
   }
 

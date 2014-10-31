@@ -76,7 +76,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 		ILuint column_offset;
         ILuint pointer_position;
 
-		if (!SIOread(io, &column_offset, 1, sizeof(column_offset)) != sizeof(column_offset))
+		if (SIOread(io, &column_offset, 1, sizeof(column_offset)) != sizeof(column_offset))
 			return IL_FALSE;
 
 		UInt(&column_offset);
@@ -202,7 +202,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsDOOM[] = { 
+static ILconst_string iFormatExtsDOOM[] = { 
 	NULL 
 };
 

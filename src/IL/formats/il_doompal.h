@@ -14,7 +14,7 @@
 #define DOOMPAL_H
 
 #define IL_DOOMPAL_SIZE 768
-ILubyte ilDefaultDoomPal[IL_DOOMPAL_SIZE] = {
+static ILubyte ilDefaultDoomPal[IL_DOOMPAL_SIZE] = {
 	0, 0, 0,
 	31, 23, 11,
 	23, 15, 7,

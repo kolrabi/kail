@@ -32,22 +32,22 @@ typedef struct {
 
 static iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *stack);
 static void iff_end_read_chunk(SIO *io, iff_chunk_stack *stack);
-static char *iff_read_data(SIO *io, int size);
+static ILubyte *iff_read_data(SIO *io, ILuint size);
 static ILboolean iLoadIffInternal(ILimage *);
 
 
 /* Define the IFF tags we are looking for in the file. */
-const ILuint IFF_TAG_CIMG = ('C' << 24) | ('I' << 16) | ('M' << 8) | ('G'); 
-const ILuint IFF_TAG_FOR4 = ('F' << 24) | ('O' << 16) | ('R' << 8) | ('4'); 
-const ILuint IFF_TAG_TBHD = ('T' << 24) | ('B' << 16) | ('H' << 8) | ('D'); 
-const ILuint IFF_TAG_TBMP = ('T' << 24) | ('B' << 16) | ('M' << 8) | ('P');
-const ILuint IFF_TAG_RGBA = ('R' << 24) | ('G' << 16) | ('B' << 8) | ('A');
-const ILuint IFF_TAG_CLPZ = ('C' << 24) | ('L' << 16) | ('P' << 8) | ('Z');
-const ILuint IFF_TAG_ESXY = ('E' << 24) | ('S' << 16) | ('X' << 8) | ('Y');
-const ILuint IFF_TAG_ZBUF = ('Z' << 24) | ('B' << 16) | ('U' << 8) | ('F');
-const ILuint IFF_TAG_BLUR = ('B' << 24) | ('L' << 16) | ('U' << 8) | ('R');
-const ILuint IFF_TAG_BLRT = ('B' << 24) | ('L' << 16) | ('R' << 8) | ('T');
-const ILuint IFF_TAG_HIST = ('H' << 24) | ('I' << 16) | ('S' << 8) | ('T');
+static const ILuint IFF_TAG_CIMG = ('C' << 24) | ('I' << 16) | ('M' << 8) | ('G'); 
+static const ILuint IFF_TAG_FOR4 = ('F' << 24) | ('O' << 16) | ('R' << 8) | ('4'); 
+static const ILuint IFF_TAG_TBHD = ('T' << 24) | ('B' << 16) | ('H' << 8) | ('D'); 
+static const ILuint IFF_TAG_TBMP = ('T' << 24) | ('B' << 16) | ('M' << 8) | ('P');
+static const ILuint IFF_TAG_RGBA = ('R' << 24) | ('G' << 16) | ('B' << 8) | ('A');
+// static const ILuint IFF_TAG_CLPZ = ('C' << 24) | ('L' << 16) | ('P' << 8) | ('Z');
+// static const ILuint IFF_TAG_ESXY = ('E' << 24) | ('S' << 16) | ('X' << 8) | ('Y');
+static const ILuint IFF_TAG_ZBUF = ('Z' << 24) | ('B' << 16) | ('U' << 8) | ('F');
+// static const ILuint IFF_TAG_BLUR = ('B' << 24) | ('L' << 16) | ('U' << 8) | ('R');
+// static const ILuint IFF_TAG_BLRT = ('B' << 24) | ('L' << 16) | ('R' << 8) | ('T');
+// static const ILuint IFF_TAG_HIST = ('H' << 24) | ('I' << 16) | ('S' << 8) | ('T');
 
 // Flags
 #define RGB_FLAG     (1)
@@ -55,13 +55,13 @@ const ILuint IFF_TAG_HIST = ('H' << 24) | ('I' << 16) | ('S' << 8) | ('T');
 #define ZBUFFER_FLAG (4)
 
 // Function for decompress the file.
-static char *iff_decompress_rle(ILuint numBytes, char *compressedData, 
+static ILubyte *iff_decompress_rle(ILuint numBytes, ILubyte *compressedData, 
                                 ILuint compressedDataSize, 
                                 ILuint *compressedStartIndex);
 
-static char *iffReadUncompressedTile  (SIO *io, ILushort width, ILushort height, ILbyte depth);
-static char *iff_decompress_tile_rle  (ILushort width, ILushort height, ILushort depth, 
-                                       char *compressedData, ILuint compressedDataSize);
+static ILubyte *iffReadUncompressedTile  (SIO *io, ILushort width, ILushort height, ILubyte depth);
+static ILubyte *iff_decompress_tile_rle  (ILushort width, ILushort height, ILushort depth, 
+                                          ILubyte *compressedData, ILuint compressedDataSize);
 
 static ILboolean iIsValidIff(SIO *io) {
   ILuint pos = SIOtell(io);
@@ -198,7 +198,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
 
     // Read tiles
     while ( (tileImage < tiles) || (tileZ < tiles) ) {
-      char *    tileData;
+      ILubyte *    tileData = NULL;
       ILushort  x1, x2, y1, y2, tile_width, tile_height;
       ILuint    remainingDataSize;
       // ILushort  tile_area;
@@ -226,11 +226,12 @@ static ILboolean iLoadIffInternal(ILimage *Image)
 
       if (chunkInfo.tag == IFF_TAG_RGBA) {
         if (tileCompressed) {
-          char  *data = iff_read_data(io, remainingDataSize);
+          ILubyte  *data = iff_read_data(io, remainingDataSize);
           if (data) {
-            tileData = iff_decompress_tile_rle(tile_width, tile_height,
-                              bpp, data, remainingDataSize);
+            tileData = iff_decompress_tile_rle(tile_width, tile_height, bpp, data, remainingDataSize);
             ifree(data);
+          } else {
+            tileData = NULL;
           }
         } else {
           tileData = iffReadUncompressedTile(io, tile_width, tile_height, bpp);
@@ -282,12 +283,12 @@ iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
   }
 
   chunkStack->chunkStack[chunkStack->chunkDepth].start = SIOtell(io);
-  chunkStack->chunkStack[chunkStack->chunkDepth].tag   = GetBigInt(io);
-  chunkStack->chunkStack[chunkStack->chunkDepth].size  = GetBigInt(io);
+  chunkStack->chunkStack[chunkStack->chunkDepth].tag   = GetBigUInt(io);
+  chunkStack->chunkStack[chunkStack->chunkDepth].size  = GetBigUInt(io);
     
   if (chunkStack->chunkStack[chunkStack->chunkDepth].tag == IFF_TAG_FOR4) {
     // -- We have a form, so read the form type tag as well. 
-    chunkStack->chunkStack[chunkStack->chunkDepth].chunkType = GetBigInt(io);
+    chunkStack->chunkStack[chunkStack->chunkDepth].chunkType = GetBigUInt(io);
   } else {
     chunkStack->chunkStack[chunkStack->chunkDepth].chunkType = 0;
   } 
@@ -297,8 +298,8 @@ iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
 
 void iff_end_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
 {
-  ILuint  end;
-  ILint   part;
+  ILuint end;
+  ILuint part;
   
   end = chunkStack->chunkStack[chunkStack->chunkDepth].start 
       + chunkStack->chunkStack[chunkStack->chunkDepth].size + 8;
@@ -310,7 +311,7 @@ void iff_end_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
   // Add padding 
   part = end % 4;
   if (part != 0) {
-      end += 4 - part;   
+      end += 4U - part;   
   }
 
   SIOseek(io, end, IL_SEEK_SET);
@@ -318,9 +319,9 @@ void iff_end_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
   chunkStack->chunkDepth--;
 }
 
-char * iff_read_data(SIO *io, int size)
+ILubyte * iff_read_data(SIO *io, ILuint size)
 {
-  char *buffer = (char*)ialloc(size * sizeof(char));
+  ILubyte *buffer = (ILubyte*)ialloc(size * sizeof(char));
   if (buffer == NULL)
     return NULL;
   
@@ -336,15 +337,15 @@ char * iff_read_data(SIO *io, int size)
   IFF decompress functions
 */
 
-char *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILbyte depth)
+ILubyte *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILubyte depth)
 {
-  char  *data = NULL;
-  char  *iniPixel;
-  char  *finPixel;
-  int   i, j;
-  int   tam = width * height * depth * sizeof(char);
+  ILubyte  *data = NULL;
+  ILubyte  *iniPixel;
+  ILubyte  *finPixel;
+  ILuint   i, j;
+  ILuint   tam = width * height * depth * sizeof(ILubyte);
 
-  data = (char*) ialloc(tam);
+  data = (ILubyte*) ialloc(tam);
   if (data == NULL)
     return NULL;
 
@@ -357,7 +358,7 @@ char *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILbyte d
   for (i = 0; i < tam / depth; i++) {
     finPixel = iniPixel + depth;
     for (j = 0; j < (depth /2); j++) {
-      char aux;
+      ILubyte aux;
       aux = *iniPixel; 
       *(finPixel--) = *iniPixel;
       *(iniPixel++) = aux;
@@ -367,13 +368,14 @@ char *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILbyte d
 }
 
 
-char *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth, 
-                char *compressedData, ILuint compressedDataSize)
+ILubyte *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth, 
+                ILubyte *compressedData, ILuint compressedDataSize)
 {
 
-  char  *channels[4];
-  char  *data;
-  int   i, k, row, column;
+  ILubyte  *channels[4];
+  ILubyte  *data;
+  ILuint   k, row, column;
+  ILint     j;
   ILuint  compressedStart = 0;
 
   // Decompress only in RGBA.
@@ -382,15 +384,15 @@ char *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth,
     return NULL;
   }
 
-  for (i = depth-1; i >= 0; --i) {
-    channels[i] = iff_decompress_rle(width * height, compressedData, 
+  for (j = depth-1; j >= 0; --j) {
+    channels[j] = iff_decompress_rle(width * height, compressedData, 
               compressedDataSize, &compressedStart);
-    if (channels[i] == NULL)
+    if (channels[j] == NULL)
       return NULL;
   }
 
     // Build all the channels from the decompression into an RGBA array.
-  data = (char*) ialloc(width * height * depth * sizeof(char));
+  data = (ILubyte*) ialloc(width * height * depth * sizeof(ILubyte));
   if (data == NULL)
     return NULL;
 
@@ -406,20 +408,20 @@ char *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth,
   return data;
 }
 
-char *iff_decompress_rle(ILuint numBytes, char *compressedData, 
+ILubyte *iff_decompress_rle(ILuint numBytes, ILubyte *compressedData, 
               ILuint compressedDataSize, 
               ILuint *compressedStartIndex)
 {
 
-  char  *data = (char*) ialloc(numBytes * sizeof(char));
-  unsigned char nextChar, count;
-  int   i;
+  ILubyte  *data = (ILubyte*) ialloc(numBytes * sizeof(ILubyte));
+  ILubyte nextChar, count;
+  ILuint   i;
   ILuint  byteCount = 0;
 
   if (data == NULL)
     return NULL;
 
-  memset(data, 0, numBytes*sizeof(char));
+  memset(data, 0, numBytes*sizeof(ILubyte));
 
   while (byteCount < numBytes) {
     if (*compressedStartIndex >= compressedDataSize)
@@ -451,7 +453,7 @@ char *iff_decompress_rle(ILuint numBytes, char *compressedData,
   return data;
 }
 
-ILconst_string iFormatExtsIFF[] = { 
+static ILconst_string iFormatExtsIFF[] = { 
   IL_TEXT("iff"), 
   NULL 
 };

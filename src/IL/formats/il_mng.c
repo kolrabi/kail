@@ -29,11 +29,13 @@
 
 
 static ILboolean iIsValidMng(SIO* io) {
-	unsigned char mngSig[8];
-	ILint read = SIOread(io, mngSig, 1, sizeof(mngSig));
-	SIOseek(io, -read, SEEK_CUR);
+	ILubyte mngSig[8];
+	ILuint Start = SIOtell(io);
+	ILuint read = SIOread(io, mngSig, 1, sizeof(mngSig));
+	SIOseek(io, Start, IL_SEEK_SET);
 
-	if (mngSig[0] == 0x8A 
+	if (read == 8
+	&&  mngSig[0] == 0x8A 
 	&&  mngSig[1] == 0x4D
 	&&  mngSig[2] == 0x4E
 	&&  mngSig[3] == 0x47
@@ -51,7 +53,7 @@ static ILboolean iIsValidMng(SIO* io) {
 //---------------------------------------------------------------------------------------------
 // memory allocation; data must be zeroed
 //---------------------------------------------------------------------------------------------
-mng_ptr MNG_DECL mymngalloc(mng_size_t size)
+static mng_ptr MNG_DECL mymngalloc(mng_size_t size)
 {
 	return (mng_ptr)icalloc(1, size);
 }
@@ -60,7 +62,7 @@ mng_ptr MNG_DECL mymngalloc(mng_size_t size)
 //---------------------------------------------------------------------------------------------
 // memory deallocation
 //---------------------------------------------------------------------------------------------
-void MNG_DECL mymngfree(mng_ptr p, mng_size_t size)
+static void MNG_DECL mymngfree(mng_ptr p, mng_size_t size)
 {
 	(void)size;
 	ifree(p);
@@ -70,7 +72,7 @@ void MNG_DECL mymngfree(mng_ptr p, mng_size_t size)
 //---------------------------------------------------------------------------------------------
 // Stream open:
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngopenstream(mng_handle mng)
+static mng_bool MNG_DECL mymngopenstream(mng_handle mng)
 {
 	(void)mng;
 	return MNG_TRUE;
@@ -80,17 +82,17 @@ mng_bool MNG_DECL mymngopenstream(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 // Stream open for Writing:
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngopenstreamwrite(mng_handle mng)
+/* static mng_bool MNG_DECL mymngopenstreamwrite(mng_handle mng)
 {
 	(void)mng;
 	return MNG_TRUE;
-}
+} */
 
 
 //---------------------------------------------------------------------------------------------
 // Stream close:
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngclosestream(mng_handle mng)
+static mng_bool MNG_DECL mymngclosestream(mng_handle mng)
 {
 	(void)mng;
 	return MNG_TRUE; // We close the file ourself, mng_cleanup doesnt seem to do it...
@@ -100,7 +102,7 @@ mng_bool MNG_DECL mymngclosestream(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 // feed data to the decoder
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngreadstream(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *bytesread)
+static mng_bool MNG_DECL mymngreadstream(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *bytesread)
 {
 	// read the requested amount of data from the file
 	ILimage *Image = (ILimage*)mng_get_userdata(mng);
@@ -113,7 +115,7 @@ mng_bool MNG_DECL mymngreadstream(mng_handle mng, mng_ptr buffer, mng_size_t siz
 //---------------------------------------------------------------------------------------------
 // callback for writing data
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *byteswritten)
+/* static mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size, mng_uint32 *byteswritten)
 {
 	ILimage *Image = (ILimage*)mng_get_userdata(mng);
 	*byteswritten = SIOwrite(&Image->io, buffer, 1, (ILuint)size);
@@ -124,13 +126,13 @@ mng_bool MNG_DECL mymngwritedata(mng_handle mng, mng_ptr buffer, mng_size_t size
 	}
 
 	return MNG_TRUE;
-}
+}*/
 
 
 //---------------------------------------------------------------------------------------------
 // the header's been read. set up the display stuff
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint32 height)
+static mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint32 height)
 {
 	ILimage *Image = (ILimage*)mng_get_userdata(mng);
 	ILuint	AlphaDepth;
@@ -157,7 +159,7 @@ mng_bool MNG_DECL mymngprocessheader(mng_handle mng, mng_uint32 width, mng_uint3
 //---------------------------------------------------------------------------------------------
 // return a row pointer for the decoder to fill
 //---------------------------------------------------------------------------------------------
-mng_ptr MNG_DECL mymnggetcanvasline(mng_handle mng, mng_uint32 line)
+static mng_ptr MNG_DECL mymnggetcanvasline(mng_handle mng, mng_uint32 line)
 {
 	ILimage *Image = (ILimage*)mng_get_userdata(mng);
 	return (mng_ptr)(Image->Data + Image->Bps * line);
@@ -167,7 +169,7 @@ mng_ptr MNG_DECL mymnggetcanvasline(mng_handle mng, mng_uint32 line)
 //---------------------------------------------------------------------------------------------
 // timer
 //---------------------------------------------------------------------------------------------
-mng_uint32 MNG_DECL mymnggetticks(mng_handle mng)
+static mng_uint32 MNG_DECL mymnggetticks(mng_handle mng)
 {
 	(void)mng;
 	return 0;
@@ -177,7 +179,7 @@ mng_uint32 MNG_DECL mymnggetticks(mng_handle mng)
 //---------------------------------------------------------------------------------------------
 // Refresh:
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngrefresh(mng_handle mng, mng_uint32 x, mng_uint32 y, mng_uint32 w, mng_uint32 h)
+static mng_bool MNG_DECL mymngrefresh(mng_handle mng, mng_uint32 x, mng_uint32 y, mng_uint32 w, mng_uint32 h)
 {
 	(void)mng;
 	(void)x;
@@ -191,7 +193,7 @@ mng_bool MNG_DECL mymngrefresh(mng_handle mng, mng_uint32 x, mng_uint32 y, mng_u
 //---------------------------------------------------------------------------------------------
 // interframe delay callback
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngsettimer(mng_handle mng, mng_uint32 msecs)
+static mng_bool MNG_DECL mymngsettimer(mng_handle mng, mng_uint32 msecs)
 {
 	(void)mng;
 	(void)msecs;
@@ -205,7 +207,7 @@ mng_bool MNG_DECL mymngsettimer(mng_handle mng, mng_uint32 msecs)
 //---------------------------------------------------------------------------------------------
 // Error Callback;
 //---------------------------------------------------------------------------------------------
-mng_bool MNG_DECL mymngerror(
+static mng_bool MNG_DECL mymngerror(
 	mng_handle mng, mng_int32 code, mng_int8 severity,
 	mng_chunkid chunktype, mng_uint32 chunkseq,
 	mng_int32 extra1, mng_int32 extra2, mng_pchar text
@@ -234,9 +236,7 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	iTrace("----");
 	mng = mng_initialize(MNG_NULL, mymngalloc, mymngfree, MNG_NULL);
-	iTrace("----");
 	if (mng == MNG_NULL) {
 		iSetError(IL_LIB_MNG_ERROR);
 		return IL_FALSE;
@@ -244,7 +244,6 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 
 	// If .mng background is available, use it.
 	mng_set_usebkgd(mng, MNG_TRUE);
-	iTrace("----");
 
 	// Set the callbacks.
 	mng_setcb_errorproc 		(mng, mymngerror);
@@ -256,22 +255,19 @@ static ILboolean iLoadMngInternal(ILimage *Image)
 	mng_setcb_processheader	(mng, mymngprocessheader);
 	mng_setcb_getcanvasline (mng, mymnggetcanvasline);
 	mng_setcb_refresh 			(mng, mymngrefresh);
-	iTrace("----");
 
 	mng_set_userdata 				(mng, Image);
-	iTrace("----");
 
 	mng_read(mng);
-	iTrace("----");
 	mng_display(mng);
-	iTrace("----");
 
 	return IL_TRUE;
 }
 
 
+#if 0
 // Internal function used to save the Mng.
-ILboolean iSaveMngInternal(/* ILimage * */)
+static ILboolean iSaveMngInternal(ILimage *)
 {
 	//mng_handle mng;
 
@@ -310,8 +306,9 @@ ILboolean iSaveMngInternal(/* ILimage * */)
 
 	//return IL_TRUE;
 }
+#endif
 
-ILconst_string iFormatExtsMNG[] = { 
+static ILconst_string iFormatExtsMNG[] = { 
   IL_TEXT("mng"), 
   IL_TEXT("jng"),
   NULL 

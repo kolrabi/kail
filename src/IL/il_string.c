@@ -49,7 +49,7 @@ ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext)
   if (Arg == NULL || Ext == NULL || !iStrLen(Arg) || !iStrLen(Ext))  // if not a good filename/extension, exit early
     return IL_FALSE;
 
-  Len = iStrLen(Arg);
+  Len = (ILint)iStrLen(Arg);
   Argu += Len;  // start at the end
 
   for (i = Len; i >= 0; i--) {
@@ -74,7 +74,7 @@ ILstring ILAPIENTRY iGetExtension(ILconst_string FileName)
 {
   ILboolean PeriodFound = IL_FALSE;
   ILstring Ext = (ILstring)FileName;
-  ILint i, Len = iStrLen(FileName);
+  ILint i, Len = (ILint)iStrLen(FileName);
 
   if (FileName == NULL || !Len)  // if not a good filename/extension, exit early
     return NULL;

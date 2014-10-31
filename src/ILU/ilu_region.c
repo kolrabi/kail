@@ -68,7 +68,7 @@ void iRegioniv(ILUpointi *Points, ILuint n) {
 
 
 // Inserts edge into list in order of increasing xIntersect field.
-void InsertEdge(Edge *list, Edge *edge) {
+static void InsertEdge(Edge *list, Edge *edge) {
   Edge *p, *q = list;
 
   p = q->next;
@@ -87,8 +87,8 @@ void InsertEdge(Edge *list, Edge *edge) {
 
 
 // For an index, return y-coordinate of next nonhorizontal line
-ILint yNext(ILint k, ILint cnt, ILpointi *pts) {
-  ILint j;
+static ILint yNext(ILuint k, ILuint cnt, ILpointi *pts) {
+  ILuint j;
 
   if ((k+1) > (cnt-1))
     j = 0;
@@ -109,7 +109,7 @@ ILint yNext(ILint k, ILint cnt, ILpointi *pts) {
 // Store lower-y coordinate and inverse slope for each edge.  Adjust
 //  and store upper-y coordinate for edges that are the lower member
 //  of a monotonically increasing or decreasing pair of edges
-void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *edges[]) {
+static void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *edges[]) {
   edge->dxPerScan = (ILfloat)(upper.x - lower.x) / (upper.y - lower.y);
   edge->xIntersect = (ILfloat)lower.x;
   if (upper.y < yComp)
@@ -121,7 +121,7 @@ void MakeEdgeRec(ILpointi lower, ILpointi upper, ILint yComp, Edge *edge, Edge *
 }
 
 
-void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges) {
+static void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges) {
   Edge *edge;
   ILpointi v1, v2;
   ILuint i;
@@ -147,7 +147,7 @@ void BuildEdgeList(ILuint cnt, ILpointi *pts, Edge **edges) {
 }
 
 
-void BuildActiveList(ILint scan, Edge *active, Edge *edges[]) {
+static void BuildActiveList(ILuint scan, Edge *active, Edge *edges[]) {
   Edge *p, *q;
 
   p = edges[scan]->next;
@@ -160,14 +160,14 @@ void BuildActiveList(ILint scan, Edge *active, Edge *edges[]) {
 
 #define iRegionSetPixel(mask, w, x,y) ((mask)[y * (w) + x] = 1 )
 
-void FillScan(ILubyte *mask, ILuint width, ILint scan, Edge *active) {
+static void FillScan(ILubyte *mask, ILuint width, ILuint scan, Edge *active) {
   Edge *p1, *p2;
   ILint i;
 
   p1 = active->next;
   while (p1) {
     p2 = p1->next;
-    for (i = (ILuint)p1->xIntersect; i < p2->xIntersect; i++) {
+    for (i = (ILint)p1->xIntersect; i < p2->xIntersect; i++) {
       iRegionSetPixel(mask, width, (ILuint)i, scan);
     }
     p1 = p2->next;
@@ -175,7 +175,7 @@ void FillScan(ILubyte *mask, ILuint width, ILint scan, Edge *active) {
 }
 
 
-void DeleteAfter(Edge *q) {
+static void DeleteAfter(Edge *q) {
   Edge *p = q->next;
   q->next = p->next;
   free(p);
@@ -183,11 +183,11 @@ void DeleteAfter(Edge *q) {
 
 
 // Delete completed edges.  Update 'xIntersect' field for others
-void UpdateActiveList(ILint scan, Edge *active) {
+static void UpdateActiveList(ILuint scan, Edge *active) {
   Edge *q = active, *p = active->next;
 
   while (p) {
-    if (scan >= p->yUpper) {
+    if ((ILint)scan >= p->yUpper) {
       p = p->next;
       DeleteAfter(q);
     }
@@ -200,7 +200,7 @@ void UpdateActiveList(ILint scan, Edge *active) {
 }
 
 
-void ResortActiveList(Edge *active)
+static void ResortActiveList(Edge *active)
 {
   Edge *q, *p = active->next;
 
@@ -235,8 +235,8 @@ ILubyte *iScanFill(ILimage *Image) {
 
   for (i = 0; i < TLSData->PointNum; i++) {
     if (TLSData->RegionPointsf) {
-      TLSData->RegionPointsi[i].x = (ILuint)(Image->Width  * TLSData->RegionPointsf[i].x);
-      TLSData->RegionPointsi[i].y = (ILuint)(Image->Height * TLSData->RegionPointsf[i].y);
+      TLSData->RegionPointsi[i].x = (ILint)(Image->Width  * TLSData->RegionPointsf[i].x);
+      TLSData->RegionPointsi[i].y = (ILint)(Image->Height * TLSData->RegionPointsf[i].y);
     }
     if (TLSData->RegionPointsi[i].x >= (ILint)Image->Width || TLSData->RegionPointsi[i].y >= (ILint)Image->Height)
       goto error;

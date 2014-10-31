@@ -22,7 +22,8 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 {
   static const ILfloat LumFactor[3] = { 0.212671f, 0.715160f, 0.072169f };  // http://www.inforamp.net/~poynton/ and libpng's libpng.txt - Used for conversion to luminance.
   ILimage   *NewImage = NULL; //, *CurImage = NULL;
-  ILuint    i, j, k, c, Size, LumBpp = 1;
+  ILuint    i, j, k, c, Size;
+  ILubyte   LumBpp = 1;
   ILfloat   Resultf;
   ILubyte   *Temp = NULL;
   ILboolean Converted;
@@ -30,7 +31,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
   NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
   if (NewImage == NULL) {
-    return IL_FALSE;
+    return NULL;
   }
 
   iCopyImageAttr(NewImage, Image);
@@ -264,11 +265,6 @@ alloc_error:
 }
 
 
-// In il_quantizer.c
-ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols);
-// In il_neuquant.c
-ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
-
 // Converts an image from one format to another
 ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenum DestType)
 {
@@ -279,7 +275,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
   // CurImage = Image;
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
-    return IL_FALSE;
+    return NULL;
   }
 
   // We don't support 16-bit color indices (or higher).
@@ -317,9 +313,9 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
   }
   else if (DestFormat == IL_COLOUR_INDEX && Image->Format != IL_LUMINANCE) {
     if (iGetInt(IL_QUANTIZATION_MODE) == IL_NEU_QUANT)
-      return iNeuQuant(Image, iGetInt(IL_MAX_QUANT_INDICES));
+      return iNeuQuant(Image, (ILuint)iGetInt(IL_MAX_QUANT_INDICES));
     else // Assume IL_WU_QUANT otherwise.
-      return iQuantizeImage(Image, iGetInt(IL_MAX_QUANT_INDICES));
+      return iQuantizeImage(Image, (ILuint)iGetInt(IL_MAX_QUANT_INDICES));
   }
   else {
     NewImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
@@ -347,9 +343,9 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
       NewImage->Pal.PalType = IL_PAL_RGB24;
       NewImage->Pal.Palette = (ILubyte*)ialloc(768);
       for (i = 0; i < 256; i++) {
-        NewImage->Pal.Palette[i * 3] = i;
-        NewImage->Pal.Palette[i * 3 + 1] = i;
-        NewImage->Pal.Palette[i * 3 + 2] = i;
+        NewImage->Pal.Palette[i * 3    ] = 
+        NewImage->Pal.Palette[i * 3 + 1] = 
+        NewImage->Pal.Palette[i * 3 + 2] = (ILubyte)i;
       }
       NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
       if (NewImage->Data == NULL) {
@@ -426,10 +422,16 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
 ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 {
   ILuint    i = 0, Size = Image->Bpp * Image->Width * Image->Height;
-  ILbyte    PalBpp = iGetBppPal(Image->Pal.PalType);
+  ILubyte   PalBpp = (ILubyte)iGetBppPal(Image->Pal.PalType);
   ILushort  *ShortPtr;
   ILuint    *IntPtr, Temp;
   ILdouble  *DoublePtr, DoubleTemp;
+  void      *VoidPtr = Image->Data;
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
   if ((Image->Bpp != 1 && Image->Bpp != 3 && Image->Bpp != 4)) {
     iSetError(IL_INVALID_VALUE);
@@ -496,28 +498,27 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
   if (Image->Format == IL_COLOUR_INDEX) {
     for (; i < Image->Pal.PalSize; i += PalBpp) {
         Temp = Image->Pal.Palette[i];
-        Image->Pal.Palette[i] = Image->Pal.Palette[i+2];
-        Image->Pal.Palette[i+2] = Temp;
+        Image->Pal.Palette[i  ] = Image->Pal.Palette[i+2];
+        Image->Pal.Palette[i+2] = (ILubyte)Temp;
     }
-  }
-  else {
-    ShortPtr = (ILushort*)Image->Data;
-    IntPtr = (ILuint*)Image->Data;
-    DoublePtr = (ILdouble*)Image->Data;
+  } else {
+    ShortPtr  = (ILushort*)VoidPtr;
+    IntPtr    = (ILuint*)VoidPtr;
+    DoublePtr = (ILdouble*)VoidPtr;
     switch (Image->Bpc)
     {
       case 1:
         for (; i < Size; i += Image->Bpp) {
           Temp = Image->Data[i];
-          Image->Data[i] = Image->Data[i+2];
-          Image->Data[i+2] = Temp;
+          Image->Data[i  ] = Image->Data[i+2];
+          Image->Data[i+2] = (ILubyte)Temp;
         }
         break;
       case 2:
         for (; i < Size; i += Image->Bpp) {
           Temp = ShortPtr[i];
-          ShortPtr[i] = ShortPtr[i+2];
-          ShortPtr[i+2] = Temp;
+          ShortPtr[i  ] = ShortPtr[i+2];
+          ShortPtr[i+2] = (ILushort)Temp;
         }
         break;
       case 4:  // Works fine with ILint, ILuint and ILfloat.
@@ -542,7 +543,9 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 
 ILboolean iAddAlpha(ILimage *Image)
 {
-  ILubyte   *NewData, NewBpp;
+  void   *NewData;
+  void   *OldData;
+  ILubyte   NewBpp;
   ILuint    i = 0, j = 0, Size;
 
   if (ilIsEnabled(IL_USE_KEY_COLOUR)) {
@@ -562,29 +565,30 @@ ILboolean iAddAlpha(ILimage *Image)
   Size = Image->Bps * Image->Height / Image->Bpc;
   NewBpp = (ILubyte)(Image->Bpp + 1);
   
-  NewData = (ILubyte*)ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
+  NewData = ialloc(NewBpp * Image->Bpc * Image->Width * Image->Height);
   if (NewData == NULL) {
     return IL_FALSE;
   }
+  OldData = Image->Data;
 
   switch (Image->Type)
   {
     case IL_BYTE:
     case IL_UNSIGNED_BYTE:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        NewData[j]   = Image->Data[i];
-        NewData[j+1] = Image->Data[i+1];
-        NewData[j+2] = Image->Data[i+2];
-        NewData[j+3] = UCHAR_MAX;  // Max opaqueness
+        ((ILubyte*)NewData)[j]   = ((ILubyte*)OldData)[i];
+        ((ILubyte*)NewData)[j+1] = ((ILubyte*)OldData)[i+1];
+        ((ILubyte*)NewData)[j+2] = ((ILubyte*)OldData)[i+2];
+        ((ILubyte*)NewData)[j+3] = UCHAR_MAX;  // Max opaqueness
       }
       break;
 
     case IL_SHORT:
     case IL_UNSIGNED_SHORT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-        ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-        ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+        ((ILushort*)NewData)[j]   = ((ILushort*)OldData)[i];
+        ((ILushort*)NewData)[j+1] = ((ILushort*)OldData)[i+1];
+        ((ILushort*)NewData)[j+2] = ((ILushort*)OldData)[i+2];
         ((ILushort*)NewData)[j+3] = USHRT_MAX;
       }
       break;
@@ -592,27 +596,27 @@ ILboolean iAddAlpha(ILimage *Image)
     case IL_INT:
     case IL_UNSIGNED_INT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-        ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-        ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+        ((ILuint*)NewData)[j]   = ((ILuint*)OldData)[i];
+        ((ILuint*)NewData)[j+1] = ((ILuint*)OldData)[i+1];
+        ((ILuint*)NewData)[j+2] = ((ILuint*)OldData)[i+2];
         ((ILuint*)NewData)[j+3] = UINT_MAX;
       }
       break;
 
     case IL_FLOAT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-        ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-        ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+        ((ILfloat*)NewData)[j]   = ((ILfloat*)OldData)[i];
+        ((ILfloat*)NewData)[j+1] = ((ILfloat*)OldData)[i+1];
+        ((ILfloat*)NewData)[j+2] = ((ILfloat*)OldData)[i+2];
         ((ILfloat*)NewData)[j+3] = 1.0f;
       }
       break;
 
     case IL_DOUBLE:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-        ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-        ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+        ((ILdouble*)NewData)[j]   = ((ILdouble*)OldData)[i];
+        ((ILdouble*)NewData)[j+1] = ((ILdouble*)OldData)[i+1];
+        ((ILdouble*)NewData)[j+2] = ((ILdouble*)OldData)[i+2];
         ((ILdouble*)NewData)[j+3] = 1.0;
       }
       break;
@@ -628,7 +632,8 @@ ILboolean iAddAlpha(ILimage *Image)
   Image->Bps = Image->Width * Image->Bpc * NewBpp;
   Image->SizeOfPlane = Image->Bps * Image->Height;
   Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-  ifree(Image->Data);
+  ifree(OldData); 
+  OldData = NULL;
   Image->Data = NewData;
 
   switch (Image->Format)
@@ -649,7 +654,8 @@ ILboolean iAddAlpha(ILimage *Image)
 //  making the image transparent where Key is equal to the pixel.
 ILboolean iAddAlphaKey(ILimage *Image)
 {
-  ILubyte   *NewData, NewBpp;
+  void   *NewData, *OldData;
+  ILubyte NewBpp;
   ILfloat   KeyColour[3];
   ILuint    i = 0, j = 0, c, Size;
   ILboolean Same;
@@ -688,37 +694,38 @@ ILboolean iAddAlphaKey(ILimage *Image)
     if (NewData == NULL) {
       return IL_FALSE;
     }
+    OldData = Image->Data;
 
     switch (Image->Type)
     {
       case IL_BYTE:
       case IL_UNSIGNED_BYTE:
         for (; i < Size; i += Image->Bpp, j += NewBpp) {
-          NewData[j]   = Image->Data[i];
-          NewData[j+1] = Image->Data[i+1];
-          NewData[j+2] = Image->Data[i+2];
+          ((ILubyte*)NewData)[j]   = ((ILubyte*)OldData)[i];
+          ((ILubyte*)NewData)[j+1] = ((ILubyte*)OldData)[i+1];
+          ((ILubyte*)NewData)[j+2] = ((ILubyte*)OldData)[i+2];
           Same = IL_TRUE;
           for (c = 0; c < Image->Bpp; c++) {
-            if (Image->Data[i+c] != KeyColour[c] * UCHAR_MAX)
+            if (((ILubyte*)OldData)[i+c] != (ILubyte)(KeyColour[c] * UCHAR_MAX))
               Same = IL_FALSE;
           }
 
           if (Same)
-            NewData[j+3] = 0;  // Transparent - matches key colour
+            ((ILubyte*)NewData)[j+3] = 0;  // Transparent - matches key colour
           else
-            NewData[j+3] = UCHAR_MAX;
+            ((ILubyte*)NewData)[j+3] = UCHAR_MAX;
         }
         break;
 
       case IL_SHORT:
       case IL_UNSIGNED_SHORT:
         for (; i < Size; i += Image->Bpp, j += NewBpp) {
-          ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-          ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-          ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+          ((ILushort*)NewData)[j]   = ((ILushort*)OldData)[i];
+          ((ILushort*)NewData)[j+1] = ((ILushort*)OldData)[i+1];
+          ((ILushort*)NewData)[j+2] = ((ILushort*)OldData)[i+2];
           Same = IL_TRUE;
           for (c = 0; c < Image->Bpp; c++) {
-            if (((ILushort*)Image->Data)[i+c] != KeyColour[c] * USHRT_MAX)
+            if (((ILushort*)OldData)[i+c] != (ILushort)(KeyColour[c] * USHRT_MAX))
               Same = IL_FALSE;
           }
 
@@ -732,12 +739,12 @@ ILboolean iAddAlphaKey(ILimage *Image)
       case IL_INT:
       case IL_UNSIGNED_INT:
         for (; i < Size; i += Image->Bpp, j += NewBpp) {
-          ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-          ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-          ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+          ((ILuint*)NewData)[j]   = ((ILuint*)OldData)[i];
+          ((ILuint*)NewData)[j+1] = ((ILuint*)OldData)[i+1];
+          ((ILuint*)NewData)[j+2] = ((ILuint*)OldData)[i+2];
           Same = IL_TRUE;
           for (c = 0; c < Image->Bpp; c++) {
-            if (((ILuint*)Image->Data)[i+c] != KeyColour[c] * UINT_MAX)
+            if (((ILuint*)OldData)[i+c] != (ILuint)(KeyColour[c] * UINT_MAX))
               Same = IL_FALSE;
           }
 
@@ -750,12 +757,12 @@ ILboolean iAddAlphaKey(ILimage *Image)
 
       case IL_FLOAT:
         for (; i < Size; i += Image->Bpp, j += NewBpp) {
-          ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-          ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-          ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+          ((ILfloat*)NewData)[j]   = ((ILfloat*)OldData)[i];
+          ((ILfloat*)NewData)[j+1] = ((ILfloat*)OldData)[i+1];
+          ((ILfloat*)NewData)[j+2] = ((ILfloat*)OldData)[i+2];
           Same = IL_TRUE;
           for (c = 0; c < Image->Bpp; c++) {
-            if (((ILfloat*)Image->Data)[i+c] != KeyColour[c])
+            if (fabs( ((ILfloat*)OldData)[i+c] - KeyColour[c] ) < 1.0/255.0) 
               Same = IL_FALSE;
           }
 
@@ -768,12 +775,12 @@ ILboolean iAddAlphaKey(ILimage *Image)
 
       case IL_DOUBLE:
         for (; i < Size; i += Image->Bpp, j += NewBpp) {
-          ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-          ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-          ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+          ((ILdouble*)NewData)[j]   = ((ILdouble*)OldData)[i];
+          ((ILdouble*)NewData)[j+1] = ((ILdouble*)OldData)[i+1];
+          ((ILdouble*)NewData)[j+2] = ((ILdouble*)OldData)[i+2];
           Same = IL_TRUE;
           for (c = 0; c < Image->Bpp; c++) {
-            if (((ILdouble*)Image->Data)[i+c] != KeyColour[c])
+            if (fabs( ((ILdouble*)OldData)[i+c] - KeyColour[c] ) < 1.0/255.0) 
               Same = IL_FALSE;
           }
 
@@ -795,7 +802,8 @@ ILboolean iAddAlphaKey(ILimage *Image)
     Image->Bps = Image->Width * Image->Bpc * NewBpp;
     Image->SizeOfPlane = Image->Bps * Image->Height;
     Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-    ifree(Image->Data);
+    ifree(OldData);
+    OldData = NULL;
     Image->Data = NewData;
 
     switch (Image->Format)
@@ -814,7 +822,7 @@ ILboolean iAddAlphaKey(ILimage *Image)
       return IL_FALSE;
     }
 
-    Size = ilGetInteger(IL_PALETTE_NUM_COLS);
+    Size = (ILuint)ilGetInteger(IL_PALETTE_NUM_COLS);
     if (Size == 0) {
       iSetError(IL_INTERNAL_ERROR);
       return IL_FALSE;
@@ -861,7 +869,8 @@ ILboolean iAddAlphaKey(ILimage *Image)
 
 ILboolean iRemoveAlpha(ILimage *Image)
 {
-  ILubyte *NewData, NewBpp;
+  void *NewData, *OldData;
+  ILubyte NewBpp;
   ILuint i = 0, j = 0, Size;
 
   if (Image == NULL) {
@@ -881,49 +890,50 @@ ILboolean iRemoveAlpha(ILimage *Image)
   if (NewData == NULL) {
     return IL_FALSE;
   }
+  OldData = Image->Data;
 
   switch (Image->Type)
   {
     case IL_BYTE:
     case IL_UNSIGNED_BYTE:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        NewData[j]   = Image->Data[i];
-        NewData[j+1] = Image->Data[i+1];
-        NewData[j+2] = Image->Data[i+2];
+        ((ILubyte*)NewData)[j]   = ((ILubyte*)OldData)[i];
+        ((ILubyte*)NewData)[j+1] = ((ILubyte*)OldData)[i+1];
+        ((ILubyte*)NewData)[j+2] = ((ILubyte*)OldData)[i+2];
       }
       break;
 
     case IL_SHORT:
     case IL_UNSIGNED_SHORT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILushort*)NewData)[j]   = ((ILushort*)Image->Data)[i];
-        ((ILushort*)NewData)[j+1] = ((ILushort*)Image->Data)[i+1];
-        ((ILushort*)NewData)[j+2] = ((ILushort*)Image->Data)[i+2];
+        ((ILushort*)NewData)[j]   = ((ILushort*)OldData)[i];
+        ((ILushort*)NewData)[j+1] = ((ILushort*)OldData)[i+1];
+        ((ILushort*)NewData)[j+2] = ((ILushort*)OldData)[i+2];
       }
       break;
 
     case IL_INT:
     case IL_UNSIGNED_INT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILuint*)NewData)[j]   = ((ILuint*)Image->Data)[i];
-        ((ILuint*)NewData)[j+1] = ((ILuint*)Image->Data)[i+1];
-        ((ILuint*)NewData)[j+2] = ((ILuint*)Image->Data)[i+2];
+        ((ILuint*)NewData)[j]   = ((ILuint*)OldData)[i];
+        ((ILuint*)NewData)[j+1] = ((ILuint*)OldData)[i+1];
+        ((ILuint*)NewData)[j+2] = ((ILuint*)OldData)[i+2];
       }
       break;
 
     case IL_FLOAT:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILfloat*)NewData)[j]   = ((ILfloat*)Image->Data)[i];
-        ((ILfloat*)NewData)[j+1] = ((ILfloat*)Image->Data)[i+1];
-        ((ILfloat*)NewData)[j+2] = ((ILfloat*)Image->Data)[i+2];
+        ((ILfloat*)NewData)[j]   = ((ILfloat*)OldData)[i];
+        ((ILfloat*)NewData)[j+1] = ((ILfloat*)OldData)[i+1];
+        ((ILfloat*)NewData)[j+2] = ((ILfloat*)OldData)[i+2];
       }
       break;
 
     case IL_DOUBLE:
       for (; i < Size; i += Image->Bpp, j += NewBpp) {
-        ((ILdouble*)NewData)[j]   = ((ILdouble*)Image->Data)[i];
-        ((ILdouble*)NewData)[j+1] = ((ILdouble*)Image->Data)[i+1];
-        ((ILdouble*)NewData)[j+2] = ((ILdouble*)Image->Data)[i+2];
+        ((ILdouble*)NewData)[j]   = ((ILdouble*)OldData)[i];
+        ((ILdouble*)NewData)[j+1] = ((ILdouble*)OldData)[i+1];
+        ((ILdouble*)NewData)[j+2] = ((ILdouble*)OldData)[i+2];
       }
       break;
 
@@ -938,7 +948,8 @@ ILboolean iRemoveAlpha(ILimage *Image)
   Image->Bps = Image->Width * Image->Bpc * NewBpp;
   Image->SizeOfPlane = Image->Bps * Image->Height;
   Image->SizeOfData = Image->SizeOfPlane * Image->Depth;
-  ifree(Image->Data);
+  ifree(OldData);
+  OldData = NULL;
   Image->Data = NewData;
 
   switch (Image->Format)
@@ -954,7 +965,7 @@ ILboolean iRemoveAlpha(ILimage *Image)
   return IL_TRUE;
 }
 
-ILboolean iFixImage(ILimage *Image, ILimage *BaseImage) 
+static ILboolean iFixImage(ILimage *Image, ILimage *BaseImage) 
 {
   Image->BaseImage = BaseImage;
   
@@ -968,14 +979,14 @@ ILboolean iFixImage(ILimage *Image, ILimage *BaseImage)
 
   if (ilIsEnabled(IL_TYPE_SET)) {
     if ((ILenum)ilGetInteger(IL_TYPE_MODE) != Image->Type) {
-      if (!iConvertImages(Image, Image->Format, ilGetInteger(IL_TYPE_MODE))) {
+      if (!iConvertImages(Image, Image->Format, (ILenum)ilGetInteger(IL_TYPE_MODE))) {
         return IL_FALSE;
       }
     }
   }
   if (ilIsEnabled(IL_FORMAT_SET)) {
     if ((ILenum)ilGetInteger(IL_FORMAT_MODE) != Image->Format) {
-      if (!iConvertImages(Image, ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
+      if (!iConvertImages(Image, (ILenum)ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
         return IL_FALSE;
       }
     }

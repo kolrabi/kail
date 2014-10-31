@@ -16,13 +16,13 @@
 
 #include "ilu_internal.h"
 
-ILconst_string iluErrorStringsJapanese[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] = {
+static ILconst_string iluErrorStringsJapanese[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] = {
   IL_TEXT("無効な列挙値"), //"invalid enumerant"),
-    IL_TEXT("メモリ不足"), //"out of memory"),
+  IL_TEXT("メモリ不足"), //"out of memory"),
   IL_TEXT("まだサポートされていないフォーマット"), //"format not supported yet"),
   IL_TEXT("内部エラー"), //"internal error"),
   IL_TEXT("無効な値"), //"invalid value"),
-    IL_TEXT("不正なオペレーション"), //"illegal operation"),
+  IL_TEXT("不正なオペレーション"), //"illegal operation"),
   IL_TEXT("不正なファイルの値"), //"illegal file value"),
   IL_TEXT("無効なファイルヘッダ"), //"invalid file header"),
   IL_TEXT("無効なパラメタ"), //"invalid parameter"),
@@ -37,7 +37,7 @@ ILconst_string iluErrorStringsJapanese[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1]
   IL_TEXT("ファイル読み込みエラー") //"file read error"
 };
 
-ILconst_string iluLibErrorStringsJapanese[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 1] = {
+static ILconst_string iluLibErrorStringsJapanese[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 1] = {
   IL_TEXT("gifライブラリエラー"), //"gif library error"),
   IL_TEXT("jpegライブラリエラー"), //"jpeg library error"),
   IL_TEXT("pngライブラリエラー"), //"png library error"),
@@ -47,7 +47,7 @@ ILconst_string iluLibErrorStringsJapanese[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 
   IL_TEXT("exrライブラリエラー") //"exr library error"
 };
 
-ILconst_string iluMiscErrorStringsJapanese[2] = {
+static ILconst_string iluMiscErrorStringsJapanese[2] = {
   IL_TEXT("エラー無し"),
   IL_TEXT("不明なエラー")
 };

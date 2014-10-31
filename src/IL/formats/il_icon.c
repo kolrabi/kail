@@ -63,9 +63,10 @@ static ILboolean iIsValidIcon(SIO *io)
   // Icons are difficult to detect, but it may suffice
   // We need at least one correct image header in the icon
   // Not sure whether big endian architectures are a concern in 2014
-  ILint read = SIOread(io, &dir, 1, sizeof(dir));
+  ILuint Start = SIOtell(io);
+  ILuint read = SIOread(io, &dir, 1, sizeof(dir));
   read += SIOread(io, &entry, 1, sizeof(entry));
-  SIOseek(io, -read, SEEK_CUR);
+  SIOseek(io, Start, IL_SEEK_SET);
 
   if (read == sizeof(dir) + sizeof(entry)
   &&  dir.reserved == 0
@@ -91,6 +92,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   ILimage   *Image = NULL;
   ILint   i;
   ILuint    Size, PadSize, ANDPadSize, j, k, l, m, x, w, CurAndByte; //, AndBytes;
+  ILuint Bps;
   ILboolean BaseCreated = IL_FALSE;
   ILubyte   PNGTest[3];
   SIO *io;
@@ -148,8 +150,6 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     Short(&DirEntries[i].Bpp);
     UInt (&DirEntries[i].SizeOfData);
     UInt (&DirEntries[i].Offset);
-
-    iTrace("---- ICONDIR[%2d]: %d %d %d %08x %dx%x", i, DirEntries[i].Planes, DirEntries[i].Bpp, DirEntries[i].SizeOfData, DirEntries[i].Offset, DirEntries[i].Width, DirEntries[i].Height);
   }
 
   for (i = 0; i < IconDir.Count; i++) {
@@ -160,7 +160,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     if (SIOread(io, PNGTest, 3, 1) && memcmp(PNGTest, "PNG", 3) == 0)  // Characters 'P', 'N', 'G' for PNG header
     {
 #ifdef IL_NO_PNG
-      iTrace("**** PNG icons not supported");
+      iTrace("**** PNG icons not supported, IL was built with IL_NO_PNG");
       iSetError(IL_FORMAT_NOT_SUPPORTED);  // Cannot handle these without libpng.
       goto file_read_error;
 #else
@@ -171,8 +171,6 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     }
     else
     {
-      iTrace("---- ICON %5d : is a %c%c%c", i, PNGTest[0], PNGTest[1], PNGTest[2]);
-
       // Need to go back the 4 bytes that were just read.
       SIOseek(io, DirEntries[i].Offset, IL_SEEK_SET);
 
@@ -191,8 +189,6 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       Int  (&IconImages[i].Head.YPixPerMeter);
       Int  (&IconImages[i].Head.ColourUsed);
       Int  (&IconImages[i].Head.ColourImportant);
-
-      iTrace("---- ICOIMG [%2d]: %d %dx%x", i, IconImages[i].Head.Size, IconImages[i].Head.Width, IconImages[i].Head.Height);
 
       if (IconImages[i].Head.BitCount < 8) {
         if (IconImages[i].Head.ColourUsed == 0) {
@@ -222,11 +218,11 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       else {
         IconImages[i].Pal = NULL;
       }
-
-      PadSize    = (4 - ((IconImages[i].Head.Width*IconImages[i].Head.BitCount + 7) / 8) % 4) % 4;  // Has to be DWORD-aligned.
+      
+      Bps        = (ILuint)((IconImages[i].Head.Width*IconImages[i].Head.BitCount + 7) / 8);
+      PadSize    = (4 - Bps % 4) % 4;  // Has to be DWORD-aligned.
       ANDPadSize = (4 - ((IconImages[i].Head.Width                             + 7) / 8) % 4) % 4;  // AND is 1 bit/pixel
-      Size = ((IconImages[i].Head.Width*IconImages[i].Head.BitCount + 7) / 8 + PadSize)
-            * (IconImages[i].Head.Height / 2);
+      Size =       (    Bps + PadSize) * (ILuint)(IconImages[i].Head.Height / 2);
 
       IconImages[i].Data = (ILubyte*)ialloc(Size);
       if (IconImages[i].Data == NULL)
@@ -235,7 +231,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       if (SIOread(io, IconImages[i].Data, 1, Size) != Size)
         goto file_read_error;
 
-      Size = (((IconImages[i].Head.Width + 7) /8) + ANDPadSize) * (IconImages[i].Head.Height / 2);
+      Size = (Bps + ANDPadSize) * (ILuint)(IconImages[i].Head.Height / 2);
 
       IconImages[i].AND = (ILubyte*)ialloc(Size);
       if (IconImages[i].AND == NULL)
@@ -445,6 +441,7 @@ static void ico_png_read(png_structp png_ptr, png_bytep data, png_size_t length)
   SIOread(io, data, 1, (ILuint)length);
 }
 
+static void ico_png_error_func(png_structp png_ptr, png_const_charp message) NORETURN;
 static void ico_png_error_func(png_structp png_ptr, png_const_charp message) {
   iTrace("**** PNG Error : %s", message);
   iSetError(IL_LIB_PNG_ERROR);
@@ -601,9 +598,9 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
   // Copy Palette
   if (format == IL_COLOUR_INDEX)
   {
-    int chans;
+    ILubyte chans;
     png_bytep trans = NULL;
-    int num_trans = -1;
+    ILint num_trans = -1;
     if (!png_get_PLTE(data->ico_png_ptr, data->ico_info_ptr, &palette, &num_palette)) {
       iSetError(IL_ILLEGAL_FILE_VALUE);
       png_destroy_read_struct(&data->ico_png_ptr, &data->ico_info_ptr, NULL);
@@ -617,7 +614,7 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
     }
 
 // @TODO: We may need to keep track of the size of the palette.
-    Icon->Pal = (ILubyte*)ialloc(num_palette * chans);
+    Icon->Pal = (ILubyte*)ialloc((ILuint)num_palette * chans);
 
     for (j = 0; j < num_palette; ++j) {
       Icon->Pal[chans*j + 0] = palette[j].blue;
@@ -683,7 +680,7 @@ static ILboolean iLoadIconPNG(SIO *io, struct ICOIMAGE *Icon) {
 */
 #endif
 
-ILconst_string iFormatExtsICO[] = { 
+static ILconst_string iFormatExtsICO[] = { 
   IL_TEXT("ico"), 
   IL_TEXT("cur"), 
   NULL 

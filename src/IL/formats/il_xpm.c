@@ -15,9 +15,6 @@
 #ifndef IL_NO_XPM
 #include <ctype.h>
 
-static ILboolean iIsValidXpm(SIO* io);
-static ILboolean iLoadXpmInternal(ILimage *);
-
 // Global variables
 typedef ILubyte XpmPixel[4];
 
@@ -29,30 +26,31 @@ typedef ILubyte XpmPixel[4];
 //#define XPM_DONT_USE_HASHTABLE
 
 
-static ILint XpmGetsInternal(SIO* io, ILubyte *Buffer, ILint MaxLen) {
-	ILint	i = 0, Current;
+static ILuint XpmGetsInternal(SIO* io, char *Buffer, ILuint MaxLen) {
+	ILuint	i = 0;
+	ILint Current;
 
-	if (io->eof(io->handle))
-		return IL_EOF;
+	if (SIOeof(io))
+		return 0;
 
-	while ((Current = io->getchar(io->handle)) != IL_EOF && i < MaxLen - 1) {
+	while ((Current = SIOgetc(io)) != IL_EOF && i < MaxLen - 1) {
 		if (Current == IL_EOF)
 			return 0;
 		if (Current == '\n') //unix line ending
 			break;
 
 		if (Current == '\r') { //dos/mac line ending
-			Current = io->getchar(io->handle);
+			Current = SIOgetc(io);
 			if (Current == '\n') //dos line ending
 				break;
 
 			if (Current == IL_EOF)
 				break;
 
-			Buffer[i++] = (ILubyte)Current;
+			Buffer[i++] = (char)Current;
 			continue;
 		}
-		Buffer[i++] = (ILubyte)Current;
+		Buffer[i++] = (char)Current;
 	}
 
 	Buffer[i++] = 0;
@@ -63,13 +61,13 @@ static ILint XpmGetsInternal(SIO* io, ILubyte *Buffer, ILint MaxLen) {
 
 // Internal function to get the header and check it.
 static ILboolean iIsValidXpm(SIO* io) {
-	ILubyte	Buffer[10];
-	ILuint	Pos = io->tell(io->handle);
+	char  	Buffer[10];
+	ILuint	Pos = SIOtell(io);
 
 	XpmGetsInternal(io, Buffer, 10);
-	io->seek(io->handle, Pos, IL_SEEK_SET);  // Restore position
+	SIOseek(io, Pos, IL_SEEK_SET);  // Restore position
 
-	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */")))
+	if (strncmp("/* XPM */", Buffer, iCharStrLen("/* XPM */")))
 		return IL_FALSE;
 	return IL_TRUE;
 }
@@ -91,24 +89,26 @@ static ILboolean iIsValidXpm(SIO* io) {
 //257 is the smallest prime > 256
 #define XPM_HASH_LEN 257
 
+#include "pack_push.h"
 typedef struct XPMHASHENTRY
 {
 	ILubyte ColourName[XPM_MAX_CHAR_PER_PIXEL];
 	XpmPixel ColourValue;
 	struct XPMHASHENTRY *Next;
 } XPMHASHENTRY;
+#include "pack_pop.h"
 
 
-static ILuint XpmHash(const ILubyte* name, int len)
+static ILuint XpmHash(const char* name, ILuint len)
 {
-	ILint i, sum;
+	ILuint i, sum;
 	for (sum = i = 0; i < len; ++i)
-		sum += name[i];
+		sum += (ILubyte)name[i];
 	return sum % XPM_HASH_LEN;
 }
 
 
-XPMHASHENTRY** XpmCreateHashTable()
+static XPMHASHENTRY** XpmCreateHashTable()
 {
 	XPMHASHENTRY** Table =
 		(XPMHASHENTRY**)ialloc(XPM_HASH_LEN*sizeof(XPMHASHENTRY*));
@@ -118,7 +118,7 @@ XPMHASHENTRY** XpmCreateHashTable()
 }
 
 
-void XpmDestroyHashTable(XPMHASHENTRY **Table)
+static void XpmDestroyHashTable(XPMHASHENTRY **Table)
 {
 	ILint i;
 	XPMHASHENTRY* Entry;
@@ -135,7 +135,7 @@ void XpmDestroyHashTable(XPMHASHENTRY **Table)
 }
 
 
-void XpmInsertEntry(XPMHASHENTRY **Table, const ILubyte* Name, int Len, XpmPixel Colour)
+static void XpmInsertEntry(XPMHASHENTRY **Table, const char* Name, ILuint Len, XpmPixel Colour)
 {
 	XPMHASHENTRY* NewEntry;
 	ILuint Index;
@@ -151,7 +151,7 @@ void XpmInsertEntry(XPMHASHENTRY **Table, const ILubyte* Name, int Len, XpmPixel
 }
 
 
-void XpmGetEntry(XPMHASHENTRY **Table, const ILubyte* Name, int Len, XpmPixel Colour)
+static void XpmGetEntry(XPMHASHENTRY **Table, const char* Name, ILuint Len, XpmPixel Colour)
 {
 	XPMHASHENTRY* Entry;
 	ILuint Index;
@@ -168,15 +168,15 @@ void XpmGetEntry(XPMHASHENTRY **Table, const ILubyte* Name, int Len, XpmPixel Co
 #endif //XPM_DONT_USE_HASHTABLE
 
 
-ILint XpmGets(SIO* io, ILubyte *Buffer, ILint MaxLen)
+static ILuint XpmGets(SIO* io, char *Buffer, ILuint MaxLen)
 {
-	ILint		Size, i, j;
+	ILuint		Size, i, j;
 	ILboolean	NotComment = IL_FALSE, InsideComment = IL_FALSE;
 
 	do {
 		Size = XpmGetsInternal(io, Buffer, MaxLen);
-		if (Size == IL_EOF)
-			return IL_EOF;
+		if (Size == 0)
+			return 0;
 
 		//skip leading whitespace (sometimes there's whitespace
 		//before a comment or before the pixel data)
@@ -216,10 +216,10 @@ ILint XpmGets(SIO* io, ILubyte *Buffer, ILint MaxLen)
 }
 
 
-ILint XpmGetInt(ILubyte *Buffer, ILint Size, ILint *Position)
+static ILuint XpmGetInt(const char *Buffer, ILuint Size, ILuint *Position)
 {
 	char		Buff[1024];
-	ILint		i, j;
+	ILuint		i, j;
 	ILboolean	IsInNum = IL_FALSE;
 
 	for (i = *Position, j = 0; i < Size; i++) {
@@ -231,18 +231,18 @@ ILint XpmGetInt(ILubyte *Buffer, ILint Size, ILint *Position)
 			if (IsInNum) {
 				Buff[j] = 0;
 				*Position = i;
-				return atoi(Buff);
+				return (ILuint)atoi(Buff);
 			}
 		}
 	}
 
-	return -1;
+	return 0;
 }
 
 
-ILboolean XpmPredefCol(char *Buff, XpmPixel *Colour)
+static ILboolean XpmPredefCol(const char *Buff, XpmPixel *Colour)
 {
-	ILint len;
+	ILuint len;
 	ILint val = 128;
 
 	if (!iCharStrICmp(Buff, "none")) {
@@ -339,17 +339,17 @@ ILboolean XpmPredefCol(char *Buff, XpmPixel *Colour)
 
 
 #ifndef XPM_DONT_USE_HASHTABLE
-ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XPMHASHENTRY **Table)
+static ILboolean XpmGetColour(const char *Buffer, ILuint Size, ILuint Len, XPMHASHENTRY **Table)
 #else
-ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XpmPixel* Colours)
+static ILboolean XpmGetColour(const char *Buffer, ILuint Size, ILuint Len, XpmPixel* Colours)
 #endif
 {
-	ILint		i = 0, j, strLen = 0;
-	ILubyte		ColBuff[3];
-	char		Buff[1024];
+	ILuint		i = 0, j, strLen = 0;
+	char  		ColBuff[3];
+	char			Buff[1024];
 
 	XpmPixel	Colour;
-	ILubyte		Name[XPM_MAX_CHAR_PER_PIXEL];
+	char  		Name[XPM_MAX_CHAR_PER_PIXEL];
 
 	for ( ; i < Size; i++) {
 		if (Buffer[i] == '\"')
@@ -418,7 +418,7 @@ ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XpmPixel* Colours)
 			}
 
 			ColBuff[2] = 0; // add terminating '\0' char
-			Colour[j] = (ILubyte)strtol((char*)ColBuff, NULL, 16);
+			Colour[j] = (ILubyte)strtol(ColBuff, NULL, 16);
 		}
 		Colour[3] = 255;  // Full alpha.
 	}
@@ -434,7 +434,6 @@ ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XpmPixel* Colours)
 			return IL_FALSE;
 
 		if (!XpmPredefCol(Buff, &Colour))
-
 			return IL_FALSE;
 	}
 
@@ -450,16 +449,16 @@ ILboolean XpmGetColour(ILubyte *Buffer, ILint Size, int Len, XpmPixel* Colours)
 
 static ILboolean iLoadXpmInternal(ILimage *Image) {
 #define BUFFER_SIZE 2000
-	ILubyte			Buffer[BUFFER_SIZE], *Data;
-	ILint			Size, Pos, Width, Height, NumColours, i, x, y;
-
-	ILint			CharsPerPixel;
+	char			Buffer[BUFFER_SIZE];
+	ILubyte 	*Data;
+	ILuint			Size, Pos, Width, Height, NumColours, i, x, y;
+	ILuint			CharsPerPixel;
 
 #ifndef XPM_DONT_USE_HASHTABLE
 	XPMHASHENTRY	**HashTable;
 #else
 	XpmPixel	*Colours;
-	ILint		Offset;
+	ILuint		Offset;
 #endif
 	SIO* io = &Image->io;
 
@@ -471,6 +470,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 	io = &Image->io;
 
 	Size = XpmGetsInternal(io, Buffer, BUFFER_SIZE);
+
 	if (strncmp("/* XPM */", (char*)Buffer, iCharStrLen("/* XPM */"))) {
 		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
@@ -565,7 +565,7 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 #undef BUFFER_SIZE
 }
 
-ILconst_string iFormatExtsXPM[] = { 
+static ILconst_string iFormatExtsXPM[] = { 
 	IL_TEXT("xpm"), 
 	NULL 
 };

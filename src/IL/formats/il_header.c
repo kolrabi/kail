@@ -126,7 +126,7 @@ iSaveCHEADInternal(ILimage* image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsCHEAD[] = { 
+static ILconst_string iFormatExtsCHEAD[] = { 
 	IL_TEXT("h"), 
 	NULL 
 };

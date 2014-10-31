@@ -17,12 +17,9 @@
 #include <ctype.h>
 #include <limits.h>
 
-static ILboolean iIsValidColPal(SIO *io);
-static ILboolean iLoadColPal(ILimage *Image);
-
 // TODO: check if i got the endianness right
 
-ILboolean iIsValidColPal(SIO *io) {
+static ILboolean iIsValidColPal(SIO *io) {
 	ILuint 		First = SIOtell(io);
 	ILushort  Version = GetLittleUShort(io);
 	SIOseek(io, First, IL_SEEK_SET);
@@ -98,7 +95,7 @@ static ILboolean iLoadColPal(ILimage *Image)
 }
 
 
-ILconst_string iFormatExtsCOL_PAL[] = { 
+static ILconst_string iFormatExtsCOL_PAL[] = { 
 	IL_TEXT("col"),
   NULL 
 };

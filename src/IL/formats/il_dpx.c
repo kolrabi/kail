@@ -209,12 +209,12 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 1, IL_LUMINANCE, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
-						ShortData = (ILushort*)image->Data;
+						ShortData = (ILushort*)(void*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
 							SIOread(io, Data, 1, 2);
-							Val = ((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6;  // Use the first 10 bits of the word-aligned data.
+							Val = (ILushort)(((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6);  // Use the first 10 bits of the word-aligned data.
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
 						}
 						break;
@@ -223,16 +223,16 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 3, IL_RGB, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
-						ShortData = (ILushort*)image->Data;
+						ShortData = (ILushort*)(void*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
 							SIOread(io, Data, 1, 4);
-							Val = ((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6;  // Use the first 10 bits of the word-aligned data.
+							Val = (ILushort)(((Data[0] << 2) + ((Data[1] & 0xC0) >> 6)) << 6);  // Use the first 10 bits of the word-aligned data.
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
-							Val = (((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4)) << 6;  // Use the next 10 bits.
+							Val = (ILushort)((((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4)) << 6);  // Use the next 10 bits.
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Same fill
-							Val = (((Data[2] & 0x0F) << 6) + ((Data[3] & 0xFC) >> 2)) << 6;  // And finally use the last 10 bits (ignores the last 2 bits).
+							Val = (ILushort)((((Data[2] & 0x0F) << 6) + ((Data[3] & 0xFC) >> 2)) << 6);  // And finally use the last 10 bits (ignores the last 2 bits).
 							ShortData[i++] = Val | ((Val & 0x3F0) >> 4);  // Same fill
 						}
 						break;
@@ -241,19 +241,19 @@ static ILboolean iLoadDpxInternal(ILimage* image) {
 						if (!iTexImage(image, ImageInfo.Width, ImageInfo.Height, 1, 4, IL_RGBA, IL_UNSIGNED_SHORT, NULL))
 							return IL_FALSE;
 						image->Origin = IL_ORIGIN_UPPER_LEFT;
-						ShortData = (ILushort*)image->Data;
+						ShortData = (ILushort*)(void*)image->Data;
 						NumElements = image->SizeOfData / 2;
 
 						for (i = 0; i < NumElements;) {
 							SIOread(io, Data, 1, 8);
-							Val = (Data[0] << 2) + ((Data[1] & 0xC0) >> 6);  // Use the first 10 bits of the word-aligned data.
-							ShortData[i++] = (Val << 6) | ((Val & 0x3F0) >> 4);  // Fill in the lower 6 bits with a copy of the higher bits.
-							Val = ((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4);  // Use the next 10 bits.
-							ShortData[i++] = (Val << 6) | ((Val & 0x3F0) >> 4);  // Same fill
-							Val = ((Data[2] & 0x0F) << 6) + ((Data[3] & 0xFC) >> 2);  // Use the next 10 bits.
-							ShortData[i++] = (Val << 6) | ((Val & 0x3F0) >> 4);  // Same fill
-							Val = ((Data[3] & 0x03) << 8) + Data[4];  // And finally use the last 10 relevant bits (skips 3 whole bytes worth of padding!).
-							ShortData[i++] = (Val << 6) | ((Val & 0x3F0) >> 4);  // Last fill
+							Val 						= (ILushort)((Data[0] << 2) + ((Data[1] & 0xC0) >> 6));  // Use the first 10 bits of the word-aligned data.
+							ShortData[i++] 	= (ILushort)((Val << 6) | ((Val & 0x3F0) >> 4));  // Fill in the lower 6 bits with a copy of the higher bits.
+							Val 						= (ILushort)(((Data[1] & 0x3F) << 4) + ((Data[2] & 0xF0) >> 4));  // Use the next 10 bits.
+							ShortData[i++] 	= (ILushort)((Val << 6) | ((Val & 0x3F0) >> 4));  // Same fill
+							Val 						= (ILushort)(((Data[2] & 0x0F) << 6) + ((Data[3] & 0xFC) >> 2));  // Use the next 10 bits.
+							ShortData[i++] 	= (ILushort)((Val << 6) | ((Val & 0x3F0) >> 4));  // Same fill
+							Val 						= (ILushort)(((Data[3] & 0x03) << 8) + Data[4]);  // And finally use the last 10 relevant bits (skips 3 whole bytes worth of padding!).
+							ShortData[i++] 	= (ILushort)((Val << 6) | ((Val & 0x3F0) >> 4));  // Last fill
 						}
 						break;
 				}
@@ -296,14 +296,13 @@ static ILboolean
 iIsValidDpx(SIO *io) {
 	ILuint magic;
 	ILuint Start = SIOtell(io);
-	ILint Read = SIOread(io, &magic, 1, sizeof(magic));
-
+	ILuint Read = SIOread(io, &magic, 1, sizeof(magic));
 	SIOseek(io, Start, IL_SEEK_SET);
 
 	return Read == sizeof(magic) && (magic == 0x53445058 || magic == 0x58504453);
 }
 
-ILconst_string iFormatExtsDPX[] = { 
+static ILconst_string iFormatExtsDPX[] = { 
 	IL_TEXT("dpx"),
 	NULL 
 };

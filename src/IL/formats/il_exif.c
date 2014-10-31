@@ -181,10 +181,14 @@ ILboolean iExifSave(ILimage *Image) {
   SIO *io = &Image->io;
   ILushort  Version       = 42;
   ILuint    IFD0Offset    = 8;
-  ILuint    IFD0Count     = 0, IFD0DirSize    = 2 + 4, IFD0DataSize     = 0;
-  ILuint    ExifCount     = 0, ExifDirSize    = 0, ExifDataSize     = 0;
-  ILuint    GPSCount      = 0, GPSDirSize     = 0, GPSDataSize      = 0;
-  ILuint    InteropCount  = 0, InteropDirSize = 0, InteropDataSize  = 0;
+  ILushort  IFD0Count     = 0;
+  ILuint    IFD0DirSize   = 2 + 4, IFD0DataSize     = 0;
+  ILushort  ExifCount     = 0;
+  ILuint    ExifDirSize   = 0, ExifDataSize     = 0;
+  ILushort  GPSCount      = 0;
+  ILuint    GPSDirSize    = 0, GPSDataSize      = 0;
+  ILushort  InteropCount  = 0;
+  ILuint    InteropDirSize = 0, InteropDataSize  = 0;
   ILmeta *  Meta          = Image->MetaTags;
   ILushort Num, TmpShort;
 
@@ -394,7 +398,7 @@ static ILboolean iSaveExifInternal(ILimage *Image) {
   return iExifSave(Image);
 }
 
-ILconst_string iFormatExtsEXIF[] = { 
+static ILconst_string iFormatExtsEXIF[] = { 
   IL_TEXT("exif"),
   NULL 
 };

@@ -16,17 +16,12 @@
 #ifndef IL_NO_WBMP
 #include "il_bits.h"
 
-// In il_quantizer.c
-ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols);
-// In il_neuquant.c
-ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
-
 static ILuint WbmpGetMultibyte(SIO* io) {
 	ILuint Val = 0, i;
 	ILubyte Cur = 0;
 
 	for (i = 0; i < 5; i++) {  // Should not be more than 5 bytes.
-		Cur = io->getchar(io->handle);
+		Cur = (ILubyte)SIOgetc(io);
 		Val = (Val << 7) | (Cur & 0x7F);  // Drop the MSB of Cur.
 		if (!(Cur & 0x80)) {  // Check the MSB and break if 0.
 			break;
@@ -118,7 +113,7 @@ static ILboolean WbmpPutMultibyte(SIO* io, ILuint Val) {
 		MultiVal = (Val >> (i * 7)) & 0x7F;
 		if (i != 0)
 			MultiVal |= 0x80;
-		io->putchar(MultiVal, io->handle);
+		SIOputc(io, (ILubyte)MultiVal);
 	}
 
 	return IL_TRUE;
@@ -128,7 +123,7 @@ static ILboolean WbmpPutMultibyte(SIO* io, ILuint Val) {
 static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	ILimage	*TempImage = NULL;
 	ILuint	i, j;
-	ILint	k;
+	ILuint	k;
 	ILubyte	Val;
 	ILubyte	*TempData;
 	SIO* io;
@@ -185,7 +180,7 @@ static ILboolean iSaveWbmpInternal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsWBMP[] = { 
+static ILconst_string iFormatExtsWBMP[] = { 
 	IL_TEXT("wbmp"), 
 	NULL 
 };

@@ -30,8 +30,8 @@ typedef struct iFree
 ILboolean iEnlargeStack(void);
 void      iFreeMem(void);
 void      iBindImage(ILuint);
-void      iInitIL();
-void      iShutDownIL();
+void      iInitIL(void);
+void      iShutDownIL(void);
 ILboolean iIsImage(ILuint Image);
 ILuint    iCreateSubImage(ILimage *Image, ILenum Type, ILuint Num);
 ILboolean iActiveFace(ILuint Number);

@@ -22,4 +22,15 @@
 
 __FILES_EXTERN void       iSetOutputFake(ILimage *);
 
+
+// "Fake" size functions, used to determine the size of write lumps
+// Definitions are in il_size.cpp
+void      ILAPIENTRY iSizeClose   (ILHANDLE h);
+ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint64 Offset, ILuint Mode);
+ILuint    ILAPIENTRY iSizeTell    (ILHANDLE h);
+ILint     ILAPIENTRY iSizePutc    (ILubyte Char, ILHANDLE h);
+ILint     ILAPIENTRY iSizeGetc    (ILHANDLE h);
+ILuint    ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
+ILuint    ILAPIENTRY iSizeRead    (ILHANDLE h, void *Buffer, ILuint Size, ILuint Number);
+
 #endif//FILES_H

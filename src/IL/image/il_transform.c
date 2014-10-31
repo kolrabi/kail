@@ -28,7 +28,7 @@ static ILubyte* iFlipNewBuffer(ILubyte *buff, ILuint depth, ILuint line_size, IL
   const ILuint size = line_num * line_size;
 
   if ((data = (ILubyte*)ialloc(depth*size)) == NULL)
-    return IL_FALSE;
+    return NULL;
 
   for (d = 0; d < depth; d++) {
     s1 = buff + d * size;
@@ -70,88 +70,43 @@ ILubyte* ILAPIENTRY iGetFlipped(ILimage *img)
   return iFlipNewBuffer(img->Data,img->Depth,img->Bps,img->Height);
 }
 
+static inline void *iBufferPixel(void *Data, ILuint x, ILuint y, ILuint z, ILubyte Bpc, ILuint Bps, ILuint SizeOfPlane)
+{
+  ILuint offset = Bpc*x + y*Bps/Bpc + z*SizeOfPlane;
+  return (ILubyte*)Data + offset;
+}
+
 
 //@JASON New routine created 28/03/2001
 //! Mirrors an image over its y axis
 ILboolean ILAPIENTRY iMirrorImage(ILimage *Image) {
-  ILubyte   *Data, *DataPtr, *Temp;
-  ILuint    y, d, PixLine;
-  ILint   x, c;
-  ILushort  *ShortPtr, *TempShort;
-  ILuint    *IntPtr, *TempInt;
-  ILdouble  *DblPtr, *TempDbl;
-
+  ILuint x,y,z, pixelSize;
+  void *NewData, *OldData;
+  
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  Data = (ILubyte*)ialloc(Image->SizeOfData);
-  if (Data == NULL)
+  NewData = ialloc(Image->SizeOfData);
+  if (NewData == NULL)
     return IL_FALSE;
+  OldData = Image->Data;
 
-  PixLine = Image->Bps / Image->Bpc;
-  switch (Image->Bpc)
-  {
-    case 1:
-      Temp = Image->Data;
-      for (d = 0; d < Image->Depth; d++) {
-        DataPtr = Data + d * Image->SizeOfPlane;
-        for (y = 0; y < Image->Height; y++) {
-          for (x = Image->Width - 1; x >= 0; x--) {
-            for (c = 0; c < Image->Bpp; c++, Temp++) {
-              DataPtr[y * PixLine + x * Image->Bpp + c] = *Temp;
-            }
-          }
-        }
-      }
-      break;
+  pixelSize = Image->Bpp * Image->Bpc;
 
-    case 2:
-      TempShort = (ILushort*)Image->Data;
-      for (d = 0; d < Image->Depth; d++) {
-        ShortPtr = (ILushort*)(Data + d * Image->SizeOfPlane);
-        for (y = 0; y < Image->Height; y++) {
-          for (x = Image->Width - 1; x >= 0; x--) {
-            for (c = 0; c < Image->Bpp; c++, TempShort++) {
-              ShortPtr[y * PixLine + x * Image->Bpp + c] = *TempShort;
-            }
-          }
-        }
+  for (z = 0; z < Image->Depth; z++) {
+    for (y = 0; y < Image->Height; y++) {
+      for (x = 0; x < Image->Width; x++) {
+        void *From = iBufferPixel(OldData, Image->Width-1-x, y, z, Image->Bpc, Image->Bps, Image->SizeOfPlane);
+        void *To   = iBufferPixel(NewData,                x, y, z, Image->Bpc, Image->Bps, Image->SizeOfPlane);
+        memcpy(To, From, pixelSize);
       }
-      break;
-
-    case 4:
-      TempInt = (ILuint*)Image->Data;
-      for (d = 0; d < Image->Depth; d++) {
-        IntPtr = (ILuint*)(Data + d * Image->SizeOfPlane);
-        for (y = 0; y < Image->Height; y++) {
-          for (x = Image->Width - 1; x >= 0; x--) {
-            for (c = 0; c < Image->Bpp; c++, TempInt++) {
-              IntPtr[y * PixLine + x * Image->Bpp + c] = *TempInt;
-            }
-          }
-        }
-      }
-      break;
-
-    case 8:
-      TempDbl = (ILdouble*)Image->Data;
-      for (d = 0; d < Image->Depth; d++) {
-        DblPtr = (ILdouble*)(Data + d * Image->SizeOfPlane);
-        for (y = 0; y < Image->Height; y++) {
-          for (x = Image->Width - 1; x >= 0; x--) {
-            for (c = 0; c < Image->Bpp; c++, TempDbl++) {
-              DblPtr[y * PixLine + x * Image->Bpp + c] = *TempDbl;
-            }
-          }
-        }
-      }
-      break;
+    }    
   }
 
   ifree(Image->Data);
-  Image->Data = Data;
+  Image->Data = NewData;
 
   return IL_TRUE;
 }

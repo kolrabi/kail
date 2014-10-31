@@ -14,39 +14,26 @@
 #include "il_internal.h"
 #ifndef IL_NO_TGA
 #include "il_targa.h"
-#include <time.h>  
-#include <string.h>
+
 #include "il_manip.h"
 #include "il_endian.h"
 
+#include "algo/il_rle.h"
+
+#include <time.h>  
+#include <string.h>
+
 // Internal functions
-static ILboolean  iCheckTarga(TARGAHEAD *Header);
-static ILboolean  iLoadTargaInternal(ILimage* image);
-static ILboolean  iSaveTargaInternal(ILimage* image);
 static ILboolean  iReadBwTga(ILimage* image, TARGAHEAD *Header);
 static ILboolean  iReadColMapTga(ILimage* image, TARGAHEAD *Header);
 static ILboolean  iReadUnmapTga(ILimage* image, TARGAHEAD *Header);
 static ILboolean  iUncompressTgaData(ILimage *Image);
 static ILboolean  i16BitTarga(ILimage *Image);
-static void       iGetDateTime(ILshort *Month, ILshort *Day, ILshort *Yr, ILshort *Hr, ILshort *Min, ILshort *Sec);
+static void       iGetDateTime(ILushort *Month, ILushort *Day, ILushort *Yr, ILushort *Hr, ILushort *Min, ILushort *Sec);
 
-static ILint iGetTgaHead(SIO* io, TARGAHEAD *Header) {
+static ILuint iGetTgaHead(SIO* io, TARGAHEAD *Header) {
   return SIOread(io, Header, 1, sizeof(TARGAHEAD));
 }
-
-// Internal function to get the header and check it.
-static ILboolean iIsValidTarga(SIO* io) {
-  TARGAHEAD Head;
-  ILint read = iGetTgaHead(io, &Head);
-
-  SIOseek(io, -read, IL_SEEK_CUR);
-
-  if (read == sizeof(Head)) 
-    return iCheckTarga(&Head);
-  else
-    return IL_FALSE;
-}
-
 
 // Internal function used to check if the HEADER is a valid Targa header.
 static ILboolean iCheckTarga(TARGAHEAD *Header) {
@@ -73,6 +60,16 @@ static ILboolean iCheckTarga(TARGAHEAD *Header) {
     Header->Bpp = 16;
   
   return IL_TRUE;
+}
+
+// Internal function to get the header and check it.
+static ILboolean iIsValidTarga(SIO* io) {
+  TARGAHEAD Head;
+  ILuint Start = SIOtell(io);
+  ILuint read = iGetTgaHead(io, &Head);
+  SIOseek(io, Start, IL_SEEK_SET);
+
+  return read == sizeof(Head) && iCheckTarga(&Head);
 }
 
 // Internal function used to load the Targa.
@@ -191,7 +188,7 @@ static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
   if (image->Pal.Palette && image->Pal.PalSize)
     ifree(image->Pal.Palette);
   
-  image->Format = IL_COLOUR_INDEX;
+  image->Format      = IL_COLOUR_INDEX;
   image->Pal.PalSize = Header->ColMapLen * (Header->ColMapEntSize >> 3);
   
   switch (Header->ColMapEntSize)
@@ -231,10 +228,10 @@ static ILboolean iReadColMapTga(ILimage* image, TARGAHEAD *Header) {
       Pixel = GetBigUShort(io);
       if (SIOeof(io))
         return IL_FALSE;
-      image->Pal.Palette[3] = (Pixel & 0x8000) >> 12;
-      image->Pal.Palette[0] = (Pixel & 0xFC00) >> 7;
-      image->Pal.Palette[1] = (Pixel & 0x03E0) >> 2;
-      image->Pal.Palette[2] = (Pixel & 0x001F) << 3;
+      image->Pal.Palette[3] = (ILubyte)((Pixel & 0x8000) >> 12);
+      image->Pal.Palette[0] = (ILubyte)((Pixel & 0xFC00) >> 7);
+      image->Pal.Palette[1] = (ILubyte)((Pixel & 0x03E0) >> 2);
+      image->Pal.Palette[2] = (ILubyte)((Pixel & 0x001F) << 3);
     }
   }
   
@@ -360,13 +357,13 @@ static ILboolean iReadBwTga(ILimage* image, TARGAHEAD *Header) {
 static ILboolean iUncompressTgaData(ILimage *image) {
   ILuint  BytesRead = 0, Size, RunLen, i, ToRead;
   ILubyte Header, Color[4];
-  ILint c;
+  ILuint c;
   SIO *io = &image->io;
   
   Size = image->Width * image->Height * image->Depth * image->Bpp;
   
   while (BytesRead < Size) {
-    Header = (ILubyte)image->io.getchar(image->io.handle);
+    Header = (ILubyte)SIOgetc(io);
     if (Header & BIT(7)) {
       Header &= ~BIT(7);
       if (SIOread(io, Color, 1, image->Bpp) != image->Bpp) {
@@ -409,16 +406,16 @@ static ILboolean i16BitTarga(ILimage *image) {
   ILuint    x, PixSize = image->Width * image->Height;
   
   Data = (ILubyte*)ialloc(image->Width * image->Height * 3);
-  Temp1 = (ILushort*)image->Data;
+  Temp1 = (ILushort*)(void*)image->Data;
   Temp2 = Data;
   
   if (Data == NULL)
     return IL_FALSE;
   
   for (x = 0; x < PixSize; x++) {
-    *Temp2++ = (*Temp1 & 0x001F) << 3;  // Blue
-    *Temp2++ = (*Temp1 & 0x03E0) >> 2;  // Green
-    *Temp2++ = (*Temp1 & 0x7C00) >> 7;  // Red
+    *Temp2++ = (ILubyte)((*Temp1 & 0x001F) << 3);  // Blue
+    *Temp2++ = (ILubyte)((*Temp1 & 0x03E0) >> 2);  // Green
+    *Temp2++ = (ILubyte)((*Temp1 & 0x7C00) >> 7);  // Red
     
     Temp1++;
   }
@@ -464,7 +461,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 
   io = &image->io;
 
-  Compress = iGetInt(IL_TGA_RLE);
+  Compress = ilIsEnabled(IL_TGA_RLE);
   Format = image->Format;
 
   // build header
@@ -501,14 +498,14 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   Short   (&Header.FirstEntry);
 
   switch (image->Format) {
-    case IL_COLOUR_INDEX: Header.ImageType = Compress ?  9 : 1; break;
+    case IL_COLOUR_INDEX: Header.ImageType = Compress ? TGA_COLMAP_COMP : TGA_COLMAP_UNCOMP; break;
     case IL_BGR:
-    case IL_BGRA:         Header.ImageType = Compress ? 10 : 2; break;
+    case IL_BGRA:         Header.ImageType = Compress ? TGA_UNMAP_COMP  : TGA_UNMAP_UNCOMP; break;
     case IL_RGB:
-    case IL_RGBA:         Header.ImageType = Compress ? 10 : 2; 
+    case IL_RGBA:         Header.ImageType = Compress ? TGA_UNMAP_COMP  : TGA_UNMAP_UNCOMP; 
                           iSwapColours(image);
                           break;
-    case IL_LUMINANCE:    Header.ImageType = Compress ? 11 : 3; break;
+    case IL_LUMINANCE:    Header.ImageType = Compress ? TGA_BW_COMP     : TGA_BW_UNCOMP; break;
 
     default:
       // Should convert the types here...
@@ -524,7 +521,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
       Header.ColMapEntSize = 0;
       break;
     case IL_PAL_BGR24:
-      Header.ColMapLen = (ILshort)(image->Pal.PalSize / 3);
+      Header.ColMapLen = (ILushort)(image->Pal.PalSize / 3);
       Header.ColMapEntSize = 24;
       TempPal = &image->Pal;
       break;
@@ -537,7 +534,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
       TempPal = iConvertPal(&image->Pal, IL_PAL_BGR24);
       if (TempPal == NULL)
         return IL_FALSE;
-        Header.ColMapLen = (ILshort)(TempPal->PalSize / 3);
+        Header.ColMapLen = (ILushort)(TempPal->PalSize / 3);
       Header.ColMapEntSize = 24;
       break;
     default:
@@ -570,11 +567,11 @@ static ILboolean iSaveTargaInternal(ILimage* image)
     TempData = (char*)TempImage->Data;
   }
   
-  Header.OriginX = image->OffX;
-  Header.OriginY = image->OffY;
-  Header.Width   = image->Width;
-  Header.Height  = image->Height;
-  Header.Bpp     = image->Bpp << 3;  // Changes to bits per pixel
+  Header.OriginX = (ILshort)image->OffX;
+  Header.OriginY = (ILshort)image->OffY;
+  Header.Width   = (ILushort)image->Width;
+  Header.Height  = (ILushort)image->Height;
+  Header.Bpp     = (ILubyte)(image->Bpp << 3);  // Changes to bits per pixel
   Header.ImageDesc = 0;
 
   Short   (&Header.OriginX);
@@ -601,7 +598,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
       ifree(idString);
       return IL_FALSE;
     }
-    RleLen = ilRleCompress((unsigned char*)TempData, TempImage->Width, TempImage->Height,
+    RleLen = iRleCompress((ILubyte*)TempData, TempImage->Width, TempImage->Height,
                            TempImage->Depth, TempImage->Bpp, Rle, IL_TGACOMP, NULL);
     
     SIOwrite(io, Rle, 1, RleLen);
@@ -643,7 +640,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
 }
 
 //changed name to iGetDateTime on 20031221 to fix bug 830196
-static void iGetDateTime(ILshort *Month, ILshort *Day, ILshort *Yr, ILshort *Hr, ILshort *Min, ILshort *Sec) {
+static void iGetDateTime(ILushort *Month, ILushort *Day, ILushort *Yr, ILushort *Hr, ILushort *Min, ILushort *Sec) {
 #ifdef DJGPP
   struct date day;
   struct time curtime;
@@ -695,7 +692,7 @@ static void iGetDateTime(ILshort *Month, ILshort *Day, ILshort *Yr, ILshort *Hr,
 #endif
 }
 
-ILconst_string iFormatExtsTGA[] = { 
+static ILconst_string iFormatExtsTGA[] = { 
   IL_TEXT("tga"), 
   IL_TEXT("vda"), 
   IL_TEXT("icb"), 

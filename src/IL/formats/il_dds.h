@@ -54,8 +54,6 @@ typedef struct DDSHEAD
 	ILuint	TextureStage;
 } DDSHEAD;
 
-#include "pack_pop.h"
-
 // use cast to struct instead of RGBA_MAKE as struct is
 //  much
 typedef struct Color8888
@@ -105,6 +103,17 @@ typedef struct DXTAlphaBlock3BitLinear
 	ILbyte stuff[6];
 } DXTAlphaBlock3BitLinear;
 
+typedef struct {
+	DDSHEAD	Head;				// Image header
+	ILubyte	*CompData;	// Compressed data
+	ILuint	CompSize;			// Compressed size
+	//static ILuint	CompFormat;			// Compressed format
+	ILimage	*Image, *BaseImage;
+	ILuint	Width, Height, Depth;
+	ILboolean	Has16BitComponents;
+} DDS_CONTEXT;
+
+#include "pack_pop.h"
 
 // Defines
 
@@ -170,37 +179,27 @@ enum PixFormat
 
 #define CUBEMAP_SIDES 6
 
-typedef struct {
-	DDSHEAD	Head;				// Image header
-	ILubyte	*CompData;	// Compressed data
-	ILuint	CompSize;			// Compressed size
-	//static ILuint	CompFormat;			// Compressed format
-	ILimage	*Image, *BaseImage;
-	ILint	Width, Height, Depth;
-	ILboolean	Has16BitComponents;
-} DDS_CONTEXT;
-
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
 ILuint		DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat);
 void		DxtcReadColor(ILushort Data, Color8888* Out);
 void		DxtcReadColors(const ILubyte* Data, Color8888* Out);
-ILboolean	DecompressDXT1(ILimage *lImage, ILubyte *lCompData);
-ILboolean	DecompressDXT2(ILimage *lImage, ILubyte *lCompData);
-ILboolean	DecompressDXT3(ILimage *lImage, ILubyte *lCompData);
-ILboolean	DecompressDXT4(ILimage *lImage, ILubyte *lCompData);
-ILboolean	DecompressDXT5(ILimage *lImage, ILubyte *lCompData);
+ILboolean	DecompressDXT1(ILimage *lImage, const void *lCompData);
+ILboolean	DecompressDXT2(ILimage *lImage, const void *lCompData);
+ILboolean	DecompressDXT3(ILimage *lImage, const void *lCompData);
+ILboolean	DecompressDXT4(ILimage *lImage, const void *lCompData);
+ILboolean	DecompressDXT5(ILimage *lImage, const void *lCompData);
 ILboolean	iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
 void		CorrectPreMult(ILimage *image);
 void		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
 ILboolean	iSaveDdsInternal(ILimage *);
 ILboolean	WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags);
-ILushort	*CompressTo565(ILimage *Image);
-ILubyte		*CompressTo88(ILimage *Image);
+//ILushort	*CompressTo565(ILimage *Image);
+//ILubyte		*CompressTo88(ILimage *Image);
 ILuint		Compress(ILimage *Image, ILenum DXTCFormat);
 ILboolean	GetBlock(ILushort *Block, ILushort *Data, ILimage *Image, ILuint XPos, ILuint YPos);
 ILboolean	GetAlphaBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos);
-ILboolean	Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, int channel);
+ILboolean	Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, ILubyte channel);
 void		ShortToColor565(ILushort Pixel, Color565 *Colour);
 void		ShortToColor888(ILushort Pixel, Color888 *Colour);
 ILushort	Color565ToShort(Color565 *Colour);

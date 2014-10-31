@@ -41,13 +41,13 @@ ILint bclose(BITFILE *BitFile) {
 }
 
 // Returns the current bit position of a BITFILE.
-ILint btell(BITFILE *BitFile) {
+ILuint btell(BITFILE *BitFile) {
   return BitFile->BitPos;
 }
 
 // Seeks in a BITFILE just like fseek for FILE.
 ILint bseek(BITFILE *BitFile, ILint Offset, ILuint Mode) {
-  ILint Len;
+  ILuint Len;
 
   if (BitFile == NULL || BitFile->io == NULL)
     return 1;
@@ -55,13 +55,13 @@ ILint bseek(BITFILE *BitFile, ILint Offset, ILuint Mode) {
   switch (Mode) {
     case IL_SEEK_SET:
       if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
-        BitFile->BitPos = Offset;
+        BitFile->BitPos     = (ILuint)Offset;
         BitFile->ByteBitOff = BitFile->BitPos % 8;
       }
       break;
     case IL_SEEK_CUR:
       if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
-        BitFile->BitPos += Offset;
+        BitFile->BitPos     = (ILuint)((ILint)BitFile->BitPos+Offset);
         BitFile->ByteBitOff = BitFile->BitPos % 8;
       }
       break;
@@ -71,7 +71,7 @@ ILint bseek(BITFILE *BitFile, ILint Offset, ILuint Mode) {
       SIOseek(BitFile->io, 0, IL_SEEK_SET);
 
       if (!SIOseek(BitFile->io, Offset >> 3, Mode)) {
-        BitFile->BitPos     = (Len << 3) + Offset;
+        BitFile->BitPos     = (ILuint)((ILint)(Len << 3) + Offset);
         BitFile->ByteBitOff = BitFile->BitPos % 8;
       }
       break;
@@ -84,7 +84,7 @@ ILint bseek(BITFILE *BitFile, ILint Offset, ILuint Mode) {
 }
 
 // hehe, "bread".  It reads data into Buffer from the BITFILE, just like fread for FILE.
-ILint bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile) {
+ILuint bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile) {
   // Note that this function is somewhat useless: In binary image
   // formats, there are some pad bits after each scanline. This
   // function does not take that into account, so you must use bseek to
@@ -108,9 +108,9 @@ ILint bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile) {
   return BuffPos;
 }
 
-
+/*
 // Reads bits and puts the first bit in the file as the highest in the return value.
-ILuint breadVal(ILuint NumBits, BITFILE *BitFile) {
+static ILuint breadVal(ILuint NumBits, BITFILE *BitFile) {
   ILuint  BuffPos = 0;
   ILuint  Buffer = 0;
 
@@ -136,3 +136,4 @@ ILuint breadVal(ILuint NumBits, BITFILE *BitFile) {
 
   return BuffPos;
 }
+*/

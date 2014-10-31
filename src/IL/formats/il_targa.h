@@ -23,7 +23,7 @@ typedef struct TARGAHEAD
   ILubyte   ColMapPresent;
   ILubyte   ImageType;
   ILshort   FirstEntry;
-  ILshort   ColMapLen;
+  ILushort  ColMapLen;
   ILubyte   ColMapEntSize;
 
   ILshort   OriginX;
@@ -50,9 +50,9 @@ typedef struct TARGAEXT
   ILshort Size;       // should be TGA_EXT_LEN
   char    AuthName[41];   // the image author's name
   char    AuthComments[324];  // author's comments
-  ILshort Month, Day, Year, Hour, Minute, Second; // internal date of file
+  ILushort Month, Day, Year, Hour, Minute, Second; // internal date of file
   char    JobID[41];      // the job description (if any)
-  ILshort JobHour, JobMin, JobSecs; // the job's time
+  ILushort JobHour, JobMin, JobSecs; // the job's time
   char    SoftwareID[41];   // the software that created this
   ILshort SoftwareVer;    // the software version number * 100
   ILbyte  SoftwareVerByte;  // the software version letter

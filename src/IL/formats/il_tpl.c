@@ -39,7 +39,7 @@ typedef struct TPLHEAD
 #define TPL_CMP		14
 
 // Wrapping
-#define TPL_CLAMP	0
+// #define TPL_CLAMP	0
 #define	TPL_REPEAT	1
 #define TPL_MIRROR	2
 
@@ -94,11 +94,11 @@ static ILboolean iCheckTpl(TPLHEAD *Header) {
 // Internal function used to load the TPL.
 static ILboolean iLoadTplInternal(ILimage *image) {
 	TPLHEAD		Header;
-	ILuint		Pos, TexOff, PalOff, DataFormat, Bpp, DataOff, WrapS;
+	ILuint		Pos, TexOff, PalOff, DataFormat, DataOff, WrapS;
 	ILuint		x, y, xBlock, yBlock, i, j, k, n;
 	ILenum		Format;
 	ILushort	Width, Height, ShortPixel;
-	ILubyte		BytePixel, CompData[8];
+	ILubyte		BytePixel, CompData[8], Bpp;
 	Color8888	colours[4], *col;
 	ILushort	color_0, color_1;
 	ILuint		bitmask, Select;
@@ -230,7 +230,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 8; xBlock += 2) {
-								BytePixel = SIOgetc(io);
+								BytePixel = (ILubyte)SIOgetc(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
 								Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
@@ -238,7 +238,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 								// We have to do this check again, so we do not go past the last pixel in the image (ex. 1 pixel wide image).
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
-								Image->Data[DataOff+1] = (BytePixel & 0x0F) << 4 | (BytePixel & 0x0F);
+								Image->Data[DataOff+1] = (ILubyte)((BytePixel & 0x0F) << 4 | (BytePixel & 0x0F));
 								DataOff++;
 							}
 						}
@@ -261,7 +261,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 									SIOgetc(io);  // Skip the pad byte.
 									continue;
 								}
-								Image->Data[DataOff] = SIOgetc(io);  // Luminance value
+								Image->Data[DataOff] = (ILubyte)SIOgetc(io);  // Luminance value
 								DataOff++;
 							}
 						}
@@ -280,11 +280,11 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 							}
 							DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 							for (xBlock = 0; xBlock < 8; xBlock += 2) {
-								BytePixel = SIOgetc(io);
+								BytePixel = (ILubyte)SIOgetc(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
-								Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
-								Image->Data[DataOff+1] = (BytePixel & 0x0F) << 4 | (BytePixel & 0x0F);
+								Image->Data[DataOff  ] = (ILubyte)((BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4);
+								Image->Data[DataOff+1] = (ILubyte)((BytePixel & 0x0F) << 4 | (BytePixel & 0x0F));
 								DataOff += 2;
 							}
 						}
@@ -307,8 +307,8 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 									SIOseek(io, 2, IL_SEEK_CUR);  // Skip the pad bytes.
 									continue;
 								}
-								Image->Data[DataOff] = SIOgetc(io);
-								Image->Data[DataOff+1] = SIOgetc(io);
+								Image->Data[DataOff  ] = (ILubyte)SIOgetc(io);
+								Image->Data[DataOff+1] = (ILubyte)SIOgetc(io);
 								DataOff += 2;
 							}
 						}
@@ -330,9 +330,9 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 								ShortPixel = GetBigUShort(io);
 								if ((x + xBlock) >= Image->Width)
 									continue;  // Already read the pad byte.
-								Image->Data[DataOff  ] = ((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13); // Red
-								Image->Data[DataOff+1] = ((ShortPixel & 0x07E0) >> 3) | ((ShortPixel & 0x600) >> 9); // Green
-								Image->Data[DataOff+2] = ((ShortPixel & 0x001f) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
+								Image->Data[DataOff  ] = (ILubyte)(((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13)); // Red
+								Image->Data[DataOff+1] = (ILubyte)(((ShortPixel & 0x07E0) >> 3) | ((ShortPixel & 0x600) >> 9)); // Green
+								Image->Data[DataOff+2] = (ILubyte)(((ShortPixel & 0x001f) << 3) | ((ShortPixel & 0x1C) >> 2)); // Blue
 								DataOff += 3;
 							}
 						}
@@ -357,17 +357,17 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 
 								if (ShortPixel & 0x8000) {  // Check MSB.
 									// We have RGB5.
-									Image->Data[DataOff] = ((ShortPixel & 0x7C00) >> 7) | ((ShortPixel & 0x7000) >> 12); // Red
-									Image->Data[DataOff+1] = ((ShortPixel & 0x3E0) >> 2) | ((ShortPixel & 0x380) >> 7); // Green
-									Image->Data[DataOff+2] = ((ShortPixel & 0x1F) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
+									Image->Data[DataOff  ] = (ILubyte)(((ShortPixel & 0x7C00) >> 7) | ((ShortPixel & 0x7000) >> 12)); // Red
+									Image->Data[DataOff+1] = (ILubyte)(((ShortPixel & 0x3E0) >> 2) | ((ShortPixel & 0x380) >> 7)); // Green
+									Image->Data[DataOff+2] = (ILubyte)(((ShortPixel & 0x1F) << 3) | ((ShortPixel & 0x1C) >> 2)); // Blue
 									Image->Data[DataOff+3] = 0xFF;  // I am just assuming that it is opaque.
 								}
 								else {
 									// We have RGB4A3.
-									Image->Data[DataOff] = ((ShortPixel & 0x7800) >> 7) | ((ShortPixel & 0x7800) >> 11); // Red
-									Image->Data[DataOff+1] = ((ShortPixel & 0x0780) >> 3) | ((ShortPixel & 0x0780) >> 7); // Green
-									Image->Data[DataOff+2] = ((ShortPixel & 0x0078) << 1) | ((ShortPixel & 0x0078) >> 3); // Blue
-									Image->Data[DataOff+3] = ((ShortPixel & 0x07) << 5) | ((ShortPixel & 0x07) << 2) | (ShortPixel >> 1); // Alpha
+									Image->Data[DataOff  ] = (ILubyte)(((ShortPixel & 0x7800) >> 7) | ((ShortPixel & 0x7800) >> 11)); // Red
+									Image->Data[DataOff+1] = (ILubyte)(((ShortPixel & 0x0780) >> 3) | ((ShortPixel & 0x0780) >> 7)); // Green
+									Image->Data[DataOff+2] = (ILubyte)(((ShortPixel & 0x0078) << 1) | ((ShortPixel & 0x0078) >> 3)); // Blue
+									Image->Data[DataOff+3] = (ILubyte)(((ShortPixel & 0x07) << 5) | ((ShortPixel & 0x07) << 2) | (ShortPixel >> 1)); // Alpha
 								}
 								DataOff += 3;
 							}
@@ -394,8 +394,8 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 									SIOseek(io, 2, IL_SEEK_CUR);  // Skip pad bytes.
 									continue;
 								}
-								Image->Data[DataOff+3] = SIOgetc(io);  // Alpha
-								Image->Data[DataOff] = SIOgetc(io);  // Red
+								Image->Data[DataOff+3] = (ILubyte)SIOgetc(io);  // Alpha
+								Image->Data[DataOff  ] = (ILubyte)SIOgetc(io);  // Red
 								DataOff += 3;
 							}
 
@@ -406,8 +406,8 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 									SIOseek(io, 2, IL_SEEK_CUR);  // Skip pad bytes.
 									continue;
 								}
-								Image->Data[DataOff+1] = SIOgetc(io);  // Green
-								Image->Data[DataOff+2] = SIOgetc(io);  // Blue
+								Image->Data[DataOff+1] = (ILubyte)SIOgetc(io);  // Green
+								Image->Data[DataOff+2] = (ILubyte)SIOgetc(io);  // Blue
 								DataOff += 3;
 							}
 						}
@@ -478,7 +478,7 @@ static ILboolean iLoadTplInternal(ILimage *image) {
 
 								for (j = 0, k = 0; j < 4; j++) {
 									for (i = 0; i < 4; i++, k++) {
-										Select = (bitmask & (0x03 << k*2)) >> k*2;
+										Select = (bitmask & (0x03U << k*2)) >> k*2;
 										col = &colours[Select];
 
 										if (((x + xBlock + i) < Image->Width) && ((y + yBlock + j) < Image->Height)) {
@@ -529,12 +529,12 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 			PalBpp = 4;
 
 			for (i = 0; i < NumPal; i++) {
-				LumVal = SIOgetc(io);
+				LumVal = (ILubyte)SIOgetc(io);
 				//@TODO: Do proper conversion of luminance, or support this format natively.
-				Image->Pal.Palette[i * 4] = LumVal;  // Assign the luminance value.
+				Image->Pal.Palette[i * 4    ] = LumVal;  // Assign the luminance value.
 				Image->Pal.Palette[i * 4 + 1] = LumVal;
 				Image->Pal.Palette[i * 4 + 2] = LumVal;
-				Image->Pal.Palette[i * 4 + 3] = SIOgetc(io);  // Get alpha value.
+				Image->Pal.Palette[i * 4 + 3] = (ILubyte)SIOgetc(io);  // Get alpha value.
 			}
 			break;
 
@@ -549,9 +549,9 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 			for (i = 0; i < NumPal; i++) {
 				ShortPixel = GetBigUShort(io);
 				// This is mostly the same code as in the TPL_RGB565 case.
-				Image->Pal.Palette[i*3] = ((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13); // Red
-				Image->Pal.Palette[i*3+1] = ((ShortPixel & 0x7E0) >> 3) | ((ShortPixel & 0x600) >> 9); // Green
-				Image->Pal.Palette[i*3+2] = ((ShortPixel & 0x1f) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
+				Image->Pal.Palette[i*3  ] = (ILubyte)(((ShortPixel & 0xF800) >> 8) | ((ShortPixel & 0xE000) >> 13)); // Red
+				Image->Pal.Palette[i*3+1] = (ILubyte)(((ShortPixel & 0x7E0) >> 3) | ((ShortPixel & 0x600) >> 9)); // Green
+				Image->Pal.Palette[i*3+2] = (ILubyte)(((ShortPixel & 0x1f) << 3) | ((ShortPixel & 0x1C) >> 2)); // Blue
 			}
 			break;
 
@@ -568,17 +568,17 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 				// This is mostly the same code as in the TPL_RGB565 case.
 				if (ShortPixel & 0x8000) {  // Check MSB.
 					// We have RGB5.
-					Image->Pal.Palette[i*4] = ((ShortPixel & 0x7C00) >> 7) | ((ShortPixel & 0x7000) >> 12); // Red
-					Image->Pal.Palette[i*4+1] = ((ShortPixel & 0x3E0) >> 2) | ((ShortPixel & 0x380) >> 7); // Green
-					Image->Pal.Palette[i*4+2] = ((ShortPixel & 0x1F) << 3) | ((ShortPixel & 0x1C) >> 2); // Blue
+					Image->Pal.Palette[i*4  ] = (ILubyte)(((ShortPixel & 0x7C00) >> 7) | ((ShortPixel & 0x7000) >> 12)); // Red
+					Image->Pal.Palette[i*4+1] = (ILubyte)(((ShortPixel & 0x3E0) >> 2) | ((ShortPixel & 0x380) >> 7)); // Green
+					Image->Pal.Palette[i*4+2] = (ILubyte)(((ShortPixel & 0x1F) << 3) | ((ShortPixel & 0x1C) >> 2)); // Blue
 					Image->Pal.Palette[i*4+3] = 0xFF;  // I am just assuming that it is opaque.
 				}
 				else {
 					// We have RGB4A3.
-					Image->Pal.Palette[i*4] = ((ShortPixel & 0x7800) >> 7) | ((ShortPixel & 0x7800) >> 11); // Red
-					Image->Pal.Palette[i*4+1] = ((ShortPixel & 0x0780) >> 3) | ((ShortPixel & 0x0780) >> 7); // Green
-					Image->Pal.Palette[i*4+2] = ((ShortPixel & 0x0078) << 1) | ((ShortPixel & 0x0078) >> 3); // Blue
-					Image->Pal.Palette[i*4+3] = ((ShortPixel & 0x07) << 5) | ((ShortPixel & 0x07) << 2) | (ShortPixel >> 1); // Alpha
+					Image->Pal.Palette[i*4  ] = (ILubyte)(((ShortPixel & 0x7800) >> 7) | ((ShortPixel & 0x7800) >> 11)); // Red
+					Image->Pal.Palette[i*4+1] = (ILubyte)(((ShortPixel & 0x0780) >> 3) | ((ShortPixel & 0x0780) >> 7)); // Green
+					Image->Pal.Palette[i*4+2] = (ILubyte)(((ShortPixel & 0x0078) << 1) | ((ShortPixel & 0x0078) >> 3)); // Blue
+					Image->Pal.Palette[i*4+3] = (ILubyte)(((ShortPixel & 0x07) << 5) | ((ShortPixel & 0x07) << 2) | (ShortPixel >> 1)); // Alpha
 				}
 			}
 			break;
@@ -606,15 +606,15 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 						}
 						DataOff = Image->Bps * (y + yBlock) + Image->Bpp * x;
 						for (xBlock = 0; xBlock < 8; xBlock += 2) {
-							BytePixel = SIOgetc(io);
+							BytePixel = (ILubyte)SIOgetc(io);
 							if ((x + xBlock) >= Image->Width)
 								continue;  // Already read the pad byte.
-							Image->Data[DataOff] = (BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4;
+							Image->Data[DataOff] = (ILubyte)((BytePixel & 0xF0) | (BytePixel & 0xF0) >> 4);
 							DataOff++;
 							// We have to do this check again, so we do not go past the last pixel in the image (ex. 1 pixel wide image).
 							if ((x + xBlock) >= Image->Width)
 								continue;  // Already read the pad byte.
-							Image->Data[DataOff+1] = (BytePixel & 0x0F) << 4 | (BytePixel & 0x0F);
+							Image->Data[DataOff+1] = (ILubyte)((BytePixel & 0x0F) << 4 | (BytePixel & 0x0F));
 							DataOff++;
 						}
 					}
@@ -638,7 +638,7 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 								SIOgetc(io);  // Skip the pad byte.
 								continue;
 							}
-							Image->Data[DataOff] = SIOgetc(io);  // Color index
+							Image->Data[DataOff] = (ILubyte)SIOgetc(io);  // Color index
 							DataOff++;
 						}
 					}
@@ -689,7 +689,7 @@ static ILboolean TplGetIndexImage(SIO *io, ILimage *Image, ILuint TexOff, ILuint
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsTPL[] = { 
+static ILconst_string iFormatExtsTPL[] = { 
 	IL_TEXT("tpl"), 
 	NULL 
 };

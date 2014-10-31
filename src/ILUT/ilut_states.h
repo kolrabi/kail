@@ -17,7 +17,7 @@
 
 
 ILboolean ilutAble(ILenum Mode, ILboolean Flag);
-
+void iInitThreads_ilut(void);
 
 #define ILUT_ATTRIB_STACK_MAX 32
 

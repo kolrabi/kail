@@ -17,8 +17,6 @@
 #include <ctype.h>
 #include <limits.h>
 
-static ILboolean iLoadPltPal(ILimage *Image);
-
 // Hasn't been tested
 //	@TODO: Test the thing!
 
@@ -59,7 +57,7 @@ static ILboolean iLoadPltPal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPLT_PAL[] = { 
+static ILconst_string iFormatExtsPLT_PAL[] = { 
 	IL_TEXT("plt"),
   NULL 
 };

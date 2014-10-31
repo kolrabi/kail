@@ -99,7 +99,7 @@ extern "C" {
 //
 
 // This is from Win32's <windef.h>
-#if (_MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__) || defined(__LCC__)
+#if (defined(_MSC_VER) && _MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__) || defined(__LCC__)
   #define ILAPIENTRY            __stdcall 
 //#elif defined(linux) || defined(MACOSX) || defined(__CYGWIN__) //fix bug 840364
 #elif defined( __GNUC__ ) && defined(_WIN32)
@@ -120,7 +120,7 @@ extern "C" {
     #define ILAPI_DEPRECATED 
   #else
     #ifdef _IL_BUILD_LIBRARY
-      #if defined _MSC_VER && _MSC_VER >= 1300
+      #if defined(_MSC_VER) && _MSC_VER >= 1300
         // __declspec(deprecated) is supported by MSVC 7.0 and later.
         #define ILAPI_DEPRECATED __declspec(dllexport deprecated)
       #else
@@ -133,7 +133,7 @@ extern "C" {
       #define ILAPI_DEPRECATED __declspec(deprecated)
     #endif
   #endif
-#elif __APPLE__
+#elif defined(__APPLE__)
   #define ILAPI extern
   #define ILAPI_DEPRECATED 
 #else
@@ -175,7 +175,7 @@ typedef double                      ILclampd;
 #endif
 
 // define character type
-#if _UNICODE
+#ifdef _UNICODE
   typedef wchar_t                   ILchar;
   #define IL_TEXT(s)                L##s
   #ifdef _MSC_VER     
@@ -433,7 +433,7 @@ enum {
 #define IL_COMPRESS_ZLIB        0x0704
 
 // File format-specific values
-#define IL_TGA_CREATE_STAMP        0x0710
+#define IL_TGA_CREATE_STAMP        0x0710 // deprecated: not used anywhere
 #define IL_JPG_QUALITY             0x0711
 #define IL_PNG_INTERLACE           0x0712
 #define IL_TGA_RLE                 0x0713
@@ -744,7 +744,7 @@ typedef ILuint    (ILAPIENTRY *fReadProc)   (ILHANDLE, void*, ILuint, ILuint);
 typedef ILint     (ILAPIENTRY *fSeekProc)   (ILHANDLE, ILint64, ILuint);
 typedef ILuint    (ILAPIENTRY *fTellProc)   (ILHANDLE);
 typedef ILint     (ILAPIENTRY *fPutcProc)   (ILubyte, ILHANDLE);
-typedef ILint     (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME
+typedef ILuint    (ILAPIENTRY *fWriteProc)  (const void*, ILuint, ILuint, ILHANDLE); // FIXME
 
 // Callback functions for allocation and deallocation
 typedef void*     (ILAPIENTRY *mAlloc)      (ILsizei);
@@ -833,12 +833,12 @@ ILAPI ILboolean ILAPIENTRY ilSetDuration(ILuint Duration);
 ILAPI void      ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 ILAPI ILboolean ILAPIENTRY ilSurfaceToDxtcData(ILenum Format);
 ILAPI ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILubyte NumChannels, ILenum Format, ILenum Type, void *Data);
-ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data);
+ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, const ILubyte* data);
 
 // Image files
 ILAPI ILuint    ILAPIENTRY ilDetermineSize(ILenum Type);
 ILAPI ILenum    ILAPIENTRY ilDetermineType(ILconst_string FileName);
-ILAPI ILenum    ILAPIENTRY ilDetermineTypeFuncs();
+ILAPI ILenum    ILAPIENTRY ilDetermineTypeFuncs(void);
 ILAPI ILenum    ILAPIENTRY ilDetermineTypeF(ILHANDLE File);
 ILAPI ILenum    ILAPIENTRY ilDetermineTypeL(const void *Lump, ILuint Size);
 ILAPI ILuint64  ILAPIENTRY ilGetLumpPos(void);

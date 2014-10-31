@@ -4,8 +4,8 @@ int main(int argc, char **argv) {
   ILuint  image     = 0;
   ILuint  reference = 0;
 
-  // syntax: ILtestFormatSave <reference> <target>
-  if (argc < 3) {
+  // syntax: ILtestAlgoQuant <reference> 
+  if (argc < 2) {
     return -1;
   }
 
@@ -20,13 +20,15 @@ int main(int argc, char **argv) {
   CHECK(reference != 0);
   CHECK(testLoadImage(argv[1], reference));
 
-  // save target image
-  CHECK(testSaveImage(argv[2], reference));
-
-  // load saved image
-  ilGenImages(1, &image);
+  // duplicate
+  image = ilCloneCurImage();
   CHECK(image != 0);
-  CHECK(testLoadImage(argv[2], image));
+  
+  // save rle encoded
+  ilBindImage(image);
+  ilEnable(IL_BMP_RLE);
+  CHECK(testSaveImage("test_bmprle.bmp", image));
+  CHECK(testLoadImage("test_bmprle.bmp", image));
 
   // compare two images
   ilBindImage(image);

@@ -264,7 +264,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
   /* There is no palette in 24 bits ILBM file */
   if ( nbColors>0 && flagHAM==0 )
   {
-    int nbrcolorsfinal = 1 << nbplanes;
+    ILuint nbrcolorsfinal = 1U << nbplanes;
     ptr = &colormap[0];
 
     for ( i=0; i<nbColors; i++ )  {
@@ -421,7 +421,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
             if ( flagHAM ) {
               switch( pixelcolor>>(nbplanes-2) ) {
                 case 0: /* take direct color from palette */
-                  finalcolor = colormap[ pixelcolor*3 ] + (colormap[ pixelcolor*3+1 ]<<8) + (colormap[ pixelcolor*3+2 ]<<16);
+                  finalcolor = (ILuint)(colormap[ pixelcolor*3 ] + (colormap[ pixelcolor*3+1 ]<<8) + (colormap[ pixelcolor*3+2 ]<<16));
                   break;
                 case 1: /* modify only blue component */
                   finalcolor = finalcolor&0x00FFFF;
@@ -468,7 +468,7 @@ done:
   return IL_TRUE;
 }
 
-ILconst_string iFormatExtsILBM[] = { 
+static ILconst_string iFormatExtsILBM[] = { 
   IL_TEXT("ilbm"), 
   IL_TEXT("lbm"), 
   IL_TEXT("ham"), 

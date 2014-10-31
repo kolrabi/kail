@@ -404,7 +404,7 @@ ILAPI void ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal)
 }
 
 // Global variable
-ILuint CurSort = 0;
+// ILuint CurSort = 0;
 
 typedef struct COL_CUBE
 {
@@ -413,10 +413,11 @@ typedef struct COL_CUBE
   ILubyte Max[3];
 } COL_CUBE;
 
+/*
 int sort_func(void *e1, void *e2)
 {
   return ((COL_CUBE*)e1)->Val[CurSort] - ((COL_CUBE*)e2)->Val[CurSort];
-}
+}*/
 
 ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
   ILimage   Image;
@@ -467,7 +468,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
           Dist1 = (ILint)CurImage->Pal.Palette[i] - (ILint)Image.Pal.Palette[j];
           Dist2 = (ILint)CurImage->Pal.Palette[i+1] - (ILint)Image.Pal.Palette[j+1];
           Dist3 = (ILint)CurImage->Pal.Palette[i+2] - (ILint)Image.Pal.Palette[j+2];
-          PalInfo[j / 3] = Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3;
+          PalInfo[j / 3] = (ILuint)(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3);
         }
         MaxDist = UINT_MAX;
         DistEntry = 0;
@@ -477,7 +478,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
             MaxDist = PalInfo[j];
           }
         }
-        CurImage->Pal.Palette[i] = DistEntry;
+        CurImage->Pal.Palette[i] = (ILubyte)DistEntry;
       }
 
       for (i = 0; i < CurImage->SizeOfData; i++) {
@@ -513,7 +514,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
           }
         }
         if (Same) {
-          NewData[i / CurImage->Bpp] = DistEntry;
+          NewData[i / CurImage->Bpp] = (ILubyte)DistEntry;
           continue;
         }
         for (j = 0; j < Image.Pal.PalSize; j += 3) {
@@ -521,7 +522,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
           Dist1 = (ILint)CurImage->Data[i] - (ILint)Image.Pal.Palette[j];
           Dist2 = (ILint)CurImage->Data[i+1] - (ILint)Image.Pal.Palette[j+1];
           Dist3 = (ILint)CurImage->Data[i+2] - (ILint)Image.Pal.Palette[j+2];
-          PalInfo[j / 3] = Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3;
+          PalInfo[j / 3] = (ILuint)(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3);
         }
         MaxDist = UINT_MAX;
         DistEntry = 0;
@@ -531,7 +532,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
             MaxDist = PalInfo[j];
           }
         }
-        NewData[i / CurImage->Bpp] = DistEntry;
+        NewData[i / CurImage->Bpp] = (ILubyte)DistEntry;
       }
 
       break;
@@ -541,12 +542,13 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
       for (i = 0; i < CurImage->SizeOfData; i += CurImage->Bpp) {
         for (j = 0; j < NumColours; j++) {
           // No need to perform a sqrt.
-          PalInfo[j] = ((ILint)CurImage->Data[i+2] - (ILint)Image.Pal.Palette[j * 3]) *
-            ((ILint)CurImage->Data[i+2] - (ILint)Image.Pal.Palette[j * 3]) + 
+          PalInfo[j] = (ILuint)(
+            ((ILint)CurImage->Data[i+2] - (ILint)Image.Pal.Palette[j * 3    ]) *
+            ((ILint)CurImage->Data[i+2] - (ILint)Image.Pal.Palette[j * 3    ]) + 
             ((ILint)CurImage->Data[i+1] - (ILint)Image.Pal.Palette[j * 3 + 1]) *
             ((ILint)CurImage->Data[i+1] - (ILint)Image.Pal.Palette[j * 3 + 1]) +
-            ((ILint)CurImage->Data[i] - (ILint)Image.Pal.Palette[j * 3 + 2]) *
-            ((ILint)CurImage->Data[i] - (ILint)Image.Pal.Palette[j * 3 + 2]);
+            ((ILint)CurImage->Data[i  ] - (ILint)Image.Pal.Palette[j * 3 + 2]) *
+            ((ILint)CurImage->Data[i  ] - (ILint)Image.Pal.Palette[j * 3 + 2]) );
         }
         MaxDist = UINT_MAX;
         DistEntry = 0;
@@ -556,7 +558,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
             MaxDist = PalInfo[j];
           }
         }
-        NewData[i / CurImage->Bpp] = DistEntry;
+        NewData[i / CurImage->Bpp] = (ILubyte)DistEntry;
       }
 
       break;
@@ -581,7 +583,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
             MaxDist = PalInfo[j];
           }
         }
-        NewData[i] = DistEntry;
+        NewData[i] = (ILubyte)DistEntry;
       }
 
       break;

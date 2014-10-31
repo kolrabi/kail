@@ -72,8 +72,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					ShortS = (ILushort*)Image->Data;
-					ShortD = (ILushort*)temp;
+					ShortS = (ILushort*)(void*)Image->Data;
+					ShortD = (ILushort*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*ShortD = *ShortS++; iSwapUShort(ShortD++);
@@ -89,8 +89,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					ShortS = (ILushort*)Image->Data;
-					ShortD = (ILushort*)temp;
+					ShortS = (ILushort*)(void*)Image->Data;
+					ShortD = (ILushort*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*ShortD = *ShortS++; iSwapUShort(ShortD++);
@@ -113,8 +113,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					IntS = (ILuint*)Image->Data;
-					IntD = (ILuint*)temp;
+					IntS = (ILuint*)(void*)Image->Data;
+					IntD = (ILuint*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*IntD = *IntS++; iSwapUInt(IntD++);
@@ -130,8 +130,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					IntS = (ILuint*)Image->Data;
-					IntD = (ILuint*)temp;
+					IntS = (ILuint*)(void*)Image->Data;
+					IntD = (ILuint*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*IntD = *IntS++; iSwapUInt(IntD++);
@@ -153,8 +153,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					FltS = (ILfloat*)Image->Data;
-					FltD = (ILfloat*)temp;
+					FltS = (ILfloat*)(void*)Image->Data;
+					FltD = (ILfloat*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*FltD = *FltS++; iSwapFloat(FltD++);
@@ -170,8 +170,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					FltS = (ILfloat*)Image->Data;
-					FltD = (ILfloat*)temp;
+					FltS = (ILfloat*)(void*)Image->Data;
+					FltD = (ILfloat*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*FltD = *FltS++; iSwapFloat(FltD++);
@@ -193,8 +193,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					DblS = (ILdouble*)Image->Data;
-					DblD = (ILdouble*)temp;
+					DblS = (ILdouble*)(void*)Image->Data;
+					DblD = (ILdouble*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*DblD = *DblS++; iSwapDouble(DblD++);
@@ -210,8 +210,8 @@ void iEndianSwapData(ILimage *Image) {
 					temp = (ILubyte*)ialloc(Image->SizeOfData);
 					if (temp == NULL)
 						return;
-					DblS = (ILdouble*)Image->Data;
-					DblD = (ILdouble*)temp;
+					DblS = (ILdouble*)(void*)Image->Data;
+					DblD = (ILdouble*)(void*)temp;
 
 					for (i = Image->Width * Image->Height; i > 0; i--) {
 						*DblD = *DblS++; iSwapDouble(DblD++);

@@ -1,6 +1,8 @@
 #include "il_internal.h"
 
-ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
+// FIXME: actually use these functions!
+/*
+static ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
 {
   ILimage *DestTemp, *SrcTemp;
   
@@ -33,7 +35,7 @@ ILboolean iCopySubImage(ILimage *Dest, ILimage *Src)
 }
 
 
-ILboolean iCopySubImages(ILimage *Dest, ILimage *Src)
+static ILboolean iCopySubImages(ILimage *Dest, ILimage *Src)
 {
   if (Src->Faces) {
     Dest->Faces = (ILimage*)icalloc(1, sizeof(ILimage));
@@ -73,7 +75,7 @@ ILboolean iCopySubImages(ILimage *Dest, ILimage *Src)
 
   return IL_TRUE;
 }
-
+*/
 
 // Copies everything but the Data and MetaTags from Src to Dest.
 ILAPI ILboolean ILAPIENTRY iCopyImageAttr(ILimage *Dest, ILimage *Src)

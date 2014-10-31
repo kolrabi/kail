@@ -14,16 +14,38 @@
 #include "il_internal.h"
 #ifndef IL_NO_HDR
 #include "il_endian.h"
-#include <string.h>
+
+typedef struct {
+  ILuint	valid;           /* indicate which fields are valid */
+  ILbyte	programtype[16]; /* listed at beginning of file to identify it 
+                         		* after "#?".  defaults to "RGBE" */ 
+  ILfloat	gamma;           /* image has already been gamma corrected with 
+                         		* given gamma.  defaults to 1.0 (no correction) */
+  ILfloat	exposure;        /* a value of 1.0 in an image corresponds to
+			 											* <exposure> watts/steradian/m^2. 
+			 											* defaults to 1.0 */
+} rgbe_header_info;
+
+/* flags indicating which fields in an rgbe_header_info are valid */
+#define RGBE_VALID_PROGRAMTYPE 0x01
+#define RGBE_VALID_GAMMA       0x02
+#define RGBE_VALID_EXPOSURE    0x04
+
+/* offsets to red, green, and blue components in a data (float) pixel */
+#define RGBE_DATA_RED    0
+#define RGBE_DATA_GREEN  1
+#define RGBE_DATA_BLUE   2
+/* number of floats per pixel */
+#define RGBE_DATA_SIZE   3
 
 // Find substr in bigstr, checking no more than max characters
 // Zero-termination of bigstr is ignored
-const char* strnstr(const char* bigstr, const char* substr, size_t max)
+static const char* strnstr(const char* bigstr, const char* substr, size_t max)
 {
 	size_t i = 0;
 
 	while (i < max) {
-		int j = 0;
+		size_t j = 0;
 		while (bigstr[i+j] == substr[j])
 			++j;
 		if (substr[j] == 0) 
@@ -38,19 +60,21 @@ const char* strnstr(const char* bigstr, const char* substr, size_t max)
 static ILboolean iIsValidHdr(SIO* io)
 {
 	char header[10];
-	ILint read = SIOread(io, header, 1, sizeof(header));
-	SIOseek(io, -read, IL_SEEK_CUR);
+	ILuint Start = SIOtell(io);
+	ILuint read = SIOread(io, header, 1, sizeof(header));
+	SIOseek(io, Start, IL_SEEK_SET);
 	return read == 10 && memcmp(header, "#?RADIANCE", 10) == 0;
 }
 
-void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
+static void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 	ILubyte *runner;
 	ILuint r, g, b, e, read, shift;
+	SIO *io = &image->io;
 
-	r = image->io.getchar(image->io.handle);
-	g = image->io.getchar(image->io.handle);
-	b = image->io.getchar(image->io.handle);
-	e = image->io.getchar(image->io.handle);
+	r = (ILubyte)SIOgetc(io);
+	g = (ILubyte)SIOgetc(io);
+	b = (ILubyte)SIOgetc(io);
+	e = (ILubyte)SIOgetc(io);
 
 	//check if the scanline is in the new format
 	//if so, e, r, g, b are stored separated and are
@@ -64,9 +88,9 @@ void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 			runner = scanline + k;
 			j = 0;
 			while (j < length) {
-				t = image->io.getchar(image->io.handle);
+				t = (ILubyte)SIOgetc(io);
 				if (t > 128) { //Run?
-					ILubyte val = image->io.getchar(image->io.handle);
+					ILubyte val = (ILubyte)SIOgetc(io);
 					t &= 127;
 					//copy current byte
 					while (t > 0 && j < length) {
@@ -79,7 +103,7 @@ void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 				else { //No Run.
 					//read new bytes
 					while (t > 0 && j < length) {
-						*runner = image->io.getchar(image->io.handle);
+						*runner = (ILubyte)SIOgetc(io);
 						runner += 4;
 						--t;
 						++j;
@@ -96,10 +120,10 @@ void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 	runner = scanline;
 	while (read < w) {
 		if (read != 0) {
-			r = image->io.getchar(image->io.handle);
-			g = image->io.getchar(image->io.handle);
-			b = image->io.getchar(image->io.handle);
-			e = image->io.getchar(image->io.handle);
+			r = (ILubyte)SIOgetc(io);
+			g = (ILubyte)SIOgetc(io);
+			b = (ILubyte)SIOgetc(io);
+			e = (ILubyte)SIOgetc(io);
 		}
 
 		//if all three mantissas are 1, then this is a rle
@@ -119,10 +143,10 @@ void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
 			shift += 8;
 		}
 		else {
-			runner[0] = r;
-			runner[1] = g;
-			runner[2] = b;
-			runner[3] = e;
+			runner[0] = (ILubyte)r;
+			runner[1] = (ILubyte)g;
+			runner[2] = (ILubyte)b;
+			runner[3] = (ILubyte)e;
 
 			shift = 0;
 			runner += 4;
@@ -140,13 +164,13 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	ILuint i, j, e, r, g, b;
 	SIO *io;
 
-    char header[1024]; // should be sufficient...
-    ILuint read;
+  char header[1024]; // should be sufficient...
+  ILuint read;
 	const char* wstr;
 	const char* hstr;
 	ILuint width = 0;
 	ILuint height = 0;
-    ILuint headerEnd;
+  ILuint headerEnd;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -160,13 +184,13 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	wstr = strnstr(header, "+X ", read) + 3;
 	hstr = strnstr(header, "-Y ", read) + 3;
 
-    if (wstr != NULL) 
-		width = atoi(wstr);
+  if (wstr != NULL) 
+		width = (ILuint)atoi(wstr);
 	if (hstr != NULL)
-		height = atoi(hstr);
+		height = (ILuint)atoi(hstr);
 
 	// Seek to start of data
-	headerEnd = hstr-header;
+	headerEnd = (ILuint)(hstr-header);
 	while (headerEnd < read && header[headerEnd] != 0x0a)
 		++headerEnd;
 
@@ -183,7 +207,7 @@ static ILboolean iLoadHdrInternal(ILimage* image)
 	}
 	image->Origin = IL_ORIGIN_UPPER_LEFT;
 
-	data = (ILfloat*)image->Data;
+	data = (ILfloat*)(void*)image->Data;
 	scanline = (ILubyte*)ialloc(width*4);
 	for (i = 0; i < height; ++i) {
 		ReadScanline(image, scanline, width);
@@ -251,33 +275,8 @@ float2rgbe(unsigned char rgbe[4], float red, float green, float blue)
   }
 }
 
-
-typedef struct {
-  ILuint	valid;            /* indicate which fields are valid */
-  ILbyte	programtype[16]; /* listed at beginning of file to identify it 
-                         * after "#?".  defaults to "RGBE" */ 
-  ILfloat	gamma;          /* image has already been gamma corrected with 
-                         * given gamma.  defaults to 1.0 (no correction) */
-  ILfloat	exposure;       /* a value of 1.0 in an image corresponds to
-			 * <exposure> watts/steradian/m^2. 
-			 * defaults to 1.0 */
-} rgbe_header_info;
-
-/* flags indicating which fields in an rgbe_header_info are valid */
-#define RGBE_VALID_PROGRAMTYPE 0x01
-#define RGBE_VALID_GAMMA       0x02
-#define RGBE_VALID_EXPOSURE    0x04
-
-/* offsets to red, green, and blue components in a data (float) pixel */
-#define RGBE_DATA_RED    0
-#define RGBE_DATA_GREEN  1
-#define RGBE_DATA_BLUE   2
-/* number of floats per pixel */
-#define RGBE_DATA_SIZE   3
-
-
 /* default minimal header. modify if you want more information in header */
-ILboolean RGBE_WriteHeader(SIO *io, ILuint width, ILuint height, rgbe_header_info *info)
+static ILboolean RGBE_WriteHeader(SIO *io, ILuint width, ILuint height, rgbe_header_info *info)
 {
 	char tmp[512];
 	char *programtype = "RGBE";
@@ -316,14 +315,14 @@ ILboolean RGBE_WriteHeader(SIO *io, ILuint width, ILuint height, rgbe_header_inf
 /* simple write routine that does not use run length encoding */
 /* These routines can be made faster by allocating a larger buffer and
    fread-ing and iwrite-ing the data in larger chunks */
-int RGBE_WritePixels(ILimage* image, float *data, int numpixels)
+static ILboolean RGBE_WritePixels(ILimage* image, ILfloat *data, ILuint numpixels)
 {
-	unsigned char rgbe[4];
+	ILubyte rgbe[4];
 
 	while (numpixels-- > 0) {
 		float2rgbe(rgbe,data[RGBE_DATA_RED],data[RGBE_DATA_GREEN],data[RGBE_DATA_BLUE]);
 		data += RGBE_DATA_SIZE;
-		if (image->io.write(rgbe, sizeof(rgbe), 1, image->io.handle) < 1)
+		if (SIOwrite(&image->io, rgbe, sizeof(rgbe), 1) < 1)
 			return IL_FALSE;
 	}
 	return IL_TRUE;
@@ -335,7 +334,7 @@ int RGBE_WritePixels(ILimage* image, float *data, int numpixels)
 /* save some space.  For each scanline, each channel (r,g,b,e) is */
 /* encoded separately for better compression. */
 
-ILboolean RGBE_WriteBytes_RLE(ILimage* image, ILubyte *data, ILuint numbytes)
+static ILboolean RGBE_WriteBytes_RLE(ILimage* image, ILubyte *data, ILuint numbytes)
 {
 #define MINRUNLENGTH 4
 	ILuint	cur, beg_run, run_count, old_run_count, nonrun_count;
@@ -358,9 +357,9 @@ ILboolean RGBE_WriteBytes_RLE(ILimage* image, ILubyte *data, ILuint numbytes)
 		}
 		/* if data before next big run is a short run then write it as such */
 		if ((old_run_count > 1)&&(old_run_count == beg_run - cur)) {
-			buf[0] = 128 + old_run_count;   /*write short run*/
+			buf[0] = (ILubyte)(128 + old_run_count);   /*write short run*/
 			buf[1] = data[cur];
-			if (image->io.write(buf,sizeof(buf[0])*2,1, image->io.handle) < 1)
+			if (SIOwrite(&image->io, buf,sizeof(buf[0])*2, 1) < 1)
 				return IL_FALSE;
 			cur = beg_run;
 		}
@@ -369,18 +368,18 @@ ILboolean RGBE_WriteBytes_RLE(ILimage* image, ILubyte *data, ILuint numbytes)
 			nonrun_count = beg_run - cur;
 			if (nonrun_count > 128) 
 				nonrun_count = 128;
-			buf[0] = nonrun_count;
-			if (image->io.write(buf,sizeof(buf[0]),1, image->io.handle) < 1)
+			buf[0] = (ILubyte)nonrun_count;
+			if (SIOwrite(&image->io, buf,sizeof(buf[0]), 1) < 1)
 				return IL_FALSE;
-			if (image->io.write(&data[cur],sizeof(data[0])*nonrun_count,1, image->io.handle) < 1)
+			if (SIOwrite(&image->io, &data[cur],sizeof(data[0])*nonrun_count, 1) < 1)
 				return IL_FALSE;
 			cur += nonrun_count;
 		}
 		/* write out next run if one was found */
 		if (run_count >= MINRUNLENGTH) {
-			buf[0] = 128 + run_count;
+			buf[0] = (ILubyte)(128 + run_count);
 			buf[1] = data[beg_run];
-			if (image->io.write(buf,sizeof(buf[0])*2,1, image->io.handle) < 1)
+			if (SIOwrite(&image->io, buf,sizeof(buf[0])*2, 1) < 1)
 				return IL_FALSE;
 			cur += run_count;
 		}
@@ -427,11 +426,11 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 
 	if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 		iFlipBuffer(TempImage->Data, TempImage->Depth, TempImage->Bps, TempImage->Height);
-	data = (ILfloat*)TempImage->Data;
+	data = (ILfloat*)(void*)TempImage->Data;
 
 	if ((TempImage->Width < 8)||(TempImage->Width > 0x7fff)) {
 		/* run length encoding is not allowed so write flat*/
-		bRet = RGBE_WritePixels(image, data,TempImage->Width*TempImage->Height);
+		bRet = RGBE_WritePixels(image, data, TempImage->Width*TempImage->Height);
 		if (image != TempImage)
 			iCloseImage(TempImage);
 		return bRet;
@@ -448,9 +447,9 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	while(TempImage->Height-- > 0) {
 		rgbe[0] = 2;
 		rgbe[1] = 2;
-		rgbe[2] = TempImage->Width >> 8;
-		rgbe[3] = TempImage->Width & 0xFF;
-		if (image->io.write(rgbe, sizeof(rgbe), 1, image->io.handle) < 1) {
+		rgbe[2] = (ILubyte)TempImage->Width >> 8;
+		rgbe[3] = (ILubyte)TempImage->Width & 0xFF;
+		if (SIOwrite(&image->io, rgbe, sizeof(rgbe), 1) < 1) {
 			free(buffer);
 			if (image != TempImage)
 				iCloseImage(TempImage);
@@ -483,7 +482,7 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsHDR[] = { 
+static ILconst_string iFormatExtsHDR[] = { 
 	IL_TEXT("hdr"), 
 	NULL 
 };

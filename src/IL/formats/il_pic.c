@@ -56,12 +56,10 @@ static ILboolean iCheckPic(PIC_HEAD *Header)
 static ILboolean iIsValidPic(SIO* io)
 {
 	PIC_HEAD	Head;
-	ILint read = iGetPicHead(io, &Head);
-	io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
-	if (read == sizeof(Head))
-		return iCheckPic(&Head);
-	else
-		return IL_FALSE;
+	ILuint Start = SIOtell(io);
+	ILuint read = iGetPicHead(io, &Head);
+	SIOseek(io, Start, IL_SEEK_SET); // Go ahead and restore to previous state
+	return read == sizeof(Head) && iCheckPic(&Head);
 }
 
 
@@ -286,11 +284,11 @@ static ILboolean iLoadPicInternal(ILimage* image)
 		}
 		Channels->Next = NULL;
 
-		Chained = image->io.getchar(image->io.handle);
-		Channels->Size = image->io.getchar(image->io.handle);
-		Channels->Type = image->io.getchar(image->io.handle);
-		Channels->Chan = image->io.getchar(image->io.handle);
-		if (image->io.eof(image->io.handle)) {
+		Chained = (ILubyte)SIOgetc(&image->io);
+		Channels->Size = (ILubyte)SIOgetc(&image->io);
+		Channels->Type = (ILubyte)SIOgetc(&image->io);
+		Channels->Chan = (ILubyte)SIOgetc(&image->io);
+		if (SIOeof(&image->io)) {
 			Read = IL_FALSE;
 			goto finish;
 		}
@@ -315,7 +313,7 @@ static ILboolean iLoadPicInternal(ILimage* image)
 	}
 	image->Origin = IL_ORIGIN_LOWER_LEFT;
 
-	Read = readScanlines(&image->io, (ILuint*)image->Data, Header.Width, Header.Height, Channel, Alpha);
+	Read = readScanlines(&image->io, (ILuint*)(void*)image->Data, Header.Width, Header.Height, Channel, Alpha);
 
 finish:
 	// Destroy channels
@@ -331,7 +329,7 @@ finish:
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPIC[] = { 
+static ILconst_string iFormatExtsPIC[] = { 
   IL_TEXT("pic"), 
   NULL 
 };

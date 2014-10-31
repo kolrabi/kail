@@ -10,12 +10,14 @@
 //
 //-----------------------------------------------------------------------------
 
-#define IL_BMP_C
-
 #include "il_internal.h"
+
 #ifndef IL_NO_BMP
+
 #include "il_bmp.h"
 #include "il_endian.h"
+#include "algo/il_rle.h"
+
 #include <stdio.h>
 
 #ifndef _WIN32
@@ -36,12 +38,11 @@
 static void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLeft, ILuint * CONST_RESTRICT ShiftRight);
 
 // Internal function used to get the .bmp header from the current file.
-ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
+static ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
 {
-  ILuint i;
-  ILint read = io->read(io->handle, Header, 1, sizeof(BMPHEAD));
-
-  io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
+  ILuint Pos = SIOtell(io);
+  ILuint read = SIOread(io, Header, 1, sizeof(BMPHEAD));
+  SIOseek(io, Pos, IL_SEEK_SET);
 
   Int  (&Header->bfSize);
   UInt (&Header->bfReserved);
@@ -58,13 +59,6 @@ ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
   Int  (&Header->biClrUsed);
   Int  (&Header->biClrImportant); 
 
-
-  for (i=0; i<sizeof(BMPHEAD); i++) {
-    ILint read = io->read(io->handle, Header, 1, i);
-    io->seek(io->handle, -read, IL_SEEK_CUR);  // Go ahead and restore to previous state
-  }
-
-
   if (read == sizeof(BMPHEAD))
     return IL_TRUE;
   else
@@ -72,14 +66,13 @@ ILboolean iGetBmpHead(SIO* io, BMPHEAD * const Header)
 }
 
 
-ILboolean iGetOS2Head(SIO* io, OS2_HEAD * const Header)
+static ILboolean iGetOS2Head(SIO* io, OS2_HEAD * const Header)
 {
-  ILint toRead  = sizeof(OS2_HEAD);
-  ILint  read   = io->read(io->handle, Header, 1, toRead);
+  ILuint Pos = SIOtell(io);
+  ILuint read = SIOread(io, Header, 1, sizeof(OS2_HEAD));
+  SIOseek(io, Pos, IL_SEEK_SET);
 
-  io->seek(io->handle, -read, IL_SEEK_CUR);
-
-  if (read != toRead)
+  if (read != sizeof(OS2_HEAD))
     return IL_FALSE;
 
   // @todo: untested endian conversion - I don't have a machine+OS that uses big endian
@@ -101,7 +94,7 @@ ILboolean iGetOS2Head(SIO* io, OS2_HEAD * const Header)
 
 
 // Internal function used to check if the HEADER is a valid .bmp header.
-ILboolean iCheckBmp (const BMPHEAD * CONST_RESTRICT Header)
+static ILboolean iCheckBmp (const BMPHEAD * CONST_RESTRICT Header)
 {
   //if ((Header->bfType != ('B'|('M'<<8))) || ((Header->biSize != 0x28) && (Header->biSize != 0x0C)))
   if (Header->bfType[0] != 'B' || Header->bfType[1] != 'M')
@@ -124,7 +117,7 @@ ILboolean iCheckBmp (const BMPHEAD * CONST_RESTRICT Header)
 }
 
 
-ILboolean iCheckOS2 (const OS2_HEAD * CONST_RESTRICT Header)
+static ILboolean iCheckOS2 (const OS2_HEAD * CONST_RESTRICT Header)
 {
   if ((Header->bfType != ('B'|('M'<<8))) || (Header->DataOff < 26) || (Header->cbFix < 12))
     return IL_FALSE;
@@ -144,9 +137,9 @@ ILboolean iCheckOS2 (const OS2_HEAD * CONST_RESTRICT Header)
 static ILboolean iIsValidBmp(SIO* io)
 {
   char Sig[2];
-  ILint Read = SIOread(io, Sig, 1, 2);
-
-    SIOseek(io, -Read, IL_SEEK_CUR);
+  ILuint Pos = SIOtell(io);
+  ILuint Read = SIOread(io, Sig, 1, 2);
+  SIOseek(io, Pos, IL_SEEK_SET);
   return Read == 2 && memcmp(Sig, "BM", 2) == 0;
 }
 
@@ -176,8 +169,7 @@ INLINE void GetShiftFromMask(const ILuint Mask, ILuint * CONST_RESTRICT ShiftLef
   return;
 }
 
-
-ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
+static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 {
   ILuint  PadSize, Read, i, j, k, c;
   ILubyte ByteData;
@@ -295,10 +287,10 @@ ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 }
 
 
-ILboolean prepareBMP(ILimage* image, BMPHEAD * Header, ILubyte bpp, ILuint format)
+static ILboolean prepareBMP(ILimage* image, BMPHEAD * Header, ILubyte bpp, ILuint format)
 {
   // Update the current image with the new dimensions
-  if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, bpp, format, IL_UNSIGNED_BYTE, NULL)) 
+  if (!iTexImage(image, (ILuint)Header->biWidth, (ILuint)abs(Header->biHeight), 1, bpp, format, IL_UNSIGNED_BYTE, NULL)) 
   {
     return IL_FALSE;
   }
@@ -316,7 +308,7 @@ ILboolean prepareBMP(ILimage* image, BMPHEAD * Header, ILubyte bpp, ILuint forma
 
 
 // Reads an uncompressed monochrome .bmp
-ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
 {
   ILuint i, j, k, c, Read;
   ILubyte ByteData, PadSize, Padding[4];
@@ -369,7 +361,7 @@ ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
 
 
 // Reads an uncompressed .bmp
-ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
 {
   ILuint i, j;
   ILubyte ByteData, PadSize, Padding[4];
@@ -382,8 +374,7 @@ ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
 
   // Prepare palette
   image->Pal.PalType = IL_PAL_BGR32;
-  image->Pal.PalSize = Header->biClrUsed ? 
-      Header->biClrUsed * 4 : 256 * 4;
+  image->Pal.PalSize = Header->biClrUsed ? (ILuint)Header->biClrUsed * 4 : 256 * 4;
       
   if (Header->biBitCount == 4)  // biClrUsed is 0 for 4-bit bitmaps
     image->Pal.PalSize = 16 * 4;
@@ -420,9 +411,9 @@ ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
 
 
 // Reads an uncompressed .bmp
-ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
 {
-    ILuint PadSize;
+  ILuint PadSize;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  1, IL_COLOUR_INDEX))
@@ -432,8 +423,7 @@ ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
 
   // Prepare the palette
   image->Pal.PalType = IL_PAL_BGR32;
-  image->Pal.PalSize = Header->biClrUsed ? 
-      Header->biClrUsed * 4 : 256 * 4;
+  image->Pal.PalSize = Header->biClrUsed ? (ILuint)Header->biClrUsed * 4 : 256 * 4;
       
   if (Header->biBitCount == 4)  // biClrUsed is 0 for 4-bit bitmaps
     image->Pal.PalSize = 16 * 4;
@@ -471,13 +461,13 @@ ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
 }
 
 
-ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
 {
   ILubyte PadSize = 0;
   ILuint rMask, gMask, bMask, rShiftR, gShiftR, bShiftR, rShiftL, gShiftL, bShiftL;
-  ILint inputBps = 2 * Header->biWidth;
+  ILuint inputBps = 2 * (ILuint)Header->biWidth;
   ILubyte* inputScanline = (ILubyte*) ialloc(inputBps);
-  ILuint inputOffset = Header->bfDataOff;
+  ILuint inputOffset = (ILuint)Header->bfDataOff;
   ILuint y;
 
   if ((Header->biWidth & 1) != 0) {
@@ -488,6 +478,7 @@ ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
   // Update the current image with the new dimensions, unpack to 24 bpp
   if (!prepareBMP(image, Header,  3, IL_BGR))
   {
+    ifree(inputScanline);
     return IL_FALSE;
   }
 
@@ -523,7 +514,7 @@ ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
   for (y = 0; y < image->Height; y++) {
     ILuint k = image->Bps * y;
     ILuint x;
-    ILint read;
+    ILuint read;
 
     image->io.seek(image->io.handle, inputOffset, IL_SEEK_SET);
     read = image->io.read(image->io.handle, inputScanline, 1, inputBps);
@@ -533,10 +524,10 @@ ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
     inputOffset += inputBps;
 
     for(x = 0; x < image->Width; x++, k += 3) {
-      WORD Read16 = ((WORD*) inputScanline)[x];
-      image->Data[k] = ((Read16 & bMask) >> bShiftR) << bShiftL;
-      image->Data[k + 1] = ((Read16 & gMask) >> gShiftR)  << gShiftL;
-      image->Data[k + 2] = ((Read16 & rMask) >> rShiftR) << rShiftL;
+      WORD Read16 = ((WORD*)((void*)inputScanline))[x];
+      image->Data[k    ] = (ILubyte)(((Read16 & bMask) >> bShiftR) << bShiftL);
+      image->Data[k + 1] = (ILubyte)(((Read16 & gMask) >> gShiftR) << gShiftL);
+      image->Data[k + 2] = (ILubyte)(((Read16 & rMask) >> rShiftR) << rShiftL);
     }
   }
 
@@ -547,7 +538,7 @@ ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
 
 
 // Reads an uncompressed .bmp
-ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
 {
     ILubyte PadSize;
 
@@ -582,10 +573,10 @@ ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
 }
 
 // Reads an uncompressed 32-bpp .bmp
-ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
+static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
 {
-    ILint read;
-    DWORD * start, * stop, * pixel;
+  ILuint read;
+  DWORD * start, * stop, * pixel;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  4, IL_BGRA))
@@ -594,17 +585,17 @@ ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
   }
 
   // Read pixel data
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
-  read = image->io.read(image->io.handle, image->Data, 1, image->SizeOfPlane);
+  SIOseek(&image->io, Header->bfDataOff, IL_SEEK_SET);
+  read = SIOread(&image->io, image->Data, 1, image->SizeOfPlane);
 
   // Convert data: ABGR to BGRA
   // @TODO: bitfields are not supported here yet ... would mean that at least one color channel 
   // could use more than 8 bits precision
-  start = (DWORD*) ilGetData();
+  start = (DWORD*)(void*) ilGetData();
   stop = start + image->Width * image->Height;
 
     for (pixel = start; pixel < stop; ++pixel)
-    (*pixel) = (((*pixel) && 255) << 24) + ((*pixel) >> 8);
+    (*pixel) = (ILuint)(((*pixel) & 255) << 24) + ((*pixel) >> 8);
 
   if ((ILuint)read == image->SizeOfPlane) {
     return IL_TRUE;
@@ -614,7 +605,7 @@ ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
 }
 
 // Reads an uncompressed .bmp
-ILboolean ilReadUncompBmp(ILimage* image, BMPHEAD * header)
+static ILboolean ilReadUncompBmp(ILimage* image, BMPHEAD * header)
 {
   // A height of 0 is illegal
   if (header->biHeight == 0) {
@@ -626,32 +617,24 @@ ILboolean ilReadUncompBmp(ILimage* image, BMPHEAD * header)
 
   switch (header->biBitCount)
   {
-    case 1:
-      return ilReadUncompBmp1(image, header);
-    case 4:
-      return ilReadUncompBmp4(image, header);
-    case 8:
-      return ilReadUncompBmp8(image, header);
-    case 16:
-      return ilReadUncompBmp16(image, header);
-    case 24:
-      return ilReadUncompBmp24(image, header);
-    case 32:
-      return ilReadUncompBmp32(image, header);
-    default:
-      iSetError(IL_ILLEGAL_FILE_VALUE);
-      return IL_FALSE;
+    case 1:       return ilReadUncompBmp1(image, header);
+    case 4:       return ilReadUncompBmp4(image, header);
+    case 8:       return ilReadUncompBmp8(image, header);
+    case 16:      return ilReadUncompBmp16(image, header);
+    case 24:      return ilReadUncompBmp24(image, header);
+    case 32:      return ilReadUncompBmp32(image, header);
+    default:      iSetError(IL_ILLEGAL_FILE_VALUE);
+                  return IL_FALSE;
   }
 }
 
-
-ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
+static ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
 {
   ILubyte Bytes[2];
-  size_t  offset = 0, count, endOfLine = Header->biWidth;
+  size_t  offset = 0, count, endOfLine = (ILuint)Header->biWidth;
 
   // Update the current image with the new dimensions
-  if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
+  if (!iTexImage(image, (ILuint)Header->biWidth, (ILuint)abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
     return IL_FALSE;
 
   image->Origin = IL_ORIGIN_LOWER_LEFT;
@@ -721,14 +704,14 @@ ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
 }
 
 
-ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
+static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
 {
   ILubyte Bytes[2];
   ILuint  i;
-    size_t  offset = 0, count, endOfLine = Header->biWidth;
+  size_t  offset = 0, count, endOfLine = (ILuint)Header->biWidth;
 
   // Update the current image with the new dimensions
-  if (!iTexImage(image, Header->biWidth, abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
+  if (!iTexImage(image, (ILuint)Header->biWidth, (ILuint)abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
     return IL_FALSE;
   image->Origin = IL_ORIGIN_LOWER_LEFT;
 
@@ -760,7 +743,7 @@ ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
   image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
 
   while (offset < image->SizeOfData) {
-      int align;
+    int align;
     if (image->io.read(image->io.handle, &Bytes[0], sizeof(Bytes), 1) != 1)
       return IL_FALSE;
     if (Bytes[0] == 0x0) {        // Escape sequence
@@ -791,7 +774,7 @@ ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
           }
           else
             byte = (Bytes[0] & 0x0F);
-          image->Data[offset++] = byte;
+          image->Data[offset++] = (ILubyte)byte;
         }
 
         align = Bytes[1] % 4;
@@ -869,8 +852,8 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
 // Internal function used to save the .bmp.
 static ILboolean iSaveBitmapInternal(ILimage* image)
 {
-  //int compress_rle8 = ilGetInteger(IL_BMP_RLE);
-  int compress_rle8 = IL_FALSE; // disabled BMP RLE compression. broken
+  ILboolean compress_rle8 = ilIsEnabled(IL_BMP_RLE);
+  //int compress_rle8 = IL_FALSE; // disabled BMP RLE compression. broken
   ILuint  FileSize, i, PadSize, Padding = 0;
   ILimage *TempImage = NULL;
   ILpal *TempPal;
@@ -915,9 +898,9 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
     // Generate grayscale palette
     for (i = 0; i < 256; i++)
     {
-      image->Pal.Palette[i * 4] = i;
-      image->Pal.Palette[i * 4 + 1] = i;
-      image->Pal.Palette[i * 4 + 2] = i;
+      image->Pal.Palette[i * 4]     =
+      image->Pal.Palette[i * 4 + 1] =
+      image->Pal.Palette[i * 4 + 2] = (ILubyte)i;
       image->Pal.Palette[i * 4 + 3] = 0;
     }
   }
@@ -978,7 +961,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   /*if (image->Origin == IL_ORIGIN_UPPER_LEFT)
     SaveLittleInt(&image->io, -(ILint)image->Height);
   else*/
-    SaveLittleInt(&image->io, TempImage->Height);
+    SaveLittleUInt(&image->io, TempImage->Height);
 
   SaveLittleUShort(&image->io, 1);  // Number of planes
   SaveLittleUShort(&image->io, (ILushort)((ILushort)TempImage->Bpp << 3));  // Bpp
@@ -1002,8 +985,8 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   
   if( compress_rle8 == IL_TRUE ) {
     //@TODO compress and save
-    ILubyte *Dest = (ILubyte*)ialloc((long)((double)TempImage->SizeOfPlane*130/127));
-    FileSize = ilRleCompress(TempImage->Data,TempImage->Width,TempImage->Height,
+    ILubyte *Dest = (ILubyte*)ialloc((ILuint)(TempImage->SizeOfPlane*130.0/127.0));
+    FileSize = iRleCompress(TempImage->Data,TempImage->Width,TempImage->Height,
             TempImage->Depth,TempImage->Bpp,Dest,IL_BMPCOMP,NULL);
     image->io.write(Dest,1,FileSize, image->io.handle);
   } else {
@@ -1038,7 +1021,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   return IL_TRUE;
 }
 
-ILconst_string iFormatExtsBMP[] = { 
+static ILconst_string iFormatExtsBMP[] = { 
   IL_TEXT("bmp"), 
   IL_TEXT("dib"), 
   NULL 

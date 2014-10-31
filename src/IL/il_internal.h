@@ -128,17 +128,11 @@ void          iHint(ILenum Target, ILenum Mode);
 
 IL_TLS_DATA * iGetTLSData(void);
 
-//
-// Rle compression
-//
-
-#define   IL_TGACOMP 0x01
-#define   IL_PCXCOMP 0x02
-#define   IL_SGICOMP 0x03
-#define   IL_BMPCOMP 0x04
-
-ILboolean ilRleCompressLine(ILubyte *ScanLine, ILuint Width, ILubyte Bpp, ILubyte *Dest, ILuint *DestWidth, ILenum CompressMode);
-ILuint    ilRleCompress(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte *Dest, ILenum CompressMode, ILuint *ScanTable);
+// In il_neuquant.c
+ILimage *iNeuQuant(ILimage *Image, ILuint NumCols);
+// In il_quantizer.c
+ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols);
+ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat);
 
 //
 // DXTC compression
@@ -174,7 +168,7 @@ ILboolean iInvertSurfaceDxtcDataAlpha(ILimage* image);
 ILboolean iImageToDxtcData(ILimage *image, ILenum Format);
 ILboolean iSetData(ILimage *Image, void *Data);
 ILboolean iSetDuration(ILimage *Image, ILuint Duration);
-ILboolean iTexImageDxtc(ILimage* image, ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data);
+ILboolean iTexImageDxtc(ILimage* image, ILuint w, ILuint h, ILuint d, ILenum DxtFormat, const ILubyte* data);
 
 // TODO: put all functions that have a corresponding il* public api function equivalent into internal exports
 
@@ -208,6 +202,12 @@ ILboolean ilLoadWdp(ILconst_string FileName);
 ILboolean ilLoadWdpF(ILHANDLE File);
 ILboolean ilLoadWdpL(const void *Lump, ILuint Size);
 */
+
+ILboolean iIsValidDds(SIO* io);
+ILboolean iLoadDdsInternal(ILimage* image);
+
+ILboolean iExifLoad(ILimage *Image);
+ILboolean iExifSave(ILimage *Image);
 
 ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID);
 ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);

@@ -5,7 +5,7 @@ typedef struct {
   ILenum ExifIFD;
   ILenum ExifID;
   ILenum Type;
-  ILint Length;
+  ILint  Length;
 } ILmetaDesc;
 
 static ILmetaDesc MetaDescriptions[] = {
@@ -110,7 +110,7 @@ ILuint iGetMetaDataSize(ILenum Type, ILuint Count) {
   return 0;
 }
 
-ILmetaDesc *iGetMetaDesc(ILenum MetaID) {
+static ILmetaDesc *iGetMetaDesc(ILenum MetaID) {
   ILuint i;
   for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
     if (MetaDescriptions[i].MetaID == MetaID)
@@ -119,7 +119,8 @@ ILmetaDesc *iGetMetaDesc(ILenum MetaID) {
   return NULL;
 }
 
-ILmetaDesc *iGetMetaDescFromExifID(ILenum IFD, ILenum ID) {
+/*
+static ILmetaDesc *iGetMetaDescFromExifID(ILenum IFD, ILenum ID) {
   ILuint i;
   for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
     if (MetaDescriptions[i].ExifIFD == IFD && MetaDescriptions[i].ExifID == ID)
@@ -127,8 +128,9 @@ ILmetaDesc *iGetMetaDescFromExifID(ILenum IFD, ILenum ID) {
   }
   return NULL;
 }
+*/
 
-ILuint iGetMetaLen(ILenum MetaID) {
+ILint iGetMetaLen(ILenum MetaID) {
   ILuint i;
   for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
     if (MetaDescriptions[i].MetaID == MetaID)
@@ -137,7 +139,7 @@ ILuint iGetMetaLen(ILenum MetaID) {
   return 0;
 }
 
-ILuint iGetMetaLenf(ILenum MetaID) {
+ILint iGetMetaLenf(ILenum MetaID) {
   ILuint i;
   for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
     if (MetaDescriptions[i].MetaID == MetaID) {
@@ -252,7 +254,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   return IL_TRUE;
 }
 
-ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILuint MaxCount) {
+ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILint MaxCount) {
   ILuint count, size;
   ILenum Type;
   void *data;
@@ -289,20 +291,21 @@ ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILuint MaxCount) 
     Type = IL_EXIF_TYPE_SDWORD;
   }
 
-  if (MaxCount > 0 && count > MaxCount) {
-    iSetError(IL_INTERNAL_ERROR);
-    return 0;
+  if (MaxCount == 0) {
+    return count;
+  } else if (MaxCount > 0 && count > (ILuint)MaxCount) {
+    count = (ILuint)MaxCount;
   }
 
   if (Param) {
     for (i = 0; i<count; i++) {
       switch (Type) {
-        case IL_EXIF_TYPE_BYTE:     Param[i] = ((ILubyte*)  data)[i]; break;
-        case IL_EXIF_TYPE_WORD:     Param[i] = ((ILushort*) data)[i]; break;
-        case IL_EXIF_TYPE_DWORD:    Param[i] = ((ILuint*)   data)[i]; break;
-        case IL_EXIF_TYPE_SBYTE:    Param[i] = ((ILbyte*)   data)[i]; break;
-        case IL_EXIF_TYPE_SWORD:    Param[i] = ((ILshort*)  data)[i]; break;
-        case IL_EXIF_TYPE_SDWORD:   Param[i] = ((ILint*)    data)[i]; break;
+        case IL_EXIF_TYPE_BYTE:     Param[i] = (ILint)((ILubyte*)  data)[i]; break;
+        case IL_EXIF_TYPE_WORD:     Param[i] = (ILint)((ILushort*) data)[i]; break;
+        case IL_EXIF_TYPE_DWORD:    Param[i] = (ILint)((ILint*)    data)[i]; break;
+        case IL_EXIF_TYPE_SBYTE:    Param[i] = (ILint)((ILbyte*)   data)[i]; break;
+        case IL_EXIF_TYPE_SWORD:    Param[i] = (ILint)((ILshort*)  data)[i]; break;
+        case IL_EXIF_TYPE_SDWORD:   Param[i] = (ILint)((ILint*)    data)[i]; break;
       }
     }
   }
@@ -312,7 +315,7 @@ ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILuint MaxCount) 
 
 ILboolean iSetMetaiv(ILimage *Image, ILenum MetaID, const ILint *Param) {
   void *data;
-  ILint i;
+  ILuint i;
   ILint Count;
   ILuint Size;
 
@@ -333,32 +336,32 @@ ILboolean iSetMetaiv(ILimage *Image, ILenum MetaID, const ILint *Param) {
     Count = *Param++;
   }
 
-  Size = iGetMetaDataSize(Desc->Type, Count);
+  Size = iGetMetaDataSize(Desc->Type, (ILuint)Count);
   data = ialloc(Size);
   if (!data) return IL_FALSE;
 
-  for (i=0; i<Count; i++) {
+  for (i=0; i<(ILuint)Count; i++) {
     switch (Desc->Type) {
-      case IL_EXIF_TYPE_BYTE:     ((ILubyte*)  data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_WORD:     ((ILushort*) data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_DWORD:    ((ILuint*)   data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SBYTE:    ((ILbyte*)   data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SWORD:    ((ILshort*)  data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SDWORD:   ((ILint*)    data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_RATIONAL: ((ILuint*)   data)[i*2]   = Param[i*2]; 
-                                  ((ILuint*)   data)[i*2+1] = Param[i*2+1]; break;
-      case IL_EXIF_TYPE_SRATIONAL:((ILint*)    data)[i*2]   = Param[i*2]; 
-                                  ((ILint*)    data)[i*2+1] = Param[i*2+1]; break;
+      case IL_EXIF_TYPE_BYTE:     ((ILubyte*)  data)[i]     = (ILubyte) Param[i    ]; break;
+      case IL_EXIF_TYPE_WORD:     ((ILushort*) data)[i]     = (ILushort)Param[i    ]; break;
+      case IL_EXIF_TYPE_DWORD:    ((ILuint*)   data)[i]     = (ILuint)  Param[i    ]; break;
+      case IL_EXIF_TYPE_SBYTE:    ((ILbyte*)   data)[i]     = (ILbyte)  Param[i    ]; break;
+      case IL_EXIF_TYPE_SWORD:    ((ILshort*)  data)[i]     = (ILshort) Param[i    ]; break;
+      case IL_EXIF_TYPE_SDWORD:   ((ILint*)    data)[i]     = (ILint)   Param[i    ]; break;
+      case IL_EXIF_TYPE_RATIONAL: ((ILuint*)   data)[i*2]   = (ILuint)  Param[i*2  ]; 
+                                  ((ILuint*)   data)[i*2+1] = (ILuint)  Param[i*2+1]; break;
+      case IL_EXIF_TYPE_SRATIONAL:((ILint*)    data)[i*2]   = (ILint)   Param[i*2  ]; 
+                                  ((ILint*)    data)[i*2+1] = (ILint)   Param[i*2+1]; break;
     }
   }
 
-  iSetMetadata(Image, Desc->ExifIFD, Desc->ExifID, Desc->Type, Count, Size, data);
+  iSetMetadata(Image, Desc->ExifIFD, Desc->ExifID, Desc->Type, (ILuint)Count, Size, data);
 
   ifree(data);
   return IL_TRUE;
 }
 
-ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILuint MaxCount) {
+ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILint MaxCount) {
   ILuint count, size;
   ILenum Type;
   void *data;
@@ -373,9 +376,10 @@ ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILuint MaxCount
   if (!iGetMetadata(Image, Desc->ExifIFD, Desc->ExifID, &Type, &count, &size, &data))
     return 0;
 
-  if (MaxCount > 0 && count > MaxCount) {
-    iSetError(IL_INTERNAL_ERROR);
-    return 0;
+  if (MaxCount == 0) {
+    return count;
+  } else if (MaxCount > 0 && count > (ILuint)MaxCount) {
+    count = (ILuint)MaxCount;
   }
 
   if (Param) {
@@ -398,7 +402,7 @@ ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILuint MaxCount
 
 ILboolean iSetMetafv(ILimage *Image, ILenum MetaID, const ILfloat *Param) {
   void *data;
-  ILint i;
+  ILuint i;
   ILint Count;
   ILuint Size;
 
@@ -416,29 +420,30 @@ ILboolean iSetMetafv(ILimage *Image, ILenum MetaID, const ILfloat *Param) {
 
   Count = Desc->Length;
   if (Count == -1) {
-    Count = *Param++;
+    Count = *(ILint*)Param;
+    Param++;
   }
 
-  Size = iGetMetaDataSize(Desc->Type, Count);
+  Size = iGetMetaDataSize(Desc->Type, (ILuint)Count);
   data = ialloc(Size);
   if (!data) return IL_FALSE;
 
-  for (i=0; i<Count; i++) {
+  for (i=0; i<(ILuint)Count; i++) {
     switch (Desc->Type) {
-      case IL_EXIF_TYPE_BYTE:     ((ILubyte*)  data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_WORD:     ((ILushort*) data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_DWORD:    ((ILuint*)   data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SBYTE:    ((ILbyte*)   data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SWORD:    ((ILshort*)  data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_SDWORD:   ((ILint*)    data)[i] = Param[i]; break;
-      case IL_EXIF_TYPE_RATIONAL: ((ILuint*)   data)[i*2]   = Param[i] * 10000000; 
-                                  ((ILuint*)   data)[i*2+1] = 10000000; break;
-      case IL_EXIF_TYPE_SRATIONAL:((ILint*)    data)[i*2]   = Param[i] * 10000000; 
-                                  ((ILuint*)   data)[i*2+1] = 10000000; break;
+      case IL_EXIF_TYPE_BYTE:     ((ILubyte*)  data)[i]     = (ILubyte) Param[i]; break;
+      case IL_EXIF_TYPE_WORD:     ((ILushort*) data)[i]     = (ILushort)Param[i]; break;
+      case IL_EXIF_TYPE_DWORD:    ((ILuint*)   data)[i]     = (ILuint)  Param[i]; break;
+      case IL_EXIF_TYPE_SBYTE:    ((ILbyte*)   data)[i]     = (ILbyte)  Param[i]; break;
+      case IL_EXIF_TYPE_SWORD:    ((ILshort*)  data)[i]     = (ILshort) Param[i]; break;
+      case IL_EXIF_TYPE_SDWORD:   ((ILint*)    data)[i]     = (ILint)   Param[i]; break;
+      case IL_EXIF_TYPE_RATIONAL: ((ILuint*)   data)[i*2]   = (ILuint)  (Param[i] * 10000000); 
+                                  ((ILuint*)   data)[i*2+1] = (ILuint)  10000000; break;
+      case IL_EXIF_TYPE_SRATIONAL:((ILint*)    data)[i*2]   = (ILint)   (Param[i] * 10000000); 
+                                  ((ILuint*)   data)[i*2+1] = (ILuint)  10000000; break;
     }
   }
 
-  iSetMetadata(Image, Desc->ExifIFD, Desc->ExifID, Desc->Type, Count, Size, data);
+  iSetMetadata(Image, Desc->ExifIFD, Desc->ExifID, Desc->Type, (ILuint)Count, Size, data);
 
   ifree(data);
   return IL_TRUE;

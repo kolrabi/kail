@@ -65,7 +65,7 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 {
 	ILimage		*Rotated = NULL;
-	ILint		x, y, c;
+	ILuint		x, y, c;
 	ILdouble	Cos, Sin;
 	ILuint		RotOffset, ImgOffset;
 	ILint		MinX, MinY, MaxX, MaxY;
@@ -103,9 +103,9 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 		return NULL;
 	}
 
-	if (iResizeImage(Rotated, abs(MaxX) - MinX, abs(MaxY) - MinY, 1, Image->Bpp, Image->Bpc) == IL_FALSE) {
+	if (iResizeImage(Rotated, (ILuint)(abs(MaxX) - MinX), (ILuint)(abs(MaxY) - MinY), 1, Image->Bpp, Image->Bpc) == IL_FALSE) {
 		iCloseImage(Rotated);
-		return IL_FALSE;
+		return NULL;
 	}
 
 	iClearImage(Rotated);
@@ -119,8 +119,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 	{
 		case 1:  // Byte-based (most images)
 			if (Angle == 90.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -130,8 +130,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 180.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -141,8 +141,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 270.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -152,10 +152,10 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else {
-				for (x = 0; x < (ILint)Rotated->Width; x++) {
-					for (y = 0; y < (ILint)Rotated->Height; y++) {
-						SrcX = (ILint)((x + MinX) * Cos + (y + MinY) * Sin);
-						SrcY = (ILint)((y + MinY) * Cos - (x + MinX) * Sin);
+				for (x = 0; x < Rotated->Width; x++) {
+					for (y = 0; y < Rotated->Height; y++) {
+						SrcX = (ILint)(((ILint)x + MinX) * Cos + ((ILint)y + MinY) * Sin);
+						SrcY = (ILint)(((ILint)y + MinY) * Cos - ((ILint)x + MinX) * Sin);
 						if (SrcX >= 0 && SrcX < (ILint)Image->Width && SrcY >= 0 && SrcY < (ILint)Image->Height) {
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
@@ -173,8 +173,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 			Rotated->Bps /= 2; //   cast to short.
 
 			if (Angle == 90.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -184,8 +184,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 180.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -195,8 +195,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 270.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -206,10 +206,10 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else {
-				for (x = 0; x < (ILint)Rotated->Width; x++) {
-					for (y = 0; y < (ILint)Rotated->Height; y++) {
-						SrcX = (ILint)((x + MinX) * Cos + (y + MinY) * Sin);
-						SrcY = (ILint)((y + MinY) * Cos - (x + MinX) * Sin);
+				for (x = 0; x < Rotated->Width; x++) {
+					for (y = 0; y < Rotated->Height; y++) {
+						SrcX = (ILint)(((ILint)x + MinX) * Cos + ((ILint)y + MinY) * Sin);
+						SrcY = (ILint)(((ILint)y + MinY) * Cos - ((ILint)x + MinX) * Sin);
 						if (SrcX >= 0 && SrcX < (ILint)Image->Width && SrcY >= 0 && SrcY < (ILint)Image->Height) {
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
@@ -229,8 +229,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 			Rotated->Bps /= 4;
 
 			if (Angle == 90.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -240,8 +240,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 180.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -251,8 +251,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 270.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -262,10 +262,10 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else {
-				for (x = 0; x < (ILint)Rotated->Width; x++) {
-					for (y = 0; y < (ILint)Rotated->Height; y++) {
-						SrcX = (ILint)((x + MinX) * Cos + (y + MinY) * Sin);
-						SrcY = (ILint)((y + MinY) * Cos - (x + MinX) * Sin);
+				for (x = 0; x < Rotated->Width; x++) {
+					for (y = 0; y < Rotated->Height; y++) {
+						SrcX = (ILint)(((ILint)x + MinX) * Cos + ((ILint)y + MinY) * Sin);
+						SrcY = (ILint)(((ILint)y + MinY) * Cos - ((ILint)x + MinX) * Sin);
 						if (SrcX >= 0 && SrcX < (ILint)Image->Width && SrcY >= 0 && SrcY < (ILint)Image->Height) {
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
@@ -285,8 +285,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 			Rotated->Bps /= 8;
 
 			if (Angle == 90.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -296,8 +296,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 180.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) { 
-					for (y = 0; y < (ILint)Image->Height; y++) { 
+				for (x = 0; x < Image->Width; x++) { 
+					for (y = 0; y < Image->Height; y++) { 
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -307,8 +307,8 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else if (Angle == 270.0) {
-				for (x = 0; x < (ILint)Image->Width; x++) {
-					for (y = 0; y < (ILint)Image->Height; y++) {
+				for (x = 0; x < Image->Width; x++) {
+					for (y = 0; y < Image->Height; y++) {
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
@@ -318,10 +318,10 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 				} 
 			}
 			else {
-				for (x = 0; x < (ILint)Rotated->Width; x++) {
-					for (y = 0; y < (ILint)Rotated->Height; y++) {
-						SrcX = (ILint)((x + MinX) * Cos + (y + MinY) * Sin);
-						SrcY = (ILint)((y + MinY) * Cos - (x + MinX) * Sin);
+				for (x = 0; x < Rotated->Width; x++) {
+					for (y = 0; y < Rotated->Height; y++) {
+						SrcX = (ILint)(((ILint)x + MinX) * Cos + ((ILint)y + MinY) * Sin);
+						SrcY = (ILint)(((ILint)y + MinY) * Cos - ((ILint)x + MinX) * Sin);
 						if (SrcX >= 0 && SrcX < (ILint)Image->Width && SrcY >= 0 && SrcY < (ILint)Image->Height) {
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;

@@ -45,7 +45,7 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD ul_reason_for_call, LPVOID lpReserve
 #endif
 
 void iInit() {
-	iInitThreads();
+	iInitThreads_ilu();
 	iSetLanguage(ILU_ENGLISH);
 }
 

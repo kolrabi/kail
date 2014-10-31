@@ -22,9 +22,10 @@ static ILimage *iUncompressDcxSmall(SIO *io, DCXHEAD *Header);
 static ILboolean 
 iIsValidDcx(SIO *io) {
 	ILuint Signature;
-	ILint Read = SIOread(io, &Signature, 1, 4);
+	ILuint Start = SIOtell(io);
+	ILuint Read = SIOread(io, &Signature, 1, 4);
 
-  SIOseek(io, -Read, IL_SEEK_CUR);
+  SIOseek(io, Start, IL_SEEK_SET);
 
 	if (Read != 4)
 		return IL_FALSE;
@@ -37,7 +38,6 @@ iIsValidDcx(SIO *io) {
 // Internal function obtain the .dcx header from the current file.
 static ILboolean 
 iGetDcxHead(SIO *io, DCXHEAD *Head) {
-	iTrace("--- %08x", SIOtell(io));
 	if (SIOread(io, Head, 1, sizeof(*Head)) != sizeof(*Head))
 		return IL_FALSE;
 
@@ -261,10 +261,12 @@ iUncompressDcx(SIO *io, DCXHEAD *Header) {
 
 	// Read in the palette
 	if (Image->Bpp == 1) {
-		ByteHead = SIOgetc(io);	// the value 12, because it signals there's a palette for some reason...
-							//	We should do a check to make certain it's 12...
+		ByteHead = (ILubyte)SIOgetc(io);	// the value 12, because it signals there's a palette for some reason...
+
+		// We should do a check to make certain it's 12...
 		if (ByteHead != 12)
 			SIOseek(io, -1, IL_SEEK_CUR);
+
 		if (SIOread(io, Image->Pal.Palette, 1, Image->Pal.PalSize) != Image->Pal.PalSize) {
 			iCloseImage(Image);
 			return NULL;
@@ -395,7 +397,7 @@ file_read_error:
 	return NULL;
 }
 
-ILconst_string iFormatExtsDCX[] = { 
+static ILconst_string iFormatExtsDCX[] = { 
 	IL_TEXT("dcx"), 
 	NULL 
 };

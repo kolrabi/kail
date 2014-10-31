@@ -53,7 +53,16 @@
     #endif
 #endif
 
-#ifdef _MSC_VER
+
+#ifndef NORETURN
+    #if defined(__GNUC__) || defined(__clang__)
+        #define NORETURN __attribute__((noreturn))
+    #else
+        #define NORETURN
+    #endif
+#endif
+
+#if defined(_MSC_VER) || defined(__clang__)
   #define snprintf _snprintf
 #endif
 
@@ -123,7 +132,7 @@ INLINE ILHANDLE SIOopenRO(SIO *io, ILconst_string FileName) {
     io->lumpSize = SIOtell(io);
     SIOseek(io, OrigPos, SEEK_SET);
   } else {
-    io->lumpSize = ~0;
+    io->lumpSize = ~0UL;
   }
   return io->handle;
 }
@@ -151,7 +160,7 @@ ILAPI char *    ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen);
 typedef struct ILmeta {
   ILenum      IFD;
   ILenum      ID;
-  ILushort    Type;
+  ILuint      Type;
   ILuint      Length, Size;
   void *      Data;
   ILchar *    String;
@@ -168,6 +177,7 @@ typedef struct ILimage {
     ILuint          Depth;       //!< the image's depth
     ILubyte         Bpp;         //!< bytes per pixel (now number of channels)
     ILubyte         Bpc;         //!< bytes per channel
+    ILushort        Extra;       //!< reserved
     ILuint          Bps;         //!< bytes per scanline (components for IL)
     ILubyte*        Data;        //!< the image data
     ILuint          SizeOfData;  //!< the total size of the data (in bytes)
@@ -281,10 +291,10 @@ ILAPI ILimage*  ILAPIENTRY iCloneImage      (ILimage *Src);
 ILAPI ILimage*  ILAPIENTRY iConvertImage    (ILimage *Image, ILenum DestFormat, ILenum DestType);
 ILAPI ILimage*  ILAPIENTRY iNewImage        (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
 ILAPI ILimage*  ILAPIENTRY iNewImageFull    (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
-ILAPI ILuint    ILAPIENTRY iGetiv           (ILimage *Image, ILenum Mode, ILint *Param, ILuint MaxCount);
-ILAPI ILuint    ILAPIENTRY iGetfv           (ILimage *Image, ILenum Mode, ILfloat *Param, ILuint MaxCount);
-ILAPI void      ILAPIENTRY iSetiv           (ILimage *Image, ILenum Mode, const ILint *Param, ILuint Count);
-ILAPI void      ILAPIENTRY iSetfv           (ILimage *Image, ILenum Mode, const ILfloat *Param, ILuint Count);
+ILAPI ILuint    ILAPIENTRY iGetiv           (ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCount);
+ILAPI ILuint    ILAPIENTRY iGetfv           (ILimage *Image, ILenum Mode, ILfloat *Param, ILint MaxCount);
+ILAPI void      ILAPIENTRY iSetiv           (ILimage *Image, ILenum Mode, const ILint *Param);
+ILAPI void      ILAPIENTRY iSetfv           (ILimage *Image, ILenum Mode, const ILfloat *Param);
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped      (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY iCopyPixels      (ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);
 ILAPI ILuint    ILAPIENTRY iGetCurName      (void);
@@ -345,7 +355,6 @@ ILAPI ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ex
 // ILU functions
 //
 ILAPI ILboolean ILAPIENTRY iSwapColours(ILimage *img);
-ILAPI ILboolean ILAPIENTRY iFlipImage(ILimage *image);
 ILAPI ILimage*  ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle);
 ILAPI ILimage*  ILAPIENTRY iluRotate3D_(ILimage *Image, ILfloat x, ILfloat y, ILfloat z, ILfloat Angle);
 ILAPI ILimage*  ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
@@ -353,7 +362,14 @@ ILAPI ILboolean ILAPIENTRY iBuildMipmaps(ILimage *Parent, ILuint Width, ILuint H
 
 #define imemclear(x,y) memset(x,0,y);
 
-ILAPI extern FILE *iTraceOut;
+#if defined(_WIN32) && !defined(IL_STATIC_LIB)
+  #if defined(_ILU_BUILD_LIBRARY) || defined(_ILUT_BUILD_LIBRARY)
+    __declspec(dllimport)
+  #else
+    __declspec(dllexport) 
+  #endif
+#endif
+extern FILE *iTraceOut;
 
 #define iTrace(...) if (iTraceOut) {\
   fprintf(iTraceOut, "%s:%d: ", __FILE__, __LINE__); \

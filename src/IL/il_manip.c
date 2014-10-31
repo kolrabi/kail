@@ -15,7 +15,7 @@
 
 // Should we add type to the parameter list?
 // Copies a 1d block of pixels to the buffer pointed to by Data.
-ILboolean iCopyPixels1D(ILimage *Image, ILuint XOff, ILuint Width, void *Data)
+static ILboolean iCopyPixels1D(ILimage *Image, ILuint XOff, ILuint Width, void *Data)
 {
   ILuint  x, c, NewBps, NewOff, PixBpp;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
@@ -52,7 +52,7 @@ ILboolean iCopyPixels1D(ILimage *Image, ILuint XOff, ILuint Width, void *Data)
 
 
 // Copies a 2d block of pixels to the buffer pointed to by Data.
-ILboolean iCopyPixels2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, ILuint Height, void *Data)
+static ILboolean iCopyPixels2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, ILuint Height, void *Data)
 {
   ILuint  x, y, c, NewBps, DataBps, NewXOff, NewHeight, PixBpp;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
@@ -97,7 +97,7 @@ ILboolean iCopyPixels2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, 
 
 
 // Copies a 3d block of pixels to the buffer pointed to by Data.
-ILboolean iCopyPixels3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, void *Data)
+static ILboolean iCopyPixels3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, void *Data)
 {
   ILuint  x, y, z, c, NewBps, DataBps, NewSizePlane, NewH, NewD, NewXOff, PixBpp;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
@@ -220,10 +220,10 @@ failed:
 }
 
 
-ILboolean iSetPixels1D(ILimage *Image, ILint XOff, ILuint Width, void *Data)
+static ILboolean iSetPixels1D(ILimage *Image, ILint XOff, ILuint Width, void *Data)
 {
-  ILuint  c, SkipX = 0, PixBpp;
-  ILint x, NewWidth;
+  ILuint  c, PixBpp;
+  ILint x, NewWidth, SkipX = 0;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
@@ -241,18 +241,18 @@ ILboolean iSetPixels1D(ILimage *Image, ILint XOff, ILuint Width, void *Data)
     XOff = 0;
   }
 
-  if (Image->Width < XOff + Width) {
-    NewWidth = Image->Width - XOff;
+  if (Image->Width - Width < (ILuint)XOff) {
+    NewWidth = (ILint)Image->Width - XOff;
   }
   else {
-    NewWidth = Width;
+    NewWidth = (ILint)Width;
   }
 
   NewWidth -= SkipX;
 
   for (x = 0; x < NewWidth; x++) {
     for (c = 0; c < PixBpp; c++) {
-      TempData[(x + XOff) * PixBpp + c] = Temp[(x + SkipX) * PixBpp + c];
+      TempData[(ILuint)(x + XOff) * PixBpp + c] = Temp[(ILuint)(x + SkipX) * PixBpp + c];
     }
   }
 
@@ -265,10 +265,10 @@ ILboolean iSetPixels1D(ILimage *Image, ILint XOff, ILuint Width, void *Data)
 }
 
 
-ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Width, ILuint Height, void *Data)
+static ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Width, ILuint Height, void *Data)
 {
-  ILuint  c, SkipX = 0, SkipY = 0, NewBps, PixBpp;
-  ILint x, y, NewWidth, NewHeight;
+  ILuint x, y;
+  ILuint NewWidth, NewHeight, NewBps, PixBpp, SkipX = 0, SkipY = 0, c;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
@@ -282,22 +282,22 @@ ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Width, ILu
   PixBpp = Image->Bpp * Image->Bpc;
 
   if (XOff < 0) {
-    SkipX = abs(XOff);
+    SkipX = (ILuint)abs(XOff);
     XOff = 0;
   }
   if (YOff < 0) {
-    SkipY = abs(YOff);
+    SkipY = (ILuint)abs(YOff);
     YOff = 0;
   }
 
-  if (Image->Width < XOff + Width)
-    NewWidth = Image->Width - XOff;
+  if (Image->Width < (ILuint)XOff + Width)
+    NewWidth = Image->Width - (ILuint)XOff;
   else
     NewWidth = Width;
   NewBps = Width * PixBpp;
 
-  if (Image->Height < YOff + Height)
-    NewHeight = Image->Height - YOff;
+  if (Image->Height < (ILuint)YOff + Height)
+    NewHeight = Image->Height - (ILuint)YOff;
   else
     NewHeight = Height;
 
@@ -307,7 +307,7 @@ ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Width, ILu
   for (y = 0; y < NewHeight; y++) {
     for (x = 0; x < NewWidth; x++) {
       for (c = 0; c < PixBpp; c++) {
-        TempData[(y + YOff) * Image->Bps + (x + XOff) * PixBpp + c] =
+        TempData[(y + (ILuint)YOff) * Image->Bps + (x + (ILuint)XOff) * PixBpp + c] =
           Temp[(y + SkipY) * NewBps + (x + SkipX) * PixBpp + c];          
       }
     }
@@ -322,10 +322,10 @@ ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Width, ILu
 }
 
 
-ILboolean iSetPixels3D(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, void *Data)
+static ILboolean iSetPixels3D(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width, ILuint Height, ILuint Depth, void *Data)
 {
   ILuint  SkipX = 0, SkipY = 0, SkipZ = 0, c, NewBps, NewSizePlane, PixBpp;
-  ILint x, y, z, NewW, NewH, NewD;
+  ILuint x, y, z, NewW, NewH, NewD;
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
@@ -339,31 +339,31 @@ ILboolean iSetPixels3D(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuin
   PixBpp = Image->Bpp * Image->Bpc;
 
   if (XOff < 0) {
-    SkipX = abs(XOff);
+    SkipX = (ILuint)abs(XOff);
     XOff = 0;
   }
   if (YOff < 0) {
-    SkipY = abs(YOff);
+    SkipY = (ILuint)abs(YOff);
     YOff = 0;
   }
   if (ZOff < 0) {
-    SkipZ = abs(ZOff);
+    SkipZ = (ILuint)abs(ZOff);
     ZOff = 0;
   }
 
-  if (Image->Width < XOff + Width)
-    NewW = Image->Width - XOff;
+  if (Image->Width < (ILuint)XOff + Width)
+    NewW = Image->Width - (ILuint)XOff;
   else
     NewW = Width;
   NewBps = Width * PixBpp;
 
-  if (Image->Height < YOff + Height)
-    NewH = Image->Height - YOff;
+  if (Image->Height < (ILuint)YOff + Height)
+    NewH = Image->Height - (ILuint)YOff;
   else
     NewH = Height;
 
-  if (Image->Depth < ZOff + Depth)
-    NewD = Image->Depth - ZOff;
+  if (Image->Depth < (ILuint)ZOff + Depth)
+    NewD = Image->Depth - (ILuint)ZOff;
   else
     NewD = Depth;
   NewSizePlane = NewBps * Height;
@@ -376,7 +376,7 @@ ILboolean iSetPixels3D(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuin
     for (y = 0; y < NewH; y++) {
       for (x = 0; x < NewW; x++) {
         for (c = 0; c < PixBpp; c++) {
-          TempData[(z + ZOff) * Image->SizeOfPlane + (y + YOff) * Image->Bps + (x + XOff) * PixBpp + c] =
+          TempData[(z + (ILuint)ZOff) * Image->SizeOfPlane + (y + (ILuint)YOff) * Image->Bps + (x + (ILuint)XOff) * PixBpp + c] =
             Temp[(z + SkipZ) * NewSizePlane + (y + SkipY) * NewBps + (x + SkipX) * PixBpp + c];
         }
       }
@@ -414,10 +414,10 @@ void iSetPixels(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff, ILuint Width
       return;
   }
 
-  if (YOff + Height <= 1) {
+  if ((ILuint)YOff + Height <= 1) {
     iSetPixels1D(Image, XOff, Width, Converted);
   }
-  else if (ZOff + Depth <= 1) {
+  else if ((ILuint)ZOff + Depth <= 1) {
     iSetPixels2D(Image, XOff, YOff, Width, Height, Converted);
   }
   else {
@@ -562,7 +562,7 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
 
     case IL_SHORT:
     case IL_UNSIGNED_SHORT:
-      AlphaShort = (ILushort*)Alpha;
+      AlphaShort = (ILushort*)(void*)Alpha;
       for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
         AlphaShort[j] = ((ILushort*)TempImage->Data)[i];
       break;
@@ -570,13 +570,13 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
     case IL_INT:
     case IL_UNSIGNED_INT:
     case IL_FLOAT:  // Can throw float in here, because it's the same size.
-      AlphaInt = (ILuint*)Alpha;
+      AlphaInt = (ILuint*)(void*)Alpha;
       for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
         AlphaInt[j] = ((ILuint*)TempImage->Data)[i];
       break;
 
     case IL_DOUBLE:
-      AlphaDbl = (ILdouble*)Alpha;
+      AlphaDbl = (ILdouble*)(void*)Alpha;
       for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
         AlphaDbl[j] = ((ILdouble*)TempImage->Data)[i];
       break;
@@ -636,7 +636,7 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
   {
     case IL_BYTE: 
     case IL_UNSIGNED_BYTE: {
-      const ILbyte alpha = (ILubyte)(AlphaValue * IL_MAX_UNSIGNED_BYTE + .5);
+      const ILubyte alpha = (ILubyte)(AlphaValue * IL_MAX_UNSIGNED_BYTE + .5);
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
         Image->Data[i] = alpha;
       break;

@@ -15,78 +15,20 @@
 
 #include "il_internal.h"
 
-#define TGA_MAX_RUN 128
-#define SGI_MAX_RUN 127
-#define BMP_MAX_RUN 127
+//
+// Rle compression
+//
 
-#ifdef IL_RLE_C
-#undef NOINLINE
-#undef INLINE
-#define INLINE
-#endif
+#define   IL_TGACOMP 0x01
+#define   IL_PCXCOMP 0x02
+#define   IL_SGICOMP 0x03
+#define   IL_BMPCOMP 0x04
 
-#ifndef NOINLINE
-INLINE ILuint GetPix(ILubyte *p, ILuint bpp) {
-	ILuint Pixel;
-	Pixel = (ILuint)*p++;
-	
-	while( bpp-- > 1 ) {
-		Pixel <<= 8;
-		Pixel |= (ILuint)*p++;
-	}
-	return Pixel;
-}
+#define   TGA_MAX_RUN 128
+#define   SGI_MAX_RUN 127
+#define   BMP_MAX_RUN 127
 
-INLINE ILint CountDiffPixels(ILubyte *p, ILuint bpp, ILuint pixCnt) {
-	ILuint	pixel;
-	ILuint	nextPixel = 0;
-	ILint	n;
-
-	n = 0;
-	if (pixCnt == 1)
-		return pixCnt;
-	pixel = GetPix(p, bpp);
-
-	while (pixCnt > 1) {
-		p += bpp;
-		nextPixel = GetPix(p, bpp);
-		if (nextPixel == pixel)
-			break;
-		pixel = nextPixel;
-		++n;
-		--pixCnt;
-	}
-
-	if (nextPixel == pixel)
-		return n;
-	return n + 1;
-}
-
-
-INLINE ILint CountSamePixels(ILubyte *p, ILuint bpp, ILuint pixCnt) {
-	ILuint	pixel;
-	ILuint	nextPixel;
-	ILint	n;
-
-	n = 1;
-	pixel = GetPix(p, bpp);
-	pixCnt--;
-
-	while (pixCnt > 0) {
-		p += bpp;
-		nextPixel = GetPix(p, bpp);
-		if (nextPixel != pixel)
-			break;
-		++n;
-		--pixCnt;
-	}
-
-	return n;
-}
-#endif
-
-ILuint GetPix(ILubyte *p, ILuint bpp);
-ILint CountDiffPixels(ILubyte *p, ILuint bpp, ILuint pixCnt);
-ILint CountSamePixels(ILubyte *p, ILuint bpp, ILuint pixCnt);
+ILboolean iRleCompressLine(const ILubyte *ScanLine, ILuint Width, ILubyte Bpp, ILubyte *Dest, ILuint *DestWidth, ILenum CompressMode);
+ILuint    iRleCompress(const ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte *Dest, ILenum CompressMode, ILuint *ScanTable);
 
 #endif//RLE_H

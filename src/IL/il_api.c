@@ -569,7 +569,7 @@ void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
   iGetiv(Image, Mode, &Temp, 1);
   iUnlockImage(Image);  
 
-  *Param = Temp;
+  *Param = Temp ? IL_TRUE : IL_FALSE;
 }
 
 
@@ -651,7 +651,7 @@ ILfloat ILAPIENTRY ilGetFloatImage(ILuint ImageName, ILenum Mode) {
  * @ingroup state
  */
 ILuint ILAPIENTRY ilGetFloatv(ILenum Mode, ILfloat *Param) {
-  SIMPLE_FUNC(Image, ILuint, iGetfv(Image, Mode, Param, 0));
+  SIMPLE_FUNC(Image, ILuint, iGetfv(Image, Mode, Param, -1));
 }
 
 /**
@@ -747,7 +747,6 @@ ILuint ILAPIENTRY ilGetIntegerv(ILenum Mode, ILint *Param) {
  * IL_PNG_ALPHA_INDEX     | RW  | -1                    | Define a colour index as transparent, saved in the tRNS chunk.
  * IL_PNG_INTERLACE       | RW  | IL_FALSE              | Use interlacing when writing PNG files.
  * IL_SGI_RLE             | RW  | IL_FALSE              | Use RLE when writing SGI files.
- * IL_TGA_CREATE_STAMP    | RW
  * IL_TGA_RLE             | RW  | IL_FALSE              | Use RLE when writing Targa files.
  * IL_VTF_COMP            | RW  | IL_DXT_NO_COMP        | Compression to use when writing VTF files, can be IL_DXT_NO_COMP, IL_DXT1, IL_DXT3, IL_DXT4, IL_DXT5.
  *
@@ -1153,11 +1152,10 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
  * IL_PNM, IL_PSD, IL_PSP, IL_PXR, IL_ROT, IL_SGI, IL_SUN, IL_TEXTURE, IL_TGA, IL_TIF, IL_TPL,
  * IL_UTX, IL_VTF, IL_WAL, IL_WBMP, IL_XPM, IL_RAW, IL_JASC_PAL and IL_TYPE_UNKNOWN.
  * If IL_TYPE_UNKNOWN is specified, ilLoadFuncs fails.
- * @param File File stream to load from.
  * @return Boolean value of failure or success.  Returns IL_FALSE if loading fails.
  * @ingroup file
  */
-ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
+ILboolean ILAPIENTRY ilLoadFuncs(ILenum Type) {
   ILimage *Image;
   ILboolean Result;
 
@@ -1170,10 +1168,10 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum type) {
     return IL_FALSE;
   }
 
-  if (type == IL_TYPE_UNKNOWN)
-    type = iDetermineTypeFuncs(Image);
+  if (Type == IL_TYPE_UNKNOWN)
+    Type = iDetermineTypeFuncs(Image);
 
-  Result = iLoadFuncs2(Image, type);
+  Result = iLoadFuncs2(Image, Type);
   iUnlockImage(Image);
 
   return Result;
@@ -1518,8 +1516,8 @@ void ILAPIENTRY ilResetWrite() {
  * @return Boolean value of failure or success.  Returns IL_FALSE if saving failed.
  * @ingroup file
  */
-ILboolean ILAPIENTRY ilSave(ILenum type, ILconst_string FileName) {
-  SIMPLE_FUNC(Image, ILboolean, iSave(Image, type, FileName));
+ILboolean ILAPIENTRY ilSave(ILenum Type, ILconst_string FileName) {
+  SIMPLE_FUNC(Image, ILboolean, iSave(Image, Type, FileName));
 }
 
 /**
@@ -1656,7 +1654,7 @@ void ILAPIENTRY ilSetFloat(ILenum Mode, ILfloat Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetfv(Image, Mode, &Param, 1);
+  iSetfv(Image, Mode, &Param);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1671,7 +1669,7 @@ void ILAPIENTRY ilSetFloatv(ILenum Mode, ILfloat *Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetfv(Image, Mode, Param, 0);
+  iSetfv(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1686,7 +1684,7 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetiv(Image, Mode, &Param, 1);
+  iSetiv(Image, Mode, &Param);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1701,7 +1699,7 @@ void ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetiv(Image, Mode, Param, 0);
+  iSetiv(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
 }
@@ -1847,10 +1845,15 @@ ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILuby
 /**
  * Sets the currently bound image data. Like ilTexImage but from 
  * DXTC compressed data.
+ * @param Width Specifies the new image width.  This cannot be 0.
+ * @param Height Specifies the new image height.  This cannot be 0.
+ * @param Depth Specifies the new image depth.  This cannot be 0.
+ * @param DxtFormat Describes the DXT compression data format.
+ * @param Data The DTX compressed pixel data.
  * @ingroup image_manip
  */
-ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILint w, ILint h, ILint d, ILenum DxtFormat, const ILubyte* data) {
-  SIMPLE_FUNC(Image, ILboolean, iTexImageDxtc(Image, w, h, d, DxtFormat, data));
+ILAPI ILboolean ILAPIENTRY ilTexImageDxtc(ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, const ILubyte* Data) {
+  SIMPLE_FUNC(Image, ILboolean, iTexImageDxtc(Image, Width, Height, Depth, DxtFormat, Data));
 }
 
 /**

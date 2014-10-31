@@ -128,7 +128,7 @@ cleanup_error:
 }
 
 
-ILconst_string iFormatExtsWAL[] = { 
+static ILconst_string iFormatExtsWAL[] = { 
 	IL_TEXT("wal"), 
 	NULL 
 };

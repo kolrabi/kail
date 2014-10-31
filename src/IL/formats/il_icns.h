@@ -21,18 +21,18 @@
 typedef struct ICNSHEAD
 {
 	char		Head[4];	// Must be 'ICNS'
-	ILint		Size;		// Total size of the file (including header)
+	ILuint		Size;		// Total size of the file (including header)
 } ICNSHEAD;
 
 typedef struct ICNSDATA
 {
 	char		ID[4];		// Identifier ('it32', 'il32', etc.)
-	ILint		Size;		// Total size of the entry (including identifier)
+	ILuint		Size;		// Total size of the entry (including identifier)
 } ICNSDATA;
 
 #include "pack_pop.h"
 
 ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlpha, 
-	ILint Width, ICNSDATA *Entry, ILimage **Image);
+	ILuint Width, ICNSDATA *Entry, ILimage **Image);
 
 #endif//ICNS_H

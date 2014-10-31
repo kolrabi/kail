@@ -69,7 +69,8 @@ static ILboolean iIsValidRot(SIO *io) {
 
 // Internal function used to load the ROT.
 static ILboolean iLoadRotInternal(ILimage *Image) {
-	ILuint    Channels, CompSize;
+	ILubyte   Channels;
+	ILuint    CompSize;
 	ILuint		MipSize, MipWidth, MipHeight;
 	ILenum		FormatIL;
 	ILubyte		*CompData = NULL;
@@ -289,14 +290,14 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsROT[] = { 
+static ILconst_string iFormatExtsROT[] = { 
 	IL_TEXT("rot"), 
 	NULL 
 };
 
 ILformat iFormatROT = { 
 	/* .Validate = */ iIsValidRot, 
-    /* .Load     = */ iLoadRotInternal, 
+  /* .Load     = */ iLoadRotInternal, 
 	/* .Save     = */ NULL, 
 	/* .Exts     = */ iFormatExtsROT
 };

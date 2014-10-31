@@ -65,8 +65,9 @@ typedef struct BLP2HEAD
 static ILboolean 
 iIsValidBLP1(SIO *io) {
   ILubyte Sig[4];
-  ILint Read = io->read(io->handle, &Sig, 1, 4);
-  io->seek(io->handle, -Read, IL_SEEK_CUR);
+  ILuint Pos  = SIOtell(io);
+  ILuint Read = SIOread(io, &Sig, 1, 4);
+  SIOseek(io, Pos, IL_SEEK_SET);
   if (Read!=4) return IL_FALSE;
 
   return memcmp(Sig, "BLP1", 4) == 0;
@@ -75,8 +76,9 @@ iIsValidBLP1(SIO *io) {
 static ILboolean 
 iIsValidBLP2(SIO *io) {
   ILubyte Sig[4];
-  ILint Read = io->read(io->handle, &Sig, 1, 4);
-  io->seek(io->handle, -Read, IL_SEEK_CUR);
+  ILuint Pos  = SIOtell(io);
+  ILuint Read = SIOread(io, &Sig, 1, 4);
+  SIOseek(io, Pos, IL_SEEK_SET);
   if (Read!=4) return IL_FALSE;
 
   return memcmp(Sig, "BLP2", 4) == 0;
@@ -89,8 +91,8 @@ iIsValidBLP(SIO *io) {
 
 static ILboolean
 iGetBlp1Head(SIO *io, BLP1HEAD *Header) {
-    ILuint i;
-  ILint Read = SIOread(io, Header, 1, sizeof(*Header));
+  ILuint i;
+  ILuint Read = SIOread(io, Header, 1, sizeof(*Header));
 
   if (Read != sizeof(*Header))
     return IL_FALSE;
@@ -347,9 +349,10 @@ iLoadBlp1(ILimage *TargetImage) {
 static ILboolean 
 iGetBlp2Head(SIO *io, BLP2HEAD *Header) {
   ILuint i;
-  ILint Read = SIOread(io, Header, 1, sizeof(*Header));
+  ILuint Pos  = SIOtell(io);
+  ILuint Read = SIOread(io, Header, 1, sizeof(*Header));
   if (Read != sizeof(*Header)) {
-    SIOseek(io, -Read, IL_SEEK_CUR); // Go back the size of the BLP2 header, since we tried reading it.
+    SIOseek(io, Pos, IL_SEEK_SET);
     return IL_FALSE;
   }
 
@@ -399,8 +402,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
   BLP2HEAD  Header;
   ILubyte   *CompData;
   ILimage   *Image = TargetImage;
-  ILuint    Mip, j, x, CompSize, AlphaSize, AlphaOff;
-  ILint     y;
+  ILuint    Mip, j, x, y, CompSize, AlphaSize, AlphaOff;
   ILboolean BaseCreated = IL_FALSE;
   ILubyte   *DataAndAlpha = NULL, *Palette = NULL, AlphaMask;
   SIO *     io = &TargetImage->io;
@@ -435,7 +437,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
             break;
           if (Image->Width == 1 && Image->Height == 1)  // Already at the smallest mipmap (1x1), so we are done.
             break;
-          if (Header.MipOffsets[Mip] == 0 || Header.MipLengths == 0)  // No more mipmaps in the file.
+          if (Header.MipOffsets[Mip] == 0 || Header.MipLengths[Mip] == 0)  // No more mipmaps in the file.
             break;
         }
 
@@ -552,14 +554,14 @@ iLoadBlpInternal(ILimage *TargetImage) {
             AlphaOff = 0;
             // The really strange thing about this alpha data is that it is upside-down when compared to the
             //   regular color-indexed data, so we have to flip it.
-            for (y = Image->Height - 1; y >= 0; y--) {
+            for (y = 0; y < Image->Height; y++) {
               for (x = 0; x < Image->Width; x++) {
                 if (AlphaMask == 0) {  // Shifting it past the highest bit makes it 0, since we only have 1 byte.
                   AlphaOff++;        // Move along the alpha buffer.
                   AlphaMask = 0x01;  // Reset the alpha mask.
                 }
                 // This is just 1-bit alpha, so it is either on or off.
-                Image->Data[Image->Bps * y + x * 4 + 3] = DataAndAlpha[AlphaOff] & AlphaMask ? 0xFF : 0x00;
+                Image->Data[Image->Bps * (Image->Height-1-y) + x * 4 + 3] = DataAndAlpha[AlphaOff] & AlphaMask ? 0xFF : 0x00;
                 AlphaMask <<= 1;
               }
             }
@@ -681,7 +683,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
   return IL_TRUE;
 }
 
-ILconst_string iFormatExtsBLP[] = { 
+static ILconst_string iFormatExtsBLP[] = { 
   IL_TEXT("blp"), 
   NULL 
 };

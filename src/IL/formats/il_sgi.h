@@ -21,7 +21,7 @@ typedef struct iSgiHeader
 {
 	ILshort		MagicNum;	// IRIS image file magic number
 	ILbyte		Storage;	// Storage format
-	ILbyte		Bpc;			// Number of bytes per pixel channel
+	ILubyte		Bpc;			// Number of bytes per pixel channel
 	ILushort	Dim;			// Number of dimensions
 											//  1: single channel, 1 row with XSize pixels
 											//  2: single channel, XSize*YSize pixels

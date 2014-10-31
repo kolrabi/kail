@@ -125,7 +125,7 @@ static ILboolean iLoadMdlInternal(ILimage *Image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsMDL[] = { 
+static ILconst_string iFormatExtsMDL[] = { 
   IL_TEXT("mdl"), 
   NULL 
 };

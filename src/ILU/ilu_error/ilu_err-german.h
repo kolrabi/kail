@@ -16,7 +16,7 @@
 
 #include "ilu_internal.h"
 
-ILconst_string iluErrorStringsGerman[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] = {
+static ILconst_string iluErrorStringsGerman[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] = {
 	IL_TEXT("Ung\u00fcltiger Enumerator"),
   IL_TEXT("Kein Speicher verf\u00fcgbar"),
 	IL_TEXT("Das Format wird noch nicht unterst\u00fctzt"),
@@ -37,7 +37,7 @@ ILconst_string iluErrorStringsGerman[IL_FILE_READ_ERROR - IL_INVALID_ENUM + 1] =
 	IL_TEXT("Fehler beim Lesen der Datei")
 };
 
-ILconst_string iluLibErrorStringsGerman[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 1] = {
+static ILconst_string iluLibErrorStringsGerman[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 1] = {
 	IL_TEXT("Fehler in der gif Bibliothek"),
 	IL_TEXT("Fehler in der jpeg Bibliothek"),
 	IL_TEXT("Fehler in der png Bibliothek"),
@@ -47,7 +47,7 @@ ILconst_string iluLibErrorStringsGerman[IL_LIB_EXR_ERROR - IL_LIB_GIF_ERROR + 1]
 	IL_TEXT("Fehler in der exr Bibliothek")
 };
 
-ILconst_string iluMiscErrorStringsGerman[2] = {
+static ILconst_string iluMiscErrorStringsGerman[2] = {
 	IL_TEXT("Kein Fehler"),
 	IL_TEXT("Unbekannter Fehler")
 };

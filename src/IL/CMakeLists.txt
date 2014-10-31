@@ -156,6 +156,7 @@ IF                      ( WIN32 )
   # Windows programs need a DevIL.dll not libIL.dll
   SET                   ( LIBNAME DevIL )
   ADD_LIBRARY           ( ${LIBNAME} ${SOURCES} )
+  SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES IMPORT_PREFIX "" )
   SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES PREFIX "" )
 ELSE                    ()
   SET                   ( LIBNAME IL )
@@ -164,8 +165,9 @@ ENDIF                   ()
 
 IF                      ( MINGW )
   SET_TARGET_PROPERTIES ( ${LIBNAME} PROPERTIES LINK_FLAGS
-                          "-Wl,--output-def,${CMAKE_BINARY_DIR}/DevIL.def")
-  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/DevIL.def DESTINATION lib)  
+                          "-Wl,--output-def,${CMAKE_CURRENT_BINARY_DIR}/DevIL.def -Wl,--out-implib,${CMAKE_CURRENT_BINARY_DIR}/DevIL.dll.a")
+  INSTALL               ( FILES ${CMAKE_CURRENT_BINARY_DIR}/DevIL.def DESTINATION lib)  
+  INSTALL               ( FILES ${CMAKE_CURRENT_BINARY_DIR}/DevIL.dll.a DESTINATION lib)  
 ENDIF                   ()
 
 TARGET_LINK_LIBRARIES   ( ${LIBNAME} ${LINK_LIBS} )

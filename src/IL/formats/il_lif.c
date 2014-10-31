@@ -102,7 +102,7 @@ static ILboolean iLoadLifInternal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsLIF[] = { 
+static ILconst_string iFormatExtsLIF[] = { 
   IL_TEXT("lif"), 
   NULL 
 };

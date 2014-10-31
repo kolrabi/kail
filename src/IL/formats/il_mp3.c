@@ -14,14 +14,16 @@
 #ifndef IL_NO_MP3
 #include "il_jpeg.h"
 
+#include "pack_push.h"
 typedef struct MP3HEAD
 {
-	char	Signature[3];
-	ILubyte	VersionMajor;
-	ILubyte	VersionMinor;
-	ILubyte	Flags;
-	ILuint	Length;
+  char  Signature[3];
+  ILubyte VersionMajor;
+  ILubyte VersionMinor;
+  ILubyte Flags;
+  ILuint  Length;
 } MP3HEAD;
+#include "pack_pop.h"
 
 #define MP3_NONE 0
 #define MP3_JPG  1
@@ -34,152 +36,149 @@ ILboolean iLoadPngInternal(ILimage* image);
 ILboolean iLoadJpegInternal(ILimage* image);
 
 static ILuint GetSynchInt(SIO* io) {
-	ILuint SynchInt;
+  ILuint SynchInt = GetBigUInt(io);
+  SynchInt = ((SynchInt & 0x7F000000) >> 3) | ((SynchInt & 0x7F0000) >> 2)
+           | ((SynchInt &     0x7F00) >> 1) |  (SynchInt &     0x7F);
 
-	SynchInt = GetBigUInt(io);
-
-	SynchInt = ((SynchInt & 0x7F000000) >> 3) | ((SynchInt & 0x7F0000) >> 2)
-				| ((SynchInt & 0x7F00) >> 1) | (SynchInt & 0x7F);
-
-	return SynchInt;
+  return SynchInt;
 }
 
 
 // Internal function used to get the MP3 header from the current file.
-ILboolean iGetMp3Head(SIO* io, MP3HEAD *Header) {
-	if (io->read(io->handle, Header->Signature, 3, 1) != 1)
-		return IL_FALSE;
-	Header->VersionMajor = io->getchar(io->handle);
-	Header->VersionMinor = io->getchar(io->handle);
-	Header->Flags = io->getchar(io->handle);
-	Header->Length = GetSynchInt(io);
+static ILboolean iGetMp3Head(SIO* io, MP3HEAD *Header) {
+  if (SIOread(io, Header->Signature, 3, 1) != 1)
+    return IL_FALSE;
+  Header->VersionMajor  = (ILubyte)SIOgetc(io);
+  Header->VersionMinor  = (ILubyte)SIOgetc(io);
+  Header->Flags         = (ILubyte)SIOgetc(io);
+  Header->Length        = GetSynchInt(io);
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 // Internal function to get the header and check it.
 static ILboolean iIsValidMp3(SIO* io) {
-	MP3HEAD		Header;
-	ILuint		Pos = io->tell(io->handle);
+  MP3HEAD   Header;
+  ILuint    Pos = io->tell(io->handle);
 
-	if (!iGetMp3Head(io, &Header))
-		return IL_FALSE;
-	// The length of the header varies, so we just go back to the original position.
-	io->seek(io->handle, Pos, IL_SEEK_CUR);
+  if (!iGetMp3Head(io, &Header))
+    return IL_FALSE;
+  // The length of the header varies, so we just go back to the original position.
+  io->seek(io->handle, Pos, IL_SEEK_CUR);
 
-	return iCheckMp3(&Header);
+  return iCheckMp3(&Header);
 }
 
 
 // Internal function used to check if the HEADER is a valid MP3 header.
 static ILboolean iCheckMp3(MP3HEAD *Header) {
-	if (strncmp(Header->Signature, "ID3", 3))
-		return IL_FALSE;
-	if (Header->VersionMajor != 3 && Header->VersionMinor != 4)
-		return IL_FALSE;
+  if (strncmp(Header->Signature, "ID3", 3))
+    return IL_FALSE;
+  if (Header->VersionMajor != 3 && Header->VersionMinor != 4)
+    return IL_FALSE;
 
-	return IL_TRUE;
+  return IL_TRUE;
 }
 
 static ILuint iFindMp3Pic(SIO* io, MP3HEAD *Header) {
-	char	ID[4];
-	ILuint	FrameSize;
-	//ILubyte	TextEncoding;
-	ILubyte	MimeType[66], Description[66];
-	// ILubyte	PicType;
-	ILuint	i;
-	ILuint	Type = MP3_NONE;
+  char  ID[4];
+  ILuint  FrameSize;
+  //ILubyte TextEncoding;
+  ILubyte MimeType[66], Description[66];
+  // ILubyte  PicType;
+  ILuint  i;
+  ILuint  Type = MP3_NONE;
 
-	do {
-		if (io->read(io->handle, ID, 4, 1) != 1)
-			return MP3_NONE;
-		if (Header->VersionMajor == 3)
-			FrameSize = GetBigUInt(io);
-		else
-			FrameSize = GetSynchInt(io);
+  do {
+    if (io->read(io->handle, ID, 4, 1) != 1)
+      return MP3_NONE;
+    if (Header->VersionMajor == 3)
+      FrameSize = GetBigUInt(io);
+    else
+      FrameSize = GetSynchInt(io);
 
-		GetBigUShort(io);  // Skip the flags.
+    GetBigUShort(io);  // Skip the flags.
 
-		//@TODO: Support multiple APIC entries in an mp3 file.
-		if (!strncmp(ID, "APIC", 4)) {
-			//@TODO: Use TextEncoding properly - UTF16 strings starting with FFFE or FEFF.
-			//TextEncoding = io->getchar(io->handle);
-			// Get the MimeType (read until we hit 0).
-			for (i = 0; i < 65; i++) {
-				MimeType[i] = io->getchar(io->handle);
-				if (MimeType[i] == 0)
-					break;
-			}
-			// The MimeType must be terminated by 0 in the file by the specs.
-			if (MimeType[i] != 0)
-				return MP3_NONE;
-			if (!strcmp((const char*)MimeType, "image/jpeg"))
-				Type = MP3_JPG;
-			else if (!strcmp((const char*)MimeType, "image/png"))
-				Type = MP3_PNG;
-			else
-				Type = MP3_NONE;
+    //@TODO: Support multiple APIC entries in an mp3 file.
+    if (!strncmp(ID, "APIC", 4)) {
+      //@TODO: Use TextEncoding properly - UTF16 strings starting with FFFE or FEFF.
+      //TextEncoding = io->getchar(io->handle);
+      // Get the MimeType (read until we hit 0).
+      for (i = 0; i < 65; i++) {
+        MimeType[i] = (ILubyte)SIOgetc(io);
+        if (MimeType[i] == 0)
+          break;
+      }
+      // The MimeType must be terminated by 0 in the file by the specs.
+      if (MimeType[i] != 0)
+        return MP3_NONE;
+      if (!strcmp((const char*)MimeType, "image/jpeg"))
+        Type = MP3_JPG;
+      else if (!strcmp((const char*)MimeType, "image/png"))
+        Type = MP3_PNG;
+      else
+        Type = MP3_NONE;
 
-			// PicType = io->getchar(io->handle);  // Whether this is a cover, band logo, etc.
+      // PicType = io->getchar(io->handle);  // Whether this is a cover, band logo, etc.
 
-			// Skip the description.
-			for (i = 0; i < 65; i++) {
-				Description[i] = io->getchar(io->handle);
-				if (Description[i] == 0)
-					break;
-			}
-			if (Description[i] != 0)
-				return MP3_NONE;
-			return Type;
-		}
-		else {
-			io->seek(io->handle, FrameSize, IL_SEEK_CUR);
-		}
+      // Skip the description.
+      for (i = 0; i < 65; i++) {
+        Description[i] = (ILubyte)SIOgetc(io);
+        if (Description[i] == 0)
+          break;
+      }
+      if (Description[i] != 0)
+        return MP3_NONE;
+      return Type;
+    }
+    else {
+      io->seek(io->handle, FrameSize, IL_SEEK_CUR);
+    }
 
-		//if (!strncmp(MimeType, "
-	} while (!io->eof(io->handle) && io->tell(io->handle) < Header->Length);
+    //if (!strncmp(MimeType, "
+  } while (!io->eof(io->handle) && io->tell(io->handle) < Header->Length);
 
-	return Type;
+  return Type;
 }
 
 
 // Internal function used to load the MP3.
 static ILboolean iLoadMp3Internal(ILimage* image) {
-	MP3HEAD	Header;
-	ILuint	Type;
+  MP3HEAD Header;
+  ILuint  Type;
 
-	if (image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
+  if (image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
 
-	if (!iGetMp3Head(&image->io, &Header))
-		return IL_FALSE;
-	if (!iCheckMp3(&Header))
-		return IL_FALSE;
-	Type = iFindMp3Pic(&image->io, &Header);
-	
-	switch (Type)
-	{
+  if (!iGetMp3Head(&image->io, &Header))
+    return IL_FALSE;
+  if (!iCheckMp3(&Header))
+    return IL_FALSE;
+  Type = iFindMp3Pic(&image->io, &Header);
+  
+  switch (Type)
+  {
 #ifndef IL_NO_JPG
-		case MP3_JPG:
-			return iLoadJpegInternal(image);
+    case MP3_JPG:
+      return iLoadJpegInternal(image);
 #endif//IL_NO_JPG
 
 #ifndef IL_NO_PNG
-		case MP3_PNG:
-			return iLoadPngInternal(image);
+    case MP3_PNG:
+      return iLoadPngInternal(image);
 #endif//IL_NO_PNG
 
-		// Either a picture was not found, or the MIME type was not recognized.
-		default:
-			iSetError(IL_INVALID_FILE_HEADER);
-	}
+    // Either a picture was not found, or the MIME type was not recognized.
+    default:
+      iSetError(IL_INVALID_FILE_HEADER);
+  }
 
-	return IL_FALSE;
+  return IL_FALSE;
 }
 
-ILconst_string iFormatExtsMP3[] = { 
+static ILconst_string iFormatExtsMP3[] = { 
   IL_TEXT("mp3"), 
   NULL 
 };

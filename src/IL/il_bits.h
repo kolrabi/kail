@@ -23,15 +23,15 @@ typedef struct BITFILE
   SIO *     io;
   ILuint    BitPos;
   ILint     ByteBitOff;
-  ILubyte   Buff;
+  ILuint    Buff;
 } BITFILE;
 
 // Functions for reading bits from a file
 BITFILE* bitfile(SIO *io);
 ILint    bclose(BITFILE *BitFile);
-ILint    btell(BITFILE *BitFile);
+ILuint   btell(BITFILE *BitFile);
 ILint    bseek(BITFILE *BitFile, ILint Offset, ILuint Mode);
-ILint    bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
+ILuint    bread(void *Buffer, ILuint Size, ILuint Number, BITFILE *BitFile);
 
 // Useful macros for manipulating bits
 #define SetBits(var, bits)    (var |= bits)

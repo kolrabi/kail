@@ -37,7 +37,7 @@ static ILboolean iLoadTextureInternal(ILimage* image) {
   return iLoadDdsInternal(image);
 }
 
-ILconst_string iFormatExtsTEXTURE[] = { 
+static ILconst_string iFormatExtsTEXTURE[] = { 
   IL_TEXT("texture"), 
   NULL 
 };

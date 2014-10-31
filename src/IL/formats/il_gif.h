@@ -17,10 +17,6 @@
 
 #include "il_internal.h"
 
-#if __cplusplus
-extern "C" {
-#endif
-
 #define GIF_VERSION87A "GIF87a"
 #define GIF_VERSION89A "GIF89a"
 
@@ -59,8 +55,7 @@ enum {
 	GifDisposal_Restore                   =    3,
 };
 
-#pragma pack(push)
-#pragma pack(1)
+#include "pack_push.h"
 
 typedef struct GifSignature {
 	char Magic[6];
@@ -87,9 +82,6 @@ typedef struct GifImageDescriptor {
 	ILushort Height;
 	ILubyte  Flags;
 } GifImageDescriptor;
-
-#pragma pack(pop)
-
 
 typedef struct GifLoadingContext {
 	ILimage * Target;
@@ -136,8 +128,6 @@ typedef struct LZWInputStream {
 	ILuint    OutputBufferLen;
 } LZWInputStream;
 
-#if __cplusplus
-}
-#endif
+#include "pack_pop.h"
 
 #endif//GIF_H

@@ -5,7 +5,7 @@
 #include <limits.h>
 
 
-ILboolean iCrop2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, ILuint Height) {
+static ILboolean iCrop2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, ILuint Height) {
   ILuint  x, y, c, OldBps;
   ILubyte *Data;
   ILenum  Origin;
@@ -51,7 +51,7 @@ ILboolean iCrop2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width, ILuint
 }
 
 
-ILboolean iCrop3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth)
+static ILboolean iCrop3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth)
 {
   ILuint  x, y, z, c, OldBps, OldPlane;
   ILubyte *Data;
@@ -97,6 +97,7 @@ ILboolean iCrop3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint 
 
   return IL_TRUE;
 }
+
 
 ILboolean iCrop(ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth) {
   if (ZOff <= 1)
@@ -208,17 +209,6 @@ ILboolean iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height, ILuint Dep
   }
 
   ifree(Data);
-
-  return IL_TRUE;
-}
-
-ILboolean ILAPIENTRY iFlipImage(ILimage *image) {
-  if( image == NULL ) {
-    iSetError(ILU_ILLEGAL_OPERATION);
-    return IL_FALSE;
-  }
-
-  iFlipBuffer(image->Data,image->Depth,image->Bps,image->Height);
 
   return IL_TRUE;
 }
@@ -408,14 +398,14 @@ ILboolean iWave(ILimage *Image, ILfloat Angle) {
 
     if (Delta < 0) {
       Delta = -Delta;
-      memcpy(TempBuff, DataPtr, Image->Bpp * Delta);
-      memcpy(DataPtr, DataPtr + Image->Bpp * Delta, Image->Bpp * (Image->Width - Delta));
-      memcpy(DataPtr + Image->Bpp * (Image->Width - Delta), TempBuff, Image->Bpp * Delta);
+      memcpy(TempBuff, DataPtr, Image->Bpp * (ILuint)Delta);
+      memcpy(DataPtr, DataPtr + Image->Bpp * (ILuint)Delta, Image->Bpp * (Image->Width - (ILuint)Delta));
+      memcpy(DataPtr + Image->Bpp * (Image->Width - (ILuint)Delta), TempBuff, Image->Bpp * (ILuint)Delta);
     }
     else if (Delta > 0) {
-      memcpy(TempBuff, DataPtr, Image->Bpp * (Image->Width - Delta));
-      memcpy(DataPtr, DataPtr + Image->Bpp * (Image->Width - Delta), Image->Bpp * Delta);
-      memcpy(DataPtr + Image->Bpp * Delta, TempBuff, Image->Bpp * (Image->Width - Delta));
+      memcpy(TempBuff, DataPtr, Image->Bpp * (Image->Width - (ILuint)Delta));
+      memcpy(DataPtr, DataPtr + Image->Bpp * (Image->Width - (ILuint)Delta), Image->Bpp * (ILuint)Delta);
+      memcpy(DataPtr + Image->Bpp * (ILuint)Delta, TempBuff, Image->Bpp * (Image->Width - (ILuint)Delta));
     }
   }
 
@@ -424,6 +414,7 @@ ILboolean iWave(ILimage *Image, ILfloat Angle) {
   return IL_TRUE;
 }
 
+/*
 ILboolean ILAPIENTRY iSwapColours(ILimage *img) { 
   if( img == NULL ) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -469,7 +460,7 @@ ILboolean ILAPIENTRY iSwapColours(ILimage *img) {
   iSetError(ILU_INTERNAL_ERROR);
   return IL_FALSE;
 }
-
+*/
 
 typedef struct BUCKET { ILuint Colours;  struct BUCKET *Next; } BUCKET;
 
@@ -613,7 +604,8 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
   ILfloat Result = 0.0, Sum1 = 0.0, Sum2 = 0.0;
   ILimage *Image1, *Image2;
   ILuint  Size, i;
-  ILuint Bpp, Format;
+  ILubyte Bpp;
+  ILenum Format;
 
   // Same image, so return true.
   if (Original == Image)
@@ -652,14 +644,14 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
     Sum2 += ((ILfloat*)(Image2->Data))[i] * ((ILfloat*)(Image2->Data))[i];
   }
 
-  Sum1 = sqrt(Sum1);
-  Sum2 = sqrt(Sum2);
+  Sum1 = (ILfloat)(sqrt(Sum1));
+  Sum2 = (ILfloat)(sqrt(Sum2));
 
   for (i = 0; i<Size; i++) {
     Result += ((ILfloat*)Image1->Data)[i]/Sum1 * ((ILfloat*)Image2->Data)[i]/Sum2;
   }
 
-  Result = sqrt(Result);
+  Result = (ILfloat)(sqrt(Result));
 
   iCloseImage(Image1);
   iCloseImage(Image2);
@@ -669,7 +661,8 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
 
 
 ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, const ILubyte *ClearCol) {
-  ILint TolVal, Distance, Dist1, Dist2, Dist3;
+  ILint TolVal;
+  ILint Distance, Dist1, Dist2, Dist3;
   ILuint  i; //, NumPix;
 
   if (Image == NULL) {
@@ -679,7 +672,7 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
 
   if (Tolerance > 1.0f || Tolerance < -1.0f)
     Tolerance = 1.0f;  // Clamp it.
-  TolVal = (ILuint)(fabs(Tolerance) * UCHAR_MAX);  // To be changed.
+  TolVal = (ILint)(fabs(Tolerance) * UCHAR_MAX);  // To be changed.
   // NumPix = Image->Width * Image->Height * Image->Depth;
 
   if (Tolerance <= FLT_EPSILON && Tolerance >= 0) {
@@ -694,7 +687,7 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
           Dist1 = (ILint)Image->Data[i  ] - (ILint)ClearCol[0];
           Dist2 = (ILint)Image->Data[i+1] - (ILint)ClearCol[1];
           Dist3 = (ILint)Image->Data[i+2] - (ILint)ClearCol[2];
-          Distance = (ILint)sqrt((float)(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3));
+          Distance = (ILint)(sqrt(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3));
           if (Distance >= -TolVal && Distance <= TolVal) {
             Image->Data[i] = Red;
             Image->Data[i+1] = Green;
@@ -708,7 +701,7 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
           Dist1 = (ILint)Image->Data[i] - (ILint)ClearCol[0];
           Dist2 = (ILint)Image->Data[i+1] - (ILint)ClearCol[1];
           Dist3 = (ILint)Image->Data[i+2] - (ILint)ClearCol[2];
-          Distance = (ILint)sqrt((float)(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3));
+          Distance = (ILint)(sqrt(Dist1 * Dist1 + Dist2 * Dist2 + Dist3 * Dist3));
           if (Distance >= -TolVal && Distance <= TolVal) {
             Image->Data[i+2] = Red;
             Image->Data[i+1] = Green;

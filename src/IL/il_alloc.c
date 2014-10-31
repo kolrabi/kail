@@ -9,8 +9,6 @@
 //
 //-----------------------------------------------------------------------------
 
-#define __ALLOC_C
-
 // Memory leak detection
 #ifdef _WIN32
   #ifdef _DEBUG 
@@ -79,7 +77,7 @@ void* ILAPIENTRY ialloc(ILsizei Size) {
   }
 
   // store appropriate ifree_ptr for this chunk of memory
-  *Ptr = ifree_ptr;
+  *Ptr = (void*)ifree_ptr;
   return (void*)(Ptr + 1);
 }
 

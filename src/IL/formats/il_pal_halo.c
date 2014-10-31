@@ -44,7 +44,7 @@ typedef struct HALOHEAD
 ILboolean iIsValidHaloPal(SIO *io) {
 	ILuint 		First = SIOtell(io);
 	HALOHEAD  Head;
-	ILubyte   Read = SIOread(io, &Head, 1, sizeof(Head));
+	ILuint    Read = SIOread(io, &Head, 1, sizeof(Head));
 
 	SIOseek(io, First, IL_SEEK_SET);
 
@@ -137,7 +137,7 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsHALO_PAL[] = { 
+static ILconst_string iFormatExtsHALO_PAL[] = { 
 	IL_TEXT("pal"),
   NULL 
 };

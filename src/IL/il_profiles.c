@@ -13,47 +13,20 @@
 #include "il_internal.h"
 #ifndef IL_NO_LCMS
 
-#ifdef PACKAGE_NAME
-#define IL_PACKAGE_NAME PACKAGE_NAME;
-#undef  PACKAGE_NAME
-#endif
-
-#if (!defined(_WIN32) && !defined(_WIN64))
-  #define NON_WINDOWS 1
-
 #ifdef LCMS_NODIRINCLUDE
   #include <lcms2.h>
 #else
   #include <lcms/lcms2.h>
 #endif
-
-#else
-    #ifdef LCMS_NODIRINCLUDE
-      #include <lcms2.h>
-    #else
-      #include <lcms/lcms2.h>
-    #endif
-
-#endif//_WIN32
-
-
-#ifdef PACKAGE_NAME
-#undef PACKAGE_NAME
-#endif
-
-#ifdef IL_PACKAGE_NAME
-#define PACKAGE_NAME IL_PACKAGE_NAME
-#undef  IL_PACKAGE_NAME
-#endif
-
 #endif//IL_NO_LCMS
 
 ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile) {
 #ifndef IL_NO_LCMS
   cmsHPROFILE   hInProfile, hOutProfile;
   cmsHTRANSFORM hTransform;
-  ILubyte     *Temp;
-  ILint     Format=0;
+  ILubyte     * Temp;
+  ILenum        Format=0;
+
 #ifdef _UNICODE
   char AnsiName[512];
 #endif//_UNICODE

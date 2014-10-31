@@ -4,7 +4,7 @@
 #endif 
 
 #cmakedefine IL_UNICODE 1
-#if IL_UNICODE
+#ifdef IL_UNICODE
 #define _UNICODE 1
 #define UNICODE 1
 #endif
@@ -315,6 +315,8 @@
 
 /* Define if you have libsquish installed */
 #cmakedefine IL_USE_DXTC_SQUISH
+
+#cmakedefine ALTIVEC_GCC 1
 
 /* TODO */
 #if 0

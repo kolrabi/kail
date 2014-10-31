@@ -18,15 +18,12 @@
 #include "ilu_states.h"
 
 
-ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
-ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
-ILimage *iluScale3DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 
 ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter)
 {
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
-		return IL_FALSE;
+		return NULL;
 	}
 
 	if (Filter == ILU_NEAREST)

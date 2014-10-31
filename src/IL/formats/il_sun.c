@@ -40,18 +40,17 @@ typedef struct SUNHEAD
 #include "pack_pop.h"
 
 // Data storage types
-#define IL_SUN_OLD      0x00
-#define IL_SUN_STANDARD 0x01
+// #define IL_SUN_OLD      0x00
+// #define IL_SUN_STANDARD 0x01
 #define IL_SUN_BYTE_ENC 0x02
-#define IL_SUN_RGB      0x03
-#define IL_SUN_TIFF     0x04
-#define IL_SUN_IFF      0x05
-#define IL_SUN_EXPER    0xFFFF  // Experimental, not supported.
+#define IL_SUN_RGB      0x03// #define IL_SUN_TIFF     0x04
+// #define IL_SUN_IFF      0x05
+// #define IL_SUN_EXPER    0xFFFF  // Experimental, not supported.
 
 // Colormap types
 #define IL_SUN_NO_MAP   0x00
 #define IL_SUN_RGB_MAP  0x01
-#define IL_SUN_RAW_MAP  0x02
+// #define IL_SUN_RAW_MAP  0x02
 
 // Internal function used to get the Sun header from the current file.
 static ILuint iGetSunHead(SIO* io, SUNHEAD *Header)
@@ -96,13 +95,11 @@ static ILboolean iCheckSun(SUNHEAD *Header) {
 // Internal function to get the header and check it.
 static ILboolean iIsValidSun(SIO* io) {
   SUNHEAD Head;
-  ILint read = iGetSunHead(io, &Head);
-  SIOseek(io, -read, IL_SEEK_CUR);
+  ILuint Start = SIOtell(io);
+  ILuint read = iGetSunHead(io, &Head);
+  SIOseek(io, Start, IL_SEEK_SET);
 
-  if (read == sizeof(Head))
-    return iCheckSun(&Head);
-  else
-    return IL_FALSE;
+  return read == sizeof(Head) && iCheckSun(&Head);
 }
 
 /*
@@ -141,7 +138,7 @@ static ILuint iSunGetRle(ILimage* image, ILubyte *Data, ILuint Length) {
   return i;
 }
 */
-static void writeSunPixels(ILimage* image, ILuint *dataOffset, ILubyte value, int count) {
+static void writeSunPixels(ILimage* image, ILuint *dataOffset, ILubyte value, ILuint count) {
   if (*dataOffset < image->SizeOfData) {
     if (*dataOffset + count > image->SizeOfData)
       count = image->SizeOfData - *dataOffset;
@@ -167,17 +164,17 @@ static void iSunDecodeRle(ILimage* image) {
 
   while (dataOffset < image->SizeOfData) {
     ILint res = SIOgetc(io);
-    ILubyte Flag = res;
+    ILubyte Flag = (ILubyte)res;
     if (res == IL_EOF) break;
     
     if (Flag == 0x80) {
-      ILuint count = SIOgetc(io);
+      ILubyte count = (ILubyte)SIOgetc(io);
       if (count == 0) {
         // Output 0x80 once (input values of 0x80 are encoded as 0x8000)
         writeSunPixel(image, &dataOffset, 0x80);
       } else {
         // Here we have a run.
-        ILubyte value = SIOgetc(io);
+        ILubyte value = (ILubyte)SIOgetc(io);
         writeSunPixels(image, &dataOffset, value, count+1);
       }
     } else {
@@ -278,12 +275,11 @@ static ILboolean iLoadSunInternal(ILimage* image) {
           return IL_FALSE;
       }
       else {  // Colour-mapped image
-        int colCount;
+        ILuint colCount;
         ILubyte* r;
         ILubyte* g;
         ILubyte* b;
         ILubyte* sunPalette;
-        ILint i;
 
         if (!iTexImage(image, Header.Width, Header.Height, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL))
           return IL_FALSE;
@@ -393,7 +389,7 @@ static ILboolean iLoadSunInternal(ILimage* image) {
   return IL_TRUE;
 }
 
-ILconst_string iFormatExtsSUN[] = { 
+static ILconst_string iFormatExtsSUN[] = { 
   IL_TEXT("sun"), 
   IL_TEXT("ras"), 
   IL_TEXT("im1"), 

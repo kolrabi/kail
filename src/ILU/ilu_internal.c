@@ -58,11 +58,10 @@ ILU_TLS_DATA * iGetTLSDataILU() {
 #endif
 }
 
-void iInitThreads(void) {
+void iInitThreads_ilu(void) {
   #if IL_THREAD_SAFE_PTHREAD
     pthread_key_create(&iTlsKeyILU, &iFreeTLSData);
   #elif IL_THREAD_SAFE_WIN32
     iTlsKeyILU = TlsAlloc();
   #endif
-  iTrace("---- ILU TLS key: %08x", iTlsKeyILU);
 }

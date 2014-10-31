@@ -54,7 +54,7 @@ typedef struct {
 #endif
 
 // Internal functions
-
+/*
 #ifndef NOINLINE
 INLINE ILfloat ilCos(ILfloat Angle) {
   return (ILfloat)(cos(Angle * IL_DEGCONV));
@@ -73,9 +73,10 @@ ILfloat ilCos(ILfloat Angle);
 ILfloat ilSin(ILfloat Angle);
 ILint   ilRound(ILfloat Num);
 #endif
+*/
 
 ILU_TLS_DATA * iGetTLSDataILU(void);
-void iInitThreads(void);
+void iInitThreads_ilu(void);
 
 ILuint    iScaleAdvanced(ILimage *Image, ILuint Width, ILuint Height, ILenum Filter);
 ILubyte * iScanFill(ILimage *Image);
@@ -98,6 +99,13 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
 ILboolean iSetLanguage(ILenum Language);
 ILfloat   iSimilarity(ILimage * Image, ILimage * Original);
 ILboolean iWave(ILimage *Image, ILfloat Angle);
+
+ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter);
+ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter);
+ILimage *iluScale3D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth, ILenum Filter);
+ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
+ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
+ILimage *iluScale3DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 
 #define imemclear(x,y) memset(x,0,y);
 

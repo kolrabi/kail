@@ -19,7 +19,7 @@
 	#define WORDS_LITTLEENDIAN
 #endif
 
-#if WORDS_BIGENDIAN
+#ifdef WORDS_BIGENDIAN
 	#define Short(s) 			iSwapShort(s)
 	#define UShort(s) 		iSwapUShort(s)
 	#define Int(i) 				iSwapInt(i)
@@ -52,7 +52,7 @@
 #ifdef IL_ENDIAN_C // defined when included from il_endian.c
 #undef NOINLINE
 #undef INLINE
-#define INLINE
+#define INLINE static inline
 #endif
 
 #ifndef NOINLINE
@@ -70,7 +70,7 @@ INLINE void iSwapUShort(ILushort *s)  {
 			: "=r" (*s)
 			: "0" (*s));
 	#else
-		*s = ((*s)>>8) | ((*s)<<8);
+		*s = (ILushort)(((*s)>>8) | ((*s)<<8));
 	#endif //GCC_X86_ASM
 	#endif //USE_WIN32_ASM
 }
@@ -216,71 +216,71 @@ INLINE ILdouble GetBigDouble(SIO* io) {
 	return d;
 }
 
-INLINE ILubyte SaveLittleUShort(SIO* io, ILushort s) {
+INLINE ILuint SaveLittleUShort(SIO* io, ILushort s) {
 	UShort(&s);
 	return io->write(&s, sizeof(ILushort), 1, io->handle);
 }
 
-INLINE ILubyte SaveLittleShort(SIO* io, ILshort s) {
+INLINE ILuint SaveLittleShort(SIO* io, ILshort s) {
 	Short(&s);
 	return io->write(&s, sizeof(ILshort), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveLittleUInt(SIO* io, ILuint i) {
+INLINE ILuint SaveLittleUInt(SIO* io, ILuint i) {
 	UInt(&i);
 	return io->write(&i, sizeof(ILuint), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveLittleInt(SIO* io, ILint i) {
+INLINE ILuint SaveLittleInt(SIO* io, ILint i) {
 	Int(&i);
 	return io->write(&i, sizeof(ILint), 1, io->handle);
 }
 
-INLINE ILubyte SaveLittleFloat(SIO* io, ILfloat f) {
+INLINE ILuint SaveLittleFloat(SIO* io, ILfloat f) {
 	Float(&f);
 	return io->write(&f, sizeof(ILfloat), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveLittleDouble(SIO* io, ILdouble d) {
+INLINE ILuint SaveLittleDouble(SIO* io, ILdouble d) {
 	Double(&d);
 	return io->write(&d, sizeof(ILdouble), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigUShort(SIO* io, ILushort s) {
+INLINE ILuint SaveBigUShort(SIO* io, ILushort s) {
 	BigUShort(&s);
 	return io->write(&s, sizeof(ILushort), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigShort(SIO* io, ILshort s) {
+INLINE ILuint SaveBigShort(SIO* io, ILshort s) {
 	BigShort(&s);
 	return io->write(&s, sizeof(ILshort), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigUInt(SIO* io, ILuint i) {
+INLINE ILuint SaveBigUInt(SIO* io, ILuint i) {
 	BigUInt(&i);
 	return io->write(&i, sizeof(ILuint), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigInt(SIO* io, ILint i) {
+INLINE ILuint SaveBigInt(SIO* io, ILint i) {
 	BigInt(&i);
 	return io->write(&i, sizeof(ILint), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigFloat(SIO* io, ILfloat f) {
+INLINE ILuint SaveBigFloat(SIO* io, ILfloat f) {
 	BigFloat(&f);
 	return io->write(&f, sizeof(ILfloat), 1, io->handle);
 }
 
 
-INLINE ILubyte SaveBigDouble(SIO* io, ILdouble d) {
+INLINE ILuint SaveBigDouble(SIO* io, ILdouble d) {
 	BigDouble(&d);
 	return io->write(&d, sizeof(ILdouble), 1, io->handle);
 }

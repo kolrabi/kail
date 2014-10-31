@@ -27,7 +27,7 @@ static ILboolean iLoadJascPal(ILimage *Image);
 static ILboolean iIsValidJascPal(SIO *io) {
 	ILuint 		First = SIOtell(io);
 	ILubyte   Head[9];
-	ILubyte   Read = SIOread(io, Head, 1, 9);
+	ILuint    Read = SIOread(io, Head, 1, 9);
 
 	SIOseek(io, First, IL_SEEK_SET);
 
@@ -67,7 +67,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 		return IL_FALSE;
 	}
 
-	NumColours = atoi(Buff);
+	NumColours = (ILuint)atoi(Buff);
 	if (NumColours == 0) {
 		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
@@ -88,7 +88,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 				return IL_FALSE;
 			}
 
-			NewPal.Palette[i * PALBPP + c] = atoi(Buff);
+			NewPal.Palette[i * PALBPP + c] = (ILubyte)atoi(Buff);
 		}
 	}
 
@@ -105,9 +105,9 @@ static ILboolean iLoadJascPal(ILimage *Image)
 
 //! Saves a Paint Shop Pro formatted palette (.pal) file.
 static ILboolean iSaveJascPal(ILimage *Image) {
-	ILuint	i, PalBpp, NumCols = ilGetInteger(IL_PALETTE_NUM_COLS);
+	ILuint	i, PalBpp, NumCols = (ILuint)ilGetInteger(IL_PALETTE_NUM_COLS);
 	SIO *io = &Image->io;
-    ILpal *ConvPal;
+  ILpal *ConvPal;
 
 	if (NumCols == 0 || NumCols > 256) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -140,7 +140,7 @@ static ILboolean iSaveJascPal(ILimage *Image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsJASC_PAL[] = { 
+static ILconst_string iFormatExtsJASC_PAL[] = { 
 	IL_TEXT("pal"),
   NULL 
 };

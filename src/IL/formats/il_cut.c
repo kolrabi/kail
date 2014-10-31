@@ -44,7 +44,7 @@ struct HaloPalette
 };
 #endif
 
-ILboolean isValidCutHeader(const CUT_HEAD* header)
+static ILboolean isValidCutHeader(const CUT_HEAD* header)
 {
 	if (header == 0)
 		return IL_FALSE;
@@ -77,7 +77,7 @@ iIsValidCut(SIO* io) {
 	return bRet;
 }
 
-ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, int y)
+static ILboolean readScanLine(ILimage* image, ILubyte* chunk, ILushort chunkSize, ILuint y)
 {
 	ILushort chunkOffset = 0;
 	ILuint outOffset = 0;
@@ -122,7 +122,8 @@ iLoadCutInternal(ILimage* image) {
 	CUT_HEAD	Header;
   ILubyte *   chunk;
 	ILboolean   done    = IL_FALSE;
-	ILint       y       = 0, i;
+	ILuint      y = 0;
+	ILint       i;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -167,15 +168,15 @@ iLoadCutInternal(ILimage* image) {
 
 	// Create a fake greyscale palette
 	for (i = 0; i < 256; ++i) {
-		image->Pal.Palette[3*i  ] = i;
-		image->Pal.Palette[3*i+1] = i;
-		image->Pal.Palette[3*i+2] = i;
+		image->Pal.Palette[3*i  ] = (ILubyte)i;
+		image->Pal.Palette[3*i+1] = (ILubyte)i;
+		image->Pal.Palette[3*i+2] = (ILubyte)i;
 	}
 
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsCUT[] = { 
+static ILconst_string iFormatExtsCUT[] = { 
 	IL_TEXT("cut"), 
 	NULL 
 };

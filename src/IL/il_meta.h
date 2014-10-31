@@ -1,16 +1,16 @@
 #include "il_internal.h"
 
 ILuint iGetMetaDataSize(ILenum Type, ILuint Count);
-ILuint iGetMetaLen(ILenum MetaID);
-ILuint iGetMetaLenf(ILenum MetaID);
+ILint iGetMetaLen(ILenum MetaID);
+ILint iGetMetaLenf(ILenum MetaID);
 ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID);
 ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
 
-ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILuint MaxCount);
+ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILint MaxCount);
 ILboolean iSetMetaiv(ILimage *Image, ILenum MetaID, const ILint *Param);
 
-ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILuint MaxCount);
+ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILint MaxCount);
 ILboolean iSetMetafv(ILimage *Image, ILenum MetaID, const ILfloat *Param);
 
 const void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size);

@@ -33,7 +33,7 @@ void checkRead(ILimage *ilimage) {
 
   // test getc
   { 
-    ILubyte b = SIOgetc(&ilimage->io);
+    ILubyte b = (ILubyte)SIOgetc(&ilimage->io);
     CHECK_EQ(b, 'D'); 
   }
 

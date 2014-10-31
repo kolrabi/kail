@@ -22,17 +22,7 @@ static ILuint    ILAPIENTRY iReadLump    (ILHANDLE h, void *Buffer, const ILuint
 static ILint     ILAPIENTRY iSeekLump    (ILHANDLE h, ILint64 Offset, ILuint Mode);
 static ILuint    ILAPIENTRY iTellLump    (ILHANDLE h);
 static ILint     ILAPIENTRY iPutcLump    (ILubyte Char, ILHANDLE h);
-static ILint     ILAPIENTRY iWriteLump   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
-
-// "Fake" size functions, used to determine the size of write lumps
-// Definitions are in il_size.cpp
-void      ILAPIENTRY iSizeClose   (ILHANDLE h);
-ILint     ILAPIENTRY iSizeSeek    (ILHANDLE h, ILint64 Offset, ILuint Mode);
-ILuint    ILAPIENTRY iSizeTell    (ILHANDLE h);
-ILint     ILAPIENTRY iSizePutc    (ILubyte Char, ILHANDLE h);
-ILint     ILAPIENTRY iSizeGetc    (ILHANDLE h);
-ILint     ILAPIENTRY iSizeWrite   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
-ILuint    ILAPIENTRY iSizeRead    (ILHANDLE h, void *Buffer, ILuint Size, ILuint Number);
+static ILuint    ILAPIENTRY iWriteLump   (const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h);
 
 // Next 7 functions are the default read functions
 
@@ -60,12 +50,12 @@ static void ILAPIENTRY iDefaultClose(ILHANDLE Handle) {
 }
 
 static ILuint ILAPIENTRY iDefaultTell(ILHANDLE Handle) {
-  ILuint res = ftell((FILE*)Handle);
+  ILuint res = (ILuint)ftell((FILE*)Handle);
   return res;
 }
 
 static ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint64 Offset, ILuint Mode) {
-  ILuint res = fseek((FILE*)Handle, Offset, Mode);
+  ILint res = (ILint)fseek((FILE*)Handle, (long)Offset, (int)Mode);
   clearerr((FILE*)Handle);
   return res;
 }
@@ -131,8 +121,8 @@ static ILint ILAPIENTRY iDefaultPutc(ILubyte Char, ILHANDLE Handle) {
   return fputc(Char, (FILE*)Handle);
 }
 
-static ILint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle) {
-  return (ILint)fwrite(Buffer, Size, Number, (FILE*)Handle);
+static ILuint ILAPIENTRY iDefaultWrite(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE Handle) {
+  return (ILuint)fwrite(Buffer, Size, Number, (FILE*)Handle);
 }
 
 void iSetRead(ILimage *Image, fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
@@ -369,22 +359,22 @@ ILint ILAPIENTRY iSeekLump(ILHANDLE h, ILint64 Offset, ILuint Mode) {
     case IL_SEEK_SET:
       if (Offset > (ILint)io->lumpSize)
         return 1;
-      io->lumpPos = Offset;
+      io->lumpPos = (ILuint)Offset;
       break;
 
     case IL_SEEK_CUR:
       if (io->lumpPos + Offset > io->lumpSize || (ILint)io->lumpPos+Offset < 0)
         return 1;
-      io->lumpPos += Offset;
+      io->lumpPos = (ILuint)((ILint)io->lumpPos + (ILint)Offset);
       break;
 
     case IL_SEEK_END:
       if (Offset > 0)
         return 1;
       // Should we use >= instead?
-      if (abs(Offset) > (ILint)io->lumpSize)  // If ReadLumpSize == 0, too bad
+      if (abs((ILint)Offset) > (ILint)io->lumpSize)  // If ReadLumpSize == 0, too bad
         return 1;
-      io->lumpPos = io->lumpSize + Offset;
+      io->lumpPos = (ILuint)((ILint)io->lumpSize + (ILint)Offset);
       break;
 
     default:
@@ -405,7 +395,7 @@ ILint ILAPIENTRY iPutcLump(ILubyte Char, ILHANDLE h)
 }
 
 
-ILint ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
+ILuint ILAPIENTRY iWriteLump(const void *Buffer, ILuint Size, ILuint Number, ILHANDLE h)
 {
   SIO *io = (SIO*)h;
   ILuint SizeBytes = Size * Number;

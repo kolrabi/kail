@@ -37,6 +37,7 @@
 #include "ilu_states.h"
 #include "ilu_region.h"
 
+/*
 #define SIMPLE_PROC(img, f) { \
   ILimage *img; \
   iLockState(); \
@@ -44,7 +45,7 @@
   iUnlockState(); \
   f; \
   iUnlockImage(img);  }
-
+*/
 #define SIMPLE_FUNC(img, r, f) { \
   ILimage *img; r Result; \
   iLockState(); \
@@ -298,12 +299,12 @@ ILboolean ILAPIENTRY iluEmboss() {
  */ 
 ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth) {
   ILimage *Image;
-  ILint Placement;
+  ILenum Placement;
   ILboolean Result;
 
   iLockState(); 
   Image  = iLockCurImage();
-  iGetIntegerv(ILU_PLACEMENT, &Placement);
+  iGetIntegerv_ilu(ILU_PLACEMENT, (ILint*)&Placement);
   iUnlockState();
 
   Result = iEnlargeCanvas(Image, Width, Height, Depth, Placement);
@@ -319,7 +320,7 @@ ILboolean ILAPIENTRY iluEnlargeCanvas(ILuint Width, ILuint Height, ILuint Depth)
  */
 ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
   ILimage *Image;
-  ILint   Filter;
+  ILenum   Filter;
   ILboolean Result;
 
   if (XDim <= 0.0f || YDim <= 0.0f || ZDim <= 0.0f) {
@@ -329,7 +330,7 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
 
   iLockState(); 
   Image = iLockCurImage();
-  iGetIntegerv(ILU_FILTER, &Filter);
+  iGetIntegerv_ilu(ILU_FILTER, (ILint*)&Filter);
   iUnlockState();
 
   if (!Image) {
@@ -337,8 +338,10 @@ ILboolean ILAPIENTRY iluEnlargeImage(ILfloat XDim, ILfloat YDim, ILfloat ZDim) {
     return IL_FALSE;
   }
 
-  Result = iScale(Image, (ILuint)(Image->Width * XDim), (ILuint)(Image->Height * YDim),
-          (ILuint)(Image->Depth * ZDim), Filter);
+  Result = iScale(Image, 
+    (ILuint)(Image->Width  * XDim), 
+    (ILuint)(Image->Height * YDim),
+    (ILuint)(Image->Depth  * ZDim), Filter);
   iUnlockImage(Image);
   return Result;
 }
@@ -462,7 +465,7 @@ ILint ILAPIENTRY iluGetInteger(ILenum Mode) {
  */
 void ILAPIENTRY iluGetIntegerv(ILenum Mode, ILint *Param) {
   iLockState();
-  iGetIntegerv(Mode, Param);
+  iGetIntegerv_ilu(Mode, Param);
   iUnlockState();
 }
 
@@ -483,7 +486,7 @@ ILconst_string ILAPIENTRY iluGetString(ILenum StringName) {
   ILconst_string Result;
 
   iLockState();
-  Result = iGetString(StringName);
+  Result = iGetString_ilu(StringName);
   iUnlockState();
 
   return Result;
@@ -687,12 +690,12 @@ ILboolean ILAPIENTRY iluSaturate4f(ILfloat r, ILfloat g, ILfloat b, ILfloat Satu
  */
 ILboolean ILAPIENTRY iluScale(ILuint Width, ILuint Height, ILuint Depth) {
   ILimage *Image;
-  ILint Filter;
+  ILenum Filter;
   ILboolean Result;
 
   iLockState(); 
   Image  = iLockCurImage();
-  iGetIntegerv(ILU_FILTER, &Filter);
+  iGetIntegerv_ilu(ILU_FILTER, (ILint*)&Filter);
   iUnlockState();
 
   Result = iScale(Image, Width, Height, Depth, Filter);

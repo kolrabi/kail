@@ -56,62 +56,52 @@ typedef struct Box
  * NB: these must start out 0!
  */
 
-// Global variables
-ILfloat		gm2[33][33][33];
-ILint		wt[33][33][33], mr[33][33][33],	mg[33][33][33],	mb[33][33][33];
-ILuint		size; //image size
-ILint		K;    //colour look-up table size
-ILushort	*Qadd;
+typedef struct QuantContext {
 
+	ILfloat   gm2[33][33][33];
 
-ILint	WindW, WindH, WindD;
-ILint	i;
-ILubyte	*buffer;
-static ILint	Width, Height, Depth, Comp;
-/*ILint	TotalColors;
-ILint	a, b;
-ILubyte	*buf1, *buf2;*/
+	ILint 		wt[33][33][33], 
+						mr[33][33][33],	
+						mg[33][33][33],	
+						mb[33][33][33];
 
-ILuint n2(ILint s)
-{
-	ILint	i;
-	ILint	res;
+	ILuint		size; //image size
+ 	ILuint  	K;    //colour look-up table size
+	ILushort	*Qadd;
 
-	res = 1;
-	for (i = 0; i < s; i++) {
-		res = res*2;
-	}
-
-	return res;
-}
-
+	ILuint 		WindW, WindH, WindD;
+	ILubyte   *buffer;
+	ILuint    Width, Height, Depth, Comp;
+} QuantContext;
 
 // Build 3-D color histogram of counts, r/g/b, c^2
-ILboolean Hist3d(ILubyte *Ir, ILubyte *Ig, ILubyte *Ib, ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
+static ILboolean Hist3d(QuantContext *ctx, ILubyte *Ir, ILubyte *Ig, ILubyte *Ib, ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
 {
 	ILint	ind, r, g, b;
-	ILint	inr, ing, inb, table[2560];
+	ILint	inr, ing, inb;
+	ILuint table[256];
 	ILuint	i;
 		
 	for (i = 0; i < 256; i++)
 	{
 		table[i] = i * i;
 	}
-	Qadd = (ILushort*)ialloc(sizeof(ILushort) * size);
-	if (Qadd == NULL)
+
+	ctx->Qadd = (ILushort*)ialloc(sizeof(ILushort) * ctx->size);
+	if (ctx->Qadd == NULL)
 	{
 		return IL_FALSE;
 	}
 	
-        imemclear(Qadd, sizeof(ILushort) * size);
+  imemclear(ctx->Qadd, sizeof(ILushort) * ctx->size);
         
-	for (i = 0; i < size; i++)
+	for (i = 0; i < ctx->size; i++)
 	{
 	    r = Ir[i]; g = Ig[i]; b = Ib[i];
 	    inr = (r>>3) + 1; 
 	    ing = (g>>3) + 1; 
 	    inb = (b>>3) + 1; 
-	    Qadd[i] = ind = (inr<<10)+(inr<<6)+inr+(ing<<5)+ing+inb;
+	    ctx->Qadd[i] = ind = (ILushort)((inr<<10)+(inr<<6)+inr+(ing<<5)+ing+inb);
 	    //[inr][ing][inb]
 	    vwt[ind]++;
 	    vmr[ind] += r;
@@ -136,7 +126,7 @@ ILboolean Hist3d(ILubyte *Ir, ILubyte *Ig, ILubyte *Ib, ILint *vwt, ILint *vmr, 
 
 
 // Compute cumulative moments
-void M3d(ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
+static void M3d(ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
 {
 	ILushort	ind1, ind2;
 	ILubyte		i, r, g, b;
@@ -152,7 +142,7 @@ void M3d(ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
 			line2 = 0.0f;
 			line = line_r = line_g = line_b = 0;
 			for (b = 1; b <= 32; b++) {
-				ind1 = (r<<10) + (r<<6) + r + (g<<5) + g + b; // [r][g][b]
+				ind1 = (ILushort)((r<<10) + (r<<6) + r + (g<<5) + g + b); // [r][g][b]
 				line += vwt[ind1];
 				line_r += vmr[ind1]; 
 				line_g += vmg[ind1]; 
@@ -178,16 +168,16 @@ void M3d(ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
 
 
 // Compute sum over a Box of any given statistic
-ILint Vol(Box *cube, ILint mmt[33][33][33]) 
+static ILint Vol(const Box *cube, const ILint mmt[33][33][33]) 
 {
-    return( mmt[cube->r1][cube->g1][cube->b1] 
-	   -mmt[cube->r1][cube->g1][cube->b0]
-	   -mmt[cube->r1][cube->g0][cube->b1]
-	   +mmt[cube->r1][cube->g0][cube->b0]
-	   -mmt[cube->r0][cube->g1][cube->b1]
-	   +mmt[cube->r0][cube->g1][cube->b0]
-	   +mmt[cube->r0][cube->g0][cube->b1]
-	   -mmt[cube->r0][cube->g0][cube->b0] );
+    return(mmt[cube->r1][cube->g1][cube->b1] 
+	   			-mmt[cube->r1][cube->g1][cube->b0]
+	   			-mmt[cube->r1][cube->g0][cube->b1]
+	   			+mmt[cube->r1][cube->g0][cube->b0]
+	   			-mmt[cube->r0][cube->g1][cube->b1]
+				  +mmt[cube->r0][cube->g1][cube->b0]
+	   			+mmt[cube->r0][cube->g0][cube->b1]
+	   			-mmt[cube->r0][cube->g0][cube->b0] );
 }
 
 /* The next two routines allow a slightly more efficient calculation
@@ -198,28 +188,25 @@ ILint Vol(Box *cube, ILint mmt[33][33][33])
 
 // Compute part of Vol(cube, mmt) that doesn't depend on r1, g1, or b1
 //	(depending on dir)
-ILint Bottom(Box *cube, ILubyte dir, ILint mmt[33][33][33])
+static ILint Bottom(const Box *cube, ILubyte dir, const ILint mmt[33][33][33])
 {
     switch(dir)
     {
 		case RED:
 			return( -mmt[cube->r0][cube->g1][cube->b1]
-				+mmt[cube->r0][cube->g1][cube->b0]
-				+mmt[cube->r0][cube->g0][cube->b1]
-				-mmt[cube->r0][cube->g0][cube->b0] );
-			break;
+							+mmt[cube->r0][cube->g1][cube->b0]
+							+mmt[cube->r0][cube->g0][cube->b1]
+							-mmt[cube->r0][cube->g0][cube->b0] );
 		case GREEN:
 			return( -mmt[cube->r1][cube->g0][cube->b1]
-				+mmt[cube->r1][cube->g0][cube->b0]
-				+mmt[cube->r0][cube->g0][cube->b1]
-				-mmt[cube->r0][cube->g0][cube->b0] );
-			break;
+							+mmt[cube->r1][cube->g0][cube->b0]
+							+mmt[cube->r0][cube->g0][cube->b1]
+							-mmt[cube->r0][cube->g0][cube->b0] );
 		case BLUE:
 			return( -mmt[cube->r1][cube->g1][cube->b0]
-				+mmt[cube->r1][cube->g0][cube->b0]
-				+mmt[cube->r0][cube->g1][cube->b0]
-				-mmt[cube->r0][cube->g0][cube->b0] );
-			break;
+							+mmt[cube->r1][cube->g0][cube->b0]
+							+mmt[cube->r0][cube->g1][cube->b0]
+							-mmt[cube->r0][cube->g0][cube->b0] );
     }
     return 0;
 }
@@ -227,28 +214,25 @@ ILint Bottom(Box *cube, ILubyte dir, ILint mmt[33][33][33])
 
 // Compute remainder of Vol(cube, mmt), substituting pos for
 //	r1, g1, or b1 (depending on dir)
-ILint Top(Box *cube, ILubyte dir, ILint pos, ILint mmt[33][33][33])
+static ILint Top(const Box *cube, ILubyte dir, ILint pos, const ILint mmt[33][33][33])
 {
     switch (dir)
     {
 		case RED:
-			return( mmt[pos][cube->g1][cube->b1] 
-			   -mmt[pos][cube->g1][cube->b0]
-			   -mmt[pos][cube->g0][cube->b1]
-			   +mmt[pos][cube->g0][cube->b0] );
-			break;
+			return(mmt[pos][cube->g1][cube->b1] 
+			   		-mmt[pos][cube->g1][cube->b0]
+			   		-mmt[pos][cube->g0][cube->b1]
+			   		+mmt[pos][cube->g0][cube->b0] );
 		case GREEN:
-			return( mmt[cube->r1][pos][cube->b1] 
-			   -mmt[cube->r1][pos][cube->b0]
-			   -mmt[cube->r0][pos][cube->b1]
-			   +mmt[cube->r0][pos][cube->b0] );
-			break;
+			return(mmt[cube->r1][pos][cube->b1] 
+			   		-mmt[cube->r1][pos][cube->b0]
+				    -mmt[cube->r0][pos][cube->b1]
+				    +mmt[cube->r0][pos][cube->b0] );
 		case BLUE:
-			return( mmt[cube->r1][cube->g1][pos]
-			   -mmt[cube->r1][cube->g0][pos]
-			   -mmt[cube->r0][cube->g1][pos]
-			   +mmt[cube->r0][cube->g0][pos] );
-			break;
+			return(mmt[cube->r1][cube->g1][pos]
+			   		-mmt[cube->r1][cube->g0][pos]
+			   		-mmt[cube->r0][cube->g1][pos]
+			   		+mmt[cube->r0][cube->g0][pos] );
     }
 
     return 0;
@@ -257,23 +241,24 @@ ILint Top(Box *cube, ILubyte dir, ILint pos, ILint mmt[33][33][33])
 
 // Compute the weighted variance of a Box
 //	NB: as with the raw statistics, this is really the variance * size
-ILfloat Var(Box *cube)
+static ILfloat Var(QuantContext *ctx, const Box *cube)
 {
 	ILfloat dr, dg, db, xx;
 
-	dr = (ILfloat)Vol(cube, mr); 
-	dg = (ILfloat)Vol(cube, mg); 
-	db = (ILfloat)Vol(cube, mb);
-	xx = gm2[cube->r1][cube->g1][cube->b1] 
-		-gm2[cube->r1][cube->g1][cube->b0]
-		-gm2[cube->r1][cube->g0][cube->b1]
-		+gm2[cube->r1][cube->g0][cube->b0]
-		-gm2[cube->r0][cube->g1][cube->b1]
-		+gm2[cube->r0][cube->g1][cube->b0]
-		+gm2[cube->r0][cube->g0][cube->b1]
-		-gm2[cube->r0][cube->g0][cube->b0];
+	dr = (ILfloat)(Vol(cube, ctx->mr)); 
+	dg = (ILfloat)(Vol(cube, ctx->mg)); 
+	db = (ILfloat)(Vol(cube, ctx->mb));
 
-	return xx - (dr*dr+dg*dg+db*db) / (ILfloat)Vol(cube, wt);
+	xx = ctx->gm2[cube->r1][cube->g1][cube->b1] 
+		  -ctx->gm2[cube->r1][cube->g1][cube->b0]
+			-ctx->gm2[cube->r1][cube->g0][cube->b1]
+			+ctx->gm2[cube->r1][cube->g0][cube->b0]
+			-ctx->gm2[cube->r0][cube->g1][cube->b1]
+			+ctx->gm2[cube->r0][cube->g1][cube->b0]
+			+ctx->gm2[cube->r0][cube->g0][cube->b1]
+			-ctx->gm2[cube->r0][cube->g0][cube->b0];
+
+	return xx - (dr*dr+dg*dg+db*db) / (ILfloat)(Vol(cube, ctx->wt));
 }
 
 /* We want to minimize the sum of the variances of two subBoxes.
@@ -283,7 +268,7 @@ ILfloat Var(Box *cube)
  * so we drop the minus sign and MAXIMIZE the sum of the two terms.
  */
 
-ILfloat Maximize(Box *cube, ILubyte dir, ILint first, ILint last, ILint *cut,
+static ILfloat Maximize(QuantContext *ctx, const Box *cube, ILubyte dir, ILint first, ILint last, ILint *cut,
 				 ILint whole_r, ILint whole_g, ILint whole_b, ILint whole_w)
 {
 	ILint	half_r, half_g, half_b, half_w;
@@ -291,18 +276,18 @@ ILfloat Maximize(Box *cube, ILubyte dir, ILint first, ILint last, ILint *cut,
 	ILint	i;
 	ILfloat	temp, max;
 
-	base_r = Bottom(cube, dir, mr);
-	base_g = Bottom(cube, dir, mg);
-	base_b = Bottom(cube, dir, mb);
-	base_w = Bottom(cube, dir, wt);
+	base_r = Bottom(cube, dir, ctx->mr);
+	base_g = Bottom(cube, dir, ctx->mg);
+	base_b = Bottom(cube, dir, ctx->mb);
+	base_w = Bottom(cube, dir, ctx->wt);
 	max = 0.0;
 	*cut = -1;
 
 	for (i = first; i < last; ++i) {
-		half_r = base_r + Top(cube, dir, i, mr);
-		half_g = base_g + Top(cube, dir, i, mg);
-		half_b = base_b + Top(cube, dir, i, mb);
-		half_w = base_w + Top(cube, dir, i, wt);
+		half_r = base_r + Top(cube, dir, i, ctx->mr);
+		half_g = base_g + Top(cube, dir, i, ctx->mg);
+		half_b = base_b + Top(cube, dir, i, ctx->mb);
+		half_w = base_w + Top(cube, dir, i, ctx->wt);
 		// Now half_x is sum over lower half of Box, if split at i 
 		if (half_w == 0) {  // subBox could be empty of pixels!
 			continue;       // never split into an empty Box
@@ -334,21 +319,21 @@ ILfloat Maximize(Box *cube, ILubyte dir, ILint first, ILint last, ILint *cut,
 }
 
 
-ILint Cut(Box *set1, Box *set2)
+static ILint Cut(QuantContext *ctx, Box *set1, Box *set2)
 {
 	ILubyte dir;
 	ILint cutr, cutg, cutb;
 	ILfloat maxr, maxg, maxb;
 	ILint whole_r, whole_g, whole_b, whole_w;
 
-	whole_r = Vol(set1, mr);
-	whole_g = Vol(set1, mg);
-	whole_b = Vol(set1, mb);
-	whole_w = Vol(set1, wt);
+	whole_r = Vol(set1, ctx->mr);
+	whole_g = Vol(set1, ctx->mg);
+	whole_b = Vol(set1, ctx->mb);
+	whole_w = Vol(set1, ctx->wt);
 
-	maxr = Maximize(set1, RED, set1->r0+1, set1->r1, &cutr, whole_r, whole_g, whole_b, whole_w);
-	maxg = Maximize(set1, GREEN, set1->g0+1, set1->g1, &cutg, whole_r, whole_g, whole_b, whole_w);
-	maxb = Maximize(set1, BLUE, set1->b0+1, set1->b1, &cutb, whole_r, whole_g, whole_b, whole_w);
+	maxr = Maximize(ctx, set1, RED,   set1->r0+1, set1->r1, &cutr, whole_r, whole_g, whole_b, whole_w);
+	maxg = Maximize(ctx, set1, GREEN, set1->g0+1, set1->g1, &cutg, whole_r, whole_g, whole_b, whole_w);
+	maxb = Maximize(ctx, set1, BLUE,  set1->b0+1, set1->b1, &cutb, whole_r, whole_g, whole_b, whole_w);
 
 	if ((maxr >= maxg) && (maxr >= maxb)) {
 		dir = RED;
@@ -390,7 +375,7 @@ ILint Cut(Box *set1, Box *set2)
 }
 
 
-void Mark(struct Box *cube, int label, unsigned char *tag)
+static void Mark(Box *cube, ILubyte label, unsigned char *tag)
 {
 	ILint r, g, b;
 
@@ -410,31 +395,36 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 	Box		cube[MAXCOLOR];
 	ILubyte	*tag = NULL;
 	ILubyte	lut_r[MAXCOLOR], lut_g[MAXCOLOR], lut_b[MAXCOLOR];
-	ILint	next;
+	ILuint	next;
 	ILint	weight;
-	ILuint	k;
+	ILuint	i;
+	ILuint k;
 	ILfloat	vv[MAXCOLOR], temp;
 	//ILint	color_num;
 	ILubyte	*NewData = NULL, *Palette = NULL;
 	ILimage	*TempImage = NULL, *NewImage = NULL;
 	ILubyte	*Ir = NULL, *Ig = NULL, *Ib = NULL;
 
-	ILint num_alloced_colors; // number of colors we allocated space for in palette, as NumCols but will not be less than 256
+	ILuint num_alloced_colors; // number of colors we allocated space for in palette, as NumCols but will not be less than 256
 
-	num_alloced_colors=NumCols;
-	if(num_alloced_colors<256) { num_alloced_colors=256; }
+	QuantContext ctx;
+
+	num_alloced_colors = NumCols;
+	if(num_alloced_colors<256) { 
+		num_alloced_colors=256; 
+	}
 
 	TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
 
 	if (TempImage == NULL)
 		return NULL;
 
-	buffer = Image->Data;
-	WindW = Width = Image->Width;
-	WindH = Height = Image->Height;
-	WindD = Depth = Image->Depth;
-	Comp = Image->Bpp;
-	Qadd = NULL;
+	ctx.buffer = Image->Data;
+	ctx.WindW = ctx.Width = Image->Width;
+	ctx.WindH = ctx.Height = Image->Height;
+	ctx.WindD = ctx.Depth = Image->Depth;
+	ctx.Comp = Image->Bpp;
+	ctx.Qadd = NULL;
 
 	//color_num = ImagePrecalculate(Image);
 
@@ -446,9 +436,11 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 		return NULL;
 	}
 
-	Ir = (ILubyte*)ialloc(Width * Height * Depth);
-	Ig = (ILubyte*)ialloc(Width * Height * Depth);
-	Ib = (ILubyte*)ialloc(Width * Height * Depth);
+	ctx.size = ctx.Width * ctx.Height * ctx.Depth;
+
+	Ir = (ILubyte*)ialloc(ctx.size);
+	Ig = (ILubyte*)ialloc(ctx.size);
+	Ib = (ILubyte*)ialloc(ctx.size);
 	if (!Ir || !Ig || !Ib) {
 		ifree(Ir);
 		ifree(Ig);
@@ -458,109 +450,109 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 		return NULL;
 	}
 
-	size = Width * Height * Depth;
-        
-        #ifdef ALTIVEC_GCC
-            register ILuint v_size = size>>4;
-            register ILuint pos = 0;
-            v_size = v_size /3;
-            register vector unsigned char d0,d1,d2;
-            register vector unsigned char red[3],blu[3],green[3];
-            
-            register union{
-                vector unsigned char vec;
-                vector unsigned int load;
-            } mask_1, mask_2, mask_3;
-            
-            mask_1.load = (vector unsigned int){0xFF0000FF,0x0000FF00,0x00FF0000,0xFF0000FF};
-            mask_2.load = (vector unsigned int){0x00FF0000,0xFF0000FF,0x0000FF00,0x00FF0000};
-            mask_2.load = (vector unsigned int){0x0000FF00,0x00FF0000,0xFF0000FF,0x0000FF00};
-            
-            while( v_size >= 0 ) {
-                d0 = vec_ld(pos,TempImage->Data);
-                d1 = vec_ld(pos+16,TempImage->Data);
-                d2 = vec_ld(pos+32,TempImage->Data);
-                
-                red[0] =   vec_and(d0,mask_1.vec);
-                green[0] = vec_and(d0,mask_2.vec);
-                blu[0] =   vec_and(d0,mask_3.vec);
-                
-                red[1] =   vec_and(d1,mask_3.vec);
-                green[1] = vec_and(d1,mask_1.vec);
-                blu[1] =   vec_and(d1,mask_2.vec);
-                
-                red[2] =   vec_and(d2,mask_2.vec);
-                green[2] = vec_and(d2,mask_3.vec);
-                blu[2] =   vec_and(d2,mask_1.vec);
-                
-                vec_st(red[0],pos,Ir);
-                vec_st(red[1],pos+16,Ir);
-                vec_st(red[2],pos+32,Ir);
-                
-                vec_st(blu[0],pos,Ib);
-                vec_st(blu[1],pos+16,Ib);
-                vec_st(blu[2],pos+32,Ib);
-                
-                vec_st(green[0],pos,Ig);
-                vec_st(green[1],pos+16,Ig);
-                vec_st(green[2],pos+32,Ig);
-                
-                pos += 48;
-            }
-            size -= pos;
-        #endif
+#ifdef ALTIVEC_GCC
+  register ILuint v_size = size>>4;
+  register ILuint pos = 0;
+  v_size = v_size /3;
+  register vector unsigned char d0,d1,d2;
+  register vector unsigned char red[3],blu[3],green[3];
+  
+  register union{
+      vector unsigned char vec;
+      vector unsigned int load;
+  } mask_1, mask_2, mask_3;
+  
+  mask_1.load = (vector unsigned int){0xFF0000FF,0x0000FF00,0x00FF0000,0xFF0000FF};
+  mask_2.load = (vector unsigned int){0x00FF0000,0xFF0000FF,0x0000FF00,0x00FF0000};
+  mask_2.load = (vector unsigned int){0x0000FF00,0x00FF0000,0xFF0000FF,0x0000FF00};
+  
+  while( v_size >= 0 ) {
+      d0 = vec_ld(pos,TempImage->Data);
+      d1 = vec_ld(pos+16,TempImage->Data);
+      d2 = vec_ld(pos+32,TempImage->Data);
+      
+      red[0] =   vec_and(d0,mask_1.vec);
+      green[0] = vec_and(d0,mask_2.vec);
+      blu[0] =   vec_and(d0,mask_3.vec);
+      
+      red[1] =   vec_and(d1,mask_3.vec);
+      green[1] = vec_and(d1,mask_1.vec);
+      blu[1] =   vec_and(d1,mask_2.vec);
+      
+      red[2] =   vec_and(d2,mask_2.vec);
+      green[2] = vec_and(d2,mask_3.vec);
+      blu[2] =   vec_and(d2,mask_1.vec);
+      
+      vec_st(red[0],pos,Ir);
+      vec_st(red[1],pos+16,Ir);
+      vec_st(red[2],pos+32,Ir);
+      
+      vec_st(blu[0],pos,Ib);
+      vec_st(blu[1],pos+16,Ib);
+      vec_st(blu[2],pos+32,Ib);
+      
+      vec_st(green[0],pos,Ig);
+      vec_st(green[1],pos+16,Ig);
+      vec_st(green[2],pos+32,Ig);
+      
+      pos += 48;
+  }
+  size -= pos;
+#endif
 
-	for (k = 0; k < size; k++) {
-                Ir[k] = TempImage->Data[k * 3];
-		Ig[k] = TempImage->Data[k * 3 + 1];
-		Ib[k] = TempImage->Data[k * 3 + 2];
+	for (i = 0; i < ctx.size; i++) {
+    Ir[i] = TempImage->Data[i * 3 + 0];
+		Ig[i] = TempImage->Data[i * 3 + 1];
+		Ib[i] = TempImage->Data[i * 3 + 2];
 	}
-        
-        #ifdef ALTIVEC_GCC
-           size = Width * Height * Depth;
-        #endif
-        
-	// Set new colors number
-	K = NumCols;
 
-	if (K <= 256) {
+#ifdef ALTIVEC_GCC
+   size = Width * Height * Depth;
+#endif
+
+	// Set new colors number
+	ctx.K = NumCols;
+
+	if (ctx.K <= 256) {
 		// Begin Wu's color quantization algorithm
 
 		// May have "leftovers" from a previous run.
-		
-                imemclear(gm2, 33 * 33 * 33 * sizeof(ILfloat));
-                imemclear(wt, 33 * 33 * 33 * sizeof(ILint));
-                imemclear(mr, 33 * 33 * 33 * sizeof(ILint));
-                imemclear(mg, 33 * 33 * 33 * sizeof(ILint));
-                imemclear(mb, 33 * 33 * 33 * sizeof(ILint));
+    imemclear(ctx.gm2, 33 * 33 * 33 * sizeof(ILfloat));
+    imemclear(ctx.wt,  33 * 33 * 33 * sizeof(ILint));
+    imemclear(ctx.mr,  33 * 33 * 33 * sizeof(ILint));
+    imemclear(ctx.mg,  33 * 33 * 33 * sizeof(ILint));
+    imemclear(ctx.mb,  33 * 33 * 33 * sizeof(ILint));
                 
-		if (!Hist3d(Ir, Ig, Ib, (ILint*)wt, (ILint*)mr, (ILint*)mg, (ILint*)mb, (ILfloat*)gm2))
+		if (!Hist3d(&ctx, Ir, Ig, Ib, (ILint*)ctx.wt, (ILint*)ctx.mr, (ILint*)ctx.mg, (ILint*)ctx.mb, (ILfloat*)ctx.gm2))
 			goto error_label;
 
-		M3d((ILint*)wt, (ILint*)mr, (ILint*)mg, (ILint*)mb, (ILfloat*)gm2);
+		M3d((ILint*)ctx.wt, (ILint*)ctx.mr, (ILint*)ctx.mg, (ILint*)ctx.mb, (ILfloat*)ctx.gm2);
 
 		cube[0].r0 = cube[0].g0 = cube[0].b0 = 0;
 		cube[0].r1 = cube[0].g1 = cube[0].b1 = 32;
+
 		next = 0;
-		for (i = 1; i < K; ++i) {
-			if (Cut(&cube[next], &cube[i])) { // volume test ensures we won't try to cut one-cell Box */
-				vv[next] = (cube[next].vol>1) ? Var(&cube[next]) : 0.0f;
-				vv[i] = (cube[i].vol>1) ? Var(&cube[i]) : 0.0f;
+		for (i = 1; i < ctx.K; ++i) {
+			if (Cut(&ctx, &cube[next], &cube[i])) { // volume test ensures we won't try to cut one-cell Box */
+				vv[next] = (cube[next].vol>1) ? Var(&ctx, &cube[next]) : 0.0f;
+				vv[i]    = (cube[i   ].vol>1) ? Var(&ctx, &cube[i   ]) : 0.0f;
 			}
 			else {
 				vv[next] = 0.0;   // don't try to split this Box again
 				i--;              // didn't create Box i
 			}
+
 			next = 0;
 			temp = vv[0];
-			for (k = 1; (ILint)k <= i; ++k) {
+
+			for (k = 1; k <= i; ++k) {
 				if (vv[k] > temp) {
 					temp = vv[k]; next = k;
 				}
 			}
 				
 			if (temp <= 0.0) {
-				K = i+1;
+				ctx.K = i+1;
 				// Only got K Boxes
 				break;
 			}
@@ -569,13 +561,14 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 		tag = (ILubyte*)ialloc(33 * 33 * 33 * sizeof(ILubyte));
 		if (tag == NULL)
 			goto error_label;
-		for (k = 0; (ILint)k < K; k++) {
-			Mark(&cube[k], k, tag);
-			weight = Vol(&cube[k], wt);
+
+		for (k = 0; k < ctx.K; k++) {
+			Mark(&cube[k], (ILubyte)k, tag);
+			weight = Vol(&cube[k], ctx.wt);
 			if (weight) {
-				lut_r[k] = (ILubyte)(Vol(&cube[k], mr) / weight);
-				lut_g[k] = (ILubyte)(Vol(&cube[k], mg) / weight);
-				lut_b[k] = (ILubyte)(Vol(&cube[k], mb) / weight);
+				lut_r[k] = (ILubyte)(Vol(&cube[k], ctx.mr) / weight);
+				lut_g[k] = (ILubyte)(Vol(&cube[k], ctx.mg) / weight);
+				lut_b[k] = (ILubyte)(Vol(&cube[k], ctx.mb) / weight);
 			}
 			else {
 				// Bogus Box
@@ -583,11 +576,11 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 			}
 		}
 
-		for (i = 0; i < (ILint)size; i++) {
-			NewData[i] = tag[Qadd[i]];
+		for (i = 0; i < ctx.size; i++) {
+			NewData[i] = tag[ctx.Qadd[i]];
 		}
 		ifree(tag);
-		ifree(Qadd);
+		ifree(ctx.Qadd);
 
 		for (k = 0; k < NumCols; k++) {
 			Palette[k * 3]     = lut_b[k];
@@ -612,17 +605,17 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 		return NULL;
 	}
 	iCopyImageAttr(NewImage, Image);
-	NewImage->Bpp = 1;
-	NewImage->Bps = Image->Width;
+	NewImage->Bpp 				= 1;
+	NewImage->Bps 				= Image->Width;
 	NewImage->SizeOfPlane = NewImage->Bps * Image->Height;
-	NewImage->SizeOfData = NewImage->SizeOfPlane;
-	NewImage->Format = IL_COLOUR_INDEX;
-	NewImage->Type = IL_UNSIGNED_BYTE;
+	NewImage->SizeOfData 	= NewImage->SizeOfPlane;
+	NewImage->Format 			= IL_COLOUR_INDEX;
+	NewImage->Type 				= IL_UNSIGNED_BYTE;
 
 	NewImage->Pal.Palette = Palette;
 	NewImage->Pal.PalSize = 256 * 3;
 	NewImage->Pal.PalType = IL_PAL_BGR24;
-	NewImage->Data = NewData;
+	NewImage->Data 				= NewData;
 
 	return NewImage;
 
@@ -633,6 +626,6 @@ error_label:
 	ifree(Ib);
 	ifree(Ir);
 	ifree(tag);
-	ifree(Qadd);
+	ifree(ctx.Qadd);
 	return NULL;
 }

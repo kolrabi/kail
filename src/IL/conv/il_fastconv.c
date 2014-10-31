@@ -18,11 +18,12 @@
 
 ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 {
+	void * VoidPtr = Image->Data;
 	ILubyte		*BytePtr = Image->Data;
-	ILushort	*ShortPtr = (ILushort*)Image->Data;
-	ILuint		*IntPtr = (ILuint*)Image->Data;
-	ILfloat		*FloatPtr = (ILfloat*)Image->Data;
-	ILdouble	*DblPtr = (ILdouble*)Image->Data;
+	ILushort	*ShortPtr = (ILushort*)VoidPtr;
+	ILuint		*IntPtr = (ILuint*)VoidPtr;
+	ILfloat		*FloatPtr = (ILfloat*)VoidPtr;
+	ILdouble	*DblPtr = (ILdouble*)VoidPtr;
 
 #ifndef ALTIVEC_GCC
 	ILuint		SizeOfData, i=0;

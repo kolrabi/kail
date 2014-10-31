@@ -103,7 +103,7 @@ INLINE ILushort ILAPIENTRY ilFloatToHalf(ILuint i) {
 		// Assemble the half from s, e (zero) and m.
 		//
 
-		return s | (m >> 13);
+		return (ILushort)(s | (m >> 13));
 	}
 	else if (e == 0xff - (127 - 15))
 	{
@@ -114,7 +114,7 @@ INLINE ILushort ILAPIENTRY ilFloatToHalf(ILuint i) {
 			// infinity with the same sign as f.
 			//
 
-			return s | 0x7c00;
+			return (ILushort)(s | 0x7c00);
 		}
 		else
 		{
@@ -128,7 +128,7 @@ INLINE ILushort ILAPIENTRY ilFloatToHalf(ILuint i) {
 			//
 
 			m >>= 13;
-			return s | 0x7c00 | m | (m == 0);
+			return (ILushort)(s | 0x7c00 | m | (m == 0));
 		}
 	}
 	else
@@ -160,14 +160,14 @@ INLINE ILushort ILAPIENTRY ilFloatToHalf(ILuint i) {
 		if (e > 30)
 		{
 			ilFloatToHalfOverflow();	// Cause a hardware floating point overflow;
-			return s | 0x7c00;	// if this returns, the half becomes an
+			return (ILushort)(s | 0x7c00);	// if this returns, the half becomes an
 		}   			// infinity with the same sign as f.
 
 		//
 		// Assemble the half from s, e and m.
 		//
 
-		return s | (e << 10) | (m >> 13);
+		return (ILushort)(s | (e << 10) | (m >> 13));
 	}
 }
 
@@ -186,7 +186,7 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 			// Plus or minus zero
 			//
 
-			return s << 31;
+			return (ILuint)s << 31;
 		}
 		else
 		{
@@ -212,7 +212,7 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 			// Positive or negative infinity
 			//
 
-			return (s << 31) | 0x7f800000;
+			return (ILuint)(s << 31) | 0x7f800000;
 		}
 		else
 		{
@@ -220,7 +220,7 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 			// Nan -- preserve sign and significand bits
 			//
 
-			return (s << 31) | 0x7f800000 | (m << 13);
+			return (ILuint)((s << 31) | 0x7f800000 | (m << 13));
 		}
 	}
 
@@ -235,15 +235,15 @@ INLINE ILuint ILAPIENTRY ilHalfToFloat (ILushort y) {
 	// Assemble s, e and m.
 	//
 
-	return (s << 31) | (e << 23) | m;
+	return (ILuint)((s << 31) | (e << 23) | m);
 }
 
 INLINE void ILAPIENTRY ilHalfToFloatV (const void *Half, void *Float) {
-	*((ILuint*)Float) = ilHalfToFloat(*((ILshort*)Half));
+	*((ILuint*)Float) = ilHalfToFloat(*((ILushort*)Half));
 }
 
 INLINE void ILAPIENTRY ilFloatToHalfV (const void *Float, void *Half) {
-	*((ILshort*)Half) = ilFloatToHalf(*((ILuint*)Float));
+	*((ILushort*)Half) = ilFloatToHalf(*((ILuint*)Float));
 }
 
 #endif //NOINLINE

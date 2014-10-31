@@ -23,11 +23,11 @@
 #include <limits.h>
 
 //! Checks if an image is a cubemap
-ILuint GetCubemapInfo(ILimage* image, ILint* faces)
+static ILuint GetCubemapInfo(ILimage* image, ILuint* faces)
 {
-  ILint indices[] = { -1, -1, -1,  -1, -1, -1 }, i;
+  ILint indices[] = { -1, -1, -1,  -1, -1, -1 };
   ILimage *img;
-  ILuint  ret = 0;
+  ILuint  ret = 0, i;
   ILint   srcMipmapCount = 0, srcImagesCount = 0, mipmapCount;
 
   if (image == NULL)
@@ -89,26 +89,26 @@ ILuint GetCubemapInfo(ILimage* image, ILint* faces)
 ILboolean iSaveDdsInternal(ILimage *Image)
 {
   ILenum  DXTCFormat;
-  ILint counter, numMipMaps, numFaces, i;
+  ILuint counter, numMipMaps, numFaces, i;
   ILubyte *CurData = NULL;
-  ILint CubeTable[6] = { 0 };
+  ILuint CubeTable[6] = { 0 };
   ILuint  CubeFlags;
   ILimage *SubImage;
 
   CubeFlags = GetCubemapInfo(Image, CubeTable);
 
-  DXTCFormat = iGetInt(IL_DXTC_FORMAT);
+  DXTCFormat = (ILenum)iGetInt(IL_DXTC_FORMAT);
   WriteHeader(Image, DXTCFormat, CubeFlags);
 
   if (CubeFlags != 0) {
-    // numFaces = iGetIntegerImage(Image, IL_NUM_FACES); // Should always be 5 for now
-    iGetiv(Image, IL_NUM_FACES, &numFaces, 1);
+    //numFaces = iGetIntegerImage(Image, IL_NUM_FACES); // Should always be 5 for now
+    iGetiv(Image, IL_NUM_FACES, (ILint*)&numFaces, 1);
   } else {
     numFaces = 0;
   }
 
   // numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS); //this assumes all faces have same # of mipmaps
-  iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
+  iGetiv(Image, IL_NUM_MIPMAPS, (ILint*)&numMipMaps, 1);
 
   for (i = 0; i <= numFaces; ++i) {
     for (counter = 0; counter <= numMipMaps; counter++) {
@@ -234,7 +234,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 
   //numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
   iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
-  SaveLittleUInt(io, numMipMaps + 1);  // MipMapCount
+  SaveLittleInt(io, numMipMaps + 1);  // MipMapCount
 
   for (i = 0; i < 11; i++)
     SaveLittleUInt(io,0);   // Not used
@@ -274,7 +274,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
 ILuint ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, ILenum DXTCFormat) {
   ILubyte *CurData = NULL;
   ILuint  retVal;
-  ILint BlockNum;
+  ILuint BlockNum;
 
   if (Buffer == NULL) {  // Return the number that will be written with a subsequent call.
     BlockNum = ((Image->Width + 3)/4) * ((Image->Height + 3)/4) * Image->Depth;
@@ -333,13 +333,12 @@ static ILint Mul8Bit(ILint a, ILint b)
   return (t + (t >> 8)) >> 8;
 }
 
-ILushort As16Bit(ILint r, ILint g, ILint b)
+static ILushort As16Bit(ILint r, ILint g, ILint b)
 {
-  return (Mul8Bit(r,31) << 11) + (Mul8Bit(g,63) << 5) + Mul8Bit(b,31);
+  return (ILushort)((Mul8Bit(r,31) << 11) + (Mul8Bit(g,63) << 5) + Mul8Bit(b,31));
 }
 
-
-ILushort *CompressTo565(ILimage *Image)
+static ILushort *CompressTo565(ILimage *Image)
 {
   ILimage   *TempImage;
   ILushort  *Data;
@@ -431,8 +430,7 @@ ILushort *CompressTo565(ILimage *Image)
   return Data;
 }
 
-
-ILubyte *CompressTo88(ILimage *Image)
+static ILubyte *CompressTo88(ILimage *Image)
 {
   ILimage   *TempImage;
   ILubyte   *Data;
@@ -499,7 +497,7 @@ ILubyte *CompressTo88(ILimage *Image)
   return Data;
 }
 
-void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
+static void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
 {
   ILimage   *TempImage;
   ILuint    i, j;
@@ -534,49 +532,49 @@ void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
   {
     case IL_RGB:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i += 3, j++) {
-        Alpha[j] = TempImage->Data[i];
-        Data[j] = (TempImage->Data[i+1] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i+2] >> 3;
+        Alpha[j] = (ILubyte) ( TempImage->Data[i]             );
+        Data[j]  = (ILushort)((TempImage->Data[i+1] >> 2) << 5);
+        Data[j] |= (ILushort)( TempImage->Data[i+2] >> 3      );
       }
       break;
 
     case IL_RGBA:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i += 4, j++) {
-        Alpha[j]  = TempImage->Data[i];
-        Data[j] = (TempImage->Data[i+1] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i+2] >> 3;
+        Alpha[j]  = (ILubyte) ( TempImage->Data[i]);
+        Data[j]   = (ILushort)((TempImage->Data[i+1] >> 2) << 5);
+        Data[j]  |= (ILushort)( TempImage->Data[i+2] >> 3);
       }
       break;
 
     case IL_BGR:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i += 3, j++) {
-        Alpha[j]  = TempImage->Data[i+2];
-        Data[j] = (TempImage->Data[i+1] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i  ] >> 3;
+        Alpha[j]  = (ILubyte) ( TempImage->Data[i+2]);
+        Data[j]   = (ILushort)((TempImage->Data[i+1] >> 2) << 5);
+        Data[j]  |= (ILushort)( TempImage->Data[i  ] >> 3);
       }
       break;
 
     case IL_BGRA:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i += 4, j++) {
-        Alpha[j]  = TempImage->Data[i+2];
-        Data[j] = (TempImage->Data[i+1] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i  ] >> 3;
+        Alpha[j]  = (ILubyte) ( TempImage->Data[i+2]);
+        Data[j]   = (ILushort)((TempImage->Data[i+1] >> 2) << 5);
+        Data[j]  |= (ILushort)( TempImage->Data[i  ] >> 3);
       }
       break;
 
     case IL_LUMINANCE:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i++, j++) {
-        Alpha[j]  = TempImage->Data[i];
-        Data[j] = (TempImage->Data[i] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i] >> 3;
+        Alpha[j]  = (ILubyte) ( TempImage->Data[i]);
+        Data[j]   = (ILushort)((TempImage->Data[i] >> 2) << 5);
+        Data[j]  |= (ILushort)( TempImage->Data[i] >> 3);
       }
       break;
 
     case IL_LUMINANCE_ALPHA:
       for (i = 0, j = 0; i < TempImage->SizeOfData; i += 2, j++) {
-        Alpha[j]  = TempImage->Data[i];
-        Data[j] = (TempImage->Data[i] >> 2) << 5;
-        Data[j] |=  TempImage->Data[i] >> 3;
+        Alpha[j]  = (ILubyte) ( TempImage->Data[i]);
+        Data[j]   = (ILushort)((TempImage->Data[i] >> 2) << 5);
+        Data[j]  |= (ILushort)( TempImage->Data[i] >> 3);
       }
       break;
   }
@@ -898,16 +896,17 @@ ILboolean GetAlphaBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XP
   return IL_TRUE;
 }
 
-ILboolean Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, int channel)
+ILboolean Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, ILubyte channel)
 {
-  ILuint x, y, i = 0, Offset = 2*(YPos * Image->Width + XPos) + channel;
+  ILuint x, y, i = 0;
+  ILuint Offset = 2*(YPos * Image->Width + XPos) + channel;
 
   for (y = 0; y < 4; y++) {
     for (x = 0; x < 4; x++) {
       if (x < Image->Width && y < Image->Height)
-                Block[i++] = Data[Offset + 2*x];
-            else
-                Block[i++] = Data[Offset];
+        Block[i++] = Data[Offset + 2*x];
+      else
+        Block[i++] = Data[Offset];
     }
         Offset += 2*Image->Width;
   }
@@ -927,22 +926,22 @@ void ShortToColor565(ILushort Pixel, Color565 *Colour)
 
 void ShortToColor888(ILushort Pixel, Color888 *Colour)
 {
-  Colour->r = ((Pixel & 0xF800) >> 11) << 3;
-  Colour->g = ((Pixel & 0x07E0) >> 5)  << 2;
-  Colour->b = ((Pixel & 0x001F))       << 3;
+  Colour->r = (ILubyte)(((Pixel & 0xF800) >> 11) << 3);
+  Colour->g = (ILubyte)(((Pixel & 0x07E0) >> 5)  << 2);
+  Colour->b = (ILubyte)(((Pixel & 0x001F))       << 3);
   return;
 }
 
 
 ILushort Color565ToShort(Color565 *Colour)
 {
-  return (Colour->nRed << 11) | (Colour->nGreen << 5) | (Colour->nBlue);
+  return (ILushort)((Colour->nRed << 11) | (Colour->nGreen << 5) | (Colour->nBlue));
 }
 
 
 ILushort Color888ToShort(Color888 *Colour)
 {
-  return ((Colour->r >> 3) << 11) | ((Colour->g >> 2) << 5) | (Colour->b >> 3);
+  return (ILushort)(((Colour->r >> 3) << 11) | ((Colour->g >> 2) << 5) | (Colour->b >> 3));
 }
 
 
@@ -991,7 +990,7 @@ ILuint GenBitMask(ILushort ex0, ILushort ex1, ILuint NumCols, ILushort *In, ILub
       Dist = Distance(&c, &Colours[j]);
       if (Dist < Closest) {
         Closest = Dist;
-        Mask[i] = j;
+        Mask[i] = (ILubyte)j;
         if (OutCol) {
           OutCol[i].r = Colours[j].r;
           OutCol[i].g = Colours[j].g;
@@ -1002,7 +1001,7 @@ ILuint GenBitMask(ILushort ex0, ILushort ex1, ILuint NumCols, ILushort *In, ILub
   }
 
   for (i = 0; i < 16; i++) {
-    BitMask |= (Mask[i] << (i*2));
+    BitMask |= (ILuint)(Mask[i] << (i*2));
   }
 
   return BitMask;
@@ -1042,10 +1041,10 @@ void GenAlphaBitMask(ILubyte a0, ILubyte a1, ILubyte *In, ILubyte *Mask, ILubyte
   for (i = 0; i < 16; i++) {
     Closest = UINT_MAX;
     for (j = 0; j < 8; j++) {
-      Dist = abs((ILint)In[i] - (ILint)Alphas[j]);
+      Dist = (ILuint)abs((ILint)In[i] - (ILint)Alphas[j]);
       if (Dist < Closest) {
         Closest = Dist;
-        M[i] = j;
+        M[i] = (ILubyte)j;
       }
     }
   }
@@ -1059,14 +1058,14 @@ void GenAlphaBitMask(ILubyte a0, ILubyte a1, ILubyte *In, ILubyte *Mask, ILubyte
   //this was changed 20040623. There was a shift bug in here. Now the code
   //produces much higher quality images.
   // First three bytes.
-  Mask[0] = (M[0]) | (M[1] << 3) | ((M[2] & 0x03) << 6);
-  Mask[1] = ((M[2] & 0x04) >> 2) | (M[3] << 1) | (M[4] << 4) | ((M[5] & 0x01) << 7);
-  Mask[2] = ((M[5] & 0x06) >> 1) | (M[6] << 2) | (M[7] << 5);
+  Mask[0] = (ILubyte)((M[0]) | (M[1] << 3) | ((M[2] & 0x03) << 6));
+  Mask[1] = (ILubyte)(((M[2] & 0x04) >> 2) | (M[3] << 1) | (M[4] << 4) | ((M[5] & 0x01) << 7));
+  Mask[2] = (ILubyte)(((M[5] & 0x06) >> 1) | (M[6] << 2) | (M[7] << 5));
 
   // Second three bytes.
-  Mask[3] = (M[8]) | (M[9] << 3) | ((M[10] & 0x03) << 6);
-  Mask[4] = ((M[10] & 0x04) >> 2) | (M[11] << 1) | (M[12] << 4) | ((M[13] & 0x01) << 7);
-  Mask[5] = ((M[13] & 0x06) >> 1) | (M[14] << 2) | (M[15] << 5);
+  Mask[3] = (ILubyte)((M[8]) | (M[9] << 3) | ((M[10] & 0x03) << 6));
+  Mask[4] = (ILubyte)(((M[10] & 0x04) >> 2) | (M[11] << 1) | (M[12] << 4) | ((M[13] & 0x01) << 7));
+  Mask[5] = (ILubyte)(((M[13] & 0x06) >> 1) | (M[14] << 2) | (M[15] << 5));
 
   return;
 }
@@ -1079,7 +1078,7 @@ ILuint RMSAlpha(ILubyte *Orig, ILubyte *Test)
 
   for (i = 0; i < 16; i++) {
     d = Orig[i] - Test[i];
-    RMS += d*d;
+    RMS += (ILuint)(d*d);
   }
 
   //RMS /= 16;
@@ -1095,14 +1094,14 @@ ILuint Distance(Color888 *c1, Color888 *c2)
       (c1->b - c2->b) * (c1->b - c2->b);
 }
 
-#define Sum(c) ((c)->r + (c)->g + (c)->b)
+//#define Sum(c) ((c)->r + (c)->g + (c)->b)
 #define NormSquared(c) ((c)->r * (c)->r + (c)->g * (c)->g + (c)->b * (c)->b)
 
 void ChooseEndpoints(ILushort *Block, ILushort *ex0, ILushort *ex1)
 {
   ILuint    i;
   Color888  Colours[16];
-  ILint   Lowest=0, Highest=0;
+  ILuint   Lowest=0, Highest=0;
 
   for (i = 0; i < 16; i++) {
     ShortToColor888(Block[i], &Colours[i]);
@@ -1131,8 +1130,8 @@ void ChooseAlphaEndpoints(ILubyte *Block, ILubyte *a0, ILubyte *a1)
       Highest = Block[i];
   }
 
-  *a0 = Lowest;
-  *a1 = Highest;
+  *a0 = (ILubyte)Lowest;
+  *a1 = (ILubyte)Highest;
 }
 
 

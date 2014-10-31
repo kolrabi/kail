@@ -215,22 +215,22 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 
 // ImageLib Utility Toolkit's OpenGL Functions
 #ifdef ILUT_USE_OPENGL
-  ILAPI GLuint    ILAPIENTRY ilutGLBindTexImage();
+  ILAPI GLuint    ILAPIENTRY ilutGLBindTexImage(void);
   ILAPI GLuint    ILAPIENTRY ilutGLBindMipmaps(void);
   ILAPI ILboolean ILAPIENTRY ilutGLBuildMipmaps(void);
   ILAPI GLuint    ILAPIENTRY ilutGLLoadImage(ILstring FileName);
   ILAPI ILboolean ILAPIENTRY ilutGLScreen(void);
   ILAPI ILboolean ILAPIENTRY ilutGLScreenie(void);
   ILAPI ILboolean ILAPIENTRY ilutGLSaveImage(ILstring FileName, GLuint TexID);
-  ILAPI ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILuint XOff, ILuint YOff);
-  ILAPI ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILuint XOff, ILuint YOff, ILuint ZOff);
+  ILAPI ILboolean ILAPIENTRY ilutGLSubTex2D(GLuint TexID, ILint XOff, ILint YOff);
+  ILAPI ILboolean ILAPIENTRY ilutGLSubTex3D(GLuint TexID, ILint XOff, ILint YOff, ILint ZOff);
   ILAPI ILboolean ILAPIENTRY ilutGLSetTex2D(GLuint TexID);
   ILAPI ILboolean ILAPIENTRY ilutGLSetTex3D(GLuint TexID);
-  ILAPI ILboolean ILAPIENTRY ilutGLTexImage(GLuint Level);
-  ILAPI ILboolean ILAPIENTRY ilutGLSubTex(GLuint TexID, ILuint XOff, ILuint YOff);
+  ILAPI ILboolean ILAPIENTRY ilutGLTexImage(GLint Level);
+  ILAPI ILboolean ILAPIENTRY ilutGLSubTex(GLuint TexID, ILint XOff, ILint YOff);
 
   ILAPI ILboolean ILAPIENTRY ilutGLSetTex(GLuint TexID);  // Deprecated - use ilutGLSetTex2D.
-  ILAPI ILboolean ILAPIENTRY ilutGLSubTex(GLuint TexID, ILuint XOff, ILuint YOff);  // Use ilutGLSubTex2D.
+  ILAPI ILboolean ILAPIENTRY ilutGLSubTex(GLuint TexID, ILint XOff, ILint YOff);  // Use ilutGLSubTex2D.
 #endif//ILUT_USE_OPENGL
 
 // ImageLib Utility Toolkit's Allegro Functions

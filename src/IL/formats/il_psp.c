@@ -15,6 +15,7 @@
 #include "il_psp.h"
 #ifndef IL_NO_PSP
 
+#include "pack_push.h"
 // Make these global, since they contain most of the image information.
 // BP: y'know what? let's not make these global, global state is bad mmkay?
 typedef struct {
@@ -27,6 +28,7 @@ typedef struct {
 	SIO *         io;
 	ILimage *     Image;
 } PSP_CTX;
+#include "pack_pop.h"
 
 // Function definitions
 static ILboolean	iLoadPspInternal(ILimage *);
@@ -40,7 +42,7 @@ static ILboolean	ReadAlphaBlock(PSP_CTX *);
 static ILboolean	ReadPalette(PSP_CTX *);
 static ILubyte* 	GetChannel(PSP_CTX *);
 static ILboolean	UncompRLE(ILubyte *CompData, ILubyte *Data, ILuint CompLen);
-
+/*
 // Global constants
 static const ILubyte PSPSignature[32] = {
 	0x50, 0x61, 0x69, 0x6E, 0x74, 0x20, 0x53, 0x68, 0x6F, 0x70, 0x20, 0x50, 0x72, 0x6F, 0x20, 0x49,
@@ -50,6 +52,7 @@ static const ILubyte PSPSignature[32] = {
 static const ILubyte GenAttHead[4] = {
 	0x7E, 0x42, 0x4B, 0x00
 };
+*/
 
 // Internal function used to get the Psp header from the current file.
 static ILboolean iGetPspHead(SIO *io, PSPHEAD *Header)
@@ -156,7 +159,7 @@ static ILboolean ReadGenAttributes(PSP_CTX *ctx)
 		return IL_FALSE;
 
 	// Can have new entries in newer versions of the spec (4.0).
-	Padding = (ChunkLen) - sizeof(ctx->AttChunk);
+	Padding = (ILint)(ChunkLen - sizeof(ctx->AttChunk));
 	if (Padding > 0)
 		SIOseek(ctx->io, Padding, IL_SEEK_CUR);
 
@@ -186,7 +189,7 @@ static ILboolean ParseChunks(PSP_CTX *ctx)
 	do {
 		if (SIOread(ctx->io, &Block, 1, sizeof(Block)) != sizeof(Block)) {
 			ilGetError();  // Get rid of the erroneous IL_FILE_READ_ERROR.
-			return IL_TRUE;
+			break;
 		}
 
 		if (ctx->Header.MajorVersion == 3) {
@@ -197,7 +200,7 @@ static ILboolean ParseChunks(PSP_CTX *ctx)
 
 		if ( Block.HeadID[0] != 0x7E || Block.HeadID[1] != 0x42 
 			|| Block.HeadID[2] != 0x4B || Block.HeadID[3] != 0x00 ) {
-				return IL_TRUE;
+				break;
 		}
 
 		UShort(&Block.BlockID);
@@ -445,13 +448,12 @@ static ILubyte *GetChannel(PSP_CTX *ctx)
 		case PSP_COMP_NONE:
 			ifree(Data);
 			return CompData;
-			break;
 
 		case PSP_COMP_RLE:
 			if (!UncompRLE(CompData, Data, Channel.CompLen)) {
 				ifree(CompData);
 				ifree(Data);
-				return IL_FALSE;
+				return NULL;
 			}
 			break;
 
@@ -631,7 +633,7 @@ static ILboolean Cleanup(PSP_CTX *ctx) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPSP[] = { 
+static ILconst_string iFormatExtsPSP[] = { 
   IL_TEXT("psp"), 
   NULL 
 };

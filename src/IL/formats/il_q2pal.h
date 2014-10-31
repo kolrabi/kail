@@ -14,7 +14,7 @@
 #define Q2PAL_H
 
 #define IL_Q2PAL_SIZE 768
-ILubyte ilDefaultQ2Pal[IL_Q2PAL_SIZE] = {
+static ILubyte ilDefaultQ2Pal[IL_Q2PAL_SIZE] = {
 	0, 0, 0,
 	15, 15, 15,
 	31, 31, 31,

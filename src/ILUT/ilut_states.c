@@ -47,7 +47,7 @@ static void iFreeTLSData(void *ptr) {
 }
 #endif
 
-ILUT_TLS_DATA * iGetTLSData() {
+static ILUT_TLS_DATA * iGetTLSData() {
 #if IL_THREAD_SAFE_PTHREAD
   ILUT_TLS_DATA *iDataPtr = (ILUT_TLS_DATA*)pthread_getspecific(iTlsKey);
   if (iDataPtr == NULL) {
@@ -81,7 +81,7 @@ ILUT_TLS_DATA * iGetTLSData() {
 #endif
 }
 
-void iInitThreads(void) {
+void iInitThreads_ilut(void) {
   static ILboolean isInit = IL_FALSE;
   if (!isInit) {
   #if IL_THREAD_SAFE_PTHREAD
@@ -115,16 +115,16 @@ void ilutDefaultStates() {
   ilutStates[ilutCurrentPos].D3DAlphaKeyColor = -1;
 }
 
-/**
+/*
  * Sets the number of mip map levels for DirectX 8 textures (ILUT_D3D_MIPLEVELS).
  * @ingroup ilut_dx8
  */
-void ILAPIENTRY ilutD3D8MipFunc(ILuint NumLevels) {
+/*void ILAPIENTRY ilutD3D8MipFunc(ILuint NumLevels) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
   ilutStates[ilutCurrentPos].D3DMipLevels = NumLevels;
 }
-
+*/
 
 ILconst_string ILAPIENTRY ilutGetString(ILenum StringName) {
   switch (StringName)
@@ -307,19 +307,19 @@ void ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param) {
       *Param = ilutStates[ilutCurrentPos].ilutUseS3TC;
       break;
     case ILUT_S3TC_FORMAT:
-      *Param = ilutStates[ilutCurrentPos].ilutDXTCFormat;
+      *Param = (ILint)ilutStates[ilutCurrentPos].ilutDXTCFormat;
       break;
     case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      *Param = ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget;
+      *Param = (ILint)ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget;
       break;
     case ILUT_D3D_MIPLEVELS:
-      *Param = ilutStates[ilutCurrentPos].D3DMipLevels;
+      *Param = (ILint)ilutStates[ilutCurrentPos].D3DMipLevels;
       break;
     case ILUT_D3D_ALPHA_KEY_COLOR:
       *Param = ilutStates[ilutCurrentPos].D3DAlphaKeyColor;
       break;
     case ILUT_D3D_POOL:
-      *Param = ilutStates[ilutCurrentPos].D3DPool;
+      *Param = (ILint)ilutStates[ilutCurrentPos].D3DPool;
       break;
 
     default:
@@ -366,7 +366,7 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
   switch (Mode) {
     case ILUT_S3TC_FORMAT:
       if (Param >= IL_DXT1 && Param <= IL_DXT5) {
-        ilutStates[ilutCurrentPos].ilutDXTCFormat = Param;
+        ilutStates[ilutCurrentPos].ilutDXTCFormat = (ILenum)Param;
       }
       break;
 
@@ -408,7 +408,7 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
 
     case ILUT_D3D_MIPLEVELS:
       if (Param >= 0) {
-        ilutStates[ilutCurrentPos].D3DMipLevels = Param;
+        ilutStates[ilutCurrentPos].D3DMipLevels = (ILuint)Param;
       }
       break;
 
@@ -418,7 +418,7 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
 
     case ILUT_D3D_POOL:
       if (Param >= 0 && Param <= 2) {
-        ilutStates[ilutCurrentPos].D3DPool = Param;
+        ilutStates[ilutCurrentPos].D3DPool = (ILenum)Param;
       }
       break;
 
@@ -431,8 +431,6 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
 
 /** 
  * Pushes a new set of modes and attributes onto the state stack.
- * @param  Bits [description]
- * @return      [description]
  * @ingroup ilut_state
  */
 void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
@@ -491,7 +489,7 @@ ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer) {
     return IL_FALSE;
   }
 
-  iInitThreads();
+  iInitThreads_ilut();
 
   switch (Renderer) {
     #ifdef ILUT_USE_OPENGL

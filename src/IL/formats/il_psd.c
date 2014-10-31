@@ -21,7 +21,7 @@
 #include "il_psd.h"
 
 
-ILushort	ChannelNum;
+//ILushort	ChannelNum;
 
 static ILboolean	iCheckPsd (PSDHEAD *Header);
 static ILboolean	ReadPsd 	(ILimage* image, PSDHEAD *Head);
@@ -29,14 +29,12 @@ static ILboolean	ReadGrey(ILimage* image, PSDHEAD *Head);
 static ILboolean	ReadIndexed(ILimage* image, PSDHEAD *Head);
 static ILboolean	ReadRGB(ILimage* image, PSDHEAD *Head);
 static ILboolean	ReadCMYK(ILimage* image, PSDHEAD *Head);
-static ILuint		* GetCompChanLen(SIO*io, PSDHEAD *Head);
-
-// static ILboolean	iLoadPsdInternal(ILimage *image);
-ILboolean	PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed);
-ILboolean	ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources);
-ILboolean	GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboolean Compressed);
-ILboolean	iSavePsdInternal(ILimage* image);
-
+static ILuint		* GetCompChanLen(SIO*io, PSDHEAD *Head, ILushort ChannelNum);
+static ILboolean	PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed, ILushort ChannelNum);
+static ILboolean	ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources);
+static ILboolean	GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboolean Compressed);
+//ILboolean	iSavePsdInternal(ILimage* image);
+//
 // TODO: share these
 static float ubyte_to_float(ILubyte val)
 {
@@ -158,6 +156,7 @@ static ILboolean ReadGrey(ILimage* image, PSDHEAD *Head) {
 	ILenum		Type;
 	ILubyte * Resources = NULL;
 	SIO *     io = &image->io; 
+	ILushort  ChannelNum;
 
 	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
 	SIOseek(io, ColorMode, IL_SEEK_CUR);
@@ -194,7 +193,7 @@ static ILboolean ReadGrey(ILimage* image, PSDHEAD *Head) {
 	if (!iTexImage(image, Head->Width, Head->Height, 1, 1, IL_LUMINANCE, Type, NULL))
 		goto cleanup_error;
 
-	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
+	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed, ChannelNum))
 		goto cleanup_error;
 
 	if (!ParseResources(image, ResourceSize, Resources))
@@ -215,6 +214,7 @@ static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 	ILubyte * Palette = NULL;
 	ILubyte * Resources = NULL;
 	SIO *     io = &image->io; 
+	ILushort  ChannelNum;
 
 	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
 	if (ColorMode % 3 != 0) {
@@ -274,7 +274,7 @@ static ILboolean ReadIndexed(ILimage* image, PSDHEAD *Head) {
 	ifree(Palette);
 	Palette = NULL;
 
-	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
+	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed, ChannelNum))
 		goto cleanup_error;
 
 	ParseResources(image, ResourceSize, Resources);
@@ -298,6 +298,7 @@ static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 	ILenum		Format, Type;
 	ILubyte * Resources = NULL;
 	SIO *  		io = &image->io;
+	ILushort  ChannelNum;
 
 	ColorMode = GetBigUInt(io);  // Skip over the 'color mode data section'
 	SIOseek(io, ColorMode, IL_SEEK_CUR);
@@ -345,7 +346,7 @@ static ILboolean ReadRGB(ILimage* image, PSDHEAD *Head)
 	if (!iTexImage(image, Head->Width, Head->Height, 1, (Format==IL_RGB) ? 3 : 4, Format, Type, NULL))
 		goto cleanup_error;
 
-	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
+	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed, ChannelNum))
 		goto cleanup_error;
 
 	if (!ParseResources(image, ResourceSize, Resources))
@@ -368,6 +369,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 	ILubyte * Resources = NULL;
 	ILubyte * KChannel = NULL;
 	SIO *  		io = &image->io;
+	ILushort  ChannelNum;
 
 	ColorMode = GetBigUInt(io);;  // Skip over the 'color mode data section'
 	SIOseek(io, ColorMode, IL_SEEK_CUR);
@@ -418,7 +420,7 @@ ILboolean ReadCMYK(ILimage* image, PSDHEAD *Head) {
 	if (!iTexImage(image, Head->Width, Head->Height, 1, (ILubyte)Head->Channels, Format, Type, NULL))
 		goto cleanup_error;
 
-	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed))
+	if (!PsdGetData(image, Head, image->Data, (ILboolean)Compressed, ChannelNum))
 		goto cleanup_error;
 
 	Size = image->Bpc * image->Width * image->Height;
@@ -460,7 +462,7 @@ cleanup_error:
 	return IL_FALSE;
 }
 
-static ILuint *GetCompChanLen(SIO *io, PSDHEAD *Head) {
+static ILuint *GetCompChanLen(SIO *io, PSDHEAD *Head, ILushort ChannelNum) {
 	ILushort	*RleTable;
 	ILuint		*ChanLen, c, i, j;
 
@@ -505,6 +507,7 @@ static ILuint ReadCompressedChannel(SIO *io, const ILuint ChanLen, ILuint Size, 
 	ILuint		i;
 	ILint		Run;
 	ILbyte		HeadByte;
+	ILubyte   UHeadByte;
 
 	(void)ChanLen;
 
@@ -514,33 +517,37 @@ static ILuint ReadCompressedChannel(SIO *io, const ILuint ChanLen, ILuint Size, 
 	*/
 
 	for (i = 0; i < Size; ) {
-		HeadByte = SIOgetc(io);
+		HeadByte = (ILbyte)SIOgetc(io);
+		UHeadByte = (ILubyte)HeadByte;
 
 		if (HeadByte >= 0) {  //  && HeadByte <= 127
-			if (i + HeadByte > Size)
+			if (i + UHeadByte > Size)
 			{
 				return READ_COMPRESSED_ERROR_FILE_CORRUPT;
 			}
-			if (SIOread(io, Channel + i, HeadByte + 1, 1) != 1)
+
+			if (SIOread(io, Channel + i, UHeadByte + 1, 1) != 1)
 			{
 				return READ_COMPRESSED_ERROR_FILE_READ_ERROR;
 			}
 
-			i += HeadByte + 1;
+			i += UHeadByte + 1;
 		}
 		if (HeadByte >= -127 && HeadByte <= -1) {
+			ILuint Length = (ILuint)(-HeadByte + 1);
+
 			Run = SIOgetc(io);
 			if (Run == IL_EOF)
 			{
 				return READ_COMPRESSED_ERROR_FILE_READ_ERROR;
 			}
-			if (i + (-HeadByte + 1) > Size)
+			if (i + Length > Size)
 			{
 				return READ_COMPRESSED_ERROR_FILE_CORRUPT;
 			}
 
-			memset(Channel + i, Run, -HeadByte + 1);
-			i += -HeadByte + 1;
+			memset(Channel + i, Run, Length);
+			i += Length;
 		}
 		if (HeadByte == -128)
 		{ }  // Noop
@@ -550,7 +557,7 @@ static ILuint ReadCompressedChannel(SIO *io, const ILuint ChanLen, ILuint Size, 
 }
 
 
-ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed)
+static ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Compressed, ILushort ChannelNum)
 {
 	ILuint		c, x, y, i, Size, ReadResult, NumChan;
 	ILubyte		*Channel = NULL;
@@ -558,6 +565,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 	ILuint		*ChanLen = NULL;
 
 	SIO *     io = &image->io;
+	void *    ImageData = image->Data;
 
 	(void)Buffer;
 
@@ -577,7 +585,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 	if (Channel == NULL) {
 		return IL_FALSE;
 	}
-	ShortPtr = (ILushort*)Channel;
+	ShortPtr = (ILushort*)(void*)Channel;
 
 	// @TODO: Add support for this in, though I have yet to run across a .psd
 	//	file that uses this.
@@ -630,7 +638,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 					 #ifndef WORDS_BIGENDIAN
 						iSwapUShort(ShortPtr+i);
 					 #endif
-						((ILushort*)image->Data)[y + x + c] = ShortPtr[i];
+						((ILushort*)ImageData)[y + x + c] = ShortPtr[i];
 					}
 				}
 				image->Bps *= 2;
@@ -646,9 +654,9 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 				image->Bps /= 2;
 				for (y = 0; y < Head->Height * image->Bps; y += image->Bps) {
 					for (x = 0; x < image->Bps; x += image->Bpp, i++) {
-						float curVal = ushort_to_float(((ILushort*)image->Data)[y + x + 3]);
+						float curVal = ushort_to_float(((ILushort*)ImageData)[y + x + 3]);
 						float newVal = ushort_to_float(ShortPtr[i]);
-						((ILushort*)image->Data)[y + x + 3] = float_to_ushort(curVal * newVal);
+						((ILushort*)ImageData)[y + x + 3] = float_to_ushort(curVal * newVal);
 					}
 				}
 				image->Bps *= 2;
@@ -656,7 +664,7 @@ ILboolean PsdGetData(ILimage* image, PSDHEAD *Head, void *Buffer, ILboolean Comp
 		}
 	}
 	else {
-		ChanLen = GetCompChanLen(io, Head);
+		ChanLen = GetCompChanLen(io, Head, ChannelNum);
 
 		Size = Head->Width * Head->Height;
 		for (c = 0; c < NumChan; c++) {
@@ -739,7 +747,7 @@ ILboolean ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources
 		}
 		Resources += 4;
 
-		ID = *((ILushort*)Resources);
+		ID = *((ILushort*)(void*)Resources);
 		BigUShort(&ID);
 		Resources += 2;
 
@@ -749,7 +757,7 @@ ILboolean ParseResources(ILimage* image, ILuint ResourceSize, ILubyte *Resources
 		Resources += NameLen;
 
 		// Get the resource data size.
-		Size = *((ILuint*)Resources);
+		Size = *((ILuint*)(void*)Resources);
 		BigUInt(&Size);
 		Resources += 4;
 
@@ -806,19 +814,20 @@ ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboo
 	}
 	else {
 		for (i = 0; i < Head->Width * Head->Height; ) {
-			HeadByte = SIOgetc(io);
+			HeadByte = (ILbyte)SIOgetc(io);
 
 			if (HeadByte >= 0) {  //  && HeadByte <= 127
-				if (SIOread(io, Buffer + i, HeadByte + 1, 1) != 1)
+				if (SIOread(io, Buffer + i, (ILuint)HeadByte + 1, 1) != 1)
 					return IL_FALSE;
-				i += HeadByte + 1;
+				i += (ILuint)HeadByte + 1;
 			}
 			if (HeadByte >= -127 && HeadByte <= -1) {
-				Run = SIOgetc(io);
+				ILuint Length = (ILuint)(-HeadByte + 1);
+				Run = (ILbyte)SIOgetc(io);
 				if (Run == IL_EOF)
 					return IL_FALSE;
-				memset(Buffer + i, Run, -HeadByte + 1);
-				i += -HeadByte + 1;
+				memset(Buffer + i, Run, Length);
+				i += Length;
 			}
 			if (HeadByte == -128)
 			{ }  // Noop
@@ -830,7 +839,7 @@ ILboolean GetSingleChannel(ILimage* image, PSDHEAD *Head, ILubyte *Buffer, ILboo
 
 
 // Internal function used to save the Psd.
-ILboolean iSavePsdInternal(ILimage* image)
+static ILboolean iSavePsdInternal(ILimage* image)
 {
 	ILubyte		*Signature = (ILubyte*)"8BPS";
 	ILimage		*TempImage;
@@ -858,8 +867,8 @@ ILboolean iSavePsdInternal(ILimage* image)
 	SaveBigShort(io,0);
 
 	SaveBigShort(io,image->Bpp);
-	SaveBigInt(io,image->Height);
-	SaveBigInt(io,image->Width);
+	SaveBigUInt(io,image->Height);
+	SaveBigUInt(io,image->Width);
 	if (image->Bpc > 2)
 		Type = IL_UNSIGNED_SHORT;
 
@@ -876,7 +885,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	else {
 		TempImage = image;
 	}
-	SaveBigShort(io,(ILushort)(TempImage->Bpc * 8));
+	SaveBigUShort(io,(ILushort)(TempImage->Bpc * 8));
 
 	// @TODO:  Put the other formats here.
 	switch (TempImage->Format)
@@ -942,7 +951,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 		}
 	}
 	else {  // TempImage->Bpc == 2
-		ShortPtr = (ILushort*)TempData;
+		ShortPtr = (ILushort*)(void*)TempData;
 		TempImage->SizeOfPlane /= 2;
 		for (c = 0; c < TempImage->Bpp; c++) {
 			for (i = c; i < TempImage->SizeOfPlane; i += TempImage->Bpp) {
@@ -962,7 +971,7 @@ ILboolean iSavePsdInternal(ILimage* image)
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPSD[] = { 
+static ILconst_string iFormatExtsPSD[] = { 
   IL_TEXT("psd"), 
   IL_TEXT("pdd"), 
   NULL 

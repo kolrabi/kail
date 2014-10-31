@@ -44,7 +44,7 @@ static ILboolean iCheckPix(PIXHEAD *Header) {
 // Internal function used to get the Pix header from the current file.
 static ILuint iGetPixHead(SIO* io, PIXHEAD *Header)
 {
-	ILuint read = io->read(io->handle, Header, 1, sizeof(PIXHEAD));
+	ILuint read = SIOread(io, Header, 1, sizeof(PIXHEAD));
 
 	UShort(&Header->Width);
 	UShort(&Header->Height);
@@ -59,8 +59,9 @@ static ILuint iGetPixHead(SIO* io, PIXHEAD *Header)
 // Internal function to get the header and check it.
 static ILboolean iIsValidPix(SIO* io) {
 	PIXHEAD	Head;
-	ILint read = iGetPixHead(io, &Head);
-	io->seek(io->handle, -read, IL_SEEK_CUR);
+	ILuint Start = SIOtell(io);
+	ILuint read = iGetPixHead(io, &Head);
+	SIOseek(io, Start, IL_SEEK_SET);
 
 	if (read == sizeof(Head))
 		return iCheckPix(&Head);
@@ -91,8 +92,8 @@ static ILboolean iLoadPixInternal(ILimage* image) {
 		return IL_FALSE;
 
 	for (i = 0; i < image->SizeOfData; ) {
-		ByteHead = image->io.getchar(image->io.handle);
-		if (image->io.read(image->io.handle, Colour, 1, 3) != 3)
+		ByteHead = (ILubyte)SIOgetc(&image->io);
+		if (SIOread(&image->io, Colour, 1, 3) != 3)
 			return IL_FALSE;
 		for (j = 0; j < ByteHead; j++) {
 			image->Data[i++] = Colour[0];
@@ -106,7 +107,7 @@ static ILboolean iLoadPixInternal(ILimage* image) {
 	return IL_TRUE;
 }
 
-ILconst_string iFormatExtsPIX[] = { 
+static ILconst_string iFormatExtsPIX[] = { 
   IL_TEXT("pix"), 
   NULL 
 };

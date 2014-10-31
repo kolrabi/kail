@@ -33,12 +33,11 @@ ILuint	*IntPtr, *SIntPtr;
 ILfloat	*FloatPtr, *SFloatPtr;
 */
 
-
 ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter)
 {
 	if (Image == NULL) {
 		iSetError(ILU_ILLEGAL_OPERATION);
-		return IL_FALSE;
+		return NULL;
 	}
 
 	if (Filter == ILU_NEAREST)

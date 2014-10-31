@@ -5,7 +5,7 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
   ILuint    x, y, z, ConvBps, ConvSizePlane;
-  ILubyte   *Converted;
+  void   *Converted, *DestData;
   ILuint    c;
   // ILuint   StartX, StartY, StartZ;
   ILboolean DestFlipped = IL_FALSE;
@@ -46,9 +46,10 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
   }
   
   // convert source image to match the destination image type and format
-  Converted = (ILubyte*)iConvertBuffer(Src->SizeOfData, Src->Format, Dest->Format, Src->Type, Dest->Type, NULL, SrcTemp);
+  Converted = iConvertBuffer(Src->SizeOfData, Src->Format, Dest->Format, Src->Type, Dest->Type, NULL, SrcTemp);
   if (Converted == NULL)
     return IL_FALSE;
+  DestData = Dest->Data;
   
   ConvBps       = Dest->Bpp * Src->Width;
   ConvSizePlane = ConvBps   * Src->Height;
@@ -57,26 +58,29 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
   // overlapped region only
   if (DestX < 0) {
     if (Width <= (ILuint)-DestX) return IL_TRUE; // nothing to do
-    Width -= DestX;
+    Width -= (ILuint)-DestX;
+    SrcX += (ILuint)-DestX;
     DestX = 0;
   }
 
   if (DestY < 0) {
     if (Height <= (ILuint)-DestY) return IL_TRUE; // nothing to do
-    Height -= DestY;
+    Height -= (ILuint)-DestY;
+    SrcY += (ILuint)-DestY;
     DestY = 0;
   }
 
   if (DestZ < 0) {
     if (Depth <= (ILuint)-DestZ) return IL_TRUE; // nothing to do
-    Depth -= DestZ;
+    Depth -= (ILuint)-DestZ;
+    SrcZ += (ILuint)-DestZ;
     DestZ = 0;
   }
   
   // Limit the copy of data inside of the destination image
-  if (Width  + DestX > Dest->Width)  Width  = Dest->Width  - DestX;
-  if (Height + DestY > Dest->Height) Height = Dest->Height - DestY;
-  if (Depth  + DestZ > Dest->Depth)  Depth  = Dest->Depth  - DestZ;
+  if (Width  + (ILuint)DestX > Dest->Width)  Width  = Dest->Width  - (ILuint)DestX;
+  if (Height + (ILuint)DestY > Dest->Height) Height = Dest->Height - (ILuint)DestY;
+  if (Depth  + (ILuint)DestZ > Dest->Depth)  Depth  = Dest->Depth  - (ILuint)DestZ;
   
   //@TODO: non funziona con rgba
   if (Src->Format == IL_RGBA || Src->Format == IL_BGRA || Src->Format == IL_LUMINANCE_ALPHA) {
@@ -85,7 +89,7 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
       for (y = 0; y < Height; y++) {
         for (x = 0; x < Width; x++) {
           const ILuint  SrcIndex  = (z+SrcZ)*ConvSizePlane + (y+SrcY)*ConvBps + (x+SrcX)*Dest->Bpp;
-          const ILuint  DestIndex = (z+DestZ)*Dest->SizeOfPlane + (y+DestY)*Dest->Bps + (x+DestX)*Dest->Bpp;
+          const ILuint  DestIndex = (z+(ILuint)DestZ)*Dest->SizeOfPlane + (y+(ILuint)DestY)*Dest->Bps + (x+(ILuint)DestX)*Dest->Bpp;
           const ILuint  AlphaIdx = SrcIndex + bpp_without_alpha;
           ILfloat FrontAlpha = 0; // foreground opacity
           ILfloat BackAlpha = 0;  // background opacity
@@ -94,26 +98,26 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
           {
             case IL_BYTE:
             case IL_UNSIGNED_BYTE:
-              FrontAlpha = Converted[AlphaIdx]/((float)IL_MAX_UNSIGNED_BYTE);
-              BackAlpha = Dest->Data[AlphaIdx]/((float)IL_MAX_UNSIGNED_BYTE);
+              FrontAlpha = ((ILbyte*)Converted)[AlphaIdx]/((float)IL_MAX_UNSIGNED_BYTE);
+              BackAlpha  = ((ILbyte*)DestData )[AlphaIdx]/((float)IL_MAX_UNSIGNED_BYTE);
               break;
             case IL_SHORT:
             case IL_UNSIGNED_SHORT:
               FrontAlpha = ((ILshort*)Converted)[AlphaIdx]/((float)IL_MAX_UNSIGNED_SHORT);
-              BackAlpha = ((ILshort*)Dest->Data)[AlphaIdx]/((float)IL_MAX_UNSIGNED_SHORT);
+              BackAlpha  = ((ILshort*)DestData )[AlphaIdx]/((float)IL_MAX_UNSIGNED_SHORT);
               break;
             case IL_INT:
             case IL_UNSIGNED_INT:
               FrontAlpha = ((ILint*)Converted)[AlphaIdx]/((float)IL_MAX_UNSIGNED_INT);
-              BackAlpha = ((ILint*)Dest->Data)[AlphaIdx]/((float)IL_MAX_UNSIGNED_INT);
+              BackAlpha  = ((ILint*)DestData )[AlphaIdx]/((float)IL_MAX_UNSIGNED_INT);
               break;
             case IL_FLOAT:
               FrontAlpha = ((ILfloat*)Converted)[AlphaIdx];
-              BackAlpha = ((ILfloat*)Dest->Data)[AlphaIdx];
+              BackAlpha  = ((ILfloat*)DestData )[AlphaIdx];
               break;
             case IL_DOUBLE:
               FrontAlpha = (ILfloat)(((ILdouble*)Converted)[AlphaIdx]);
-              BackAlpha = (ILfloat)(((ILdouble*)Dest->Data)[AlphaIdx]);
+              BackAlpha  = (ILfloat)(((ILdouble*)DestData )[AlphaIdx]);
               break;
           }
           
@@ -124,17 +128,19 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
             ResultAlpha = FrontAlpha + (1.0f - FrontAlpha) * BackAlpha;
             for (c = 0; c < bpp_without_alpha; c++)
             {
-              Dest->Data[DestIndex + c] = (ILubyte)( 0.5f + 
-                (Converted[SrcIndex + c] * FrontAlpha + 
-                (1.0f - FrontAlpha) * Dest->Data[DestIndex + c] * BackAlpha) 
-                / ResultAlpha);
+              ((ILubyte*)DestData)[DestIndex + c] = (ILubyte)( 
+                0.5f + (
+                  ((ILubyte*)Converted)[SrcIndex + c]  * FrontAlpha + 
+                  ((ILubyte*)DestData )[DestIndex + c] * BackAlpha  * (1.0f - FrontAlpha)
+                ) / ResultAlpha
+              );
             }
-            Dest->Data[AlphaIdx] = (ILubyte)(0.5f + ResultAlpha * (float)IL_MAX_UNSIGNED_BYTE);
+            ((ILubyte*)DestData)[AlphaIdx] = (ILubyte)(0.5f + ResultAlpha * (float)IL_MAX_UNSIGNED_BYTE);
           }
           else {
             for (c = 0; c < Dest->Bpp; c++)
             {
-              Dest->Data[DestIndex + c] = (ILubyte)(Converted[SrcIndex + c]);
+              ((ILubyte*)DestData)[DestIndex + c] = (ILubyte)(((ILubyte*)Converted)[SrcIndex + c]);
             }
           }
         }
@@ -145,8 +151,12 @@ ILboolean iBlit(ILimage *Dest, ILimage *Src, ILint DestX,  ILint DestY,   ILint 
       for( y = 0; y < Height; y++ ) {
         for( x = 0; x < Width; x++ ) {
           for( c = 0; c < Dest->Bpp; c++ ) {
-            Dest->Data[(z+DestZ)*Dest->SizeOfPlane + (y+DestY)*Dest->Bps + (x+DestX)*Dest->Bpp + c] =
-             Converted[(z+SrcZ)*ConvSizePlane + (y+SrcY)*ConvBps + (x+SrcX)*Dest->Bpp + c];
+            ((ILubyte*)DestData)  [(z+(ILuint)DestZ)*Dest->SizeOfPlane + 
+                                   (y+(ILuint)DestY)*Dest->Bps         + 
+                                   (x+(ILuint)DestX)*Dest->Bpp         + c] =
+              ((ILubyte*)Converted)[ (z+SrcZ)*ConvSizePlane + 
+                                     (y+SrcY)*ConvBps + 
+                                     (x+SrcX)*Dest->Bpp + c];
           }
         }
       }

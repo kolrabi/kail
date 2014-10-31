@@ -23,6 +23,7 @@
 #define IL_PGM_BINARY	0x0005
 #define IL_PPM_BINARY	0x0006
 
+#include "pack_push.h"
 typedef struct PPMINFO
 {
 	ILenum	Type;
@@ -31,5 +32,6 @@ typedef struct PPMINFO
 	ILuint	MaxColour;
 	ILubyte	Bpp;
 } PPMINFO;
+#include "pack_pop.h"
 
 #endif//PPMPGM_H

@@ -19,8 +19,8 @@
 
 
 // Global variables: Linked lists of registered formats
-iFormatL *LoadProcs = NULL;
-iFormatS *SaveProcs = NULL;
+static iFormatL *LoadProcs = NULL;
+static iFormatS *SaveProcs = NULL;
 
 ILboolean iRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
   iFormatL *TempNode, *NewNode;

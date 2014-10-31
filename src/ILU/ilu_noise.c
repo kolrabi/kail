@@ -47,9 +47,9 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILint)(rand() % Factor2) - Factor);
+        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
         for (c = 0; c < Image->Bpp; c++) {
-          if ((ILint)Image->Data[i + c] + Val > UCHAR_MAX)
+          if ((ILshort)Image->Data[i + c] + Val > UCHAR_MAX)
             Image->Data[i + c] = UCHAR_MAX;
           else if ((ILint)Image->Data[i + c] + Val < 0)
             Image->Data[i + c] = 0;
@@ -69,7 +69,7 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILint)(rand() % Factor2) - Factor);
+        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
         for (c = 0; c < Image->Bpp; c++) {
           if ((ILint)ShortPtr[i + c] + Val > USHRT_MAX)
             ShortPtr[i + c] = USHRT_MAX;
@@ -91,14 +91,14 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILint)(rand() % Factor2) - Factor);
+        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
         for (c = 0; c < Image->Bpp; c++) {
-          if (IntPtr[i + c] + Val > UINT_MAX)
+          if ((ILint64)IntPtr[i + c] + Val > UINT_MAX)
             IntPtr[i + c] = UINT_MAX;
           else if ((ILint)IntPtr[i + c] + Val < 0)
             IntPtr[i + c] = 0;
           else
-            IntPtr[i + c] += Val;
+            IntPtr[i + c] += (ILuint)Val;
         }
       }
       break;

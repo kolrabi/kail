@@ -13,10 +13,6 @@
 #ifndef COLOR_H
 #define COLOR_H
 
-#ifdef _cplusplus
-extern "C" {
-#endif
-
 INLINE void iYCbCr2RGB(ILubyte Y, ILubyte Cb, ILubyte Cr, ILubyte *r, ILubyte *g, ILubyte *b)
 {
   static const ILdouble c11 = 0.0054980*256;
@@ -39,27 +35,23 @@ INLINE void iYCbCr2RGB(ILubyte Y, ILubyte Cb, ILubyte Cr, ILubyte *r, ILubyte *g
   else if (r1 > 255)
     *r = 255;
   else
-    *r = r1;
+    *r = (ILubyte)r1;
 
   if (g1 < 0)
     *g = 0;
   else if (g1 > 255)
     *g = 255;
   else
-    *g = g1;
+    *g = (ILubyte)g1;
 
   if (b1 < 0)
     *b = 0;
   else if (b1 > 255)
     *b = 255;
   else
-    *b = b1;
+    *b = (ILubyte)b1;
 
   return;
 }
-
-#ifdef _cplusplus
-}
-#endif
 
 #endif

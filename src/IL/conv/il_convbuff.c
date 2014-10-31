@@ -19,12 +19,11 @@
 
 
 void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType, void *Buffer);
-ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat);
 
 #define CHECK_ALLOC()   if (NewData == NULL) { \
               if (Data != Buffer) \
                 ifree(Data); \
-              return IL_FALSE; \
+              return NULL; \
             }
 
 /*
@@ -45,7 +44,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
   //static const  ILfloat LumFactor[3] = { 0.3086f, 0.6094f, 0.0820f };  // http://www.sgi.com/grafica/matrix/index.html
   static const  ILfloat LumFactor[3] = { 0.212671f, 0.715160f, 0.072169f };  // http://www.inforamp.net/~poynton/ and libpng's libpng.txt
 
-  ILubyte   *NewData = NULL;
+  void     *NewData = NULL;
   ILuint    i, j, c, Size;
   ILfloat   Resultf;
   ILdouble  Resultd;
@@ -69,7 +68,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
   if (DestFormat == SrcFormat) {
     NewData = (ILubyte*)ialloc(NumPix * BpcDest);
     if (NewData == NULL) {
-      return IL_FALSE;
+      return NULL;
     }
     memcpy(NewData, Data, NumPix * BpcDest);
     if (Data != Buffer)
@@ -127,7 +126,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       switch (DestFormat)
       {
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest);
+          NewData = ialloc(NumPix * BpcDest);
           CHECK_ALLOC();
           switch (DestType)
           {
@@ -137,9 +136,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
               abc2cba_byte((ILubyte*)Data,NumPix * BpcDest,NewData);
             #else
               for (i = 0; i < NumPix; i += 3) {
-                NewData[i] = ((ILubyte*)(Data))[i+2];
-                NewData[i+1] = ((ILubyte*)(Data))[i+1];
-                NewData[i+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[i  ] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[i+2] = ((ILubyte*)(Data))[i];
               }
             #endif
               break;
@@ -150,9 +149,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
               abc2cba_short((ILushort*)Data,NumPix * BpcDest,(ILushort*)NewData);
             #else
               for (i = 0; i < NumPix; i += 3) {
-                ((ILushort*)(NewData))[i] = ((ILushort*)(Data))[i+2];
+                ((ILushort*)(NewData))[i  ] = ((ILushort*)(Data))[i+2];
                 ((ILushort*)(NewData))[i+1] = ((ILushort*)(Data))[i+1];
-                ((ILushort*)(NewData))[i+2] = ((ILushort*)(Data))[i];
+                ((ILushort*)(NewData))[i+2] = ((ILushort*)(Data))[i  ];
               }
             #endif
               break;
@@ -194,17 +193,17 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_RGBA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4 / 3);
+          NewData = ialloc(NumPix * BpcDest * 4 / 3);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 3, j += 4) {
-                NewData[j] = ((ILubyte*)(Data))[i];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i+2];
-                NewData[j+3] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+3] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -246,17 +245,17 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4 / 3);
+          NewData = ialloc(NumPix * BpcDest * 4 / 3);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 3, j += 4) {
-                NewData[j] = ((ILubyte*)(Data))[i+2];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i];
-                NewData[j+3] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+3] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -298,7 +297,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3);
+          NewData = ialloc(NumPix * BpcDest / 3);
           CHECK_ALLOC();
           Size = NumPix / 3;
           switch (DestType)
@@ -310,7 +309,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 3 + c] * LumFactor[c];
                 }
-                NewData[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -356,7 +355,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3 * 2);
+          NewData = ialloc(NumPix * BpcDest / 3 * 2);
           CHECK_ALLOC();
           Size = NumPix / 3;
           switch (DestType)
@@ -368,8 +367,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 3 + c] * LumFactor[c];
                 }
-                NewData[i*2] = (ILubyte)Resultf;
-                NewData[i*2+1] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[i*2  ] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i*2+1] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -419,7 +418,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3);
+          NewData = ialloc(NumPix * BpcDest / 3);
           CHECK_ALLOC();
           memset(NewData, 0, NumPix * BpcDest);
           break;
@@ -436,7 +435,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       switch (DestFormat)
       {
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest);
+          NewData = ialloc(NumPix * BpcDest);
           CHECK_ALLOC();
           switch (DestType)
           {
@@ -446,10 +445,10 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
               abcd2cbad_byte(NewData,Image->SizeOfData,NewData);
             #else
               for (i = 0; i < NumPix; i += 4) {
-                NewData[i] = ((ILubyte*)(Data))[i+2];
-                NewData[i+1] = ((ILubyte*)(Data))[i+1];
-                NewData[i+2] = ((ILubyte*)(Data))[i];
-                NewData[i+3] = ((ILubyte*)(Data))[i+3];
+                ((ILubyte*)(NewData))[i  ] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[i+2] = ((ILubyte*)(Data))[i  ];
+                ((ILubyte*)(NewData))[i+3] = ((ILubyte*)(Data))[i+3];
               }
             #endif
               break;
@@ -508,16 +507,16 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_RGB:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3 / 4);
+          NewData = ialloc(NumPix * BpcDest * 3 / 4);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 4, j += 3) {
-                NewData[j] = ((ILubyte*)(Data))[i];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j  ] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i+2];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -555,16 +554,16 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3 / 4);
+          NewData = ialloc(NumPix * BpcDest * 3 / 4);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 4, j += 3) {
-                NewData[j] = ((ILubyte*)(Data))[i+2];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j  ] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -602,7 +601,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4);
+          NewData = ialloc(NumPix * BpcDest / 4);
           CHECK_ALLOC();
           Size = NumPix / 4;
           switch (DestType)
@@ -614,7 +613,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 4 + c] * LumFactor[c];
                 }
-                NewData[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -660,7 +659,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4 * 2);
+          NewData = ialloc(NumPix * BpcDest / 4 * 2);
           CHECK_ALLOC();
           Size = NumPix / 4 * 2;
           switch (DestType)
@@ -672,8 +671,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 2 + c] * LumFactor[c];
                 }
-                NewData[i] = (ILubyte)Resultf;
-                NewData[i+1] = ((ILubyte*)(Data))[i * 2 + 3];
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i * 2 + 3];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -723,7 +722,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4);
+          NewData = ialloc(NumPix * BpcDest / 4);
           CHECK_ALLOC();
           Size = NumPix / 4;
           switch (DestType)
@@ -731,7 +730,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0; i < Size; i++) {
-                NewData[i] = ((ILubyte*)(Data))[i * 4 + 3];
+                ((ILubyte*)(NewData))[i] = ((ILubyte*)(Data))[i * 4 + 3];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -772,7 +771,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       switch (DestFormat)
       {
         case IL_RGB:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest);
+          NewData = ialloc(NumPix * BpcDest);
           CHECK_ALLOC();
           switch (DestType)
           {
@@ -782,9 +781,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
               abc2cba_byte(((ILubyte*)Data),NumPix * BpcDest,NewData);
             #else
               for (i = 0; i < NumPix; i += 3) {
-                NewData[i] = ((ILubyte*)(Data))[i+2];
-                NewData[i+1] = ((ILubyte*)(Data))[i+1];
-                NewData[i+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[i] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[i+2] = ((ILubyte*)(Data))[i];
               }
             #endif
               break;
@@ -839,17 +838,17 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4 / 3);
+          NewData = ialloc(NumPix * BpcDest * 4 / 3);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 3, j += 4) {
-                NewData[j] = ((ILubyte*)(Data))[i];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i+2];
-                NewData[j+3] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+3] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -891,17 +890,17 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_RGBA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4 / 3);
+          NewData = ialloc(NumPix * BpcDest * 4 / 3);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 3, j += 4) {
-                NewData[j] = ((ILubyte*)(Data))[i+2];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i];
-                NewData[j+3] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+3] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -943,7 +942,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3);
+          NewData = ialloc(NumPix * BpcDest / 3);
           CHECK_ALLOC();
           Size = NumPix / 3;
           switch (DestType)
@@ -955,7 +954,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++, j--) {
                   Resultf += ((ILubyte*)(Data))[i * 3 + c] * LumFactor[j];
                 }
-                NewData[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1001,7 +1000,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3 * 2);
+          NewData = ialloc(NumPix * BpcDest / 3 * 2);
           CHECK_ALLOC();
           Size = NumPix / 3;
           switch (DestType)
@@ -1013,8 +1012,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 3 + c] * LumFactor[c];
                 }
-                NewData[i*2] = (ILubyte)Resultf;
-                NewData[i*2+1] = UCHAR_MAX;
+                ((ILubyte*)(NewData))[i*2] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i*2+1] = UCHAR_MAX;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1064,7 +1063,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 3);
+          NewData = ialloc(NumPix * BpcDest / 3);
           CHECK_ALLOC();
           memset(NewData, 0, NumPix * BpcDest / 3);
           break;
@@ -1081,7 +1080,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       switch (DestFormat)
       {
         case IL_RGBA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest);
+          NewData = ialloc(NumPix * BpcDest);
           CHECK_ALLOC();
           switch (DestType)
           {
@@ -1091,10 +1090,10 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
               abcd2cbad_byte(NewData,Image->SizeOfData,NewData);
             #else
               for (i = 0; i < NumPix; i += 4) {
-                NewData[i] = ((ILubyte*)(Data))[i+2];
-                NewData[i+1] = ((ILubyte*)(Data))[i+1];
-                NewData[i+2] = ((ILubyte*)(Data))[i];
-                NewData[i+3] = ((ILubyte*)(Data))[i+3];
+                ((ILubyte*)(NewData))[i] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[i+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[i+3] = ((ILubyte*)(Data))[i+3];
               }
             #endif
               break;
@@ -1153,16 +1152,16 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3 / 4);
+          NewData = ialloc(NumPix * BpcDest * 3 / 4);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 4, j += 3) {
-                NewData[j] = ((ILubyte*)(Data))[i];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i+2];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1200,16 +1199,16 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_RGB:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3 / 4);
+          NewData = ialloc(NumPix * BpcDest * 3 / 4);
           CHECK_ALLOC();
           switch (DestType)
           {
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 4, j += 3) {
-                NewData[j] = ((ILubyte*)(Data))[i+2];
-                NewData[j+1] = ((ILubyte*)(Data))[i+1];
-                NewData[j+2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i+2];
+                ((ILubyte*)(NewData))[j+1] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j+2] = ((ILubyte*)(Data))[i];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1247,7 +1246,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4);
+          NewData = ialloc(NumPix * BpcDest / 4);
           CHECK_ALLOC();
           Size = NumPix / 4;
           switch (DestType)
@@ -1259,7 +1258,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++, j--) {
                   Resultf += ((ILubyte*)(Data))[i * 4 + c] * LumFactor[j];
                 }
-                NewData[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1305,7 +1304,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4 * 2);
+          NewData = ialloc(NumPix * BpcDest / 4 * 2);
           CHECK_ALLOC();
           Size = NumPix / 4 * 2;
           switch (DestType)
@@ -1317,8 +1316,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
                 for (c = 0; c < 3; c++) {
                   Resultf += ((ILubyte*)(Data))[i * 2 + c] * LumFactor[c];
                 }
-                NewData[i] = (ILubyte)Resultf;
-                NewData[i+1] = ((ILubyte*)(Data))[i * 2 + 3];
+                ((ILubyte*)(NewData))[i] = (ILubyte)Resultf;
+                ((ILubyte*)(NewData))[i+1] = ((ILubyte*)(Data))[i * 2 + 3];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1368,7 +1367,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 4);
+          NewData = ialloc(NumPix * BpcDest / 4);
           CHECK_ALLOC();
           Size = NumPix / 4;
           switch (DestType)
@@ -1376,7 +1375,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0; i < Size; i++) {
-                NewData[i] = ((ILubyte*)(Data))[i * 4 + 3];
+                ((ILubyte*)(NewData))[i] = ((ILubyte*)(Data))[i * 4 + 3];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1419,7 +1418,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       {
         case IL_RGB:
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3);
+          NewData = ialloc(NumPix * BpcDest * 3);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1428,7 +1427,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i++, j += 3) {
                 for (c = 0; c < 3; c++) {
-                  NewData[j + c] = ((ILubyte*)(Data))[i];
+                  ((ILubyte*)(NewData))[j + c] = ((ILubyte*)(Data))[i];
                 }
               }
               break;
@@ -1468,7 +1467,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
 
         case IL_RGBA:
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4);
+          NewData = ialloc(NumPix * BpcDest * 4);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1477,9 +1476,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i++, j += 4) {
                 for (c = 0; c < 3; c++) {
-                  NewData[j + c] = ((ILubyte*)(Data))[i];
+                  ((ILubyte*)(NewData))[j + c] = ((ILubyte*)(Data))[i];
                 }
-                NewData[j + 3] = UCHAR_MAX;  // Full opacity
+                ((ILubyte*)(NewData))[j + 3] = UCHAR_MAX;  // Full opacity
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1521,7 +1520,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 2);
+          NewData = ialloc(NumPix * BpcDest * 2);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1529,8 +1528,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0; i < NumPix; i++) {
-                NewData[i * 2] = ((ILubyte*)(Data))[i];
-                NewData[i * 2 + 1] = UCHAR_MAX;  // Full opacity
+                ((ILubyte*)(NewData))[i * 2] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[i * 2 + 1] = UCHAR_MAX;  // Full opacity
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1564,7 +1563,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest);
+          NewData = ialloc(NumPix * BpcDest);
           CHECK_ALLOC();
           memset(NewData, 0, NumPix * BpcDest);
           break;
@@ -1603,7 +1602,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       {
         case IL_RGB:
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 2 * 3);
+          NewData = ialloc(NumPix * BpcDest / 2 * 3);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1612,7 +1611,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 2, j += 3) {
                 for (c = 0; c < 3; c++) {
-                  NewData[j + c] = ((ILubyte*)(Data))[i];
+                  ((ILubyte*)(NewData))[j + c] = ((ILubyte*)(Data))[i];
                 }
               }
               break;
@@ -1652,7 +1651,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
 
         case IL_RGBA:
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 2 * 4);
+          NewData = ialloc(NumPix * BpcDest / 2 * 4);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1661,9 +1660,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 2, j += 4) {
                 for (c = 0; c < 3; c++) {
-                  NewData[j + c] = ((ILubyte*)(Data))[i];
+                  ((ILubyte*)(NewData))[j + c] = ((ILubyte*)(Data))[i];
                 }
-                NewData[j + 3] = ((ILubyte*)(Data))[i+1];
+                ((ILubyte*)(NewData))[j + 3] = ((ILubyte*)(Data))[i+1];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1705,7 +1704,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 2);
+          NewData = ialloc(NumPix * BpcDest / 2);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1713,7 +1712,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i += 2, j++) {
-                NewData[j] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[j] = ((ILubyte*)(Data))[i];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1743,7 +1742,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest / 2);
+          NewData = ialloc(NumPix * BpcDest / 2);
           CHECK_ALLOC();
           Size = NumPix / 2;
           switch (DestType)
@@ -1751,7 +1750,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0; i < Size; i++) {
-                NewData[i] = ((ILubyte*)(Data))[i * 2 + 3];
+                ((ILubyte*)(NewData))[i] = ((ILubyte*)(Data))[i * 2 + 3];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1814,7 +1813,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
       {
         case IL_RGB:
         case IL_BGR:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 3);
+          NewData = ialloc(NumPix * BpcDest * 3);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1836,7 +1835,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
 
         case IL_RGBA:
         case IL_BGRA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 4);
+          NewData = ialloc(NumPix * BpcDest * 4);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1845,9 +1844,9 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_BYTE:
               for (i = 0, j = 0; i < NumPix; i++, j += 4) {
                 for (c = 0; c < 3; c++) {
-                  NewData[j + c] = 0;
+                  ((ILubyte*)(NewData))[j + c] = 0;
                 }
-                NewData[j + 3] = ((ILubyte*)(Data))[i];  // Only value that matters
+                ((ILubyte*)(NewData))[j + 3] = ((ILubyte*)(Data))[i];  // Only value that matters
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1889,7 +1888,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
           break;
 
         case IL_LUMINANCE_ALPHA:
-          NewData = (ILubyte*)ialloc(NumPix * BpcDest * 2);
+          NewData = ialloc(NumPix * BpcDest * 2);
           CHECK_ALLOC();
 
           switch (DestType)
@@ -1897,8 +1896,8 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_UNSIGNED_BYTE:
             case IL_BYTE:
               for (i = 0; i < NumPix; i++) {
-                NewData[i * 2] = 0;
-                NewData[i * 2 + 1] = ((ILubyte*)(Data))[i];
+                ((ILubyte*)(NewData))[i * 2] = 0;
+                ((ILubyte*)(NewData))[i * 2 + 1] = ((ILubyte*)(Data))[i];
               }
               break;
             case IL_UNSIGNED_SHORT:
@@ -1975,12 +1974,13 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
 void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType, void *Buffer)
 {
   ILuint    BpcSrc, BpcDest, Size, i;
-  ILubyte   *NewData, *BytePtr;
+  ILubyte   *BytePtr;
   ILushort  *ShortPtr;
   ILuint    *IntPtr;
   ILfloat   *FloatPtr, tempFloat;
   ILdouble  *DblPtr, tempDouble;
   ILushort  *HalfPtr;
+  void      *NewData;
 
   ILubyte   *ByteBuf = (ILubyte*)Buffer;
 
@@ -1989,7 +1989,7 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
 
   if (BpcSrc == 0 || BpcDest == 0) {
     iSetError(IL_INTERNAL_ERROR);
-    return IL_FALSE;
+    return NULL;
   }
 
   Size = SizeOfData / BpcSrc;
@@ -1999,9 +1999,9 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
     return Buffer;
   }
 
-  NewData = (ILubyte*)ialloc(Size * BpcDest);
+  NewData = ialloc(Size * BpcDest);
   if (NewData == NULL) {
-    return IL_FALSE;
+    return NULL;
   }
 
   switch (DestType)
@@ -2067,7 +2067,7 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
         case IL_UNSIGNED_BYTE:
         case IL_BYTE:
           for (i = 0; i < Size; i++) {
-            ShortPtr[i] = (((ILubyte*)Buffer)[i] << 8) | ((ILubyte*)Buffer)[i];
+            ShortPtr[i] = (ILushort)((((ILubyte*)Buffer)[i] << 8) | ((ILubyte*)Buffer)[i]);
           }
           break;
         case IL_UNSIGNED_INT:
@@ -2120,14 +2120,15 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
         case IL_UNSIGNED_BYTE:
         case IL_BYTE:
           for (i = 0; i < Size; i++) {
-            IntPtr[i] = (((ILubyte*)Buffer)[i] << 24) | (((ILubyte*)Buffer)[i] << 16) | 
-              (((ILubyte*)Buffer)[i] << 8) | ((ILubyte*)Buffer)[i];
+            IntPtr[i] = (ILuint)(
+              (((ILubyte*)Buffer)[i] << 24) | (((ILubyte*)Buffer)[i] << 16) | 
+              (((ILubyte*)Buffer)[i] << 8)  | ((ILubyte*)Buffer)[i]);
           }
           break;
         case IL_UNSIGNED_SHORT:
         case IL_SHORT:
           for (i = 0; i < Size; i++) {
-            IntPtr[i] = (((ILushort*)Buffer)[i] << 16) | ((ILushort*)Buffer)[i];
+            IntPtr[i] = (ILuint)((((ILushort*)Buffer)[i] << 16) | ((ILushort*)Buffer)[i]);
           }
           break;
         case IL_FLOAT:

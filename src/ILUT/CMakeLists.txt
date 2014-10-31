@@ -4,17 +4,37 @@ SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 SET                     ( SOURCES
 
-                          ilut_allegro.c
-                          ilut_directx.c
-                          ilut_directx9.c
                           ilut_internal.c
-                          ilut_main.c
-                          ilut_opengl.c
-                          ilut_sdlsurface.c
                           ilut_states.c
-                          ilut_win32.c
-                          ilut_x11.c
                         )
+
+IF                      ( ILUT_USE_ALLEGRO )
+  SET                   ( SOURCES ${SOURCES} ilut_allegro.c )
+ENDIF                   ( )
+
+IF                      ( ILUT_USE_DIRECTX8 )
+  SET                   ( SOURCES ${SOURCES} ilut_directx.c )
+ENDIF                   ( )
+
+IF                      ( ILUT_USE_DIRECTX9 )
+  SET                   ( SOURCES ${SOURCES} ilut_directx9.c )
+ENDIF                   ( )
+
+IF                      ( ILUT_USE_OPENGL )
+  SET                   ( SOURCES ${SOURCES} ilut_opengl.c )
+ENDIF                   ( )
+
+IF                      ( ILUT_USE_SDL )
+  SET                   ( SOURCES ${SOURCES} ilut_sdlsurface.c )
+ENDIF                   ( )
+
+IF                      ( ILUT_USE_X11 )
+  SET                   ( SOURCES ${SOURCES} ilut_x11.c )
+ENDIF                   ( )
+
+IF                      ( WIN32 )
+  SET                   ( SOURCES ${SOURCES} ilut_win32.c )
+ENDIF                   ( )
 
 INCLUDE_DIRECTORIES     ( ${CMAKE_CURRENT_SOURCE_DIR} )
 
