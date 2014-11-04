@@ -152,20 +152,24 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   ILint numMipMaps;
   SIO *io = &Image->io;
 
-  Flags1 |= DDS_LINEARSIZE | DDS_MIPMAPCOUNT | DDS_WIDTH | DDS_HEIGHT | DDS_CAPS | DDS_PIXELFORMAT;
-  Flags2 |= DDS_FOURCC;
+  Flags1 |= DDS_MIPMAPCOUNT | DDS_WIDTH | DDS_HEIGHT | DDS_CAPS | DDS_PIXELFORMAT;
+  if (DXTCFormat != IL_DXT_NO_COMP)
+    Flags2 |= DDS_FOURCC;
 
   if (Image->Depth > 1)
     Flags1 |= DDS_DEPTH;
 
   // @TODO:  Fix the pre-multiplied alpha problem.
-  if (DXTCFormat == IL_DXT2)
+  /*if (DXTCFormat == IL_DXT2)
     DXTCFormat = IL_DXT3;
   else if (DXTCFormat == IL_DXT4)
-    DXTCFormat = IL_DXT5;
+    DXTCFormat = IL_DXT5;*/
 
   switch (DXTCFormat)
   {
+    case IL_DXT_NO_COMP:
+      FourCC = 0;
+      break;    
     case IL_DXT1:
     case IL_DXT1A:
       FourCC = IL_MAKEFOURCC('D','X','T','1');
@@ -197,40 +201,34 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
       return IL_FALSE;
   }
 
+  if (DXTCFormat == IL_DXT_NO_COMP) {
+    LinearSize = ( Image->Width * 8 * (iFormatHasAlpha(Image->Format)?4:3) + 7 ) / 8;
+    Flags1 |= DDS_PITCH;
+  } else {
+    Flags1 |= DDS_LINEARSIZE;
+    if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_ATI1N) {
+      BlockSize = 8;
+    }
+    else {
+      BlockSize = 16;
+    }
+    LinearSize = (((Image->Width + 3)/4) * ((Image->Height + 3)/4)) * BlockSize * Image->Depth;
+  }
+
+
   SIOwrite(io, "DDS ", 1, 4);
   SaveLittleUInt(io,124);   // Size1
   SaveLittleUInt(io,Flags1);    // Flags1
   SaveLittleUInt(io,Image->Height);
   SaveLittleUInt(io,Image->Width);
-
-  if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_ATI1N) {
-    BlockSize = 8;
-  }
-  else {
-    BlockSize = 16;
-  }
-  LinearSize = (((Image->Width + 3)/4) * ((Image->Height + 3)/4)) * BlockSize * Image->Depth;
-
-  /*
-  // doing this is actually wrong, linear size is only size of one cube face
-  if (CubeFlags != 0) {
-    ILint numFaces = 0;
-    for (i = 0; i < 6; ++i)
-      if (CubeFlags & CubemapDirections[i])
-        ++numFaces;
-
-    LinearSize *= numFaces;
-  }
-  */
-
-  SaveLittleUInt(io,LinearSize);  // LinearSize (TODO: change this when uncompressed formats are supported)
+  SaveLittleUInt(io,LinearSize);  // LinearSize
 
   if (Image->Depth > 1) {
     SaveLittleUInt(io,Image->Depth);      // Depth
     ddsCaps2 |= DDS_VOLUME;
-  }
-  else
+  } else {
     SaveLittleUInt(io,0);           // Depth
+  }
 
   //numMipMaps = iGetIntegerImage(Image, IL_NUM_MIPMAPS);
   iGetiv(Image, IL_NUM_MIPMAPS, &numMipMaps, 1);
@@ -242,11 +240,21 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   SaveLittleUInt(io,32);      // Size2
   SaveLittleUInt(io,Flags2);    // Flags2
   SaveLittleUInt(io,FourCC);    // FourCC
-  SaveLittleUInt(io,0);     // RGBBitCount
-  SaveLittleUInt(io,0);     // RBitMask
-  SaveLittleUInt(io,0);     // GBitMask
-  SaveLittleUInt(io,0);     // BBitMask
-  SaveLittleUInt(io,0);     // RGBAlphaBitMask
+
+  if (DXTCFormat == IL_DXT_NO_COMP) {
+    SaveLittleUInt(io,iFormatHasAlpha(Image->Format) ? 32 :24);              // RGBBitCount
+    SaveLittleUInt(io,iGetMaskFormat(IL_BGRA, 0));      // RBitMask
+    SaveLittleUInt(io,iGetMaskFormat(IL_BGRA, 1));      // GBitMask
+    SaveLittleUInt(io,iGetMaskFormat(IL_BGRA, 2));      // BBitMask
+    SaveLittleUInt(io,iFormatHasAlpha(Image->Format) ? iGetMaskFormat(IL_BGRA, 3) : 0);      // RGBAlphaBitMask
+  } else {
+    SaveLittleUInt(io,0);     // RGBBitCount
+    SaveLittleUInt(io,0);     // RBitMask
+    SaveLittleUInt(io,0);     // GBitMask
+    SaveLittleUInt(io,0);     // BBitMask
+    SaveLittleUInt(io,0);     // RGBAlphaBitMask
+  }
+
   ddsCaps1 |= DDS_TEXTURE;
   //changed 20040516: set mipmap flag on mipmap images
   //(non-compressed .dds files still not supported,
@@ -259,7 +267,6 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   }
 
   SaveLittleUInt(io,ddsCaps1);  // ddsCaps1
-
   SaveLittleUInt(io,ddsCaps2);  // ddsCaps2
   SaveLittleUInt(io,0);     // ddsCaps3
   SaveLittleUInt(io,0);     // ddsCaps4
@@ -285,7 +292,9 @@ ILuint ILAPIENTRY iGetDXTCData(ILimage *Image, void *Buffer, ILuint BufferSize, 
       case IL_DXT1A:
       case IL_ATI1N:
         return BlockNum * 8;
+      case IL_DXT2:
       case IL_DXT3:
+      case IL_DXT4:
       case IL_DXT5:
       case IL_3DC:
       case IL_RXGB:
@@ -416,6 +425,82 @@ static ILushort *CompressTo565(ILimage *Image)
         Data[j] |= (TempImage->Data[i] >> 2) << 5;
         Data[j] |=  TempImage->Data[i] >> 3;*/
         Data[j] = As16Bit(TempImage->Data[i], TempImage->Data[i], TempImage->Data[i]);
+      }
+      break;
+
+    case IL_ALPHA:
+      memset(Data, 0, Image->Width * Image->Height * 2 * Image->Depth);
+      break;
+  }
+
+  if (TempImage != Image)
+    iCloseImage(TempImage);
+
+  return Data;
+}
+
+static ILushort *CompressTo565PremulAlpha(ILimage *Image)
+{
+  ILimage   *TempImage;
+  ILushort  *Data;
+  ILuint    i, j;
+  ILubyte   Alpha;
+
+  if ((Image->Type != IL_UNSIGNED_BYTE && Image->Type != IL_BYTE) || Image->Format == IL_COLOUR_INDEX) {
+    TempImage = iConvertImage(Image, IL_BGRA, IL_UNSIGNED_BYTE);  // @TODO: Needs to be BGRA.
+    if (TempImage == NULL)
+      return NULL;
+  }
+  else {
+    TempImage = Image;
+  }
+
+  Data = (ILushort*)ialloc(Image->Width * Image->Height * 2 * Image->Depth);
+  if (Data == NULL) {
+    if (TempImage != Image)
+      iCloseImage(TempImage);
+    return NULL;
+  }
+
+  //changed 20040623: Use TempImages format :)
+  switch (TempImage->Format)
+  {
+    case IL_RGB:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i += 3, j++) {
+        Data[j] = As16Bit( TempImage->Data[i], TempImage->Data[i+1], TempImage->Data[i+2]);
+      }
+      break;
+
+    case IL_RGBA:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i += 4, j++) {
+        Alpha = TempImage->Data[i+3];
+        Data[j] = As16Bit( (Alpha*TempImage->Data[i]) >> 8, (Alpha*TempImage->Data[i+1]) >> 8, (Alpha*TempImage->Data[i+2])>>8);
+      }
+      break;
+
+    case IL_BGR:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i += 3, j++) {
+        Data[j] = As16Bit(TempImage->Data[i+2], TempImage->Data[i+1], TempImage->Data[i]);
+      }
+      break;
+
+    case IL_BGRA:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i += 4, j++) {
+        Alpha = TempImage->Data[i+3];
+        Data[j] = As16Bit( (Alpha*TempImage->Data[i+2]) >> 8, (Alpha*TempImage->Data[i+1]) >> 8, (Alpha*TempImage->Data[i])>>8);
+      }
+      break;
+
+    case IL_LUMINANCE:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i++, j++) {
+        Data[j] = As16Bit(TempImage->Data[i], TempImage->Data[i], TempImage->Data[i]);
+      }
+      break;
+
+    case IL_LUMINANCE_ALPHA:
+      for (i = 0, j = 0; i < TempImage->SizeOfData; i += 2, j++) {
+        Alpha = TempImage->Data[i+1];
+        Data[j] = As16Bit((Alpha*TempImage->Data[i])>>8, (Alpha*TempImage->Data[i])>>8, (Alpha*TempImage->Data[i])>>8);
       }
       break;
 
@@ -596,8 +681,10 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 
   if (DXTCFormat == IL_3DC) {
     Data3Dc = CompressTo88(Image);
-    if (Data3Dc == NULL)
+    if (Data3Dc == NULL) {
+      iTrace("**** CompressTo88 returned NULL");
       return 0;
+    }
 
     Runner8 = Data3Dc;
 
@@ -632,8 +719,10 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 
     if (Image->Bpp != 1) {
       TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
-      if (TempImage == NULL)
+      if (TempImage == NULL) {
+        iTrace("**** Could not convert to grayscale");
         return 0;
+      }
     }
     else {
       TempImage = Image;
@@ -666,21 +755,25 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
     ILubyte  *ByteData, *BlockData;
     ILuint DXTCSize;
     
-    if (iGetInt(IL_SQUISH_COMPRESS) && Image->Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
+    if (iGetInt(IL_SQUISH_COMPRESS) && Image->Depth == 1) {  // See if we need to use the squish library.
       if (DXTCFormat == IL_DXT1 || DXTCFormat == IL_DXT1A || DXTCFormat == IL_DXT3 || DXTCFormat == IL_DXT5) {
         // libsquish needs data as RGBA 32-bit.
         if (Image->Format != IL_RGBA || Image->Type != IL_UNSIGNED_BYTE) {  // No need to convert if already this format/type.
           ByteData = iConvertBuffer(Image->SizeOfData, Image->Format, IL_RGBA, Image->Type, IL_UNSIGNED_BYTE, NULL, Image->Data);
-          if (ByteData == NULL)
+          if (ByteData == NULL) {
+            iTrace("**** Could not convert to RGBA unsigned byte buffer");
             return 0;
+          }
         }
         else
           ByteData = Image->Data;
 
         // Get compressed data here.
         BlockData = iSquishCompressDXT(ByteData, Image->Width, Image->Height, 1, DXTCFormat, &DXTCSize);
-        if (BlockData == NULL)
-          return 0;
+        if (BlockData == NULL) {
+          iTrace("**** iSquishCompressDXT returned NULL, falling back to internal");
+          goto nosquish;
+        }
 
         if ((ILuint)SIOwrite(io, BlockData, 1, DXTCSize) != DXTCSize) {
           if (ByteData != Image->Data)
@@ -696,26 +789,41 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
         return Image->Width * Image->Height * 4;  // Either compresses all or none.
       }
     }
+nosquish:
 #endif//IL_USE_DXTC_SQUISH
 
-    if (DXTCFormat != IL_RXGB) {
-      Data = CompressTo565(Image);
-      if (Data == NULL)
-        return 0;
-
-      Alpha = iGetAlpha(Image, IL_UNSIGNED_BYTE);
-      if (Alpha == NULL) {
-        ifree(Data);
-        return 0;
-      }
-    }
-    else {
+    if (DXTCFormat == IL_DXT_NO_COMP) {
+      Data = NULL;
+      Alpha = iConvertBuffer(Image->SizeOfData, Image->Format, iFormatHasAlpha(Image->Format) ? IL_BGRA : IL_BGR, Image->Type, IL_UNSIGNED_BYTE, NULL, Image->Data);
+    } else if (DXTCFormat == IL_RXGB) {
       CompressToRXGB(Image, &Data, &Alpha);
       if (Data == NULL || Alpha == NULL) {
+        iTrace("**** CompressToRXGB returned NULL");
         if (Data != NULL)
           ifree(Data);
         if (Alpha != NULL)
           ifree(Alpha);
+        return 0;
+      }
+    } else  {
+      Alpha = iGetAlpha(Image, IL_UNSIGNED_BYTE);
+      if (Alpha == NULL) {
+        iTrace("**** iGetAlpha returned NULL");
+        return 0;
+      }
+
+      if (DXTCFormat == IL_DXT2 || DXTCFormat == IL_DXT4) 
+      {
+        Data = CompressTo565PremulAlpha(Image);
+      }
+      else
+      {
+        Data = CompressTo565(Image);
+      }
+
+      if (Data == NULL) {
+        iTrace("**** CompressTo565 returned NULL");
+        ifree(Alpha);
         return 0;
       }
     }
@@ -725,6 +833,11 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 
     switch (DXTCFormat)
     {
+      case IL_DXT_NO_COMP:
+        Count = Image->Width*Image->Height*Image->Depth * (iFormatHasAlpha(Image->Format) ? 4 : 3);
+        SIOwrite(io, Runner8, Count, 1);
+        break;
+
       case IL_DXT1:
       case IL_DXT1A:
         for (z = 0; z < Image->Depth; z++) {
@@ -758,25 +871,7 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
         }
         break;
 
-      /*case IL_DXT2:
-        for (y = 0; y < Image->Height; y += 4) {
-          for (x = 0; x < Image->Width; x += 4) {
-            GetAlphaBlock(AlphaBlock, Alpha, Image, x, y);
-            for (i = 0; i < 16; i += 2) {
-              SIOputc(io, (ILubyte)(((AlphaBlock[i] >> 4) << 4) | (AlphaBlock[i+1] >> 4)));
-            }
-
-            GetBlock(Block, Data, Image, x, y);
-            PreMult(Block, AlphaBlock);
-            ChooseEndpoints(Block, &ex0, &ex1);
-            SaveLittleUShort(io, ex0);
-            SaveLittleUShort(io, ex1);
-            BitMask = GenBitMask(ex0, ex1, 4, Block, NULL, NULL);
-            SaveLittleUInt(io,BitMask);
-          }   
-        }
-        break;*/
-
+      case IL_DXT2:
       case IL_DXT3:
         for (z = 0; z < Image->Depth; z++) {
           for (y = 0; y < Image->Height; y += 4) {
@@ -805,6 +900,7 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
         break;
 
       case IL_RXGB:
+      case IL_DXT4:
       case IL_DXT5:
         for (z = 0; z < Image->Depth; z++) {
           for (y = 0; y < Image->Height; y += 4) {
@@ -842,6 +938,10 @@ ILuint Compress(ILimage *Image, ILenum DXTCFormat)
           Runner8 += Image->Width * Image->Height;
         }
         break;
+
+        default:
+          iTrace("**** Unsupported DXT compression format: 0x%04x", DXTCFormat);
+
     }
 
     ifree(Data);
@@ -1186,20 +1286,11 @@ ILubyte* iCompressDXT(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, 
   ILuint  BuffSize;
   ILubyte *Buffer;
 
-  if ((DXTCFormat != IL_DXT1 && DXTCFormat != IL_DXT1A && DXTCFormat != IL_DXT3 && DXTCFormat != IL_DXT5)
+  if ((DXTCFormat != IL_DXT1 && DXTCFormat != IL_DXT1A && DXTCFormat != IL_DXT2 && DXTCFormat != IL_DXT3 && DXTCFormat != IL_DXT4 && DXTCFormat != IL_DXT5)
     || Data == NULL || Width == 0 || Height == 0 || Depth == 0) {
     iSetError(IL_INVALID_PARAM);
     return NULL;
   }
-
-  // We want to try nVidia compression first, because it is the fastest.
-#ifdef IL_USE_DXTC_NVIDIA
-  if (ilIsEnabled(IL_NVIDIA_COMPRESS) && Depth == 1) {  // See if we need to use the nVidia Texture Tools library.
-    // NVTT needs data as BGRA 32-bit.
-    // Here's where all the compression and writing goes on.
-    return iNVidiaCompressDXT(Data, Width, Height, 1, DXTCFormat, DXTCSize);
-  }
-#endif//IL_USE_DXTC_NVIDIA
 
   // libsquish generates better quality output than DevIL does, so we try it next.
 #ifdef IL_USE_DXTC_SQUISH

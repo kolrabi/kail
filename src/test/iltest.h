@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <sys/time.h>
 
 #define CHECK_ERROR() { \
   ILenum err = ilGetError(); \
@@ -33,6 +34,18 @@
   fprintf(stderr, "FAILED in line %d: %s (%f) > %s (%f)\n", __LINE__, #x, (float)x, #y, (float)y); \
   CHECK_ERROR(); \
   exit(1);  \
+}
+
+#define BENCHMARK(x, n) { \
+  struct timeval _tv1, _tv2; \
+  gettimeofday(&_tv1, NULL); \
+  for (int i=0; i<(n); i++) { \
+    x \
+  } \
+  gettimeofday(&_tv2, NULL);\
+  double _t1 = _tv1.tv_sec + 0.000001 * _tv1.tv_usec; \
+  double _t2 = _tv2.tv_sec + 0.000001 * _tv2.tv_usec; \
+  fprintf(stderr, "TIME: %lfs/op: %s\n", (_t2-_t1)/(double)(n), #x); \
 }
 
 #define RUN_TEST(n) if (!strcmp(*argv, #n)) test_##n(); else

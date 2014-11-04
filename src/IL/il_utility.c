@@ -135,6 +135,32 @@ ILAPI ILenum ILAPIENTRY iGetPalBaseType(ILenum PalType)
 }
 
 
+ILAPI ILuint ILAPIENTRY iGetMaskFormat(ILenum Format, ILubyte channel)
+{
+	switch (Format)
+	{
+		case IL_RGBA:
+		case IL_RGB:	
+			return (ILuint)(0x000000FF << (channel*8));
+
+		case IL_BGRA:
+		case IL_BGR:	
+			if (channel == 3) {
+				return 0xFF000000;
+			} else {
+				return 0x00FF0000 >> (channel*8UL);
+			}
+	}
+	return 0;
+}
+
+ILAPI ILboolean ILAPIENTRY iFormatHasAlpha(ILenum Format)
+{
+	// TODO: paletted images
+	return Format == IL_RGBA || Format == IL_BGRA || Format == IL_LUMINANCE_ALPHA;
+}
+
+
 // Returns the next power of 2 if Num isn't 2^n or returns Num if Num is 2^n
 ILAPI ILuint ILAPIENTRY iNextPower2(ILuint n)
 {	

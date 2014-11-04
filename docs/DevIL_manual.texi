@@ -905,21 +905,18 @@ ilSetInteger(IL_DXTC_FORMAT, Format);
 @emph{Format} can be @code{IL_DXT1}, @code{IL_DXT3} or @code{IL_DXT5}.
 
 @subsection Compression Method
-@code{DevIL} can use the nVidia Texture Tools (NVTT) library, the libsquish library and its own internal compressor to generate DXTC data.
+@code{KaIL} can use the libsquish library and its own internal compressor to generate DXTC data.
 By default, @code{DevIL} uses its internal compressor.  
 This compressor is fast but is not very high quality.
-NVTT is usually CUDA-enabled, meaning that it can run quickly on computers with GeForce 8-series and higher cards.
 libsquish generates images with the highest quality possible, but it can be very slow.
 
-To enable compression by NVTT or libsquish, use one of the following lines of code:
+To enable compression by libsquish, use one the following line of code:
 
 @example
-ilEnable(IL_NVIDIA_COMPRESS);
 ilEnable(IL_SQUISH_COMPRESS);
 @end example
 
-You can also disable compression by these libraries by using @code{ilDisable}.  
-If both are enabled, NVTT is used.
+You can also disable compression by this library by using @code{ilDisable}.  
 
 @section Retrieving DXTC Data
 To retrieve a copy of the DXTC data, use @code{ilGetDXTCData}.

@@ -253,6 +253,8 @@ ILAPI ILubyte   ILAPIENTRY iGetBpcType(ILenum Type);
 ILAPI ILenum    ILAPIENTRY iGetTypeBpc(ILubyte Bpc);
 ILAPI ILubyte   ILAPIENTRY iGetBppPal(ILenum PalType);
 ILAPI ILenum    ILAPIENTRY iGetPalBaseType(ILenum PalType);
+ILAPI ILuint    ILAPIENTRY iGetMaskFormat(ILenum Format, ILubyte channel);
+ILAPI ILboolean ILAPIENTRY iFormatHasAlpha(ILenum Format);
 
 ILAPI ILuint    ILAPIENTRY iNextPower2(ILuint Num);
 ILAPI ILenum    ILAPIENTRY iTypeFromExt(ILconst_string FileName);

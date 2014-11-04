@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
   // save rle encoded
   ilBindImage(image);
   ilEnable(IL_TGA_RLE);
+
+  BENCHMARK( ilDetermineSize(IL_TGA);, 100 );
+
   CHECK(testSaveImage("test_tgarle.tga", image));
   CHECK(testLoadImage("test_tgarle.tga", image));
 

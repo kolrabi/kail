@@ -480,7 +480,6 @@ ILAPI ILboolean ILAPIENTRY ilDxtcDataToSurface() {
  * @a IL_FORMAT_SET       | @a IL_FALSE   | Convert image format on load to match the format set by ilFormatFunc().
  * @a IL_TYPE_SET         | @a IL_FALSE   | Convert image data type on load to match @a IL_TYPE_MODE.
  * @a IL_CONV_PAL         | @a IL_FALSE   | Convert images that use palettes on load to 24 bit RGBA.
- * @a IL_NVIDIA_COMPRESS  | @a IL_FALSE   | Use NVIDIA texture tools for compressing DXT formats if available.
  * @a IL_SQUISH_COMPRESS  | @a IL_FALSE   | Use libsquish for compressing DXT formats if available.
  * 
  * @param  Mode Mode to enable

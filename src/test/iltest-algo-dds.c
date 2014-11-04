@@ -4,10 +4,16 @@ int main(int argc, char **argv) {
   ILuint  image     = 0;
   ILuint  reference = 0;
 
-  // syntax: ILtestAlgoQuant <reference> 
-  if (argc < 2) {
+  ILboolean useSquish;
+  ILenum  format;
+
+  // syntax: ILtestAlgoSquish <reference> <usesquish> <format> <dest>
+  if (argc < 5) {
     return -1;
   }
+
+  useSquish = !!atol(argv[2]);
+  format = (ILenum)strtol(argv[3], NULL, 16);
 
   ilInit();
   iluInit();
@@ -24,14 +30,17 @@ int main(int argc, char **argv) {
   image = ilCloneCurImage();
   CHECK(image != 0);
   
-  // save rle encoded
+  // save using squish
   ilBindImage(image);
-  ilEnable(IL_BMP_RLE);
+  if (useSquish) 
+    ilEnable(IL_SQUISH_COMPRESS);
 
-  BENCHMARK( ilDetermineSize(IL_BMP);, 100 );
+  ilBindImage(image);
+  CHECK(ilCopyImage(reference));
 
-  CHECK(testSaveImage("test_bmprle.bmp", image));
-  CHECK(testLoadImage("test_bmprle.bmp", image));
+  ilSetInteger(IL_DXTC_FORMAT, (ILint)format);
+  CHECK(testSaveImage(argv[4], image));
+  CHECK(testLoadImage(argv[4], image));
 
   // compare two images
   ilBindImage(image);

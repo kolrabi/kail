@@ -11,9 +11,6 @@
 //-----------------------------------------------------------------------------
 
 
-// Nvidia texture tools now hosted here (2014-04-07):
-// http://code.google.com/p/nvidia-texture-tools/
-
 //	However, some not really valid .dds files are also read, for example
 //	Volume Textures without the COMPLEX bit set, so the specs aren't taken
 //	too strictly while reading.
@@ -267,12 +264,9 @@ static ILboolean iLoadDdsCubemapInternal(DDS_CONTEXT *ctx, ILuint CompFormat)
 ILuint DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat)
 {
 	ILuint BlockSize;
-	iTrace("---- Flags1: %04x", ctx->Head.Flags1);
-	iTrace("---- Flags2: %04x", ctx->Head.Flags2);
 
 	if (ctx->Head.Flags2 & DDS_FOURCC) {
 		BlockSize = ((ctx->Head.Width + 3)/4) * ((ctx->Head.Height + 3)/4) * ctx->Head.Depth;
-		iTrace("---- FourCC: %08x", ctx->Head.FourCC);
 		switch (ctx->Head.FourCC)
 		{
 			case IL_MAKEFOURCC('D','X','T','1'):
@@ -679,9 +673,6 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
  * Bpp, Bpc, Bps, SizeOfPlane, Format and Type fields. It is more or
  * less assumed that the image has u8 rgba data (perhaps not for float
  * images...)
- *
- *
- * @TODO: don't use globals, clean this function (and this file) up
  */
 ILboolean DdsDecompress(DDS_CONTEXT *ctx, ILuint CompFormat)
 {
@@ -1101,9 +1092,9 @@ ILboolean DecompressDXT4(ILimage *lImage, const void *lCompData)
 	//   so the result will be wrong unless corrected. 
 	if (!DecompressDXT5(lImage, lCompData))
 		return IL_FALSE;
-	CorrectPreMult(lImage);
 
-	return IL_FALSE;
+	CorrectPreMult(lImage);
+	return IL_TRUE;
 }
 
 
@@ -1122,9 +1113,11 @@ ILboolean DecompressDXT5(ILimage *lImage, const void *lCompData)
 		ILuint  mask;
 	} *Temp = lCompData;
 
+	iTrace("----");
 	if (!lCompData)
 		return IL_FALSE;
 
+	iTrace("----");
 	for (z = 0; z < lImage->Depth; z++) {
 		for (y = 0; y < lImage->Height; y += 4) {
 			for (x = 0; x < lImage->Width; x += 4) {
@@ -1288,18 +1281,22 @@ ILboolean Decompress3Dc(DDS_CONTEXT *ctx)
 							for (i = 0; i < 4; i++) {
 								// only put pixels out < width
 								if (((x + i) < ctx->Width)) {
-									ILint t, tx, ty;
+									ILint tx, ty;
 
 									t1 = CurrOffset + (x + i)*3;
 									ctx->Image->Data[t1 + 1] = ty = YColours[bitmask & 0x07];
 									ctx->Image->Data[t1 + 0] = tx = XColours[bitmask2 & 0x07];
 
+									ctx->Image->Data[t1 + 2] = 0;
+
+									/* TODO: make this optional?
 									//calculate b (z) component ((r/255)^2 + (g/255)^2 + (b/255)^2 = 1
 									t = 127*128 - (tx - 127)*(tx - 128) - (ty - 127)*(ty - 128);
 									if (t > 0)
 										ctx->Image->Data[t1 + 2] = (ILubyte)(iSqrt(t) + 128);
 									else
 										ctx->Image->Data[t1 + 2] = 0x7F;
+									*/
 								}
 								bitmask >>= 3;
 								bitmask2 >>= 3;
@@ -1883,7 +1880,9 @@ ILboolean iDxtcDataToSurface(ILimage* image)
 		return IL_FALSE;
 	}
 
-	if (!(image->DxtcFormat == IL_DXT1 || image->DxtcFormat == IL_DXT3
+	if (!(image->DxtcFormat == IL_DXT1 || image->DxtcFormat == IL_DXT2
+		|| image->DxtcFormat == IL_DXT3
+		|| image->DxtcFormat == IL_DXT4
 		|| image->DxtcFormat == IL_DXT5)) {
 		iSetError(IL_INVALID_PARAM); //TODO
 		return IL_FALSE;
@@ -1918,7 +1917,9 @@ ILboolean iDxtcDataToSurface(ILimage* image)
 	switch(image->DxtcFormat)
 	{
 		case IL_DXT1: CompFormat = PF_DXT1; break;
+		case IL_DXT2: CompFormat = PF_DXT2; break;
 		case IL_DXT3: CompFormat = PF_DXT3; break;
+		case IL_DXT4: CompFormat = PF_DXT4; break;
 		case IL_DXT5: CompFormat = PF_DXT5; break;
 		default:
 			return IL_FALSE;

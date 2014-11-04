@@ -27,6 +27,9 @@ int main(int argc, char **argv) {
   // save rle encoded
   ilBindImage(image);
   ilEnable(IL_SGI_RLE);
+
+  BENCHMARK( ilDetermineSize(IL_SGI);, 100 );
+
   CHECK(testSaveImage("test_sgirle.rgba", image));
   CHECK(testLoadImage("test_sgirle.rgba", image));
 
