@@ -215,9 +215,6 @@ typedef struct ILimage {
 ILAPI void*         ILAPIENTRY ialloc   (ILsizei Size);
 ILAPI void          ILAPIENTRY ifreeReal(void *Ptr);
 ILAPI void*         ILAPIENTRY icalloc  (const ILsizei Size, const ILsizei Num);
-#ifdef ALTIVEC_GCC
-ILAPI void*         ILAPIENTRY ivec_align_buffer(void *buffer, const ILuint size);
-#endif
 
 #define                    ifree(x) { ifreeReal(x); (x) = 0; }
 

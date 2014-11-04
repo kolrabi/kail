@@ -20,8 +20,7 @@
 #ifndef IL_NO_BLP
 #include "il_dds.h"
 
-#pragma pack(push)
-#pragma pack(1)
+#include "pack_push.h"
 typedef struct BLP1HEAD
 {
   ILubyte Sig[4];
@@ -50,17 +49,16 @@ typedef struct BLP2HEAD
   ILuint  MipOffsets[16]; // The file offsets of each mipmap, 0 for unused
   ILuint  MipLengths[16]; // The length of each mipmap data block
 } BLP2HEAD;
-#pragma pack(pop)
+#include "pack_pop.h"
 
 // Data formats
-#define BLP_TYPE_JPG    0
-#define BLP_TYPE_DXTC_RAW 1
-#define BLP_RAW       1
-#define BLP_DXTC      2
-
+#define BLP_TYPE_JPG        0
+#define BLP_TYPE_DXTC_RAW   1
+#define BLP_RAW             1
+#define BLP_DXTC            2
 #define BLP_RAW_PLUS_ALPHA1 3
 #define BLP_RAW_PLUS_ALPHA2 4
-#define BLP_RAW_NO_ALPHA  5
+#define BLP_RAW_NO_ALPHA    5
 
 static ILboolean 
 iIsValidBLP1(SIO *io) {
@@ -136,7 +134,7 @@ iCheckBlp1(const BLP1HEAD *Header) {
 
 static ILubyte *
 ReadJpegHeader(SIO *io, ILuint *size) {
-    ILubyte *JpegHeader;
+  ILubyte *JpegHeader;
 
   if (!SIOread(io, size, sizeof(*size), 1)) {
     iSetError(IL_FILE_READ_ERROR);
@@ -178,9 +176,6 @@ iLoadBlp1(ILimage *TargetImage) {
     iSetError(IL_INVALID_FILE_HEADER);
     return IL_FALSE;
   }
-
-  //@TODO: Remove this.
-  i = 0;
 
   switch (Header.Compression)
   {

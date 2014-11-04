@@ -12,27 +12,21 @@
 
 
 #include "il_internal.h"
-#ifdef ALTIVEC_GCC
-#include "altivec_typeconversion.h"
-#endif
 
 ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 {
 	void * VoidPtr = Image->Data;
-	ILubyte		*BytePtr = Image->Data;
+	ILubyte		*BytePtr 	= Image->Data;
 	ILushort	*ShortPtr = (ILushort*)VoidPtr;
-	ILuint		*IntPtr = (ILuint*)VoidPtr;
+	ILuint		*IntPtr 	= (ILuint*)VoidPtr;
 	ILfloat		*FloatPtr = (ILfloat*)VoidPtr;
-	ILdouble	*DblPtr = (ILdouble*)VoidPtr;
-
-#ifndef ALTIVEC_GCC
+	ILdouble	*DblPtr 	= (ILdouble*)VoidPtr;
 	ILuint		SizeOfData, i=0;
-	ILubyte TempByte = 0;
-	ILushort TempShort = 0;
-	ILuint TempInt = 0;
-	ILfloat TempFloat = 0;
-	ILdouble TempDbl = 0;
-#endif
+	ILubyte 	TempByte 	= 0;
+	ILushort 	TempShort = 0;
+	ILuint 		TempInt 	= 0;
+	ILfloat 	TempFloat = 0;
+	ILdouble 	TempDbl 	= 0;
 
 	switch (DestFormat)
 	{
@@ -45,95 +39,38 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 			{
 				case IL_BYTE:
 				case IL_UNSIGNED_BYTE:
-				#ifdef ALTIVEC_GCC
-					abc2cba_byte(BytePtr,Image->SizeOfData,BytePtr);
-				#else
 					SizeOfData = Image->SizeOfData / 3;
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, BytePtr
-							mov ecx, SizeOfData
-							L1:
-								mov al,[ebx+0]
-								xchg al,[ebx+2]
-								mov [ebx+0],al
-								add ebx,3
-								loop L1
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempByte = BytePtr[0];
-							BytePtr[0] = BytePtr[2];
-							BytePtr[2] = TempByte;
-							BytePtr += 3;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempByte = BytePtr[0];
+						BytePtr[0] = BytePtr[2];
+						BytePtr[2] = TempByte;
+						BytePtr += 3;
+					}
 					return IL_TRUE;
 
 				case IL_SHORT:
 				case IL_UNSIGNED_SHORT:
-				#ifdef ALTIVEC_GCC
-					abc2cba_short(ShortPtr,Image->SizeOfData,ShortPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 6;  // 3*2
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, ShortPtr
-							mov ecx, SizeOfData
-							L2:
-								mov ax,[ebx+0]
-								xchg ax,[ebx+4]
-								mov [ebx+0],ax
-								add ebx,6
-								loop L2
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempShort = ShortPtr[0];
-							ShortPtr[0] = ShortPtr[2];
-							ShortPtr[2] = TempShort;
-							ShortPtr += 3;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempShort = ShortPtr[0];
+						ShortPtr[0] = ShortPtr[2];
+						ShortPtr[2] = TempShort;
+						ShortPtr += 3;
+					}
 					return IL_TRUE;
 
 				case IL_INT:
 				case IL_UNSIGNED_INT:
-				#ifdef ALTIVEC_GCC
-					abc2cba_int(IntPtr,Image->SizeOfData,IntPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 12;  // 3*4
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, IntPtr
-							mov ecx, SizeOfData
-							L3:
-								mov eax,[ebx+0]
-								xchg eax,[ebx+8]
-								mov [ebx+0],ax
-								add ebx,12
-								loop L3
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempInt = IntPtr[0];
-							IntPtr[0] = IntPtr[2];
-							IntPtr[2] = TempInt;
-							IntPtr += 3;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempInt = IntPtr[0];
+						IntPtr[0] = IntPtr[2];
+						IntPtr[2] = TempInt;
+						IntPtr += 3;
+					}
 					return IL_TRUE;
 					
 				case IL_FLOAT:
-				#ifdef ALTIVEC_GCC
-					abc2cba_float(FloatPtr,Image->SizeOfData,FloatPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 12;  // 3*4
 					for (i = 0; i < SizeOfData; i++) {
 						TempFloat = FloatPtr[0];
@@ -141,13 +78,9 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 						FloatPtr[2] = TempFloat;
 						FloatPtr += 3;
 					}
-				#endif
 					return IL_TRUE;
 
 				case IL_DOUBLE:
-				#ifdef ALTIVEC_GCC
-					abc2cba_double(DblPtr,Image->SizeOfData,DblPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 24;  // 3*8
 					for (i = 0; i < SizeOfData; i++) {
 						TempDbl = DblPtr[0];
@@ -155,7 +88,6 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 						DblPtr[2] = TempDbl;
 						DblPtr += 3;
 					}
-				#endif
 					return IL_TRUE;
 			}
 			break;
@@ -169,96 +101,38 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 			{
 				case IL_BYTE:
 				case IL_UNSIGNED_BYTE:
-				#ifdef ALTIVEC_GCC
-					abcd2cbad_byte(BytePtr,Image->SizeOfData,BytePtr);
-				#else
 					SizeOfData = Image->SizeOfData / 4;
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, BytePtr
-							mov ecx, SizeOfData
-							L4:
-								mov eax,[ebx]
-								bswap eax
-								ror eax,8
-								mov [ebx], eax
-								add ebx,4
-								loop L4
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempByte = BytePtr[0];
-							BytePtr[0] = BytePtr[2];
-							BytePtr[2] = TempByte;
-							BytePtr += 4;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempByte = BytePtr[0];
+						BytePtr[0] = BytePtr[2];
+						BytePtr[2] = TempByte;
+						BytePtr += 4;
+					}
 					return IL_TRUE;
 
 				case IL_SHORT:
 				case IL_UNSIGNED_SHORT:
-				#ifdef ALTIVEC_GCC
-					abcd2cbad_short(ShortPtr,Image->SizeOfData,ShortPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 8;  // 4*2
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, ShortPtr
-							mov ecx, SizeOfData
-							L5:
-								mov ax,[ebx+0]
-								xchg ax,[ebx+4]
-								mov [ebx+0],ax
-								add ebx,8
-								loop L5
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempShort = ShortPtr[0];
-							ShortPtr[0] = ShortPtr[2];
-							ShortPtr[2] = TempShort;
-							ShortPtr += 4;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempShort = ShortPtr[0];
+						ShortPtr[0] = ShortPtr[2];
+						ShortPtr[2] = TempShort;
+						ShortPtr += 4;
+					}
 					return IL_TRUE;
 
 				case IL_INT:
 				case IL_UNSIGNED_INT:
-				#ifdef ALTIVEC_GCC
-					abcd2cbad_int(IntPtr,Image->SizeOfData,IntPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 16;  // 4*4
-					#ifdef USE_WIN32_ASM
-						__asm
-						{
-							mov ebx, IntPtr
-							mov ecx, SizeOfData
-							L6:
-								mov eax,[ebx+0]
-								xchg eax,[ebx+8]
-								mov [ebx+0],ax
-								add ebx,16
-								loop L6
-						}
-					#else
-						for (i = 0; i < SizeOfData; i++) {
-							TempInt = IntPtr[0];
-							IntPtr[0] = IntPtr[2];
-							IntPtr[2] = TempInt;
-							IntPtr += 4;
-						}
-					#endif//USE_WIN32_ASM
-				#endif
+					for (i = 0; i < SizeOfData; i++) {
+						TempInt = IntPtr[0];
+						IntPtr[0] = IntPtr[2];
+						IntPtr[2] = TempInt;
+						IntPtr += 4;
+					}
 					return IL_TRUE;
 
 				case IL_FLOAT:
-				#ifdef ALTIVEC_GCC
-					abcd2cbad_float(FloatPtr,Image->SizeOfData,FloatPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 16;  // 4*4
 					for (i = 0; i < SizeOfData; i++) {
 						TempFloat = FloatPtr[0];
@@ -266,13 +140,9 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 						FloatPtr[2] = TempFloat;
 						FloatPtr += 4;
 					}
-				#endif
 					return IL_TRUE;
 
 				case IL_DOUBLE:
-				#ifdef ALTIVEC_GCC
-					abcd2cbad_double(DblPtr,Image->SizeOfData,DblPtr);
-				#else
 					SizeOfData = Image->SizeOfData / 32;  // 4*8
 					for (i = 0; i < SizeOfData; i++) {
 						TempDbl = DblPtr[0];
@@ -280,7 +150,6 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat)
 						DblPtr[2] = TempDbl;
 						DblPtr += 4;
 					}
-				#endif
 					return IL_TRUE;
 			}
 	}

@@ -278,23 +278,6 @@ static ILboolean iReadNonRleSgi(ILimage *Image, iSgiHeader *Head)
 static void sgiSwitchData(ILubyte *Data, ILuint SizeOfData) {	
 	ILubyte	Temp;
 	ILuint	i;
-	#ifdef ALTIVEC_GCC
-		i = 0;
-		union {
-			vector unsigned char vec;
-			vector unsigned int load;
-		}inversion_vector;
-
-		inversion_vector.load  = (vector unsigned int)\
-			{0x01000302,0x05040706,0x09080B0A,0x0D0C0F0E};
-		while( i <= SizeOfData-16 ) {
-			vector unsigned char data = vec_ld(i,Data);
-			vec_perm(data,data,inversion_vector.vec);
-			vec_st(data,i,Data);
-			i+=16;
-		}
-		SizeOfData -= i;
-	#endif
 	for (i = 0; i < SizeOfData; i += 2) {
 		Temp = Data[i];
 		Data[i] = Data[i+1];

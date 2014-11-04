@@ -53,23 +53,6 @@ extern "C" {
   #include <windows.h>
 #endif//_WIN32
 
-
-#ifdef IL_INLINE_ASM
-  #if (defined (_MSC_VER) && defined(_WIN32))  // MSVC++ only
-    #define USE_WIN32_ASM
-  #endif
-
-  #ifdef _WIN64
-    #undef USE_WIN32_ASM
-  //@TODO: Windows 64 compiler cannot use inline ASM, so we need to
-  //  generate some MASM code at some point.
-  #endif
-
-  #ifdef _WIN32_WCE  // Cannot use our inline ASM in Windows Mobile.
-    #undef USE_WIN32_ASM
-  #endif
-#endif
-
 #ifndef __PRETTY_FUNCTION__
 #define __PRETTY_FUNCTION__ ""
 #endif

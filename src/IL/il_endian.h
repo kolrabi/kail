@@ -57,22 +57,7 @@
 
 #ifndef NOINLINE
 INLINE void iSwapUShort(ILushort *s)  {
-	#ifdef USE_WIN32_ASM
-		__asm {
-			mov ebx, s
-			mov al, [ebx+1]
-			mov ah, [ebx  ]
-			mov [ebx], ax
-		}
-	#else
-	#ifdef GCC_X86_ASM
-		asm("ror $8,%0"
-			: "=r" (*s)
-			: "0" (*s));
-	#else
-		*s = (ILushort)(((*s)>>8) | ((*s)<<8));
-	#endif //GCC_X86_ASM
-	#endif //USE_WIN32_ASM
+	*s = (ILushort)(((*s)>>8) | ((*s)<<8));
 }
 
 INLINE void iSwapShort(ILshort *s) {
@@ -80,21 +65,7 @@ INLINE void iSwapShort(ILshort *s) {
 }
 
 INLINE void iSwapUInt(ILuint *i) {
-	#ifdef USE_WIN32_ASM
-		__asm {
-			mov ebx, i
-			mov eax, [ebx]
-			bswap eax
-			mov [ebx], eax
-		}
-	#else
-	#ifdef GCC_X86_ASM
-			asm("bswap %0;"
-				: "+r" (*i));
-	#else
-		*i = ((*i)>>24) | (((*i)>>8) & 0xff00) | (((*i)<<8) & 0xff0000) | ((*i)<<24);
-	#endif //GCC_X86_ASM
-	#endif //USE_WIN32_ASM
+	*i = ((*i)>>24) | (((*i)>>8) & 0xff00) | (((*i)<<8) & 0xff0000) | ((*i)<<24);
 }
 
 INLINE void iSwapInt(ILint *i) {
@@ -106,15 +77,6 @@ INLINE void iSwapFloat(ILfloat *f) {
 }
 
 INLINE void iSwapDouble(ILdouble *d) {
-	#ifdef GCC_X86_ASM
-	int *t = (int*)d;
-	asm("bswap %2    \n"
-		"bswap %3    \n"
-		"movl  %2,%1 \n"
-		"movl  %3,%0 \n"
-		: "=g" (t[0]), "=g" (t[1])
-		: "r"  (t[0]), "r"  (t[1]));
-	#else
 	ILubyte t,*b = (ILubyte*)d;
 	#define dswap(x,y) t=b[x]; b[x]=b[y]; b[y]=t;
 	dswap(0,7);
@@ -122,7 +84,6 @@ INLINE void iSwapDouble(ILdouble *d) {
 	dswap(2,5);
 	dswap(3,4);
 	#undef dswap
-	#endif
 }
 
 

@@ -4,9 +4,7 @@ PROJECT                 ( IL C CXX )
 SET                     ( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 SET                     ( SOURCES
-                          # altivec/common.c
-                          # altivec/typeconversion.c
-
+  
                           algo/il_neuquant.c
                           algo/il_quantizer.c
                           algo/il_rle.c

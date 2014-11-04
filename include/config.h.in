@@ -278,12 +278,6 @@
    #undef IL_USE_DXTC_SQUISH
 #endif /* IL_NO_EXTLIBS */
 
-/* X86_ASM assembly found */
-#cmakedefine GCC_X86_ASM
-
-/* Define if you can support at least some ASM */
-#cmakedefine IL_INLINE_ASM
-
 /* define if you have memalign memory allocation */
 #cmakedefine MEMALIGN
 
@@ -301,9 +295,6 @@
    first (like Motorola and SPARC, unlike Intel and VAX). */
 #cmakedefine WORDS_BIGENDIAN
 
-/* restric keyword available */
-#cmakedefine RESTRICT_KEYWORD 1
-
 /* SSE extension found */
 #cmakedefine SSE
 
@@ -315,11 +306,3 @@
 
 /* Define if you have libsquish installed */
 #cmakedefine IL_USE_DXTC_SQUISH
-
-#cmakedefine ALTIVEC_GCC 1
-
-/* TODO */
-#if 0
-/* Memory must be vector aligned */
-#cmakedefine VECTORMEM
-#endif

@@ -450,65 +450,11 @@ ILimage *iQuantizeImage(ILimage *Image, ILuint NumCols)
 		return NULL;
 	}
 
-#ifdef ALTIVEC_GCC
-  register ILuint v_size = size>>4;
-  register ILuint pos = 0;
-  v_size = v_size /3;
-  register vector unsigned char d0,d1,d2;
-  register vector unsigned char red[3],blu[3],green[3];
-  
-  register union{
-      vector unsigned char vec;
-      vector unsigned int load;
-  } mask_1, mask_2, mask_3;
-  
-  mask_1.load = (vector unsigned int){0xFF0000FF,0x0000FF00,0x00FF0000,0xFF0000FF};
-  mask_2.load = (vector unsigned int){0x00FF0000,0xFF0000FF,0x0000FF00,0x00FF0000};
-  mask_2.load = (vector unsigned int){0x0000FF00,0x00FF0000,0xFF0000FF,0x0000FF00};
-  
-  while( v_size >= 0 ) {
-      d0 = vec_ld(pos,TempImage->Data);
-      d1 = vec_ld(pos+16,TempImage->Data);
-      d2 = vec_ld(pos+32,TempImage->Data);
-      
-      red[0] =   vec_and(d0,mask_1.vec);
-      green[0] = vec_and(d0,mask_2.vec);
-      blu[0] =   vec_and(d0,mask_3.vec);
-      
-      red[1] =   vec_and(d1,mask_3.vec);
-      green[1] = vec_and(d1,mask_1.vec);
-      blu[1] =   vec_and(d1,mask_2.vec);
-      
-      red[2] =   vec_and(d2,mask_2.vec);
-      green[2] = vec_and(d2,mask_3.vec);
-      blu[2] =   vec_and(d2,mask_1.vec);
-      
-      vec_st(red[0],pos,Ir);
-      vec_st(red[1],pos+16,Ir);
-      vec_st(red[2],pos+32,Ir);
-      
-      vec_st(blu[0],pos,Ib);
-      vec_st(blu[1],pos+16,Ib);
-      vec_st(blu[2],pos+32,Ib);
-      
-      vec_st(green[0],pos,Ig);
-      vec_st(green[1],pos+16,Ig);
-      vec_st(green[2],pos+32,Ig);
-      
-      pos += 48;
-  }
-  size -= pos;
-#endif
-
 	for (i = 0; i < ctx.size; i++) {
     Ir[i] = TempImage->Data[i * 3 + 0];
 		Ig[i] = TempImage->Data[i * 3 + 1];
 		Ib[i] = TempImage->Data[i * 3 + 2];
 	}
-
-#ifdef ALTIVEC_GCC
-   size = Width * Height * Depth;
-#endif
 
 	// Set new colors number
 	ctx.K = NumCols;
