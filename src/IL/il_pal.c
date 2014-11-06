@@ -66,8 +66,7 @@ ILboolean iCopyPalette(ILpal *Dest, ILpal *Src)
 }
 
 
-// TODO: rename iCopyPalFromImage
-ILAPI ILpal* ILAPIENTRY iCopyPal(ILimage *Image) {
+ILAPI ILpal* ILAPIENTRY iCopyPalFromImage(ILimage *Image) {
   ILpal *Pal;
 
   if ( Image == NULL 

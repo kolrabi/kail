@@ -16,14 +16,8 @@
 #include "il_pcx.h"
 #include "il_manip.h"
 
-// For checking and reading
-static ILboolean iCheckPcx(PCXHEAD *Header);
-static ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header);
-static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header);
-
-
 // Obtain .pcx header
-static ILboolean iGetPcxHead(SIO* io, PCXHEAD *header) {
+ILboolean PcxGetHeader(SIO* io, PCXHEAD *header) {
 	ILuint read = SIOread(io, header, 1, sizeof(*header));
 	if (read != sizeof(*header))
 		return IL_FALSE;
@@ -46,16 +40,16 @@ static ILboolean iGetPcxHead(SIO* io, PCXHEAD *header) {
 static ILboolean iIsValidPcx(SIO* io) {
 	ILuint 			Pos = SIOtell(io);
 	PCXHEAD 		Head;
-	ILboolean 	HasHead = iGetPcxHead(io, &Head);
+	ILboolean 	HasHead = PcxGetHeader(io, &Head);
 
 	SIOseek(io, Pos, IL_SEEK_SET);
 
-	return HasHead && iCheckPcx(&Head);
+	return HasHead && PcxCheckHeader(&Head);
 }
 
 // Internal function used to check if the HEADER is a valid .pcx header.
 // Should we also do a check on Header->Bpp?
-static ILboolean iCheckPcx(PCXHEAD *Header) {
+ILboolean PcxCheckHeader(PCXHEAD *Header) {
 	//	Got rid of the Reserved check, because I've seen some .pcx files with invalid values in it.
 	if (Header->Manufacturer != 10 || Header->Encoding != 1/* || Header->Reserved != 0*/)
 		return IL_FALSE;
@@ -90,308 +84,279 @@ static ILboolean iCheckPcx(PCXHEAD *Header) {
 
 
 // Internal function used to load the .pcx.
-static ILboolean iLoadPcxInternal(ILimage* image) {
+static ILboolean iLoadPcxInternal(ILimage* Image) {
 	PCXHEAD	Header;
 	ILboolean bPcx = IL_FALSE;
+	ILimage *TempImage;
 	SIO *io;
 
-	if (image == NULL) {
+	if (Image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return bPcx;
 	}
 
-    io = &image->io;
+  io = &Image->io;
 
-	if (!iGetPcxHead(io, &Header))
+	if (!PcxGetHeader(io, &Header))
 		return IL_FALSE;
 
-	if (!iCheckPcx(&Header)) {
+	if (!PcxCheckHeader(&Header)) {
 		iSetError(IL_INVALID_FILE_HEADER);
 		return IL_FALSE;
 	}
 
-	bPcx = iUncompressPcx(image, &Header);
-
-	if (!bPcx)
-		return IL_FALSE;
-
-	return IL_TRUE;
-}
-
-
-// Internal function to uncompress the .pcx (all .pcx files are rle compressed)
-static ILboolean iUncompressPcx(ILimage* image, PCXHEAD *Header) {
-	//changed decompression loop 2003-09-01
-	//From the pcx spec: "There should always
-	//be a decoding break at the end of each scan line.
-	//But there will not be a decoding break at the end of
-	//each plane within each scan line."
-	//This is now handled correctly (hopefully ;) )
-
-	SIO *io = &image->io;
-
-	ILubyte	ByteHead, Colour, *ScanLine /* For all planes */;
-	ILuint ScanLineSize;
-	ILuint	c, i, x, y;
-
-	if (Header->Bpp < 8) {
-		/*iSetError(IL_FORMAT_NOT_SUPPORTED);
-		return IL_FALSE;*/
-		return iUncompressSmall(image, Header);
+	TempImage = PcxDecode(io, &Header);
+	if (TempImage) {
+		iTexImage(Image, TempImage->Width, TempImage->Height, 1, TempImage->Bpp, TempImage->Format, TempImage->Type, TempImage->Data);
+		Image->Origin = IL_ORIGIN_UPPER_LEFT;
+		iCloseImage(TempImage);
+		return IL_TRUE;
 	}
 
-	if (!iTexImage(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 0, IL_UNSIGNED_BYTE, NULL))
-		return IL_FALSE;
-
-	image->Origin = IL_ORIGIN_UPPER_LEFT;
-
-	switch (image->Bpp) {
-		case 1:
-			image->Format 			= IL_COLOUR_INDEX;
-			image->Pal.PalType 	= IL_PAL_RGB24;
-			image->Pal.PalSize 	= 256 * 3;  // Need to find out for sure...
-			image->Pal.Palette 	= (ILubyte*)ialloc(image->Pal.PalSize);
-			if (image->Pal.Palette == NULL) {
-				return IL_FALSE;
-			}
-			break;
-		//case 2:  // No 16-bit images in the pcx format!
-		case 3:
-			image->Format 			= IL_RGB;
-			image->Pal.Palette 	= NULL;
-			image->Pal.PalSize 	= 0;
-			image->Pal.PalType 	= IL_PAL_NONE;
-			break;
-		case 4:
-			image->Format = IL_RGBA;
-			image->Pal.Palette = NULL;
-			image->Pal.PalSize = 0;
-			image->Pal.PalType = IL_PAL_NONE;
-			break;
-
-		default:
-			iSetError(IL_ILLEGAL_FILE_VALUE);
-			return IL_FALSE;
-	}
-
-	ScanLineSize 	= image->Bpp*Header->Bps;
-	ScanLine 			= (ILubyte*)ialloc(ScanLineSize);
-
-	if (ScanLine == NULL) {
-		return IL_FALSE;
-	}
-
-	for (y = 0; y < image->Height; y++) {
-		x = 0;
-		//read scanline
-		while (x < ScanLineSize) {
-			if (SIOread(io, &ByteHead, 1, 1) != 1) {
-				goto file_read_error;
-			}
-
-			if ((ByteHead & 0xC0) == 0xC0) {
-				ByteHead &= 0x3F;
-				if (SIOread(io, &Colour, 1, 1) != 1) {
-					goto file_read_error;
-				}
-
-				if (x + ByteHead > ScanLineSize) {
-					goto file_read_error;
-				}
-
-				for (i = 0; i < ByteHead; i++) {
-					ScanLine[x++] = Colour;
-				}
-			}	else {
-				ScanLine[x++] = ByteHead;
-			}
-		}
-
-		//convert plane-separated scanline into index, rgb or rgba pixels.
-		//there might be a padding byte at the end of each scanline...
-		for (x = 0; x < image->Width; x++) {
-			for(c = 0; c < image->Bpp; c++) {
-				image->Data[y * image->Bps + x * image->Bpp + c] =
-						ScanLine[x + c * Header->Bps];
-			}
-		}
-	}
-
-	// Read in the palette
-	if (Header->Version == 5 && image->Bpp == 1) {
-		x = SIOtell(io);
-		if (SIOread(io, &ByteHead, 1, 1) == 0) {  // If true, assume that we have a luminance image.
-			ilGetError();  // Get rid of the IL_FILE_READ_ERROR.
-			image->Format = IL_LUMINANCE;
-
-			if (image->Pal.Palette)
-				ifree(image->Pal.Palette);
-
-			image->Pal.PalSize = 0;
-			image->Pal.PalType = IL_PAL_NONE;
-		}
-		else {
-			if (ByteHead != 12)  // Some Quake2 .pcx files don't have this byte for some reason.
-				SIOseek(io, -1, IL_SEEK_CUR);
-
-			if (SIOread(io, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
-				goto file_read_error;
-		}
-	}
-
-	ifree(ScanLine);
-
-	return IL_TRUE;
-
-file_read_error:
-	ifree(ScanLine);
-
-	//added 2003-09-01
-	iSetError(IL_FILE_READ_ERROR);
 	return IL_FALSE;
 }
 
-static ILboolean iUncompressSmall(ILimage* image, PCXHEAD *Header)
+static ILboolean PcxDecodeScanline(SIO *io, ILubyte *ScanLine, ILuint ScanLineSize)
 {
-	ILuint	i = 0, j, k, c, d, x, y, Bps;
-	ILubyte	HeadByte, Colour, Data = 0, *ScanLine;
+	ILuint x, i;
+	ILubyte ByteHead, Colour;
 
-	SIO *io = &image->io;
+	x = 0;
 
-	if (!iTexImage(image, Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, 1, 0, IL_UNSIGNED_BYTE, NULL)) {
-		return IL_FALSE;
+	//read scanline
+	while (x < ScanLineSize) {
+		if (SIOread(io, &ByteHead, 1, 1) != 1) {
+			return IL_FALSE;
+		}
+
+		if ((ByteHead & 0xC0) == 0xC0) {
+			ByteHead &= 0x3F;
+			if (SIOread(io, &Colour, 1, 1) != 1) {
+				return IL_FALSE;
+			}
+
+			if (x + ByteHead > ScanLineSize) {
+				return IL_FALSE;
+			}
+
+			for (i = 0; i < ByteHead; i++) {
+				ScanLine[x++] = Colour;
+			}
+		}	else {
+			ScanLine[x++] = ByteHead;
+		}
 	}
 
-	image->Origin = IL_ORIGIN_UPPER_LEFT;
+	return IL_TRUE;
+}
+
+static ILimage *
+PcxDecodeSmall(SIO *io, PCXHEAD *Header) {
+	ILuint	i = 0, j, k, c, d, x, y, Bps;
+	ILubyte	HeadByte, Colour, Data = 0, *ScanLine = NULL;
+	ILimage	*Image;
+
+	Image = iNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
+	if (Image == NULL)
+		return NULL;
+
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
 
 	switch (Header->NumPlanes)
 	{
 		case 1:
-			image->Format = IL_LUMINANCE;
+			Image->Format = IL_LUMINANCE;
 			break;
 		case 4:
-			image->Format = IL_COLOUR_INDEX;
+			Image->Format = IL_COLOUR_INDEX;
 			break;
 		default:
 			iSetError(IL_ILLEGAL_FILE_VALUE);
-			return IL_FALSE;
+			iCloseImage(Image);
+			return NULL;
 	}
 
-	if (Header->NumPlanes == 1 && Header->Bpp == 1) {
-		for (j = 0; j < image->Height; j++) {
-			i = 0; //number of written pixels
-			Bps = 0;
-			while (Bps<Header->Bps) {
+	if (Header->NumPlanes == 1) {
+		for (j = 0; j < Image->Height; j++) {
+			i = 0;
+			while (i < Image->Width) {
 				if (SIOread(io, &HeadByte, 1, 1) != 1)
-					return IL_FALSE;
-
-				++Bps;
-				// Check if we got duplicates with RLE compression
+					goto file_read_error;
 				if (HeadByte >= 192) {
 					HeadByte -= 192;
 					if (SIOread(io, &Data, 1, 1) != 1)
-						return IL_FALSE;
+						goto file_read_error;
 
-					--Bps;
-					// duplicate next byte
 					for (c = 0; c < HeadByte; c++) {
 						k = 128;
-						for (d = 0; d < 8 && i < image->Width; d++) {
-							image->Data[j * image->Width + i++] = ((Data & k) != 0 ? 255 : 0);
+						for (d = 0; d < 8 && i < Image->Width; d++) {
+							Image->Data[j * Image->Width + i++] = (!!(Data & k) == 1 ? 255 : 0);
 							k >>= 1;
 						}
-						++Bps;
 					}
 				}
 				else {
 					k = 128;
-					for (c = 0; c < 8 && i < image->Width; c++) {
-						image->Data[j * image->Width + i++] = ((HeadByte & k) != 0 ? 255 : 0);
+					for (c = 0; c < 8 && i < Image->Width; c++) {
+						Image->Data[j * Image->Width + i++] = (!!(HeadByte & k) == 1 ? 255 : 0);
 						k >>= 1;
 					}
 				}
 			}
-
-			//if(Data != 0)
-			//changed 2003-09-01:
-			//There has to be an even number of bytes per line in a pcx.
-			//One byte can hold up to 8 bits, so Width/8 bytes
-			//are needed to hold a 1 bit per pixel image line.
-			//If Width/8 is even no padding is needed,
-			//one pad byte has to be read otherwise.
-			//(let's hope the above is true ;-))
-
-			// changed 2012-05-06
-			// Not the good size - don't need it, padding inside data already !
-
-		//	if(!((image->Width >> 3) & 0x1))
-		//		image->io.getchar(image->io.handle);	// Skip pad byte
+			if (Data != 0)
+				SIOgetc(io);  // Skip pad byte if last byte not a 0
 		}
 	}
-	else if (Header->NumPlanes == 4 && Header->Bpp == 1){   // 4-bit images
-		//changed decoding 2003-09-10 (was buggy)...could need a speedup
-
-		Bps = Header->Bps * Header->NumPlanes * 8;
-		image->Pal.Palette = (ILubyte*)ialloc(16 * 3);  // Size of palette always (48 bytes).
+	else {   // 4-bit images
+		Bps = Header->Bps * Header->NumPlanes * 2;
+		Image->Pal.Palette = (ILubyte*)ialloc(16 * 3);  // Size of palette always (48 bytes).
+		Image->Pal.PalSize = 16 * 3;
+		Image->Pal.PalType = IL_PAL_RGB24;
 		ScanLine = (ILubyte*)ialloc(Bps);
-		if (image->Pal.Palette == NULL || ScanLine == NULL) {
+		if (Image->Pal.Palette == NULL || ScanLine == NULL) {
 			ifree(ScanLine);
-			ifree(image->Pal.Palette);
-			return IL_FALSE;
+			iCloseImage(Image);
+			return NULL;
 		}
-		memcpy(image->Pal.Palette, Header->ColMap, 16 * 3);
-		image->Pal.PalSize = 16 * 3;
-		image->Pal.PalType = IL_PAL_RGB24;
 
-		memset(image->Data, 0, image->SizeOfData);
+		memcpy(Image->Pal.Palette, Header->ColMap, 16 * 3);
+		imemclear(Image->Data, Image->SizeOfData);  // Since we do a += later.
 
-		for (y = 0; y < image->Height; y++) {
-			x = 0;
-			while (x < Bps) {
-				if (SIOread(io, &HeadByte, 1, 1) != 1) {
-					ifree(ScanLine);
-					return IL_FALSE;
-				}
-				if ((HeadByte & 0xC0) == 0xC0) {
-					HeadByte &= 0x3F;
-					if (SIOread(io, &Colour, 1, 1) != 1) {
-						ifree(ScanLine);
-						return IL_FALSE;
+		for (y = 0; y < Image->Height; y++) {
+			for (c = 0; c < Header->NumPlanes; c++) {
+				x = 0;
+				while (x < Bps) {
+					if (SIOread(io, &HeadByte, 1, 1) != 1)
+						goto file_read_error;
+					if ((HeadByte & 0xC0) == 0xC0) {
+						HeadByte &= 0x3F;
+						if (SIOread(io, &Colour, 1, 1) != 1)
+							goto file_read_error;
+						for (i = 0; i < HeadByte; i++) {
+							k = 128;
+							for (j = 0; j < 8; j++) {
+								ScanLine[x++] = !!(Colour & k);
+								k >>= 1;
+							}
+						}
 					}
-					for (i = 0; i < HeadByte; i++) {
+					else {
 						k = 128;
-						for (j = 0; j < 8 && x < Bps; j++) {
-							ScanLine[x++] = (Colour & k)?1:0;
+						for (j = 0; j < 8; j++) {
+							ScanLine[x++] = !!(HeadByte & k);
 							k >>= 1;
 						}
 					}
 				}
-				else {
-					k = 128;
-					for (j = 0; j < 8 && x < Bps; j++) {
-						ScanLine[x++] = (HeadByte & k)?1:0;
-						k >>= 1;
-					}
-				}
-			}
 
-			for (x = 0; x < image->Width; x++) {  // 'Cleverly' ignores the pad bytes. ;)
-				for(c = 0; c < Header->NumPlanes; c++)
-					image->Data[y * image->Width + x] |= ScanLine[x + c*Header->Bps*8] << c;
+				for (x = 0; x < Image->Width; x++) {  // 'Cleverly' ignores the pad bytes. ;)
+					Image->Data[y * Image->Width + x] += ScanLine[x] << c;
+				}
 			}
 		}
 		ifree(ScanLine);
 	}
-	else {
-		iSetError(IL_FORMAT_NOT_SUPPORTED);
-		return IL_FALSE;
-	}
 
-	return IL_TRUE;
+	return Image;
+
+file_read_error:
+	ifree(ScanLine);
+	iCloseImage(Image);
+	return NULL;
 }
 
+// Internal function to uncompress the .dcx (all .dcx files are rle compressed)
+ILimage *
+PcxDecode(SIO *io, PCXHEAD *Header) {
+	ILubyte		ByteHead, *ScanLine = NULL /* Only one plane */;
+	ILuint		c, x, y, ScanLineSize;//, Read = 0;
+	ILimage		*Image = NULL;
+
+	if (Header->Bpp < 8) {
+		return PcxDecodeSmall(io, Header);
+	}
+
+	Image = iNewImage(Header->Xmax - Header->Xmin + 1, Header->Ymax - Header->Ymin + 1, 1, Header->NumPlanes, 1);
+	if (Image == NULL)
+		return NULL;
+
+	Image->Origin = IL_ORIGIN_UPPER_LEFT;
+
+	ScanLineSize 	= Image->Bpp*Header->Bps;
+	ScanLine = (ILubyte*)ialloc(ScanLineSize);
+	if (ScanLine == NULL)
+		goto dcx_error;
+
+	switch (Image->Bpp)
+	{
+		case 1:
+			Image->Format = IL_COLOUR_INDEX;
+			Image->Pal.PalType = IL_PAL_RGB24;
+			Image->Pal.PalSize = 256 * 3; // Need to find out for sure...
+			Image->Pal.Palette = (ILubyte*)ialloc(Image->Pal.PalSize);
+			if (Image->Pal.Palette == NULL)
+				goto dcx_error;
+			break;
+		//case 2:  // No 16-bit images in the dcx format!
+		case 3:
+			Image->Format = IL_RGB;
+			Image->Pal.Palette = NULL;
+			Image->Pal.PalSize = 0;
+			Image->Pal.PalType = IL_PAL_NONE;
+			break;
+		case 4:
+			Image->Format = IL_RGBA;
+			Image->Pal.Palette = NULL;
+			Image->Pal.PalSize = 0;
+			Image->Pal.PalType = IL_PAL_NONE;
+			break;
+
+		default:
+			iSetError(IL_ILLEGAL_FILE_VALUE);
+			goto dcx_error;
+	}
+
+	for (y = 0; y < Image->Height; y++) {
+		if (!PcxDecodeScanline(io, ScanLine, ScanLineSize))
+			goto dcx_error;
+
+		//convert plane-separated scanline into index, rgb or rgba pixels.
+		//there might be a padding byte at the end of each scanline...
+		for (x = 0; x < Image->Width; x++) {
+			for(c = 0; c < Image->Bpp; c++) {
+				Image->Data[y * Image->Bps + x * Image->Bpp + c] =
+						ScanLine[x + c * Header->Bps];
+			}
+		}
+	}		
+
+	ifree(ScanLine);
+
+	// Read in the palette
+	if (Image->Bpp == 1) {
+		ByteHead = (ILubyte)SIOgetc(io);	// the value 12, because it signals there's a palette for some reason...
+
+		// We should do a check to make certain it's 12...
+		if (ByteHead != 12)
+			SIOseek(io, -1, IL_SEEK_CUR);
+
+		if (SIOread(io, Image->Pal.Palette, 1, Image->Pal.PalSize) != Image->Pal.PalSize) {
+			iCloseImage(Image);
+			return NULL;
+		}
+	}
+
+	return Image;
+
+dcx_error:
+	ifree(ScanLine);
+	iCloseImage(Image);
+	return NULL;
+}
+
+
 // Routine used from ZSoft's pcx documentation
-static ILuint encput(SIO* io, ILubyte byt, ILubyte cnt)
+static ILuint PcxEncodeWrite(SIO* io, ILubyte byt, ILubyte cnt)
 {
 	if (cnt) {
 		if ((cnt == 1) && (0xC0 != (0xC0 & byt))) {
@@ -414,7 +379,7 @@ static ILuint encput(SIO* io, ILubyte byt, ILubyte cnt)
 
 // This subroutine encodes one scanline and writes it to a file.
 //  It returns number of bytes written into outBuff, 0 if failed.
-static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
+static ILuint PcxEncodeScanline(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 	ILubyte _this, last;
 	ILuint srcIndex;
 	ILuint total = 0;
@@ -433,7 +398,7 @@ static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 		if (_this == last) {  // There is a "run" in the data, encode it
 			runCount++;
 			if (runCount == 63) {
-				if (! (i = encput(io, last, runCount)))
+				if (! (i = PcxEncodeWrite(io, last, runCount)))
 						return (0);
 				total += i;
 				runCount = 0;
@@ -441,7 +406,7 @@ static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 		}
 		else {  // No "run"  -  _this != last
 			if (runCount) {
-				if (! (i = encput(io, last, runCount)))
+				if (! (i = PcxEncodeWrite(io, last, runCount)))
 					return(0);
 				total += i;
 			}
@@ -451,7 +416,7 @@ static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 	}  // endloop
 
 	if (runCount) {  // finish up
-		if (! (i = encput(io, last, runCount)))
+		if (! (i = PcxEncodeWrite(io, last, runCount)))
 			return (0);
 		if (inLen % 2)
 			SIOputc(io, 0);
@@ -464,21 +429,12 @@ static ILuint encLine(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte Stride) {
 	return (total);
 }
 
-
-// Internal function used to save the .pcx.
-static ILboolean iSavePcxInternal(ILimage* image) {
+ILboolean PcxEncode(SIO *io, ILimage *image)
+{
 	ILuint	i, c, PalSize;
 	ILpal	*TempPal;
 	ILimage	*TempImage = image;
 	ILubyte	*TempData;
-	SIO *io;
-
-	if (image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-
-	io = &image->io;
 
 	switch (image->Format)
 	{
@@ -552,7 +508,7 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 	// Output data
 	for (i = 0; i < TempImage->Height; i++) {
 		for (c = 0; c < TempImage->Bpp; c++) {
-			encLine(io, TempData + TempImage->Bps * i + c, TempImage->Width, (ILubyte)(TempImage->Bpp - 1));
+			PcxEncodeScanline(io, TempData + TempImage->Bps * i + c, TempImage->Width, (ILubyte)(TempImage->Bpp - 1));
 		}
 	}
 
@@ -594,6 +550,21 @@ static ILboolean iSavePcxInternal(ILimage* image) {
 
 	return IL_TRUE;
 }
+
+// Internal function used to save the .pcx.
+static ILboolean iSavePcxInternal(ILimage* image) {
+	SIO *io;
+
+	if (image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &image->io;
+
+	return PcxEncode(io, image);
+}
+
 
 static ILconst_string iFormatExtsPCX[] = { 
   IL_TEXT("pcx"), 

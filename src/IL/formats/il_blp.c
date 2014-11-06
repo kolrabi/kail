@@ -14,8 +14,6 @@
 //
 //-----------------------------------------------------------------------------
 
-//@TODO: Add support for the BLP1 format as well.
-
 #include "il_internal.h"
 #ifndef IL_NO_BLP
 #include "il_dds.h"
@@ -189,7 +187,7 @@ iLoadBlp1(ILimage *TargetImage) {
         return IL_FALSE;
       }
 
-      //for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
+      for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
         //@TODO: Check return value?
         SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);
 
@@ -220,7 +218,7 @@ iLoadBlp1(ILimage *TargetImage) {
           Image->Format = IL_BGR;
 
         ifree(JpegData);
-      //}
+      }
       ifree(JpegHeader);
 #endif//IL_NO_JPG
       break;
@@ -416,13 +414,6 @@ iLoadBlpInternal(ILimage *TargetImage) {
     return IL_FALSE;
   }
 
-//@TODO: Remove this!
-/*
-  if (Header.Type != BLP_TYPE_DXTC_RAW) {
-    iTrace("---- unknown sub format");
-    return IL_FALSE;
-  }*/
-
   switch (Header.Compression)
   {
     case BLP_RAW:
@@ -612,8 +603,8 @@ iLoadBlpInternal(ILimage *TargetImage) {
           return IL_FALSE;
 
         // Read in the compressed mipmap data.
-        TargetImage->io.seek(TargetImage->io.handle, Header.MipOffsets[Mip], IL_SEEK_SET);
-        if (TargetImage->io.read(TargetImage->io.handle, CompData, 1, Header.MipLengths[Mip]) != Header.MipLengths[Mip]) {
+        SIOseek(io, Header.MipOffsets[Mip], IL_SEEK_SET);
+        if (SIOread(io, CompData, 1, Header.MipLengths[Mip]) != Header.MipLengths[Mip]) {
           ifree(CompData);
           return IL_FALSE;
         }

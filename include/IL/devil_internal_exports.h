@@ -46,7 +46,7 @@
 #ifndef INLINE
     #if defined(__GNUC__)
         #define INLINE static inline
-    #elif defined(_MSC_VER) //@TODO: Get this working in MSVC++.
+    #elif defined(_MSC_VER) 
         #define INLINE static __inline
     #else
         #define INLINE inline
@@ -312,7 +312,7 @@ ILAPI void*     ILAPIENTRY iConvertBuffer   (ILuint SizeOfData, ILenum SrcFormat
 ILAPI ILboolean ILAPIENTRY iConvertImagePal (ILimage *Image, ILenum DestFormat);
 ILAPI ILboolean ILAPIENTRY iIsValidPal      (ILpal *Palette);
 ILAPI ILpal*    ILAPIENTRY iConvertPal      (ILpal *Pal, ILenum DestFormat);
-ILAPI ILpal*    ILAPIENTRY iCopyPal         (ILimage *Image); // TODO: rename to iCopyPalFromImage
+ILAPI ILpal*    ILAPIENTRY iCopyPalFromImage(ILimage *Image);
 ILAPI void      ILAPIENTRY iClosePalReal    (ILpal *Palette);
 #define iClosePal(pal)      { iClosePalReal(pal);   pal = NULL; }
 

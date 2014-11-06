@@ -21,9 +21,9 @@
 //  DxtSize is used to return the size in bytes of the DXTC data returned.
 ILubyte* iSquishCompressDXTImpl(ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILenum DxtFormat, ILuint *DxtSize)
 {
-	ILuint	Size;  //@TODO: Support larger than 32-bit data?
-	ILint	Flags;
-	ILubyte	*DxtcData;
+	ILuint		Size;
+	ILint			Flags;
+	ILubyte	*	DxtcData;
 
 	if (Data == NULL) {  // We cannot operate on a null pointer.
 		iSetError(IL_INVALID_PARAM);

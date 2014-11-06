@@ -75,7 +75,6 @@ static ILboolean iGetOS2Head(SIO* io, OS2_HEAD * const Header)
   if (read != sizeof(OS2_HEAD))
     return IL_FALSE;
 
-  // @todo: untested endian conversion - I don't have a machine+OS that uses big endian
   UShort(&Header->bfType);
   UInt  (&Header->biSize);
   Short (&Header->xHotspot);
@@ -173,6 +172,7 @@ static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
 {
   ILuint  PadSize, Read, i, j, k, c;
   ILubyte ByteData;
+  SIO *io = &image->io;
 
   if (Header->cBitCount == 1) {
     if (!iTexImage(image, Header->cx, Header->cy, 1, 1, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE, NULL)) {
@@ -187,28 +187,27 @@ static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
     image->Pal.PalSize = 2 * 3;
     image->Pal.PalType = IL_PAL_BGR24;
 
-    if (image->io.read(image->io.handle, image->Pal.Palette, 1, 2 * 3) != 6)
+    if (SIOread(io, image->Pal.Palette, 1, 2 * 3) != 6)
       return IL_FALSE;
 
     PadSize = ((32 - (image->Width % 32)) / 8) % 4;  // Has to truncate.
-    image->io.seek(image->io.handle, Header->DataOff, IL_SEEK_SET);
+    SIOseek(io, Header->DataOff, IL_SEEK_SET);
 
     for (j = 0; j < image->Height; j++) {
       Read = 0;
       for (i = 0; i < image->Width; ) {
-        if (image->io.read(image->io.handle, &ByteData, 1, 1) != 1)
+        if (SIOread(io, &ByteData, 1, 1) != 1)
           return IL_FALSE;
         Read++;
         k = 128;
         for (c = 0; c < 8; c++) {
-          image->Data[j * image->Width + i] =
-            (!!(ByteData & k) == 1 ? 1 : 0);
+          image->Data[j * image->Width + i] = (ByteData & k) ? 1 : 0;
           k >>= 1;
           if (++i >= image->Width)
             break;
         }
       }
-      image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+      SIOseek(io, PadSize, IL_SEEK_CUR);
     }
     return IL_TRUE;
   }
@@ -226,22 +225,22 @@ static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
     image->Pal.PalSize = 16 * 3;
     image->Pal.PalType = IL_PAL_BGR24;
 
-    if (image->io.read(image->io.handle, image->Pal.Palette, 1, 16 * 3) != 16*3)
+    if (SIOread(io, image->Pal.Palette, 1, 16 * 3) != 16*3)
       return IL_FALSE;
 
     PadSize = ((8 - (image->Width % 8)) / 2) % 4;  // Has to truncate
-    image->io.seek(image->io.handle, Header->DataOff, IL_SEEK_SET);
+    SIOseek(io, Header->DataOff, IL_SEEK_SET);
 
     for (j = 0; j < image->Height; j++) {
       for (i = 0; i < image->Width; i++) {
-        if (image->io.read(image->io.handle, &ByteData, 1, 1) != 1)
+        if (SIOread(io, &ByteData, 1, 1) != 1)
           return IL_FALSE;
         image->Data[j * image->Width + i] = ByteData >> 4;
         if (++i == image->Width)
           break;
         image->Data[j * image->Width + i] = ByteData & 0x0F;
       }
-      image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+      SIOseek(io, PadSize, IL_SEEK_CUR);
     }
 
     return IL_TRUE;
@@ -259,7 +258,7 @@ static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
     image->Pal.PalSize = 256 * 3;
     image->Pal.PalType = IL_PAL_BGR24;
 
-    if (image->io.read(image->io.handle, image->Pal.Palette, 1, 256 * 3) != 256*3)
+    if (SIOread(io, image->Pal.Palette, 1, 256 * 3) != 256*3)
       return IL_FALSE;
   }
   else { //has to be 24 bpp
@@ -268,18 +267,18 @@ static ILboolean iGetOS2Bmp(ILimage* image, OS2_HEAD *Header)
   }
   image->Origin = IL_ORIGIN_LOWER_LEFT;
 
-  image->io.seek(image->io.handle, Header->DataOff, IL_SEEK_SET);
+  SIOseek(io, Header->DataOff, IL_SEEK_SET);
 
   PadSize = (4 - (image->Bps % 4)) % 4;
   if (PadSize == 0) {
-    if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfData) != image->SizeOfData)
+    if (SIOread(io, image->Data, 1, image->SizeOfData) != image->SizeOfData)
       return IL_FALSE;
   }
   else {
     for (i = 0; i < image->Height; i++) {
-      if (image->io.read(image->io.handle, image->Data + i * image->Bps, 1, image->Bps) != image->Bps)
+      if (SIOread(io, image->Data + i * image->Bps, 1, image->Bps) != image->Bps)
         return IL_FALSE;
-      image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+      SIOseek(io, PadSize, IL_SEEK_CUR);
     }
   }
 
@@ -312,6 +311,7 @@ static ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
 {
   ILuint i, j, k, c, Read;
   ILubyte ByteData, PadSize, Padding[4];
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header, 1, IL_COLOUR_INDEX)) 
@@ -328,18 +328,18 @@ static ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
   }
 
   // Read the palette
-  image->io.seek(image->io.handle, sizeof(BMPHEAD), IL_SEEK_SET);
-  if (image->io.read(image->io.handle, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
+  SIOseek(io, sizeof(BMPHEAD), IL_SEEK_SET);
+  if (SIOread(io, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
     return IL_FALSE;
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   PadSize = ((32 - (image->Width % 32)) / 8) % 4;  // Has to truncate
   for (j = 0; j < image->Height; j++) {
     Read = 0;
     for (i = 0; i < image->Width; ) {
-      if (image->io.read(image->io.handle, &ByteData, 1, 1) != 1) {
+      if (SIOread(io, &ByteData, 1, 1) != 1) {
         return IL_FALSE;
       }
       Read++;
@@ -352,8 +352,8 @@ static ILboolean ilReadUncompBmp1(ILimage* image, BMPHEAD * Header)
           break;
       }
     }
-    //image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
-    image->io.read(image->io.handle, Padding, 1, PadSize);
+    //SIOseek(io, PadSize, IL_SEEK_CUR);
+    SIOread(io, Padding, 1, PadSize);
   }
 
   return IL_TRUE;
@@ -365,6 +365,7 @@ static ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
 {
   ILuint i, j;
   ILubyte ByteData, PadSize, Padding[4];
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  1, IL_COLOUR_INDEX))
@@ -384,17 +385,17 @@ static ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
   }
 
   // Read the palette
-  image->io.seek(image->io.handle, sizeof(BMPHEAD), IL_SEEK_SET);
-  if (image->io.read(image->io.handle, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
+  SIOseek(io, sizeof(BMPHEAD), IL_SEEK_SET);
+  if (SIOread(io, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
     return IL_FALSE;
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   PadSize = ((8 - (image->Width % 8)) / 2) % 4;  // Has to truncate
   for (j = 0; j < image->Height; j++) {
     for (i = 0; i < image->Width; i++) {
-      if (image->io.read(image->io.handle, &ByteData, 1, 1) != 1) {
+      if (SIOread(io, &ByteData, 1, 1) != 1) {
         return IL_FALSE;
       }
       image->Data[j * image->Width + i] = ByteData >> 4;
@@ -402,8 +403,8 @@ static ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
         break;
       image->Data[j * image->Width + i] = ByteData & 0x0F;
     }
-    image->io.read(image->io.handle, Padding, 1, PadSize);
-    //image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+    SIOread(io, Padding, 1, PadSize);
+    //SIOseek(io, PadSize, IL_SEEK_CUR);
   }
 
   return IL_TRUE;
@@ -414,6 +415,7 @@ static ILboolean ilReadUncompBmp4(ILimage* image, BMPHEAD * Header)
 static ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
 {
   ILuint PadSize;
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  1, IL_COLOUR_INDEX))
@@ -433,27 +435,27 @@ static ILboolean ilReadUncompBmp8(ILimage* image, BMPHEAD * Header)
   }
 
   // Read the palette
-  image->io.seek(image->io.handle, sizeof(BMPHEAD), IL_SEEK_SET);
-  if (image->io.read(image->io.handle, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
+  SIOseek(io, sizeof(BMPHEAD), IL_SEEK_SET);
+  if (SIOread(io, image->Pal.Palette, 1, image->Pal.PalSize) != image->Pal.PalSize)
     return IL_FALSE;
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   PadSize = (4 - (image->Bps % 4)) % 4;
   if (PadSize == 0) {
     // If the data does not use padding, we can read it immediately
-    if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfPlane) != image->SizeOfPlane)
+    if (SIOread(io, image->Data, 1, image->SizeOfPlane) != image->SizeOfPlane)
       return IL_FALSE;
   } else {  
     // Remove padding while reading
     ILuint i;
     for (i = 0; i < image->SizeOfPlane; i += image->Bps) {
-      ILuint read = image->io.read(image->io.handle, image->Data + i, 1, image->Bps);
+      ILuint read = SIOread(io, image->Data + i, 1, image->Bps);
       if (read != image->Bps) {
         return IL_FALSE;
       }
-      image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+      SIOseek(io, PadSize, IL_SEEK_CUR);
     }
   }
 
@@ -469,6 +471,7 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
   ILubyte* inputScanline = (ILubyte*) ialloc(inputBps);
   ILuint inputOffset = (ILuint)Header->bfDataOff;
   ILuint y;
+  SIO *io = &image->io;
 
   if ((Header->biWidth & 1) != 0) {
     PadSize = 2;
@@ -486,10 +489,10 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
   {
     // If the bmp uses bitfields, we have to use them to decode the image
     ILuint readOffset = Header->biSize + 14;
-    image->io.seek(image->io.handle, readOffset, IL_SEEK_SET); //seek to bitfield data
-    image->io.read(image->io.handle, &rMask, 4, 1);
-    image->io.read(image->io.handle, &gMask, 4, 1);
-    image->io.read(image->io.handle, &bMask, 4, 1);
+    SIOseek(io, readOffset, IL_SEEK_SET); //seek to bitfield data
+    SIOread(io, &rMask, 4, 1);
+    SIOread(io, &gMask, 4, 1);
+    SIOread(io, &bMask, 4, 1);
     UInt(&rMask);
     UInt(&gMask);
     UInt(&bMask);
@@ -498,9 +501,9 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
     GetShiftFromMask(bMask, &bShiftL, &bShiftR);
   } else {
     // Default values if bitfields are not used
-    rMask = 0x7C00;
-    gMask = 0x03E0;
-    bMask = 0x001F;
+    rMask   = 0x7C00;
+    gMask   = 0x03E0;
+    bMask   = 0x001F;
     rShiftR = 10;
     gShiftR = 5;
     bShiftR = 0;
@@ -509,22 +512,22 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
     bShiftL = 3;
   }
 
-  //@TODO: This may not be safe for Big Endian.
   // Read pixels
   for (y = 0; y < image->Height; y++) {
     ILuint k = image->Bps * y;
     ILuint x;
     ILuint read;
 
-    image->io.seek(image->io.handle, inputOffset, IL_SEEK_SET);
-    read = image->io.read(image->io.handle, inputScanline, 1, inputBps);
+    SIOseek(io, inputOffset, IL_SEEK_SET);
+    read = SIOread(io, inputScanline, 1, inputBps);
     if (read != inputBps) {
       return IL_FALSE;
     }
     inputOffset += inputBps;
 
     for(x = 0; x < image->Width; x++, k += 3) {
-      WORD Read16 = ((WORD*)((void*)inputScanline))[x];
+      WORD Read16 = ((WORD*)(inputScanline))[x];
+      UShort(&Read16);
       image->Data[k    ] = (ILubyte)(((Read16 & bMask) >> bShiftR) << bShiftL);
       image->Data[k + 1] = (ILubyte)(((Read16 & gMask) >> gShiftR) << gShiftL);
       image->Data[k + 2] = (ILubyte)(((Read16 & rMask) >> rShiftR) << rShiftL);
@@ -540,7 +543,8 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
 // Reads an uncompressed .bmp
 static ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
 {
-    ILubyte PadSize;
+  ILubyte PadSize;
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  3, IL_BGR))
@@ -549,23 +553,23 @@ static ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
   }
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   // Read data
   PadSize = (4 - (image->Bps % 4)) % 4;
   if (PadSize == 0) {
     // Read entire data with just one call
-    if (image->io.read(image->io.handle, image->Data, 1, image->SizeOfPlane) != image->SizeOfPlane)
+    if (SIOread(io, image->Data, 1, image->SizeOfPlane) != image->SizeOfPlane)
       return IL_FALSE;
   } else {  
     // Microsoft requires lines to be padded if the widths aren't multiples of 4
     ILuint i;
     for (i = 0; i < image->SizeOfPlane; i += image->Bps) {
-      ILuint read = image->io.read(image->io.handle, image->Data + i, 1, image->Bps);
+      ILuint read = SIOread(io, image->Data + i, 1, image->Bps);
       if (read != image->Bps) {
         return IL_FALSE;
       }
-      image->io.seek(image->io.handle, PadSize, IL_SEEK_CUR);
+      SIOseek(io, PadSize, IL_SEEK_CUR);
     }
   }
 
@@ -632,6 +636,7 @@ static ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
 {
   ILubyte Bytes[2];
   size_t  offset = 0, count, endOfLine = (ILuint)Header->biWidth;
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!iTexImage(image, (ILuint)Header->biWidth, (ILuint)abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
@@ -658,15 +663,15 @@ static ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
      IL_ORIGIN_UPPER_LEFT : IL_ORIGIN_LOWER_LEFT;
   
   // Read the palette
-  image->io.seek(image->io.handle, sizeof(BMPHEAD), IL_SEEK_SET);
-  if (image->io.read(image->io.handle, image->Pal.Palette, image->Pal.PalSize, 1) != 1)
+  SIOseek(io, sizeof(BMPHEAD), IL_SEEK_SET);
+  if (SIOread(io, image->Pal.Palette, image->Pal.PalSize, 1) != 1)
     return IL_FALSE;
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
     while (offset < image->SizeOfData) {
-    if (image->io.read(image->io.handle, Bytes, sizeof(Bytes), 1) != 1)
+    if (SIOread(io, Bytes, sizeof(Bytes), 1) != 1)
       return IL_FALSE;
     if (Bytes[0] == 0x00) {  // Escape sequence
       switch (Bytes[1])
@@ -679,18 +684,18 @@ static ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
           offset = image->SizeOfData;
           break;
         case 0x2:
-          if (image->io.read(image->io.handle, Bytes, sizeof(Bytes), 1) != 1)
+          if (SIOread(io, Bytes, sizeof(Bytes), 1) != 1)
             return IL_FALSE;
           offset += Bytes[0] + Bytes[1] * image->Width;
           endOfLine += Bytes[1] * image->Width;
           break;
         default:
           count = IL_MIN(Bytes[1], image->SizeOfData-offset);
-          if (image->io.read(image->io.handle, image->Data + offset, (ILuint)count, 1) != 1)
+          if (SIOread(io, image->Data + offset, (ILuint)count, 1) != 1)
             return IL_FALSE;
           offset += count;
           if ((count & 1) == 1)  // Must be on a word boundary
-            if (image->io.read(image->io.handle, Bytes, 1, 1) != 1)
+            if (SIOread(io, Bytes, 1, 1) != 1)
               return IL_FALSE;
           break;
       }
@@ -709,6 +714,7 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
   ILubyte Bytes[2];
   ILuint  i;
   size_t  offset = 0, count, endOfLine = (ILuint)Header->biWidth;
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!iTexImage(image, (ILuint)Header->biWidth, (ILuint)abs(Header->biHeight), 1, 1, 0, IL_UNSIGNED_BYTE, NULL))
@@ -734,17 +740,17 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
      IL_ORIGIN_UPPER_LEFT : IL_ORIGIN_LOWER_LEFT;
 
   // Read the palette
-  image->io.seek(image->io.handle, sizeof(BMPHEAD), IL_SEEK_SET);
+  SIOseek(io, sizeof(BMPHEAD), IL_SEEK_SET);
 
-  if (image->io.read(image->io.handle, image->Pal.Palette, image->Pal.PalSize, 1) != 1)
+  if (SIOread(io, image->Pal.Palette, image->Pal.PalSize, 1) != 1)
     return IL_FALSE;
 
   // Seek to the data from the "beginning" of the file
-  image->io.seek(image->io.handle, Header->bfDataOff, IL_SEEK_SET);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   while (offset < image->SizeOfData) {
     int align;
-    if (image->io.read(image->io.handle, &Bytes[0], sizeof(Bytes), 1) != 1)
+    if (SIOread(io, &Bytes[0], sizeof(Bytes), 1) != 1)
       return IL_FALSE;
     if (Bytes[0] == 0x0) {        // Escape sequence
          switch (Bytes[1]) {
@@ -756,7 +762,7 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
             offset = image->SizeOfData;
             break;
          case 0x2:
-        if (image->io.read(image->io.handle, &Bytes[0], sizeof(Bytes), 1) != 1)
+        if (SIOread(io, &Bytes[0], sizeof(Bytes), 1) != 1)
           return IL_FALSE;
             offset += Bytes[0] + Bytes[1] * image->Width;
             endOfLine += Bytes[1] * image->Width;
@@ -768,7 +774,7 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
           int byte;
 
           if ((i & 0x01) == 0) {
-            if (image->io.read(image->io.handle, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
+            if (SIOread(io, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
               return IL_FALSE;
             byte = (Bytes[0] >> 4);
           }
@@ -780,7 +786,7 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
         align = Bytes[1] % 4;
 
         if (align == 1 || align == 2) // Must be on a word boundary
-          if (image->io.read(image->io.handle, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
+          if (SIOread(io, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
             return IL_FALSE;
       }
     } else {
@@ -858,14 +864,15 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   ILimage *TempImage = NULL;
   ILpal *TempPal;
   ILubyte *TempData;
+  SIO *io = &image->io;
 
   if (image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  image->io.putchar('B', image->io.handle);  // Comprises the
-  image->io.putchar('M', image->io.handle);  //  "signature"
+  SIOputc(io, 'B');  // Comprises the
+  SIOputc(io, 'M');  //  "signature"
   
   SaveLittleUInt(&image->io, 0);  // Will come back and change later in this function (filesize)
   SaveLittleUInt(&image->io, 0);  // Reserved
@@ -981,30 +988,29 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   }
   SaveLittleInt(&image->io, 0);  // Important colour (none)
 
-  image->io.write(TempPal->Palette, 1, TempPal->PalSize, image->io.handle);
+  SIOwrite(io, TempPal->Palette, 1, TempPal->PalSize);
   
   if( compress_rle8 == IL_TRUE ) {
-    //@TODO compress and save
     ILubyte *Dest = (ILubyte*)ialloc((ILuint)(TempImage->SizeOfPlane*130.0/127.0));
     FileSize = iRleCompress(TempImage->Data,TempImage->Width,TempImage->Height,
             TempImage->Depth,TempImage->Bpp,Dest,IL_BMPCOMP,NULL);
-    image->io.write(Dest,1,FileSize, image->io.handle);
+    SIOwrite(io, Dest, 1, FileSize);
   } else {
     PadSize = (4 - (TempImage->Bps % 4)) % 4;
     // No padding, so write data directly.
     if (PadSize == 0) {
-      image->io.write(TempData, 1, TempImage->SizeOfPlane, image->io.handle);
+      SIOwrite(io, TempData, 1, TempImage->SizeOfPlane);
     } else {  // Odd width, so we must pad each line.
       for (i = 0; i < TempImage->SizeOfPlane; i += TempImage->Bps) {
-        image->io.write(TempData + i, 1, TempImage->Bps, image->io.handle); // Write data
-        image->io.write(&Padding, 1, PadSize, image->io.handle); // Write pad byte(s)
+        SIOwrite(io, TempData + i, 1, TempImage->Bps); // Write data
+        SIOwrite(io, &Padding, 1, PadSize); // Write pad byte(s)
       }
     }
   }
   
   // Write the filesize
-  FileSize = image->io.tell(image->io.handle);
-  image->io.seek(image->io.handle, 2, IL_SEEK_SET);
+  FileSize = SIOtell(io);
+  SIOseek(io, 2, IL_SEEK_SET);
   SaveLittleUInt(&image->io, FileSize);
 
   if (TempPal != &image->Pal) {
@@ -1016,7 +1022,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   if (TempImage != image)
     iCloseImage(TempImage);
   
-  image->io.seek(image->io.handle, FileSize, IL_SEEK_SET);
+  SIOseek(io, FileSize, IL_SEEK_SET);
   
   return IL_TRUE;
 }

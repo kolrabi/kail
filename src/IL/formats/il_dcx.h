@@ -14,29 +14,6 @@
 #ifndef DCX_H
 #define DCX_H
 
-#include "il_internal.h"
-
-#include "pack_push.h"
-
-typedef struct DCXHEAD
-{
-	ILubyte		Manufacturer;
-	ILubyte		Version;
-	ILubyte		Encoding;
-	ILubyte		Bpp;
-	ILushort	Xmin, Ymin, Xmax, Ymax;
-	ILushort	HDpi;
-	ILushort	VDpi;
-	ILubyte		ColMap[48];
-	ILubyte		Reserved;
-	ILubyte		NumPlanes;
-	ILushort	Bps;
-	ILushort	PaletteInfo;
-	ILushort	HScreenSize;
-	ILushort	VScreenSize;
-	ILubyte		Filler[54];
-} DCXHEAD;
-
-#include "pack_pop.h"
+#include "il_pcx.h"
 
 #endif//PCX_H

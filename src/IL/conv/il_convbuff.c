@@ -1760,7 +1760,6 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
             case IL_DOUBLE:
               memset(NewData, 0, NumPix * BpcDest * 3);  // Easy enough
               break;
-            //@TODO: Do we need to a check for default: (error)?
           }
           break;
 
@@ -1919,7 +1918,7 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
   BpcDest = iGetBpcType(DestType);
 
   if (BpcSrc == 0 || BpcDest == 0) {
-    iSetError(IL_INTERNAL_ERROR);
+    iSetError(IL_INVALID_PARAM);
     return NULL;
   }
 

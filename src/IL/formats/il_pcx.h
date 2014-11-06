@@ -16,7 +16,6 @@
 
 #include "il_internal.h"
 
-
 #include "pack_push.h"
 
 typedef struct PCXHEAD
@@ -39,5 +38,10 @@ typedef struct PCXHEAD
 } PCXHEAD;
 
 #include "pack_pop.h"
+
+ILboolean PcxGetHeader(SIO* io, PCXHEAD *header);
+ILboolean PcxCheckHeader(PCXHEAD *Header);
+ILimage * PcxDecode(SIO *io, PCXHEAD *Header);
+ILboolean PcxEncode(SIO *io, ILimage *Image);
 
 #endif//PCX_H
