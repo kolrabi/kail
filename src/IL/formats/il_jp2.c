@@ -153,7 +153,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	//  reading past the end of the file, but this actually is not an error.
 	Error = ilGetError();
 	// Put the error back if it is not IL_FILE_READ_ERROR.
-	if (Error != IL_FILE_READ_ERROR)
+	if (Error != IL_NO_ERROR && Error != IL_FILE_READ_ERROR)
 		iSetError(Error);
 
 	// We're not supporting anything other than 8 bits/component yet.
@@ -205,6 +205,7 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 		// Have to convert data into an intermediate matrix format.
 		if (jas_image_readcmpt(Jp2Image, (int)c, 0, 0, (int)TempImage->Width, (int)TempImage->Height, origdata))
 		{
+			iSetError(IL_LIB_JP2_ERROR);
 			return IL_FALSE;
 		}
 

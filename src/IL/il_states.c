@@ -320,7 +320,7 @@ ILuint ILAPIENTRY iGetiv(ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCou
     case IL_NUM_IMAGES: 
       *Param = 0;
       if (ilStates[ilCurrentPos].ilImageSelectionMode == IL_RELATIVE)
-        for (SubImage = Image->Faces; SubImage; SubImage = SubImage->Next) (*Param)++;
+        for (SubImage = Image->Next; SubImage; SubImage = SubImage->Next) (*Param)++;
       else
         for (SubImage = Image->BaseImage; SubImage; SubImage = SubImage->Next) (*Param)++;
       return 1;
