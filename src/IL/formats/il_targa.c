@@ -675,7 +675,6 @@ static void iGetDateTime(ILushort *Month, ILushort *Day, ILushort *Yr, ILushort 
   return;
 #else
   
-  // FIXME: reentrancy
   time_t now = time(NULL);
   struct tm *tm = gmtime(&now);
 

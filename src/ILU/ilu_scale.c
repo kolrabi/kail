@@ -146,12 +146,6 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
     iluScale3D_(ToScale, Scaled, Width, Height, Depth, Filter);
   }
 
-  if (Format == IL_COLOUR_INDEX) {
-    // TODO:
-    //ilSetCurImage(Scaled);
-    //ilConvertImage(IL_COLOUR_INDEX);
-  }
-
   if (ToScale != Image)
     iCloseImage(ToScale);
 

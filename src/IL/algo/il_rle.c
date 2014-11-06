@@ -23,6 +23,7 @@ static ILuint RleCountDifferentPixels(const ILubyte *p, ILuint bpp, ILuint pixCn
   ILuint  pixel;
   ILuint  nextPixel = 0;
   ILuint  n = 0;
+  ILuint  same = 0;
 
   if (pixCnt == 0)
     return 0;
@@ -35,8 +36,12 @@ static ILuint RleCountDifferentPixels(const ILubyte *p, ILuint bpp, ILuint pixCn
     pixel = nextPixel;
     p += bpp;
     nextPixel = RleGetPixel(p, bpp);
-    if (pixel == nextPixel)
-      break;
+    if (pixel == nextPixel) {
+      if (++same > 1)
+        break;
+    } else {
+      same = 0;
+    }
 
     n++; 
     pixCnt --;
@@ -79,7 +84,6 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
   ILuint  SameCount;      // number of identical adjacent pixels
   ILuint  RLEBufSize = 0; // count of number of bytes encoded
   ILuint  MaxRun;
-  const ILint bmp_pad_to_even = 1 - ((ILsizei)q - *DestWidth) % 2;
 
   switch( CompressMode ) {
     case IL_TGACOMP:      MaxRun = TGA_MAX_RUN;     break;
@@ -96,28 +100,13 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
     SameCount = RleCountSamePixels     (p, bpp, n > MaxRun ? MaxRun : n);
 
     if( CompressMode == IL_BMPCOMP ) {
-      ILuint remaining_data;
-      if (n < DiffCount + SameCount) {
-        remaining_data = 0;
-      } else {
-        remaining_data = n - DiffCount - SameCount;
-      }
-
-      if( remaining_data < 3  ) { // check if the run has gone near the end
-        // no absolute run can be done
-        // complete the line adding 0x01 + pixel, for each pixel
-        while( remaining_data > 0 ) {
-          *q++ = 0x01;
-          *q++ = *p++;
-          remaining_data--;
-        }
+      if (DiffCount == 2) {
+        SameCount = 1;
         DiffCount = 0;
-        SameCount = 0;
-        n = 0;
       }
     }
 
-    if( DiffCount > 0 ) { // create a raw packet (bmp absolute run)
+    if( DiffCount > 1 ) { // create a raw packet (bmp absolute run)
       switch(CompressMode) {
         case IL_TGACOMP:          *q++ = (ILubyte)(DiffCount-1);
                                   break;
@@ -135,15 +124,18 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
       memcpy(q, p, DiffCount*bpp);
       p += DiffCount*bpp;
       q += DiffCount*bpp;
-    
+
       if( CompressMode == IL_BMPCOMP ) {
-        if( (ILsizei)q % 2 == (ILsizei)bmp_pad_to_even ) {
-          *q++ = 0x00; // insert padding
+        if( DiffCount % 2 ) {
+          *q++ = 0xFF; // insert padding
+          RLEBufSize++;
         }
       }
+      DiffCount = 0;
+      SameCount = 0;
     }
 
-    if( SameCount > 1 ) { // create a RLE packet
+    if( SameCount > 0 ) { // create a RLE packet
       switch(CompressMode) {
         case IL_TGACOMP:          *q++ = (ILubyte)((SameCount - 1) | 0x80);         break;
         case IL_SGICOMP:
@@ -155,9 +147,6 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
       memcpy(q, p, bpp);
       p += SameCount * bpp;
       q += bpp;
-      /*if( CompressMode == IL_BMPCOMP ) {
-        *q++ = *p++;
-      }*/
     }
   }
 

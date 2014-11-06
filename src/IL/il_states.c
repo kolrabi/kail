@@ -190,7 +190,7 @@ ILboolean iAble(ILenum Mode, ILboolean Flag) {
     case IL_NVIDIA_COMPRESS:  
     case IL_SQUISH_COMPRESS:  SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_USE_SQUISH_DXT, Flag); break;
     case IL_TGA_RLE:          SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_TGA_USE_RLE, Flag); break;
-    // FIXME: case IL_BMP_RLE:          SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_BMP_USE_RLE, Flag); break;
+    case IL_BMP_RLE:          SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_BMP_USE_RLE, Flag); break;
     case IL_SGI_RLE:          SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_SGI_USE_RLE, Flag); break;
     case IL_JPG_PROGRESSIVE:  SETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_JPG_PROGRESSIVE, Flag); break;
 
@@ -226,7 +226,7 @@ ILboolean iIsEnabled(ILenum Mode) {
     case IL_NVIDIA_COMPRESS:  
     case IL_SQUISH_COMPRESS:  return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_USE_SQUISH_DXT);
     case IL_TGA_RLE:          return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_TGA_USE_RLE);
-    // FIXME: case IL_BMP_RLE:         return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_BMP_USE_RLE);
+    case IL_BMP_RLE:          return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_BMP_USE_RLE);
     case IL_SGI_RLE:          return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_SGI_USE_RLE);
     case IL_JPG_PROGRESSIVE:  return GETFLAG(ilStates[ilCurrentPos].ilStateFlags, IL_STATE_FLAG_JPG_PROGRESSIVE);
 
@@ -268,7 +268,7 @@ ILuint ILAPIENTRY iGetiv(ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCou
     case IL_NVIDIA_COMPRESS:  
     case IL_SQUISH_COMPRESS:  
     case IL_TGA_RLE:          
-    // FIXME: case IL_BMP_RLE:
+    case IL_BMP_RLE:
     case IL_SGI_RLE:          
     case IL_JPG_PROGRESSIVE:      if (Param) *Param = iIsEnabled(Mode); return 1;
 

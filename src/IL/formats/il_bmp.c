@@ -581,6 +581,7 @@ static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
 {
   ILuint read;
   DWORD * start, * stop, * pixel;
+  SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  4, IL_BGRA))
@@ -589,8 +590,8 @@ static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
   }
 
   // Read pixel data
-  SIOseek(&image->io, Header->bfDataOff, IL_SEEK_SET);
-  read = SIOread(&image->io, image->Data, 1, image->SizeOfPlane);
+  SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
+  read = SIOread(io, image->Data, 1, image->SizeOfPlane);
 
   // Convert data: ABGR to BGRA
   // @TODO: bitfields are not supported here yet ... would mean that at least one color channel 
@@ -670,7 +671,7 @@ static ILboolean ilReadRLE8Bmp(ILimage* image, BMPHEAD *Header)
   // Seek to the data from the "beginning" of the file
   SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
-    while (offset < image->SizeOfData) {
+  while (offset < image->SizeOfData) {
     if (SIOread(io, Bytes, sizeof(Bytes), 1) != 1)
       return IL_FALSE;
     if (Bytes[0] == 0x00) {  // Escape sequence
@@ -808,15 +809,16 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
   BMPHEAD   Header;
   OS2_HEAD  Os2Head;
   ILboolean bBitmap;
+  SIO *io = &image->io;
 
   if (image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  iGetBmpHead(&image->io, &Header);
+  iGetBmpHead(io, &Header);
   if (!iCheckBmp(&Header)) {
-    iGetOS2Head(&image->io, &Os2Head);
+    iGetOS2Head(io, &Os2Head);
     if (!iCheckOS2(&Os2Head)) {
       iSetError(IL_INVALID_FILE_HEADER);
       return IL_FALSE;
@@ -861,6 +863,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   ILboolean compress_rle8 = ilIsEnabled(IL_BMP_RLE);
   //int compress_rle8 = IL_FALSE; // disabled BMP RLE compression. broken
   ILuint  FileSize, i, PadSize, Padding = 0;
+  ILuint  FileSizePos = 0;
   ILimage *TempImage = NULL;
   ILpal *TempPal;
   ILubyte *TempData;
@@ -870,12 +873,6 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
-
-  SIOputc(io, 'B');  // Comprises the
-  SIOputc(io, 'M');  //  "signature"
-  
-  SaveLittleUInt(&image->io, 0);  // Will come back and change later in this function (filesize)
-  SaveLittleUInt(&image->io, 0);  // Reserved
 
   if (compress_rle8 == IL_TRUE)
   {
@@ -888,65 +885,64 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
       iCloseImage(TempImage);
       return IL_FALSE;
     }
-  }
-
-  if((image->Format == IL_LUMINANCE) && (image->Pal.Palette == NULL))
-  {
-    // For luminance images it is necessary to generate a grayscale BGR32
-    //  color palette.  Could call iConvertImage(..., IL_COLOR_INDEX, ...)
-    //  to generate an RGB24 palette, followed by iConvertPal(..., IL_PAL_BGR32),
-    //  to convert the palette to BGR32, but it seemed faster to just
-    //  explicitely generate the correct palette.
-    
-    image->Pal.PalSize = 256*4;
-    image->Pal.PalType = IL_PAL_BGR32;
-    image->Pal.Palette = (ILubyte*)ialloc(image->Pal.PalSize);
-    
-    // Generate grayscale palette
-    for (i = 0; i < 256; i++)
+  } else {
+    if((image->Format == IL_LUMINANCE) && (image->Pal.Palette == NULL))
     {
-      image->Pal.Palette[i * 4]     =
-      image->Pal.Palette[i * 4 + 1] =
-      image->Pal.Palette[i * 4 + 2] = (ILubyte)i;
-      image->Pal.Palette[i * 4 + 3] = 0;
-    }
-  }
-  
-  // If the current image has a palette, take care of it
-  TempPal = &image->Pal;
-  if( image->Pal.PalSize && image->Pal.Palette && image->Pal.PalType != IL_PAL_NONE ) {
-    // If the palette in .bmp format, write it directly
-    if (image->Pal.PalType == IL_PAL_BGR32) {
-      TempPal = &image->Pal;
-    } else {
-      TempPal = iConvertPal(&image->Pal, IL_PAL_BGR32);
-      if (TempPal == NULL) {
-        return IL_FALSE;
+      // For luminance images it is necessary to generate a grayscale BGR32
+      //  color palette.  Could call iConvertImage(..., IL_COLOR_INDEX, ...)
+      //  to generate an RGB24 palette, followed by iConvertPal(..., IL_PAL_BGR32),
+      //  to convert the palette to BGR32, but it seemed faster to just
+      //  explicitely generate the correct palette.
+      
+      image->Pal.PalSize = 256*4;
+      image->Pal.PalType = IL_PAL_BGR32;
+      image->Pal.Palette = (ILubyte*)ialloc(image->Pal.PalSize);
+      
+      // Generate grayscale palette
+      for (i = 0; i < 256; i++)
+      {
+        image->Pal.Palette[i * 4]     =
+        image->Pal.Palette[i * 4 + 1] =
+        image->Pal.Palette[i * 4 + 2] = (ILubyte)i;
+        image->Pal.Palette[i * 4 + 3] = 0;
       }
     }
-  }
-
-  SaveLittleUInt(&image->io, 54 + TempPal->PalSize);  // Offset of the data
-  
-  //Changed 20040923: moved this block above writing of
-  //BITMAPINFOHEADER, so that the written header refers to
-  //TempImage instead of the original image
-  
-  if ((image->Format != IL_BGR) && (image->Format != IL_BGRA) && 
-      (image->Format != IL_COLOUR_INDEX) && (image->Format != IL_LUMINANCE)) {
-    if (image->Format == IL_RGBA) {
-      TempImage = iConvertImage(image, IL_BGRA, IL_UNSIGNED_BYTE);
-    } else {
-      TempImage = iConvertImage(image, IL_BGR, IL_UNSIGNED_BYTE);
+    
+    // If the current image has a palette, take care of it
+    TempPal = &image->Pal;
+    if( image->Pal.PalSize && image->Pal.Palette && image->Pal.PalType != IL_PAL_NONE ) {
+      // If the palette in .bmp format, write it directly
+      if (image->Pal.PalType == IL_PAL_BGR32) {
+        TempPal = &image->Pal;
+      } else {
+        TempPal = iConvertPal(&image->Pal, IL_PAL_BGR32);
+        if (TempPal == NULL) {
+          return IL_FALSE;
+        }
+      }
     }
-    if (TempImage == NULL)
-      return IL_FALSE;
-  } else if (image->Bpc > 1) {
-    TempImage = iConvertImage(image, image->Format, IL_UNSIGNED_BYTE);
-    if (TempImage == NULL)
-      return IL_FALSE;
-  } else {
-    TempImage = image;
+
+    //Changed 20040923: moved this block above writing of
+    //BITMAPINFOHEADER, so that the written header refers to
+    //TempImage instead of the original image
+    
+    if ((image->Format != IL_BGR) && (image->Format != IL_BGRA) && 
+        (image->Format != IL_COLOUR_INDEX) && (image->Format != IL_LUMINANCE)) {
+      if (image->Format == IL_RGBA) {
+        TempImage = iConvertImage(image, IL_BGRA, IL_UNSIGNED_BYTE);
+      } else {
+        TempImage = iConvertImage(image, IL_BGR, IL_UNSIGNED_BYTE);
+      }
+      if (TempImage == NULL)
+        return IL_FALSE;
+    } else if (image->Bpc > 1) {
+      TempImage = iConvertImage(image, image->Format, IL_UNSIGNED_BYTE);
+      if (TempImage == NULL)
+        return IL_FALSE;
+    } else {
+      TempImage = image;
+    }
+
   }
 
   if (TempImage->Origin != IL_ORIGIN_LOWER_LEFT) {
@@ -958,45 +954,61 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   } else {
     TempData = TempImage->Data;
   }
+  
+  SIOputc(io, 'B');  // Comprises the
+  SIOputc(io, 'M');  //  "signature"
+  
+  SaveLittleUInt(io, 0);  // Will come back and change later in this function (filesize)
+  SaveLittleUInt(io, 0);  // Reserved
 
-  SaveLittleUInt(&image->io, 0x28);  // Header size
-  SaveLittleUInt(&image->io, image->Width);
+  SaveLittleUInt(io, 54 + TempPal->PalSize);  // Offset of the data
+
+  SaveLittleUInt(io, 0x28);  // Header size
+  SaveLittleUInt(io, TempImage->Width);
 
   // Removed because some image viewers don't like the negative height.
   // even if it is standard. @TODO should be enabled or disabled
   // usually enabled.
   /*if (image->Origin == IL_ORIGIN_UPPER_LEFT)
-    SaveLittleInt(&image->io, -(ILint)image->Height);
+    SaveLittleInt(io, -(ILint)image->Height);
   else*/
-    SaveLittleUInt(&image->io, TempImage->Height);
+    SaveLittleUInt(io, TempImage->Height);
 
-  SaveLittleUShort(&image->io, 1);  // Number of planes
-  SaveLittleUShort(&image->io, (ILushort)((ILushort)TempImage->Bpp << 3));  // Bpp
+  SaveLittleUShort(io, 1);  // Number of planes
+  SaveLittleUShort(io, (ILushort)((ILushort)TempImage->Bpp << 3));  // Bpp
   if( compress_rle8 == IL_TRUE ) {
-    SaveLittleInt(&image->io, 1); // rle8 compression
+    SaveLittleInt(io, 1); // rle8 compression
   } else {
-    SaveLittleInt(&image->io, 0);
+    SaveLittleInt(io, 0);
   }
-  SaveLittleInt(&image->io, 0);  // Size of image (Obsolete)
-  SaveLittleInt(&image->io, 0);  // (Obsolete)
-  SaveLittleInt(&image->io, 0);  // (Obsolete)
+
+  FileSizePos = SIOtell(io);
+  SaveLittleUInt(io, 0);  // Size of image (Obsolete)
+  SaveLittleInt(io, 3780); // horiz. px/m, 3780 ~96dpi (Obsolete)
+  SaveLittleInt(io, 3780); // vert.  px/m (Obsolete)
 
   if (TempImage->Pal.PalType != IL_PAL_NONE) {
-    SaveLittleInt(&image->io, ilGetInteger(IL_PALETTE_NUM_COLS));  // Num colours used
+    SaveLittleInt(io, ilGetInteger(IL_PALETTE_NUM_COLS));  // Num colours used
   } else {
-    SaveLittleInt(&image->io, 0);
+    SaveLittleInt(io, 0);
   }
-  SaveLittleInt(&image->io, 0);  // Important colour (none)
+  SaveLittleInt(io, 0);  // Important colour (none)
 
   SIOwrite(io, TempPal->Palette, 1, TempPal->PalSize);
   
   if( compress_rle8 == IL_TRUE ) {
-    ILubyte *Dest = (ILubyte*)ialloc((ILuint)(TempImage->SizeOfPlane*130.0/127.0));
+    ILubyte *Dest = (ILubyte*)ialloc((ILuint)(TempImage->SizeOfData*2));
+    ILuint ImagePos = SIOtell(io);
     FileSize = iRleCompress(TempImage->Data,TempImage->Width,TempImage->Height,
-            TempImage->Depth,TempImage->Bpp,Dest,IL_BMPCOMP,NULL);
+            TempImage->Depth,1,Dest,IL_BMPCOMP,NULL);
+
+    SIOseek(io, FileSizePos, IL_SEEK_SET);
+    SaveLittleUInt(io, FileSize);
+    SIOseek(io, ImagePos, IL_SEEK_SET);
     SIOwrite(io, Dest, 1, FileSize);
   } else {
     PadSize = (4 - (TempImage->Bps % 4)) % 4;
+
     // No padding, so write data directly.
     if (PadSize == 0) {
       SIOwrite(io, TempData, 1, TempImage->SizeOfPlane);
@@ -1011,7 +1023,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   // Write the filesize
   FileSize = SIOtell(io);
   SIOseek(io, 2, IL_SEEK_SET);
-  SaveLittleUInt(&image->io, FileSize);
+  SaveLittleUInt(io, FileSize);
 
   if (TempPal != &image->Pal) {
     ifree(TempPal->Palette);

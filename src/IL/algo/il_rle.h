@@ -26,7 +26,7 @@
 
 #define   TGA_MAX_RUN 128
 #define   SGI_MAX_RUN 127
-#define   BMP_MAX_RUN 127
+#define   BMP_MAX_RUN 255
 
 ILboolean iRleCompressLine(const ILubyte *ScanLine, ILuint Width, ILubyte Bpp, ILubyte *Dest, ILuint *DestWidth, ILenum CompressMode);
 ILuint    iRleCompress(const ILubyte *Data, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte *Dest, ILenum CompressMode, ILuint *ScanTable);
