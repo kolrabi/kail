@@ -22,17 +22,6 @@ ILimage *iluScale2DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 ILimage *iluScale2DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height);
 ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height);
 
-/*
-ILuint	x1, x2;
-ILuint	NewY1, NewY2, NewX1, NewX2, Size, x, y, c;
-ILdouble	ScaleX, ScaleY, t1, t2, t3, t4, f, ft, NewX;
-ILdouble	Table[2][4];  // Assumes we don't have larger than 32-bit images.
-ILuint	ImgBps, SclBps;
-ILushort	*ShortPtr, *SShortPtr;
-ILuint	*IntPtr, *SIntPtr;
-ILfloat	*FloatPtr, *SFloatPtr;
-*/
-
 ILimage *iluScale2D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILenum Filter)
 {
 	if (Image == NULL) {
@@ -56,8 +45,6 @@ ILimage *iluScale2DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 	ILuint    ImgBps = Image->Bps / Image->Bpc;
 	ILuint    SclBps = Scaled->Bps / Scaled->Bpc;
   ILuint    NewY1, NewY2, NewX1, NewX2, x, y, c;
-  ILushort  *ShortPtr, *SShortPtr;
-  ILuint    *IntPtr, *SIntPtr;
 
 	switch (Image->Bpc)
 	{
@@ -76,8 +63,6 @@ ILimage *iluScale2DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 			break;
 
 		case 2:
-			ShortPtr = (ILushort*)Image->Data;
-			SShortPtr = (ILushort*)Scaled->Data;
 			for (y = 0; y < Height; y++) {
 				NewY1 = y * SclBps;
 				NewY2 = (ILuint)(y / ScaleY) * ImgBps;
@@ -85,15 +70,13 @@ ILimage *iluScale2DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 					NewX1 = x * Scaled->Bpp;
 					NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						SShortPtr[NewY1 + NewX1 + c] = ShortPtr[NewY2 + NewX2 + c];
+						iGetImageDataUShort(Scaled)[NewY1 + NewX1 + c] = iGetImageDataUShort(Image)[NewY2 + NewX2 + c];
 					}
 				}
 			}
 			break;
 
 		case 4:
-			IntPtr = (ILuint*)Image->Data;
-			SIntPtr = (ILuint*)Scaled->Data;
 			for (y = 0; y < Height; y++) {
 				NewY1 = y * SclBps;
 				NewY2 = (ILuint)(y / ScaleY) * ImgBps;
@@ -101,11 +84,12 @@ ILimage *iluScale2DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 					NewX1 = x * Scaled->Bpp;
 					NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						SIntPtr[NewY1 + NewX1 + c] = IntPtr[NewY2 + NewX2 + c];
+						iGetImageDataUInt(Scaled)[NewY1 + NewX1 + c] = iGetImageDataUInt(Image)[NewY2 + NewX2 + c];
 					}
 				}
 			}
 			break;
+			// FIXME: ILdouble
 	}
 
 	return Scaled;
@@ -121,8 +105,6 @@ ILimage *iluScale2DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
   ILuint    NewY1, NewX1, NewX2, x, y, c, Size;
   ILuint    x1, x2;
   ILdouble  t1, t2, t4, f, ft;
-  ILushort  *ShortPtr, *SShortPtr;
-  ILuint    *IntPtr, *SIntPtr;
 
 	switch (Image->Bpc)
 	{
@@ -149,8 +131,6 @@ ILimage *iluScale2DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 			break;
 
 		case 2:
-			ShortPtr = (ILushort*)Image->Data;
-			SShortPtr = (ILushort*)Scaled->Data;
 			for (y = 0; y < Height; y++) {
 				NewY1 = (ILuint)(y / ScaleY) * ImgBps;
 				for (x = 0; x < Width; x++) {
@@ -164,17 +144,15 @@ ILimage *iluScale2DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 
 					Size = y * SclBps + x * Scaled->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						x1 = ShortPtr[NewY1 + NewX1 + c];
-						x2 = ShortPtr[NewY1 + NewX2 + c];
-						SShortPtr[Size + c] = (ILushort)((1.0 - f) * x1 + f * x2);
+						x1 = iGetImageDataUShort(Image)[NewY1 + NewX1 + c];
+						x2 = iGetImageDataUShort(Image)[NewY1 + NewX2 + c];
+						iGetImageDataUShort(Scaled)[Size + c] = (ILushort)((1.0 - f) * x1 + f * x2);
 					}
 				}
 			}
 			break;
 
 		case 4:
-			IntPtr = (ILuint*)Image->Data;
-			SIntPtr = (ILuint*)Scaled->Data;
 			for (y = 0; y < Height; y++) {
 				NewY1 = (ILuint)(y / ScaleY) * ImgBps;
 				for (x = 0; x < Width; x++) {
@@ -188,9 +166,9 @@ ILimage *iluScale2DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 
 					Size = y * SclBps + x * Scaled->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						x1 = IntPtr[NewY1 + NewX1 + c];
-						x2 = IntPtr[NewY1 + NewX2 + c];
-						SIntPtr[Size + c] = (ILuint)((1.0 - f) * x1 + f * x2);
+						x1 = iGetImageDataUInt(Image)[NewY1 + NewX1 + c];
+						x2 = iGetImageDataUInt(Image)[NewY1 + NewX2 + c];
+						iGetImageDataUInt(Scaled)[Size + c] = (ILushort)((1.0 - f) * x1 + f * x2);
 					}
 				}
 			}
@@ -219,9 +197,6 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
   ILuint    NewY1, NewY2, NewX1, NewX2, Size, x, y, c;
   ILdouble  t1, t2, t3, t4, f, ft, NewX;
   ILdouble  Table[2][4];  // Assumes we don't have larger than 32-bit images.
-  ILushort  *ShortPtr, *SShortPtr;
-  ILuint    *IntPtr, *SIntPtr;
-  ILfloat   *FloatPtr, *SFloatPtr;
 
 	// only downscale is allowed
 	assert(ScaleX>0 && ScaleX<=1.0f);
@@ -282,8 +257,6 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 			break;
 
 		case 2:
-			ShortPtr = (ILushort*)Image->Data;
-			SShortPtr = (ILushort*)Scaled->Data;
 			Height--;  // Only use regular Height once in the following loop.
 			for (y = 0; y < Height; y++) {
 				NewY1 = (ILuint)(y / ScaleY) * ImgBps;
@@ -299,11 +272,11 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 					NewX2 = (ILuint)(t4 + 1) * Image->Bpp;
 
 					for (c = 0; c < Scaled->Bpp; c++) {
-						Table[0][c] = t3 * ShortPtr[NewY1 + NewX1 + c] +
-							t2 * ShortPtr[NewY1 + NewX2 + c];
+						Table[0][c] = t3 * iGetImageDataUShort(Image)[NewY1 + NewX1 + c] +
+							t2 * iGetImageDataUShort(Image)[NewY1 + NewX2 + c];
 
-						Table[1][c] = t3 * ShortPtr[NewY2 + NewX1 + c] +
-							t2 * ShortPtr[NewY2 + NewX2 + c];
+						Table[1][c] = t3 * iGetImageDataUShort(Image)[NewY2 + NewX1 + c] +
+							t2 * iGetImageDataUShort(Image)[NewY2 + NewX2 + c];
 					}
 
 					// Linearly interpolate between the table values.
@@ -311,7 +284,7 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 					t3 = (1.0 - t1);
 					Size = y * SclBps + x * Scaled->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						SShortPtr[Size + c] =
+						iGetImageDataUShort(Scaled)[Size + c] =
 							(ILushort)(t3 * Table[0][c] + t1 * Table[1][c]);
 					}
 				}
@@ -330,16 +303,14 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 
 				Size = Height * SclBps + x * Image->Bpp;
 				for (c = 0; c < Scaled->Bpp; c++) {
-					SShortPtr[Size + c] = (ILushort)((1.0 - f) * ShortPtr[NewY1 + NewX1 + c] +
-						f * ShortPtr[NewY1 + NewX2 + c]);
+					iGetImageDataUShort(Scaled)[Size + c] = (ILushort)((1.0 - f) * iGetImageDataUShort(Image)[NewY1 + NewX1 + c] +
+						f * iGetImageDataUShort(Image)[NewY1 + NewX2 + c]);
 				}
 			}
 			break;
 
 		case 4:
 			if (Image->Type != IL_FLOAT) {
-				IntPtr = (ILuint*)Image->Data;
-				SIntPtr = (ILuint*)Scaled->Data;
 				Height--;  // Only use regular Height once in the following loop.
 				for (y = 0; y < Height; y++) {
 					NewY1 = (ILuint)(y / ScaleY) * ImgBps;
@@ -355,11 +326,11 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 						NewX2 = (ILuint)(t4 + 1) * Image->Bpp;
 
 						for (c = 0; c < Scaled->Bpp; c++) {
-							Table[0][c] = t3 * IntPtr[NewY1 + NewX1 + c] +
-								t2 * IntPtr[NewY1 + NewX2 + c];
+							Table[0][c] = t3 * iGetImageDataUInt(Image)[NewY1 + NewX1 + c] +
+								t2 * iGetImageDataUInt(Image)[NewY1 + NewX2 + c];
 
-							Table[1][c] = t3 * IntPtr[NewY2 + NewX1 + c] +
-								t2 * IntPtr[NewY2 + NewX2 + c];
+							Table[1][c] = t3 * iGetImageDataUInt(Image)[NewY2 + NewX1 + c] +
+								t2 * iGetImageDataUInt(Image)[NewY2 + NewX2 + c];
 						}
 
 						// Linearly interpolate between the table values.
@@ -367,7 +338,7 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 						t3 = (1.0 - t1);
 						Size = y * SclBps + x * Scaled->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							SIntPtr[Size + c] =
+							iGetImageDataUInt(Scaled)[Size + c] =
 								(ILuint)(t3 * Table[0][c] + t1 * Table[1][c]);
 						}
 					}
@@ -386,13 +357,11 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 
 					Size = Height * SclBps + x * Image->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						SIntPtr[Size + c] = (ILuint)((1.0 - f) * IntPtr[NewY1 + NewX1 + c] +
-							f * IntPtr[NewY1 + NewX2 + c]);
+						iGetImageDataUInt(Scaled)[Size + c] = (ILuint)((1.0 - f) * iGetImageDataUInt(Image)[NewY1 + NewX1 + c] +
+							f * iGetImageDataUInt(Image)[NewY1 + NewX2 + c]);
 					}
 				}
 			} else {  // IL_FLOAT
-				FloatPtr = (ILfloat*)Image->Data;
-				SFloatPtr = (ILfloat*)Scaled->Data;
 				Height--;  // Only use regular Height once in the following loop.
 
 				for (y = 0; y < Height; y++) {
@@ -409,15 +378,15 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 						t3 = (1.0 - t2);
 						t4 = t1 * NewX;
 
-						NewX1 = (ILuint)(t4) * Image->Bpp;
+						NewX1 = (ILuint)(t4    ) * Image->Bpp;
 						NewX2 = (ILuint)(t4 + 1) * Image->Bpp;
 
 						for (c = 0; c < Scaled->Bpp; c++) {
-							Table[0][c] = t3 * FloatPtr[NewY1 + NewX1 + c] +
-								t2 * FloatPtr[NewY1 + NewX2 + c];
+							Table[0][c] = t3 * iGetImageDataFloat(Image)[NewY1 + NewX1 + c] +
+								t2 * iGetImageDataFloat(Image)[NewY1 + NewX2 + c];
 
-							Table[1][c] = t3 * FloatPtr[NewY2 + NewX1 + c] +
-								t2 * FloatPtr[NewY2 + NewX2 + c];
+							Table[1][c] = t3 * iGetImageDataFloat(Image)[NewY2 + NewX1 + c] +
+								t2 * iGetImageDataFloat(Image)[NewY2 + NewX2 + c];
 						}
 
 						// Linearly interpolate between the table values.
@@ -425,7 +394,7 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 						t3 = (1.0 - t1);
 						Size = y * SclBps + x * Scaled->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							SFloatPtr[Size + c] =
+							iGetImageDataFloat(Scaled)[Size + c] =
 								(ILfloat)(t3 * Table[0][c] + t1 * Table[1][c]);
 						}
 					}
@@ -444,8 +413,8 @@ ILimage *iluScale2DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILui
 
 					Size = Height * SclBps + x * Image->Bpp;
 					for (c = 0; c < Scaled->Bpp; c++) {
-						SFloatPtr[Size + c] = (ILfloat)((1.0 - f) * FloatPtr[NewY1 + NewX1 + c] +
-							f * FloatPtr[NewY1 + NewX2 + c]);
+						iGetImageDataFloat(Scaled)[Size + c] = (ILfloat)((1.0 - f) * iGetImageDataFloat(Image)[NewY1 + NewX1 + c] +
+							f * iGetImageDataFloat(Image)[NewY1 + NewX2 + c]);
 					}
 				}
 			}

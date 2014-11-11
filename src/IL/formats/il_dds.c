@@ -26,12 +26,16 @@ static ILboolean	AllocImage(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DdsDecompress(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	ReadMipmaps(DDS_CONTEXT *, ILuint CompFormat);
 static void				AdjustVolumeTexture(DDS_CONTEXT *, ILuint CompFormat);
+
 static ILboolean	DecompressARGB(DDS_CONTEXT *, ILuint CompFormat);
-static ILboolean	DecompressARGB16(DDS_CONTEXT *, ILuint CompFormat);
-static ILboolean	Decompress3Dc(DDS_CONTEXT *);
 static ILboolean	DecompressAti1n(DDS_CONTEXT *);
+static ILboolean	Decompress3Dc(DDS_CONTEXT *);
 static ILboolean	DecompressRXGB(DDS_CONTEXT *ctx);
 static ILboolean	DecompressFloat(DDS_CONTEXT *ctx, ILuint lCompFormat);
+static ILboolean	DecompressARGB16(DDS_CONTEXT *, ILuint CompFormat);
+
+static void    		CorrectPreMult(ILimage *image);
+static void    		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
 
 static const ILuint CubemapDirections[CUBEMAP_SIDES] = {
 	DDS_CUBEMAP_POSITIVEX,
@@ -261,7 +265,7 @@ static ILboolean iLoadDdsCubemapInternal(DDS_CONTEXT *ctx, ILuint CompFormat)
 }
 
 
-ILuint DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat)
+static ILuint DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat)
 {
 	ILuint BlockSize;
 
@@ -877,7 +881,7 @@ mip_fail:
 }
 
 
-void DxtcReadColors(const ILubyte* Data, Color8888* Out)
+static void DxtcReadColors(const ILubyte* Data, Color8888* Out)
 {
 	ILubyte r0, g0, b0, r1, g1, b1;
 
@@ -1281,12 +1285,11 @@ ILboolean Decompress3Dc(DDS_CONTEXT *ctx)
 							for (i = 0; i < 4; i++) {
 								// only put pixels out < width
 								if (((x + i) < ctx->Width)) {
-									ILint tx, ty;
+									// ILint tx, ty;
 
 									t1 = CurrOffset + (x + i)*3;
-									ctx->Image->Data[t1 + 1] = ty = YColours[bitmask & 0x07];
-									ctx->Image->Data[t1 + 0] = tx = XColours[bitmask2 & 0x07];
-
+									ctx->Image->Data[t1 + 1] = /* ty = */ YColours[bitmask & 0x07];
+									ctx->Image->Data[t1 + 0] = /* tx = */ XColours[bitmask2 & 0x07];
 									ctx->Image->Data[t1 + 2] = 0;
 
 									/* TODO: make this optional?
@@ -1511,52 +1514,6 @@ ILboolean DecompressRXGB(DDS_CONTEXT *ctx)
 	return IL_TRUE;
 }
 
-ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
-{
-	ILuint i;
-	for (i = 0; i < size; ++i, ++dest, ++src) {
-		//float: 1 sign bit, 8 exponent bits, 23 mantissa bits
-		//half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-		*dest = ilHalfToFloat(*src);
-	}
-
-	return IL_TRUE;
-}
-
-
-// Same as iConvFloat16ToFloat32, but we have to set the blue channel to 1.0f.
-//  The destination format is RGB, and the source is R16G16 (little endian).
-static ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
-{
-	ILuint i;
-	for (i = 0; i < size; i += 3) {
-		//float: 1 sign bit, 8 exponent bits, 23 mantissa bits
-		//half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-		*dest++ = ilHalfToFloat(*src++);
-		*dest++ = ilHalfToFloat(*src++);
-		*((ILfloat*)dest++) = 1.0f;
-	}
-
-	return IL_TRUE;
-}
-
-
-// Same as iConvFloat16ToFloat32, but we have to set the green and blue channels
-//  to 1.0f.  The destination format is RGB, and the source is R16.
-static ILboolean iConvR16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
-{
-	ILuint i;
-	for (i = 0; i < size; i += 3) {
-		//float: 1 sign bit, 8 exponent bits, 23 mantissa bits
-		//half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-		*dest++ = ilHalfToFloat(*src++);
-		*((ILfloat*)dest++) = 1.0f;
-		*((ILfloat*)dest++) = 1.0f;
-	}
-
-	return IL_TRUE;
-}
-
 
 ILboolean DecompressFloat(DDS_CONTEXT *ctx, ILuint lCompFormat)
 {
@@ -1724,7 +1681,6 @@ ILboolean DecompressARGB16(DDS_CONTEXT *ctx, ILuint CompFormat)
 	ILuint AlphaL, AlphaR;
 	ILuint RedPad, GreenPad, BluePad, AlphaPad;
 	ILubyte	*Temp;
-	void *ImageData;
 	ILushort *UShortImageData;
 
 	(void)CompFormat;
@@ -1748,7 +1704,7 @@ ILboolean DecompressARGB16(DDS_CONTEXT *ctx, ILuint CompFormat)
 
 	Temp = ctx->CompData;
 	TempBpp = ctx->Head.RGBBitCount / 8;
-	UShortImageData = ImageData = ctx->Image->Data;
+	UShortImageData = (void*)ctx->Image->Data;
 
 	for (i = 0; i < ctx->Image->SizeOfData / 2; i += ctx->Image->Bpp) {
 

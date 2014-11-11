@@ -67,7 +67,6 @@ static void iD3D9GetSettings(ILUTtextureSettingsDX9 *settings) {
 
 static void iD3D9CheckFormats(IDirect3DDevice9 *Device) {
   D3DDISPLAYMODE  DispMode;
-  HRESULT         hr;
   IDirect3D9    * TestD3D9;
   ILuint          i;
 
@@ -75,7 +74,7 @@ static void iD3D9CheckFormats(IDirect3DDevice9 *Device) {
   IDirect3DDevice9_GetDisplayMode(Device, 0, &DispMode);
 
   for (i = 0; i < ILUT_TEXTUREFORMAT_D3D9_COUNT; i++) {
-    hr = IDirect3D9_CheckDeviceFormat(TestD3D9, D3DADAPTER_DEFAULT,
+    HRESULT hr = IDirect3D9_CheckDeviceFormat(TestD3D9, D3DADAPTER_DEFAULT,
       D3DDEVTYPE_HAL, DispMode.Format, 0, D3DRTYPE_TEXTURE, iD3D9Formats[i]);
     iD3D9FormatsSupported[i] = (ILboolean)SUCCEEDED(hr);
   }
@@ -162,7 +161,6 @@ static IDirect3DCubeTexture9* iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DD
       iCloseImage(Image);
   }
 
-  ilutCurImage = StartImage;
   return Texture;
 }
 

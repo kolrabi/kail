@@ -40,11 +40,10 @@ ILboolean iRegisterLoad(ILconst_string Ext, IL_LOADPROC Load) {
     return IL_FALSE;
   }
 
-  if (LoadProcs == NULL) {
-    LoadProcs = NewNode;
-  }
-  else {
+  if (TempNode != NULL) {
     TempNode->Next = NewNode;
+  } else {
+    LoadProcs = NewNode;
   }
 
   NewNode->Ext = iStrDup(Ext);
@@ -73,11 +72,10 @@ ILboolean iRegisterSave(ILconst_string Ext, IL_SAVEPROC Save) {
     return IL_FALSE;
   }
 
-  if (SaveProcs == NULL) {
-    SaveProcs = NewNode;
-  }
-  else {
+  if (TempNode != NULL) {
     TempNode->Next = NewNode;
+  } else {
+    SaveProcs = NewNode;
   }
 
   NewNode->Ext = iStrDup(Ext);
@@ -176,7 +174,7 @@ ILboolean iLoadRegistered(ILconst_string FileName)
   while (TempNode != NULL) {
     if (!iStrCmp(Ext, TempNode->Ext)) {
       Error = TempNode->Load(FileName);
-      if (Error == IL_NO_ERROR || Error == 0) {  // 0 and IL_NO_ERROR are both valid.
+      if (Error == IL_NO_ERROR) { 
         return IL_TRUE;
       }
       else {
@@ -203,7 +201,7 @@ ILboolean iSaveRegistered(ILconst_string FileName)
   while (TempNode != NULL) {
     if (!iStrCmp(Ext, TempNode->Ext)) {
       Error = TempNode->Save(FileName);
-      if (Error == IL_NO_ERROR || Error == 0) {  // 0 and IL_NO_ERROR are both valid.
+      if (Error == IL_NO_ERROR) {
         return IL_TRUE;
       }
       else {

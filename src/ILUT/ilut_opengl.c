@@ -40,15 +40,19 @@ void *aglGetProcAddress( const GLubyte *name ) {
   // now the address is directly known with glext.h include
   const int len = strlen((const char*)name);
   char *symbolName = calloc(len + 2,1);
+  void *result;
   
   memcpy(symbolName+1, (const char*)name, len );
   symbolName[0] = '_';
   printf("searching %s as %s ",name,symbolName);
   void *image = dlopen(NULL,RTLD_LAZY); // brutal solution
   if( image == NULL ) {
+    free(symbolName);
     return NULL;
   }
-  return dlsym(image,symbolName);
+  result = dlsym(image,symbolName);
+  free(symbolName);
+  return result;
 }
 #endif
 
@@ -82,12 +86,10 @@ void *aglGetProcAddress( const GLubyte *name ) {
 #define ILGL_MAX_3D_TEXTURE_SIZE      0x8073
 
 typedef struct {
-  ILboolean Autodetect;
-  ILboolean UseS3TC;
-  ILboolean GenS3TC;
-  ILenum DXTCFormat;
-  ILuint MaxTexW, MaxTexH, MaxTexD;
-  ILenum Filter;
+  ILenum    DXTCFormat;
+  ILuint    MaxTexW, MaxTexH, MaxTexD;
+  ILenum    Filter;
+  ILuint    Flags;
 } ILUT_TEXTURE_SETTINGS_GL;
 
 static ILenum    ilutGLFormat(ILenum, ILubyte);
@@ -107,9 +109,7 @@ static ILboolean HasNonPowerOfTwoHardware = IL_FALSE;
 static ILboolean ilutGLSetTex2D_(ILimage *ilutCurImage, GLuint TexID);
 
 static void GetSettings(ILUT_TEXTURE_SETTINGS_GL *settings) {
-  settings->Autodetect = ilutGetBoolean(ILUT_GL_AUTODETECT_TEXTURE_TARGET);
-  settings->UseS3TC = ilutGetBoolean(ILUT_GL_USE_S3TC);
-  settings->GenS3TC = ilutGetBoolean(ILUT_GL_GEN_S3TC);
+  settings->Flags = ilutGetCurrentFlags();
   settings->DXTCFormat = (ILenum)ilutGetInteger(ILUT_S3TC_FORMAT);
   settings->MaxTexW = (ILuint)ilutGetInteger(ILUT_MAXTEX_WIDTH);
   settings->MaxTexH = (ILuint)ilutGetInteger(ILUT_MAXTEX_HEIGHT);
@@ -117,28 +117,8 @@ static void GetSettings(ILUT_TEXTURE_SETTINGS_GL *settings) {
   settings->Filter = (ILenum)iluGetInteger(ILU_FILTER);
 }
 
-// Absolutely *have* to call this if planning on using the image library with OpenGL.
-//  Call this after OpenGL has initialized.
-ILboolean ilutGLInit()
+static ILboolean iInitGLExtensions()
 {
-  ILint MaxTexW, MaxTexH, MaxTexD = 1;
-
-  iLockState(); // lock to prevent running more than once at the same time
-
-  // Should we really be setting all this ourselves?  Seems too much like a glu(t) approach...
-  glEnable(GL_TEXTURE_2D);
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-  glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
-  glPixelStorei(GL_PACK_ALIGNMENT, 1);
-
 //#ifndef GL_VERSION_1_3
   #if (defined (_WIN32) || defined(_WIN64))
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
@@ -174,11 +154,39 @@ ILboolean ilutGLInit()
     ilGLTexImage3D = glTexImage3D;
     ilGLCompressed3D = glCompressedTexImage3DARB;
   #else
-    iUnlockState();
     return IL_FALSE;  // @TODO: Find any other systems that we could be on.
   #endif
 //#else
 //#endif//GL_VERSION_1_3
+  return IL_TRUE;
+}
+
+// Absolutely *have* to call this if planning on using the image library with OpenGL.
+//  Call this after OpenGL has initialized.
+ILboolean ilutGLInit()
+{
+  ILint MaxTexW, MaxTexH, MaxTexD = 1;
+
+  iLockState(); // lock to prevent running more than once at the same time
+
+  // Should we really be setting all this ourselves?  Seems too much like a glu(t) approach...
+  glEnable(GL_TEXTURE_2D);
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+  glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+  glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+  glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+  glPixelStorei(GL_UNPACK_SWAP_BYTES, GL_FALSE);
+  glPixelStorei(GL_PACK_ALIGNMENT, 1);
+
+  if (!iInitGLExtensions()) {
+    iUnlockState();
+    return IL_FALSE;
+  }
 
   // Use PROXY_TEXTURE_2D/3D with glTexImage2D/3D() to test more accurately...
   glGetIntegerv(GL_MAX_TEXTURE_SIZE, (GLint*)&MaxTexW);
@@ -214,7 +222,7 @@ static GLuint ilutGLBindTexImage_(ILimage *Image, ILUT_TEXTURE_SETTINGS_GL *Sett
     return 0;
   }
 
-  if (Settings->Autodetect) {
+  if (Settings->Flags & ILUT_STATE_FLAG_AUTODETECT_TARGET) {
     if (HasCubemapHardware && Image->CubeFlags != 0)
       Target = ILGL_TEXTURE_CUBE_MAP;
     // TODO: GL_TEXTURE_3D
@@ -286,14 +294,13 @@ static ILboolean ILAPIENTRY ilutGLTexImage_(GLint Level, GLuint Target, ILimage 
 {
   ILimage *ImageCopy;
   ILuint  Size;
-  ILubyte *Buffer;
 
   if (Image == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
 
-  if (Settings->UseS3TC && ilGLCompressed2D != NULL) {
+  if ((Settings->Flags & ILUT_STATE_FLAG_USE_S3TC) && ilGLCompressed2D != NULL) {
     if (Image->DxtcData != NULL && Image->DxtcSize != 0) {
       ILenum DXTCFormat = GLGetDXTCNum(Image->DxtcFormat);
       ilGLCompressed2D(Target, Level, DXTCFormat, (GLsizei)Image->Width,
@@ -301,10 +308,10 @@ static ILboolean ILAPIENTRY ilutGLTexImage_(GLint Level, GLuint Target, ILimage 
       return IL_TRUE;
     }
 
-    if (Settings->GenS3TC) {
+    if ((Settings->Flags & ILUT_STATE_FLAG_GEN_S3TC)) {
       Size = iGetDXTCData(Image, NULL, 0, Settings->DXTCFormat);
       if (Size != 0) {
-        Buffer = (ILubyte*)ialloc(Size);
+          ILubyte *Buffer = (ILubyte*)ialloc(Size);
         if (Buffer == NULL) {         
           return IL_FALSE;
         }
@@ -377,12 +384,11 @@ ILboolean ILAPIENTRY ilutGLTexImage(GLint Level)
   GetSettings(&Settings);
   iUnlockState(); 
 
-  if (!Settings.Autodetect) {
+  if (!(Settings.Flags & ILUT_STATE_FLAG_AUTODETECT_TARGET)) {
     ILboolean Result = ilutGLTexImage_(Level, GL_TEXTURE_2D, ilutCurImage, &Settings);
     iUnlockImage(ilutCurImage);
     return Result;
-  }
-  else {
+  } else {
     // Autodetect texture target
 
     // Cubemap
@@ -618,7 +624,7 @@ static ILimage* MakeGLCompliant2D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL* Settin
       if (Dest == NULL) {
         return NULL;
       }
-      Created = IL_TRUE;
+      // Created = IL_TRUE;
     }
 
     if (Src->Format == IL_COLOUR_INDEX) {
@@ -685,7 +691,7 @@ ILimage* MakeGLCompliant3D(ILimage *Src, ILUT_TEXTURE_SETTINGS_GL *Settings)
       if (Dest == NULL) {
         return NULL;
       }
-      Created = IL_TRUE;
+      // Created = IL_TRUE;
     }
 
     if (Src->Format == IL_COLOUR_INDEX) {
@@ -815,7 +821,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
 
   // Could go above 128 easily...
   for (i = 0; i < 128; i++) {
-    snprintf(Buff, sizeof(255), "screen%d.tga", i);
+    snprintf(Buff, sizeof(Buff), "screen%d.tga", i);
     File = fopen(Buff, "rb");
 
     if (!File)

@@ -497,9 +497,6 @@ ILboolean iDefaultImage(ILimage *Image)
 ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
   ILimage   *TempImage;
   ILubyte   *Alpha;
-  ILushort  *AlphaShort;
-  ILuint    *AlphaInt;
-  ILdouble  *AlphaDbl;
   ILuint    i, j, Bpc, Size, AlphaOff;
 
   if (Image == NULL) {
@@ -529,16 +526,12 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
     return NULL;
   }
 
-  switch (TempImage->Format)
-  {
-    case IL_RGB:
-    case IL_BGR:
-    case IL_LUMINANCE:
-    case IL_COLOUR_INDEX:  // @TODO: Make IL_COLOUR_INDEX separate.
-      memset(Alpha, 0xFF, Size / TempImage->Bpp * Bpc);
-      if (TempImage != Image)
-        iCloseImage(TempImage);
-      return Alpha;
+  // If format has no alpha, fill with opaque.
+  if (!iFormatHasAlpha(TempImage->Format)) {
+    memset(Alpha, 0xFF, Size / TempImage->Bpp * Bpc);
+    if (TempImage != Image)
+      iCloseImage(TempImage);
+    return Alpha;
   }
 
   // If our format is alpha, just return a copy.
@@ -552,35 +545,8 @@ ILubyte* iGetAlpha(ILimage *Image, ILenum Type) {
   else
     AlphaOff = 4;
 
-  switch (TempImage->Type)
-  {
-    case IL_BYTE:
-    case IL_UNSIGNED_BYTE:
-      for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
-        Alpha[j] = TempImage->Data[i];
-      break;
-
-    case IL_SHORT:
-    case IL_UNSIGNED_SHORT:
-      AlphaShort = (ILushort*)(void*)Alpha;
-      for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
-        AlphaShort[j] = ((ILushort*)TempImage->Data)[i];
-      break;
-
-    case IL_INT:
-    case IL_UNSIGNED_INT:
-    case IL_FLOAT:  // Can throw float in here, because it's the same size.
-      AlphaInt = (ILuint*)(void*)Alpha;
-      for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
-        AlphaInt[j] = ((ILuint*)TempImage->Data)[i];
-      break;
-
-    case IL_DOUBLE:
-      AlphaDbl = (ILdouble*)(void*)Alpha;
-      for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
-        AlphaDbl[j] = ((ILdouble*)TempImage->Data)[i];
-      break;
-  }
+  for (i = AlphaOff-1, j = 0; i < Size; i += AlphaOff, j++)
+    memcpy(Alpha + j*Bpc, TempImage->Data + i * Bpc, Bpc);
 
   if (TempImage != Image)
     iCloseImage(TempImage);
@@ -638,33 +604,33 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
     case IL_UNSIGNED_BYTE: {
       const ILubyte alpha = (ILubyte)(AlphaValue * IL_MAX_UNSIGNED_BYTE + .5);
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
-        Image->Data[i] = alpha;
+        iGetImageDataUByte(Image)[i] = alpha;
       break;
     }
     case IL_SHORT:
     case IL_UNSIGNED_SHORT: {
       const ILushort alpha = (ILushort)(AlphaValue * IL_MAX_UNSIGNED_SHORT + .5);
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
-        ((ILushort*)Image->Data)[i] = alpha;
+        iGetImageDataUShort(Image)[i] = alpha;
       break;
     }
     case IL_INT:
     case IL_UNSIGNED_INT: {
       const ILushort alpha = (ILushort)(AlphaValue * IL_MAX_UNSIGNED_INT + .5);
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
-        ((ILuint*)Image->Data)[i] = alpha;
+        iGetImageDataUInt(Image)[i] = alpha;
       break;
     }
     case IL_FLOAT: {
       const ILfloat alpha = (ILfloat)AlphaValue;
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
-        ((ILfloat*)Image->Data)[i] = alpha;
+        iGetImageDataFloat(Image)[i] = alpha;
       break;
     }
     case IL_DOUBLE: {
       const ILdouble alpha  = AlphaValue;
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
-        ((ILdouble*)Image->Data)[i] = alpha;
+        iGetImageDataDouble(Image)[i] = alpha;
       break;
     }
   }

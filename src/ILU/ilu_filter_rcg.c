@@ -106,11 +106,9 @@ static double bell_filter( double t ) {
 // #define FRAC_1_6 0.1666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666666667
 
 static double B_spline_filter( double t ) { /* box (*) box (*) box (*) box */
-	double tt;
-
 	if(t < 0) t = -t;
 	if(t < 1) {
-		tt = t * t;
+		double tt = t * t;
 		return((.5 * tt * t) - tt + (2.0 / 3.0));
 	} else if(t < 2) {
 		t = 2 - t;
@@ -224,8 +222,6 @@ typedef struct {
 	Returns -1 if error, 0 otherwise.
 */
 static int calc_x_contrib( CLIST *contribX, double xscale, double fwidth, ILuint srcwidth, double (*filterf)(double), ILuint i) {
-	double width;
-	double fscale;
 	double center, left, right;
 	double weight;
 	ILuint k, n;
@@ -234,8 +230,8 @@ static int calc_x_contrib( CLIST *contribX, double xscale, double fwidth, ILuint
 	if(xscale < 1.0)
 	{
 		/* Shrinking image */
-		width = fwidth / xscale;
-		fscale = 1.0 / xscale;
+		double width = fwidth / xscale;
+		double fscale = 1.0 / xscale;
 
 		contribX->n = 0;
 		contribX->p = (CONTRIB *)icalloc((ILuint) (width * 2 + 1),

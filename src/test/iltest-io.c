@@ -4,7 +4,7 @@ static ILuint image;
 static ILchar fileName[1024];
 static const char *data;
 
-void checkRead(ILimage *ilimage) {
+static void checkRead(ILimage *ilimage) {
   ILint res;
   ILuint pos;
 

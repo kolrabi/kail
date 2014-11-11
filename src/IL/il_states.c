@@ -163,7 +163,7 @@ char *iGetString(ILimage *Image, ILenum StringName) {
 /// Boolean
 ///
 
-#define SETFLAG(x, b, v) (x) = (x) & (~(ILuint)(b)) | ((v)?(b):0)
+#define SETFLAG(x, b, v) (x) = ((x) & (~(ILuint)(b))) | ((v)?(b):0)
 #define GETFLAG(x, b)    (!!((x) & (ILuint)(b)))
 
 // Internal function that sets the Mode equal to Flag
@@ -575,8 +575,7 @@ void iPopAttrib() {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
-  if (ilCurrentPos <= 0) {
-    ilCurrentPos = 0;
+  if (ilCurrentPos == 0) {
     iSetError(IL_STACK_UNDERFLOW);
     return;
   }
@@ -730,7 +729,7 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
   IL_STATE_STRUCT * StateStruct   = iGetStateStruct();
   IL_STATES *       ilStates      = StateStruct->ilStates;
   ILuint            ilCurrentPos  = StateStruct->ilCurrentPos;
-  ILimage *         BaseImage     = CurImage->BaseImage;
+  ILimage *         BaseImage     = CurImage ? CurImage->BaseImage : NULL;
 
   if (!Param) {
     iSetError(IL_INVALID_PARAM);
@@ -796,7 +795,7 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
  
     // Format specific values
     case IL_DXTC_FORMAT:
-      if (*Param >= IL_DXT1 || *Param <= IL_DXT5 || *Param == IL_DXT1A) {
+      if ((*Param >= IL_DXT1 && *Param <= IL_DXT5) || *Param == IL_DXT1A) {
         ilStates[ilCurrentPos].ilDxtcFormat = (ILenum)*Param;
         return;
       }
@@ -814,13 +813,13 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
       }
       break;
     case IL_PCD_PICNUM:
-      if (*Param >= 0 || *Param <= 2) {
+      if (*Param >= 0 && *Param <= 2) {
         ilStates[ilCurrentPos].ilPcdPicNum = (ILuint)*Param;
         return;
       }
       break;
     case IL_PNG_ALPHA_INDEX:
-      if (*Param >= -1 || *Param <= 255) {
+      if (*Param >= -1 && *Param <= 255) {
         ilStates[ilCurrentPos].ilPngAlphaIndex = *Param;
         return;
       }
@@ -849,6 +848,10 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
     case IL_KEEP_DXTC_DATA:   iAble(Mode, !!*Param);              return;
 
     default:
+      if (CurImage == NULL) {
+        iSetError(IL_ILLEGAL_OPERATION);
+        break;
+      }
       iSetMetaiv(BaseImage, Mode, Param);
   }
 }

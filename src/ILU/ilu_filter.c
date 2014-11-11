@@ -8,9 +8,7 @@
 
 ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
   ILuint    x, y, z, i, j, k, c, r, Total, Tested;
-  ILushort  *ShortPtr;
-  ILuint    *IntPtr;
-  ILdouble  *DblPtr, DblTotal, DblTested;
+  ILdouble  DblTotal, DblTested;
   ILubyte   *RegionMask;
 
   if (Image == NULL) {
@@ -64,7 +62,7 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
       }
       break;
     case 2:
-      ShortPtr = (ILushort*)Image->Data;
+
       Image->Bps /= 2;
       for (z = 0; z < Image->Depth; z += PixSize) {
         for (y = 0; y < Image->Height; y += PixSize) {
@@ -74,7 +72,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
               for (k = 0; k < PixSize && z+k < Image->Depth; k++) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, Tested++) {
-                    Total += ShortPtr[(z+k) * Image->SizeOfPlane + 
+                    // FIXME: the index calculation looks bogus
+                    Total += iGetImageDataUShort(Image)[(z+k) * Image->SizeOfPlane + 
                       (y+j) * Image->Bps + (x+i) * Image->Bpp + c];
                   }
                 }
@@ -85,7 +84,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, Tested++) {
                     if (RegionMask[r+i]) {
-                      ShortPtr[(z+k) * Image->SizeOfPlane + (y+j)
+                    // FIXME: the index calculation looks bogus
+                      iGetImageDataUShort(Image)[(z+k) * Image->SizeOfPlane + (y+j)
                         * Image->Bps + (x+i) * Image->Bpp + c] =
                         (ILushort)Total;
                     }
@@ -99,7 +99,6 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
       Image->Bps *= 2;
       break;
     case 4:
-      IntPtr = (ILuint*)Image->Data;
       Image->Bps /= 4;
       for (z = 0; z < Image->Depth; z += PixSize) {
         for (y = 0; y < Image->Height; y += PixSize) {
@@ -109,7 +108,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
               for (k = 0; k < PixSize && z+k < Image->Depth; k++) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, Tested++) {
-                    Total += IntPtr[(z+k) * Image->SizeOfPlane + 
+                    // FIXME: the index calculation looks bogus
+                    Total += iGetImageDataUInt(Image)[(z+k) * Image->SizeOfPlane + 
                       (y+j) * Image->Bps + (x+i) * Image->Bpp + c];
                   }
                 }
@@ -120,7 +120,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, Tested++) {
                     if (RegionMask[r+i]) {
-                      IntPtr[(z+k) * Image->SizeOfPlane + (y+j)
+                    // FIXME: the index calculation looks bogus
+                      iGetImageDataUInt(Image)[(z+k) * Image->SizeOfPlane + (y+j)
                         * Image->Bps + (x+i) * Image->Bpp + c] =
                         Total;
                     }
@@ -134,7 +135,6 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
       Image->Bps *= 4;
       break;
     case 8:
-      DblPtr = (ILdouble*)Image->Data;
       Image->Bps /= 8;
       for (z = 0; z < Image->Depth; z += PixSize) {
         for (y = 0; y < Image->Height; y += PixSize) {
@@ -144,7 +144,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
               for (k = 0; k < PixSize && z+k < Image->Depth; k++) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, DblTested++) {
-                    DblTotal += DblPtr[(z+k) * Image->SizeOfPlane + 
+                    // FIXME: the index calculation looks bogus
+                    DblTotal += iGetImageDataDouble(Image)[(z+k) * Image->SizeOfPlane + 
                       (y+j) * Image->Bps + (x+i) * Image->Bpp + c];
                   }
                 }
@@ -155,7 +156,8 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
                 for (j = 0; j < PixSize && y+j < Image->Height; j++) {
                   for (i = 0; i < PixSize && x+i < Image->Width; i++, DblTested++) {
                     if (RegionMask[r+i]) {
-                      DblPtr[(z+k) * Image->SizeOfPlane + (y+j)
+                    // FIXME: the index calculation looks bogus
+                      iGetImageDataDouble(Image)[(z+k) * Image->SizeOfPlane + (y+j)
                         * Image->Bps + (x+i) * Image->Bpp + c] =
                         DblTotal;
                     }
@@ -182,7 +184,7 @@ ILboolean iPixelize(ILimage *Image, ILuint PixSize) {
 // Needs some SERIOUS optimization.
 static ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint bias)
 {
-  ILuint   x, y, c, LastX, LastY, Offsets[9];
+  ILuint   x, y, c, Offsets[9];
   ILuint    i, Temp, z;
   ILubyte   *Data, *ImgData, *NewData, *RegionMask;
   ILdouble  Num;
@@ -204,8 +206,8 @@ static ILubyte *Filter(ILimage *Image, const ILint *matrix, ILint scale, ILint b
   NewData = Data;
 
   for (z = 0; z < Image->Depth; z++) {
-    LastX = Image->Width  - 1;
-    LastY = Image->Height - 1;
+    ILuint LastX = Image->Width  - 1;
+    ILuint LastY = Image->Height - 1;
     for (y = 1; y < LastY; y++) {
       for (x = 1; x < LastX; x++) {
         Offsets[4] = ((y  ) * Image->Width + (x  )) * Image->Bpp;
@@ -593,9 +595,7 @@ ILboolean iScaleAlpha(ILimage *Image, ILfloat scale) {
 ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
   ILuint    i;
   ILint     red, grn, blu, grey;
-  ILushort  *ShortPtr;
-  ILuint    *IntPtr, NumPix, PalBPP;
-  ILdouble  *DblPtr;
+  ILuint    NumPix, PalBPP;
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -605,7 +605,7 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
   if( (Image->Format != IL_COLOUR_INDEX) 
    && (Image->Type != IL_BYTE)
    && (Image->Type != IL_UNSIGNED_BYTE) ) {
-    iTrace("**** Format is %04x, Type is %04x", Image->Format, Image->Type);
+    iTrace("**** Cannot scale colours: Format is %04x, Type is %04x", Image->Format, Image->Type);
     iSetError(ILU_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
@@ -657,33 +657,30 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
             grey = (ILint)(Image->Data[i] * r);
             if (grey > UCHAR_MAX) grey = UCHAR_MAX;
             if (grey < 0) grey = 0;
-            Image->Data[i] = (ILubyte)grey;
+            iGetImageDataUByte(Image)[i] = (ILubyte)grey;
           }
           break;
 
         case 2:
-          ShortPtr = (ILushort*)Image->Data;
           for (i = 0; i < NumPix; i+=Image->Bpp) {
-            grey = (ILint)(ShortPtr[i] * r);
+            grey = (ILint)(iGetImageDataUShort(Image)[i] * r);
             if (grey > USHRT_MAX) grey = USHRT_MAX;
             if (grey < 0) grey = 0;
-            ShortPtr[i] = (ILushort)grey;
+            iGetImageDataUShort(Image)[i] = (ILushort)grey;
           }
           break;
 
         case 4:
-          IntPtr = (ILuint*)Image->Data;
           for (i = 0; i < NumPix; i+=Image->Bpp) {
-            grey = (ILint)(IntPtr[i] * r);
+            grey = (ILint)(iGetImageDataUInt(Image)[i] * r);
             if (grey < 0) grey = 0;
-            IntPtr[i] = (ILuint)grey;
+            iGetImageDataUInt(Image)[i] = (ILuint)grey;
           }
           break;
 
         case 8:
-          DblPtr = (ILdouble*)Image->Data;
           for (i = 0; i < NumPix; i+=Image->Bpp) {
-            DblPtr[i] = DblPtr[i] * r;
+            iGetImageDataDouble(Image)[i] *= r;
           }
           break;
       }
@@ -749,9 +746,7 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
 
 ILboolean iGammaCorrect(ILimage *Image, ILfloat Gamma) {
   ILfloat   Table[256];
-  ILuint    i, NumPix;
-  ILushort  *ShortPtr;
-  ILuint    *IntPtr;
+  ILuint    i;
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -770,6 +765,9 @@ ILboolean iGammaCorrect(ILimage *Image, ILfloat Gamma) {
   }
   else {
     // Not too sure if this is the correct way of handling multiple bpc's.
+    ILushort  *ShortPtr;
+    ILuint    *IntPtr;
+    ILuint     NumPix;
     switch (Image->Bpc)
     {
       case 1:
@@ -779,14 +777,14 @@ ILboolean iGammaCorrect(ILimage *Image, ILfloat Gamma) {
         break;
       case 2:
         NumPix = Image->SizeOfData / 2;
-        ShortPtr = (ILushort*)Image->Data;
+        ShortPtr = (void*)Image->Data;
         for (i = 0; i < NumPix; i++) {
           ShortPtr[i] = (ILushort)(Table[ShortPtr[i] >> 8] * USHRT_MAX);
         }
         break;
       case 4:
         NumPix = Image->SizeOfData / 4;
-        IntPtr = (ILuint*)Image->Data;
+        IntPtr = (void*)Image->Data;
         for (i = 0; i < NumPix; i++) {
           IntPtr[i] = (ILuint)(Table[IntPtr[i] >> 24] * UINT_MAX);
         }
@@ -975,14 +973,13 @@ ILboolean iAlienify(ILimage *Image) {
 static void iIntExtImg(ILimage *Image1, ILimage *Image2, ILfloat a)
 {
   ILuint  i;
-  ILint d;
   ILubyte *Data1, *Data2;
 
   Data1 = Image1->Data;
   Data2 = Image2->Data;
 
   for (i = 0; i < Image2->SizeOfData; i++) {
-    d = (ILint)((1 - a) * *Data1 + a * *Data2);
+    ILint d = (ILint)((1 - a) * *Data1 + a * *Data2);
     // Limit a pixel value to the range [0, 255]
     if (d < 0) 
       d = 0;

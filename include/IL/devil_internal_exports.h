@@ -211,6 +211,12 @@ typedef struct ILimage {
 #endif
 } ILimage;
 
+INLINE ILubyte  *iGetImageDataUByte(ILimage *img)   { return img->Data; }
+INLINE ILushort *iGetImageDataUShort(ILimage *img)  { return (ILushort*)(void*)img->Data; }
+INLINE ILuint   *iGetImageDataUInt(ILimage *img)    { return (ILuint*)(void*)img->Data; }
+INLINE ILfloat  *iGetImageDataFloat(ILimage *img)   { return (ILfloat*)(void*)img->Data; }
+INLINE ILdouble *iGetImageDataDouble(ILimage *img)  { return (ILdouble*)(void*)img->Data; }
+
 // Memory functions
 ILAPI void*         ILAPIENTRY ialloc   (ILsizei Size);
 ILAPI void          ILAPIENTRY ifreeReal(void *Ptr);
@@ -348,7 +354,7 @@ ILAPI void      ILAPIENTRY iClosePalReal    (ILpal *Palette);
 ILAPI ILstring  ILAPIENTRY iStrDup(ILconst_string Str);
 ILAPI char *    ILAPIENTRY iCharStrDup(const char *Str);
 ILAPI ILstring  ILAPIENTRY iGetExtension(ILconst_string FileName);
-ILAPI ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext);
+//ILAPI ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext);
 
 //
 // ILU functions

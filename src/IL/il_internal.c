@@ -47,7 +47,6 @@ char * ILAPIENTRY SIOgets(SIO *io, char *buffer, ILuint MaxLen)
 // File Get Word
 //	MaxLen must be greater than 1, because the trailing NULL is always stored.
 char * ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen) {
-	ILint Temp;
 	ILuint i;
 
 	if (buffer == NULL || io == NULL || MaxLen < 2) {
@@ -56,7 +55,7 @@ char * ILAPIENTRY SIOgetw(SIO *io, char *buffer, ILuint MaxLen) {
 	}
 
 	for (i = 0; i < MaxLen - 1; i++) {
-		Temp = SIOgetc(io);
+		ILint Temp = SIOgetc(io);
 		if (Temp == '\n' || Temp == '\0' || Temp == IL_EOF) {
 			break;			
 		}

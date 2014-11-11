@@ -224,12 +224,9 @@ static ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel
 static ILboolean readScanlines(SIO* io, ILuint *image, ILint width, ILint height, CHANNEL *channel, ILuint alpha)
 {
 	ILint	i;
-	ILuint	*scan;
 
-	(void)alpha;
-	
 	for (i = height - 1; i >= 0; i--) {
-		scan = image + i * width;
+		ILuint	*scan = image + i * width;
 
 		if (!readScanline(io, (ILubyte *)scan, width, channel, alpha ? 4 : 3)) {
 			iSetError(IL_ILLEGAL_FILE_VALUE);

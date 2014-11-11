@@ -526,7 +526,8 @@ static ILboolean ilReadUncompBmp16(ILimage* image, BMPHEAD * Header)
     inputOffset += inputBps;
 
     for(x = 0; x < image->Width; x++, k += 3) {
-      WORD Read16 = ((WORD*)(inputScanline))[x];
+      WORD Read16;
+      memcpy(&Read16, inputScanline + 2*x, 2);
       UShort(&Read16);
       image->Data[k    ] = (ILubyte)(((Read16 & bMask) >> bShiftR) << bShiftL);
       image->Data[k + 1] = (ILubyte)(((Read16 & gMask) >> gShiftR) << gShiftL);
@@ -750,45 +751,48 @@ static ILboolean ilReadRLE4Bmp(ILimage* image, BMPHEAD *Header)
   SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
 
   while (offset < image->SizeOfData) {
-    int align;
     if (SIOread(io, &Bytes[0], sizeof(Bytes), 1) != 1)
       return IL_FALSE;
     if (Bytes[0] == 0x0) {        // Escape sequence
-         switch (Bytes[1]) {
-         case 0x0:  // End of line
-            offset = endOfLine;
-            endOfLine += image->Width;
-            break;
-         case 0x1:  // End of bitmap
-            offset = image->SizeOfData;
-            break;
-         case 0x2:
-        if (SIOread(io, &Bytes[0], sizeof(Bytes), 1) != 1)
-          return IL_FALSE;
-            offset += Bytes[0] + Bytes[1] * image->Width;
-            endOfLine += Bytes[1] * image->Width;
-            break;
-         default:   // Run of pixels
-            count = IL_MIN (Bytes[1], image->SizeOfData-offset);
+      int align;
+      switch (Bytes[1]) {
+        case 0x0:  // End of line
+          offset = endOfLine;
+          endOfLine += image->Width;
+          break;
 
-        for (i = 0; i < count; i++) {
-          int byte;
+        case 0x1:  // End of bitmap
+          offset = image->SizeOfData;
+          break;
 
-          if ((i & 0x01) == 0) {
+        case 0x2:
+          if (SIOread(io, &Bytes[0], sizeof(Bytes), 1) != 1)
+            return IL_FALSE;
+          offset += Bytes[0] + Bytes[1] * image->Width;
+          endOfLine += Bytes[1] * image->Width;
+          break;
+
+        default:   // Run of pixels
+          count = IL_MIN (Bytes[1], image->SizeOfData-offset);
+
+          for (i = 0; i < count; i++) {
+            int byte;
+
+            if ((i & 0x01) == 0) {
+              if (SIOread(io, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
+                return IL_FALSE;
+              byte = (Bytes[0] >> 4);
+            }
+            else
+              byte = (Bytes[0] & 0x0F);
+            image->Data[offset++] = (ILubyte)byte;
+          }
+
+          align = Bytes[1] % 4;
+
+          if (align == 1 || align == 2) // Must be on a word boundary
             if (SIOread(io, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
               return IL_FALSE;
-            byte = (Bytes[0] >> 4);
-          }
-          else
-            byte = (Bytes[0] & 0x0F);
-          image->Data[offset++] = (ILubyte)byte;
-        }
-
-        align = Bytes[1] % 4;
-
-        if (align == 1 || align == 2) // Must be on a word boundary
-          if (SIOread(io, &Bytes[0], sizeof(Bytes[0]), 1) != 1)
-            return IL_FALSE;
       }
     } else {
          count = IL_MIN (Bytes[0], image->SizeOfData-offset);

@@ -40,7 +40,7 @@ char * ILAPIENTRY iCharStrDup(const char *Str) {
 }
 
 // Simple function to test if a filename has a given extension, disregarding case
-ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext)
+/*ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext)
 {
   ILboolean PeriodFound = IL_FALSE;
   ILint i, Len;
@@ -67,16 +67,20 @@ ILboolean ILAPIENTRY iCheckExtension(ILconst_string Arg, ILconst_string Ext)
     return IL_TRUE;
 
   return IL_FALSE;  // if all else fails, return IL_FALSE
-}
+}*/
 
 
 ILstring ILAPIENTRY iGetExtension(ILconst_string FileName)
 {
   ILboolean PeriodFound = IL_FALSE;
   ILstring Ext = (ILstring)FileName;
-  ILint i, Len = (ILint)iStrLen(FileName);
+  ILint i, Len;
 
-  if (FileName == NULL || !Len)  // if not a good filename/extension, exit early
+  if (FileName == NULL)  // if not a good filename/extension, exit early
+    return NULL;
+
+  Len = (ILint)iStrLen(FileName);
+  if (Len == 0)
     return NULL;
 
   Ext += Len;  // start at the end

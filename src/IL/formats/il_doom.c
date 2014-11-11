@@ -37,7 +37,6 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 
 	ILushort column_loop;
 
-	ILubyte	*NewData;
 	ILuint	i;
 
 	if (Image == NULL) {
@@ -118,7 +117,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 
 	// Converts palette entry 247 (cyan) to transparent.
 	if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
-		NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
+		ILubyte	*NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
 		if (NewData == NULL) {
 			return IL_FALSE;
 		}
@@ -150,7 +149,6 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 // Basically just ireads 4096 bytes and copies the palette
 static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 {
-	ILubyte	*NewData;
 	ILuint	i;
 	SIO *io;
 
@@ -179,7 +177,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
-		NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
+			ILubyte	*NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
 		if (NewData == NULL) {
 			return IL_FALSE;
 		}

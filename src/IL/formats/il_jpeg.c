@@ -225,6 +225,7 @@ ILboolean iLoadJpegInternal(ILimage* image) {
 	ILboolean											result;
 	ILuint 												Start;
 	JpegContext                   ctx;
+	ILint                         setjmpResult;
 
 	if (image == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
@@ -241,7 +242,8 @@ ILboolean iLoadJpegInternal(ILimage* image) {
 	Error.error_exit 			= ExitErrorHandle;			  	// add our exit handler
 	Error.output_message 	= OutputMsg;
 
-	if ((result = setjmp(ctx.JpegJumpBuffer) == 0) != IL_FALSE) {
+	setjmpResult = setjmp(ctx.JpegJumpBuffer);
+	if (setjmpResult == 0) {
 		jpeg_create_decompress(&JpegInfo);
 		JpegInfo.do_block_smoothing 	= IL_TRUE;
 		JpegInfo.do_fancy_upsampling 	= IL_TRUE;
@@ -255,6 +257,7 @@ ILboolean iLoadJpegInternal(ILimage* image) {
 		jpeg_finish_decompress(&JpegInfo);
 		jpeg_destroy_decompress(&JpegInfo);
 	}	else {
+		result = IL_FALSE;
 		jpeg_destroy_decompress(&JpegInfo);
 	}
 

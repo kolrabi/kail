@@ -405,12 +405,13 @@ ILAPI void ILAPIENTRY iSetPal(ILimage *Image, ILpal *Pal)
 // Global variable
 // ILuint CurSort = 0;
 
-typedef struct COL_CUBE
+/* typedef struct COL_CUBE
 {
   ILubyte Min[3];
   ILubyte Val[3];
   ILubyte Max[3];
 } COL_CUBE;
+*/
 
 /*
 int sort_func(void *e1, void *e2)
@@ -423,10 +424,9 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
   ILubyte   *NewData;
   ILuint    *PalInfo, NumColours, NumPix, MaxDist, DistEntry=0, i, j;
   ILint   Dist1, Dist2, Dist3;
-  ILboolean Same;
   ILenum    Origin;
 
-  if( CurImage == NULL || (CurImage->Format != IL_BYTE || CurImage->Format != IL_UNSIGNED_BYTE) ) {
+  if( CurImage == NULL || (CurImage->Type != IL_BYTE && CurImage->Type != IL_UNSIGNED_BYTE) ) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
@@ -503,7 +503,7 @@ ILboolean iApplyPal(ILimage *CurImage, ILconst_string FileName) {
         NumColours++;
       }*/
       for (i = 0; i < CurImage->SizeOfData; i += CurImage->Bpp) {
-        Same = IL_TRUE;
+        ILboolean Same = IL_TRUE;
         if (i != 0) {
           for (j = 0; j < CurImage->Bpp; j++) {
             if (CurImage->Data[i-CurImage->Bpp+j] != CurImage->Data[i+j]) {

@@ -51,6 +51,11 @@ typedef struct Box
     ILint vol;
 } Box;
 
+typedef ILint   Histogram [33*33*33];
+typedef ILfloat Histogramf[33*33*32];
+
+#define HIST(h, x,y,z) ((h)[x + 33*(y + 33 * z)])
+
 /* Histogram is in elements 1..HISTSIZE along each axis,
  * element 0 is for base or marginal value
  * NB: these must start out 0!
@@ -58,12 +63,8 @@ typedef struct Box
 
 typedef struct QuantContext {
 
-	ILfloat   gm2[33][33][33];
-
-	ILint 		wt[33][33][33], 
-						mr[33][33][33],	
-						mg[33][33][33],	
-						mb[33][33][33];
+	Histogramf 	gm2;
+	Histogram 	wt, mr, mg, mb;
 
 	ILuint		size; //image size
  	ILuint  	K;    //colour look-up table size
@@ -168,16 +169,16 @@ static void M3d(ILint *vwt, ILint *vmr, ILint *vmg, ILint *vmb, ILfloat *m2)
 
 
 // Compute sum over a Box of any given statistic
-static ILint Vol(const Box *cube, const ILint mmt[33][33][33]) 
+static ILint Vol(const Box *cube, const Histogram mmt) 
 {
-    return(mmt[cube->r1][cube->g1][cube->b1] 
-	   			-mmt[cube->r1][cube->g1][cube->b0]
-	   			-mmt[cube->r1][cube->g0][cube->b1]
-	   			+mmt[cube->r1][cube->g0][cube->b0]
-	   			-mmt[cube->r0][cube->g1][cube->b1]
-				  +mmt[cube->r0][cube->g1][cube->b0]
-	   			+mmt[cube->r0][cube->g0][cube->b1]
-	   			-mmt[cube->r0][cube->g0][cube->b0] );
+    return(HIST(mmt, cube->r1, cube->g1, cube->b1)
+	   			-HIST(mmt, cube->r1, cube->g1, cube->b0)
+	   			-HIST(mmt, cube->r1, cube->g0, cube->b1)
+	   			+HIST(mmt, cube->r1, cube->g0, cube->b0)
+	   			-HIST(mmt, cube->r0, cube->g1, cube->b1)
+				  +HIST(mmt, cube->r0, cube->g1, cube->b0)
+	   			+HIST(mmt, cube->r0, cube->g0, cube->b1)
+	   			-HIST(mmt, cube->r0, cube->g0, cube->b0) );
 }
 
 /* The next two routines allow a slightly more efficient calculation
@@ -188,25 +189,25 @@ static ILint Vol(const Box *cube, const ILint mmt[33][33][33])
 
 // Compute part of Vol(cube, mmt) that doesn't depend on r1, g1, or b1
 //	(depending on dir)
-static ILint Bottom(const Box *cube, ILubyte dir, const ILint mmt[33][33][33])
+static ILint Bottom(const Box *cube, ILubyte dir, const Histogram mmt)
 {
     switch(dir)
     {
 		case RED:
-			return( -mmt[cube->r0][cube->g1][cube->b1]
-							+mmt[cube->r0][cube->g1][cube->b0]
-							+mmt[cube->r0][cube->g0][cube->b1]
-							-mmt[cube->r0][cube->g0][cube->b0] );
+			return( -HIST(mmt, cube->r0, cube->g1, cube->b1)
+							+HIST(mmt, cube->r0, cube->g1, cube->b0)
+							+HIST(mmt, cube->r0, cube->g0, cube->b1)
+							-HIST(mmt, cube->r0, cube->g0, cube->b0) );
 		case GREEN:
-			return( -mmt[cube->r1][cube->g0][cube->b1]
-							+mmt[cube->r1][cube->g0][cube->b0]
-							+mmt[cube->r0][cube->g0][cube->b1]
-							-mmt[cube->r0][cube->g0][cube->b0] );
+			return( -HIST(mmt, cube->r1, cube->g0, cube->b1)
+							+HIST(mmt, cube->r1, cube->g0, cube->b0)
+							+HIST(mmt, cube->r0, cube->g0, cube->b1)
+							-HIST(mmt, cube->r0, cube->g0, cube->b0) );
 		case BLUE:
-			return( -mmt[cube->r1][cube->g1][cube->b0]
-							+mmt[cube->r1][cube->g0][cube->b0]
-							+mmt[cube->r0][cube->g1][cube->b0]
-							-mmt[cube->r0][cube->g0][cube->b0] );
+			return( -HIST(mmt, cube->r1, cube->g1, cube->b0)
+							+HIST(mmt, cube->r1, cube->g0, cube->b0)
+							+HIST(mmt, cube->r0, cube->g1, cube->b0)
+							-HIST(mmt, cube->r0, cube->g0, cube->b0) );
     }
     return 0;
 }
@@ -214,25 +215,25 @@ static ILint Bottom(const Box *cube, ILubyte dir, const ILint mmt[33][33][33])
 
 // Compute remainder of Vol(cube, mmt), substituting pos for
 //	r1, g1, or b1 (depending on dir)
-static ILint Top(const Box *cube, ILubyte dir, ILint pos, const ILint mmt[33][33][33])
+static ILint Top(const Box *cube, ILubyte dir, ILint pos, const Histogram mmt)
 {
     switch (dir)
     {
 		case RED:
-			return(mmt[pos][cube->g1][cube->b1] 
-			   		-mmt[pos][cube->g1][cube->b0]
-			   		-mmt[pos][cube->g0][cube->b1]
-			   		+mmt[pos][cube->g0][cube->b0] );
+			return(HIST(mmt, pos, cube->g1, cube->b1) 
+			   		-HIST(mmt, pos, cube->g1, cube->b0)
+			   		-HIST(mmt, pos, cube->g0, cube->b1)
+			   		+HIST(mmt, pos, cube->g0, cube->b0) );
 		case GREEN:
-			return(mmt[cube->r1][pos][cube->b1] 
-			   		-mmt[cube->r1][pos][cube->b0]
-				    -mmt[cube->r0][pos][cube->b1]
-				    +mmt[cube->r0][pos][cube->b0] );
+			return(HIST(mmt, cube->r1, pos, cube->b1) 
+			   		-HIST(mmt, cube->r1, pos, cube->b0)
+				    -HIST(mmt, cube->r0, pos, cube->b1)
+				    +HIST(mmt, cube->r0, pos, cube->b0) );
 		case BLUE:
-			return(mmt[cube->r1][cube->g1][pos]
-			   		-mmt[cube->r1][cube->g0][pos]
-			   		-mmt[cube->r0][cube->g1][pos]
-			   		+mmt[cube->r0][cube->g0][pos] );
+			return(HIST(mmt, cube->r1, cube->g1, pos)
+			   		-HIST(mmt, cube->r1, cube->g0, pos)
+			   		-HIST(mmt, cube->r0, cube->g1, pos)
+			   		+HIST(mmt, cube->r0, cube->g0, pos) );
     }
 
     return 0;
@@ -249,14 +250,14 @@ static ILfloat Var(QuantContext *ctx, const Box *cube)
 	dg = (ILfloat)(Vol(cube, ctx->mg)); 
 	db = (ILfloat)(Vol(cube, ctx->mb));
 
-	xx = ctx->gm2[cube->r1][cube->g1][cube->b1] 
-		  -ctx->gm2[cube->r1][cube->g1][cube->b0]
-			-ctx->gm2[cube->r1][cube->g0][cube->b1]
-			+ctx->gm2[cube->r1][cube->g0][cube->b0]
-			-ctx->gm2[cube->r0][cube->g1][cube->b1]
-			+ctx->gm2[cube->r0][cube->g1][cube->b0]
-			+ctx->gm2[cube->r0][cube->g0][cube->b1]
-			-ctx->gm2[cube->r0][cube->g0][cube->b0];
+	xx = HIST(ctx->gm2, cube->r1, cube->g1, cube->b1) 
+		  -HIST(ctx->gm2, cube->r1, cube->g1, cube->b0)
+			-HIST(ctx->gm2, cube->r1, cube->g0, cube->b1)
+			+HIST(ctx->gm2, cube->r1, cube->g0, cube->b0)
+			-HIST(ctx->gm2, cube->r0, cube->g1, cube->b1)
+			+HIST(ctx->gm2, cube->r0, cube->g1, cube->b0)
+			+HIST(ctx->gm2, cube->r0, cube->g0, cube->b1)
+			-HIST(ctx->gm2, cube->r0, cube->g0, cube->b0);
 
 	return xx - (dr*dr+dg*dg+db*db) / (ILfloat)(Vol(cube, ctx->wt));
 }

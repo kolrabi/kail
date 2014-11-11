@@ -162,7 +162,7 @@ ILAPI ILboolean ILAPIENTRY iCopyImageAttr(ILimage *Dest, ILimage *Src)
 
 ILboolean ILAPIENTRY iCopyImage(ILimage *DestImage, ILimage *SrcImage)
 {
-  if (SrcImage == NULL || SrcImage == NULL) {
+  if (DestImage == NULL || SrcImage == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }

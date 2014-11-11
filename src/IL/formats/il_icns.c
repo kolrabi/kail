@@ -243,7 +243,7 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
 
           if (RLERead >= 128)
           {
-            for (i = 0; i < RLERead - 125 && (Position + i) < Width * Width; i++)
+            for (i = 0; i < (ILuint)RLERead - 125 && (Position + i) < Width * Width; i++)
             {
               TempImage->Data[Channel + (Position + i) * 4] = Data[RLEPos];
             }
@@ -252,7 +252,7 @@ ILboolean iIcnsReadData(ILimage* image, ILboolean *BaseCreated, ILboolean IsAlph
           }
           else
           {
-            for (i = 0; i < RLERead + 1 && (Position + i) < Width * Width; i++)
+            for (i = 0; i < (ILuint)RLERead + 1 && (Position + i) < Width * Width; i++)
             {
               TempImage->Data[Channel + (Position + i) * 4] = Data[RLEPos + i];
             }

@@ -6,6 +6,13 @@ future:
     - IPTC?
 
   - IL:
+    - More tests:
+      - BLP1
+      - BMP: OS/2, Uncompressed 1,4,8,16,32 bit, RLE 4bit
+      - blitting
+      - conversions
+      - mipmaps for formats that support them (DDS)
+      - layers for formats that support them (PSD, FITS)
     - ilIsEnabled(IL_PNG) etc. or something similar to check for supported 
       formats. (is that read or write?)
     - select file format based on content for files with extensions that are

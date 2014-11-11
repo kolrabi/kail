@@ -79,7 +79,7 @@ ILboolean ilLoadWdpL(const void *Lump, ILuint Size)
 //@TODO: Put in ilPKImageEncode_WritePixels_DevIL?
 ERR WriteDevILHeader(PKImageEncode* pIE)
 {
-    struct WMPStream* pS = pIE->pStream;
+    // struct WMPStream* pS = pIE->pStream;
 
 	if (IsEqualGUID(&GUID_PKPixelFormat24bppRGB, &pIE->guidPixFormat) || IsEqualGUID(&GUID_PKPixelFormat24bppBGR, &pIE->guidPixFormat))
     {

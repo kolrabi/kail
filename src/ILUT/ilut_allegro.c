@@ -22,7 +22,7 @@
  * @return              The allegro BITMAP.
  * @internal
  */
-BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
+static BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
   BITMAP *Bitmap;
   ILimage *TempImage;
   ILuint i = 0, j = 0;
@@ -44,7 +44,7 @@ BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
   if (TempImage->Type > IL_UNSIGNED_BYTE || TempImage->Type == IL_BYTE) 
     iConvertImages(TempImage, TempImage->Format, IL_UNSIGNED_BYTE);
 
-  Bitmap = create_bitmap_ex(TempImage->Bpp * 8, TempImage->Width, TempImage->Height);
+  Bitmap = create_bitmap_ex(TempImage->Bpp * 8, (int)TempImage->Width, (int)TempImage->Height);
   if (Bitmap == NULL) {
     iCloseImage(TempImage);
     return NULL;
@@ -108,6 +108,7 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILconst_string FileName) {
     return NULL;
   }
 
+  imemclear(&Pal, sizeof(Pal));
   Alleg = iConvertToAlleg(Image, Pal);
   iCloseImage(Image);
   return Alleg;

@@ -39,6 +39,8 @@ static inline void ilConvByteToHalf   (const ILubyte *in, void     *out)  { floa
 
 ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenum DestFormat, ILenum SrcType, ILenum DestType, ILpal *SrcPal, void *Buffer)
 {
+  iTrace("---- iConvertBuffer %u %04x -> %04x %04x -> %04x %p", SizeOfData, SrcFormat, DestFormat, SrcType, DestType, SrcPal);
+
   //static const  ILfloat LumFactor[3] = { 0.299f, 0.587f, 0.114f };  // Used for conversion to luminance
   //static const  ILfloat LumFactor[3] = { 0.3086f, 0.6094f, 0.0820f };  // http://www.sgi.com/grafica/matrix/index.html
   static const  ILfloat LumFactor[3] = { 0.212671f, 0.715160f, 0.072169f };  // http://www.inforamp.net/~poynton/ and libpng's libpng.txt
@@ -50,7 +52,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
   ILuint    NumPix;  // Really number of pixels * bpp.
   ILuint    BpcDest;
   void      *Data = NULL;
-  ILimage   *PalImage = NULL, *TempImage = NULL;
+  ILimage   *TempImage = NULL;
 
   if (SizeOfData == 0 || Buffer == NULL) {
     iSetError(IL_INVALID_PARAM);
@@ -78,37 +80,42 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
 
   // Colour-indexed images are special here
   if (SrcFormat == IL_COLOUR_INDEX) {
+    iTrace("----");
     // We create a temporary palette image so that we can send it to iConvertPalette.
-    PalImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
+    ILimage   *PalImage = (ILimage*)icalloc(1, sizeof(ILimage));  // Much better to have it all set to 0.
     if (PalImage == NULL)
       return NULL;
+
     // Populate the temporary palette image.
     PalImage->Pal.Palette = SrcPal->Palette;
     PalImage->Pal.PalSize = SrcPal->PalSize;
     PalImage->Pal.PalType = SrcPal->PalType;
-    PalImage->Width = NumPix;
-    PalImage->Height = 1;
-    PalImage->Depth = 1;
-    PalImage->Format = IL_COLOUR_INDEX;
-    PalImage->Type = IL_UNSIGNED_BYTE;
-    PalImage->Data = (ILubyte*)Buffer;
-    PalImage->Bpp = 1;
-    PalImage->SizeOfData = SizeOfData;
+    PalImage->Width       = NumPix;
+    PalImage->Height      = 1;
+    PalImage->Depth       = 1;
+    PalImage->Format      = IL_COLOUR_INDEX;
+    PalImage->Type        = IL_UNSIGNED_BYTE;
+    PalImage->Data        = (ILubyte*)Buffer;
+    PalImage->Bpp         = 1;
+    PalImage->SizeOfData  = SizeOfData;
 
     // Convert the paletted image to a different format.
     TempImage = iConvertPalette(PalImage, DestFormat);
     if (TempImage == NULL) {
+      iTrace("----");
       // So that we do not delete the original palette or data.
       PalImage->Pal.Palette = NULL;
       PalImage->Data = NULL;
       iCloseImage(PalImage);
       return NULL;
     }
+    iTrace("----");
 
     // Set TempImage->Data to NULL so that we can preserve it via NewData, or
     //  else it would get wiped out by iCloseImage.
     NewData = TempImage->Data;
     TempImage->Data = NULL;
+
     // So that we do not delete the original palette or data.
     PalImage->Pal.Palette = NULL;
     PalImage->Data = NULL;
@@ -116,6 +123,7 @@ ILAPI void* ILAPIENTRY iConvertBuffer(ILuint SizeOfData, ILenum SrcFormat, ILenu
     // Clean up here.
     iCloseImage(PalImage);
     iCloseImage(TempImage);
+    iTrace("---- %p", NewData);
     return NewData;
   }
   
@@ -1908,9 +1916,13 @@ void* ILAPIENTRY iSwitchTypes(ILuint SizeOfData, ILenum SrcType, ILenum DestType
   ILushort  *ShortPtr;
   ILuint    *IntPtr;
   ILfloat   *FloatPtr, tempFloat;
-  ILdouble  *DblPtr, tempDouble;
+  ILdouble  *DblPtr;
   ILushort  *HalfPtr;
   void      *NewData;
+
+#if CLAMP_DOUBLES
+  ILdouble  tempDouble;
+#endif    
 
   ILubyte   *ByteBuf = (ILubyte*)Buffer;
 

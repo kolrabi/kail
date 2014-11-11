@@ -690,13 +690,7 @@ ILboolean ILAPIENTRY ilutSetWinClipboard() {
 
 ILboolean ILAPIENTRY ilutGetWinClipboard()
 {
-  //HBITMAP   Bitmap;
-  HWND    hWnd;
-  HGLOBAL   hGlobal;
-  PTSTR   pGlobal, data;
   BITMAPFILEHEADER  *BmpHeader;
-  BITMAPINFOHEADER  *InfoHeader;
-  SIZE_T    Size;
   ILimage *ilutCurImage;
   ILimage* Temp;
 
@@ -712,7 +706,11 @@ ILboolean ILAPIENTRY ilutGetWinClipboard()
   }
 
   if (IsClipboardFormatAvailable(CF_DIB)) {
-    hWnd = GetForegroundWindow();
+    HWND    hWnd = GetForegroundWindow();
+    HGLOBAL   hGlobal;
+    PTSTR   pGlobal, data;
+    BITMAPINFOHEADER  *InfoHeader;
+    SIZE_T    Size;
 
     if (!OpenClipboard(hWnd)) {
       iSetError(ILUT_ILLEGAL_OPERATION);  // Dunno if this is the correct error.

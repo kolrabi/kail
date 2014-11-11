@@ -24,6 +24,7 @@ ADD_EXECUTABLE          ( ILtestAlgoBMPRLE  iltest-algo-bmprle.c    )
 ADD_EXECUTABLE          ( ILtestAlgoSGIRLE  iltest-algo-sgirle.c    )
 ADD_EXECUTABLE          ( ILtestAlgoTGARLE  iltest-algo-tgarle.c    )
 ADD_EXECUTABLE          ( ILtestAlgoDDS  iltest-algo-dds.c    )
+ADD_EXECUTABLE          ( ILtestConvert  iltest-convert.c    )
 
 TARGET_LINK_LIBRARIES   ( ILtestFormatLoad  ${ILLIB} ILU )
 TARGET_LINK_LIBRARIES   ( ILtestFormatSave  ${ILLIB} ILU )
@@ -37,6 +38,7 @@ TARGET_LINK_LIBRARIES   ( ILtestAlgoBMPRLE   ${ILLIB} ILU )
 TARGET_LINK_LIBRARIES   ( ILtestAlgoSGIRLE   ${ILLIB} ILU )
 TARGET_LINK_LIBRARIES   ( ILtestAlgoTGARLE   ${ILLIB} ILU )
 TARGET_LINK_LIBRARIES   ( ILtestAlgoDDS   ${ILLIB} ILU )
+TARGET_LINK_LIBRARIES   ( ILtestConvert   ${ILLIB} ILU )
 
 ADD_TEST                ( MemoryDefault     ILtestMemory      default_alloc )
 ADD_TEST                ( MemoryCustom      ILtestMemory      custom_alloc  )
@@ -47,6 +49,8 @@ ADD_TEST                ( ILUErrorStrings   ILtestILUError                  )
 
 ADD_TEST                ( IOOpenFile        ILtestIO          open_read ${CMAKE_CURRENT_SOURCE_DIR}/TestFile.txt )
 ADD_TEST                ( IOOpenLump        ILtestIO          open_read_lump ABCDefghijk )
+
+ADD_TEST                ( Convert           ILtestConvert     ${REF_CLR} )
 
 SET                     ( ILU_IMAGE ${CMAKE_SOURCE_DIR}/images/dougie.png )
 ADD_TEST                ( ILUAlienify       ILtestILU         ${ILU_IMAGE} ilu_alienify.png alienify )

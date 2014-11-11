@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define TEST(n) if (!strcmp(*argv, #n)) result = test_##n(); else
 #define CHECK(x) if (!(x)) { fprintf(stderr, "FAILED in line %d: %s\n", __LINE__, #x); return 1; }
 
 static int testError(ILenum error) {

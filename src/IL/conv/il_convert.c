@@ -421,17 +421,21 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
 
 ILboolean ILAPIENTRY iSwapColours(ILimage *Image)
 {
-  ILuint    i = 0, Size = Image->Bpp * Image->Width * Image->Height;
-  ILubyte   PalBpp = (ILubyte)iGetBppPal(Image->Pal.PalType);
+  ILuint    i = 0, Size;
+  ILubyte   PalBpp;
   ILushort  *ShortPtr;
   ILuint    *IntPtr, Temp;
   ILdouble  *DoublePtr, DoubleTemp;
-  void      *VoidPtr = Image->Data;
+  void      *VoidPtr;
 
   if (Image == NULL) {
     iSetError(IL_ILLEGAL_OPERATION);
     return IL_FALSE;
   }
+
+  PalBpp = (ILubyte)iGetBppPal(Image->Pal.PalType);
+  Size = Image->Bpp * Image->Width * Image->Height;
+  VoidPtr = Image->Data;
 
   if ((Image->Bpp != 1 && Image->Bpp != 3 && Image->Bpp != 4)) {
     iSetError(IL_INVALID_VALUE);
@@ -654,7 +658,7 @@ ILboolean iAddAlpha(ILimage *Image)
 //  making the image transparent where Key is equal to the pixel.
 ILboolean iAddAlphaKey(ILimage *Image)
 {
-  void   *NewData, *OldData;
+  void   *NewData;
   ILubyte NewBpp;
   ILfloat   KeyColour[3];
   ILuint    i = 0, j = 0, c, Size;
@@ -670,6 +674,8 @@ ILboolean iAddAlphaKey(ILimage *Image)
   }
 
   if (Image->Format != IL_COLOUR_INDEX) {
+    void *OldData = Image->Data;
+    
     if (Image->Bpp != 3) {
       iSetError(IL_INVALID_VALUE);
       return IL_FALSE;
@@ -694,7 +700,6 @@ ILboolean iAddAlphaKey(ILimage *Image)
     if (NewData == NULL) {
       return IL_FALSE;
     }
-    OldData = Image->Data;
 
     switch (Image->Type)
     {
@@ -965,6 +970,52 @@ ILboolean iRemoveAlpha(ILimage *Image)
   return IL_TRUE;
 }
 
+ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+{
+  ILuint i;
+  for (i = 0; i < size; ++i, ++dest, ++src) {
+    //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
+    //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
+    *dest = ilHalfToFloat(*src);
+  }
+
+  return IL_TRUE;
+}
+
+
+// Same as iConvFloat16ToFloat32, but we have to set the blue channel to 1.0f.
+//  The destination format is RGB, and the source is R16G16 (little endian).
+ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+{
+  ILuint i;
+  for (i = 0; i < size; i += 3) {
+    //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
+    //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
+    *dest++ = ilHalfToFloat(*src++);
+    *dest++ = ilHalfToFloat(*src++);
+    *((ILfloat*)dest++) = 1.0f;
+  }
+
+  return IL_TRUE;
+}
+
+
+// Same as iConvFloat16ToFloat32, but we have to set the green and blue channels
+//  to 1.0f.  The destination format is RGB, and the source is R16.
+ILboolean iConvR16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+{
+  ILuint i;
+  for (i = 0; i < size; i += 3) {
+    //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
+    //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
+    *dest++ = ilHalfToFloat(*src++);
+    *((ILfloat*)dest++) = 1.0f;
+    *((ILfloat*)dest++) = 1.0f;
+  }
+
+  return IL_TRUE;
+}
+
 static ILboolean iFixImage(ILimage *Image, ILimage *BaseImage) 
 {
   Image->BaseImage = BaseImage;
@@ -1032,4 +1083,5 @@ ILboolean iFixImages(ILimage *Image, ILimage *BaseImage) {
 
   return IL_TRUE;
 }
+
 

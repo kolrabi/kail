@@ -341,7 +341,6 @@ ILubyte *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILuby
 {
   ILubyte  *data = NULL;
   ILubyte  *iniPixel;
-  ILubyte  *finPixel;
   ILuint   i, j;
   ILuint   tam = width * height * depth * sizeof(ILubyte);
 
@@ -356,7 +355,7 @@ ILubyte *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILuby
 
   iniPixel = data;
   for (i = 0; i < tam / depth; i++) {
-    finPixel = iniPixel + depth;
+    ILubyte  *finPixel = iniPixel + depth;
     for (j = 0; j < (depth /2); j++) {
       ILubyte aux;
       aux = *iniPixel; 

@@ -392,11 +392,11 @@ static ILboolean iSaveSgiInternal(ILimage *Image)
 		Temp = iConvertImage(Image, Image->Format, DetermineSgiType(Image->Type));
 	}
 	
-	//compression of images with 2 bytes per channel doesn't work yet
-	Compress = ilIsEnabled(IL_SGI_RLE) && Temp->Bpc == 1;
-
 	if (Temp == NULL)
 		return IL_FALSE;
+
+	//compression of images with 2 bytes per channel doesn't work yet
+	Compress = ilIsEnabled(IL_SGI_RLE) && Temp->Bpc == 1;
 
 	SaveBigUShort(io, SGI_MAGICNUM);  // 'Magic' number
 	if (Compress)

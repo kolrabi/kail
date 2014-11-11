@@ -291,7 +291,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
 
     /* If nbColors < 2^nbplanes, repeat the colormap */
     /* This happens when pictures have a stencil mask */
-    if ( nbrcolorsfinal > (1<<bmhd.planes) ) {
+    if ( nbrcolorsfinal > (1UL<<bmhd.planes) ) {
       nbrcolorsfinal = (1<<bmhd.planes);
     }
     for ( i=nbColors; i < (ILuint)nbrcolorsfinal; i++ )

@@ -22,6 +22,26 @@
 
 #include <limits.h>
 
+static ILuint     Compress(ILimage *Image, ILenum DXTCFormat);
+static ILboolean  WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags);
+static ILboolean  Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, ILubyte channel);
+
+static void       ChooseAlphaEndpoints(ILubyte *Block, ILubyte *a0, ILubyte *a1);
+static void       GenAlphaBitMask(ILubyte a0, ILubyte a1, ILubyte *In, ILubyte *Mask, ILubyte *Out);
+static ILboolean  GetAlphaBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos);
+
+static void       ChooseEndpoints(ILushort *Block, ILushort *ex0, ILushort *ex1);
+static ILuint     GenBitMask(ILushort ex0, ILushort ex1, ILuint NumCols, ILushort *In, ILubyte *Alpha, Color888 *OutCol);
+static ILboolean  GetBlock(ILushort *Block, ILushort *Data, ILimage *Image, ILuint XPos, ILuint YPos);
+
+static void       CorrectEndDXT1(ILushort *ex0, ILushort *ex1, ILboolean HasAlpha);
+
+// static void       ShortToColor565(ILushort Pixel, Color565 *Colour);
+static void       ShortToColor888(ILushort Pixel, Color888 *Colour);
+// static ILushort   Color888ToShort(Color888 *Colour);
+
+static ILuint     Distance(Color888 *c1, Color888 *c2);
+
 //! Checks if an image is a cubemap
 static ILuint GetCubemapInfo(ILimage* image, ILuint* faces)
 {
@@ -669,7 +689,7 @@ static void CompressToRXGB(ILimage *Image, ILushort** xgb, ILubyte** r)
 }
 
 
-ILuint Compress(ILimage *Image, ILenum DXTCFormat)
+static ILuint Compress(ILimage *Image, ILenum DXTCFormat)
 {
   ILushort  *Data, Block[16], ex0, ex1, *Runner16, t0, t1;
   ILuint    x, y, z, i, BitMask;//, Rms1, Rms2;
@@ -908,15 +928,6 @@ nosquish:
               GetAlphaBlock(AlphaBlock, Runner8, Image, x, y);
               ChooseAlphaEndpoints(AlphaBlock, &a0, &a1);
               GenAlphaBitMask(a0, a1, AlphaBlock, AlphaBitMask, NULL/*AlphaOut*/);
-              /*Rms2 = RMSAlpha(AlphaBlock, AlphaOut);
-              GenAlphaBitMask(a0, a1, 8, AlphaBlock, AlphaBitMask, AlphaOut);
-              Rms1 = RMSAlpha(AlphaBlock, AlphaOut);
-              if (Rms2 <= Rms1) {  // Yeah, we have to regenerate...
-                GenAlphaBitMask(a0, a1, 6, AlphaBlock, AlphaBitMask, AlphaOut);
-                Rms2 = a1;  // Just reuse Rms2 as a temporary variable...
-                a1 = a0;
-                a0 = Rms2;
-              }*/
               SIOputc(io, a0);
               SIOputc(io, a1);
               SIOwrite(io, AlphaBitMask, 1, 6);
@@ -1014,7 +1025,7 @@ ILboolean Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos
   return IL_TRUE;
 }
 
-
+/*
 void ShortToColor565(ILushort Pixel, Color565 *Colour)
 {
   Colour->nRed   = (Pixel & 0xF800) >> 11;
@@ -1022,7 +1033,7 @@ void ShortToColor565(ILushort Pixel, Color565 *Colour)
   Colour->nBlue  = (Pixel & 0x001F);
   return;
 }
-
+*/
 
 void ShortToColor888(ILushort Pixel, Color888 *Colour)
 {
@@ -1032,17 +1043,10 @@ void ShortToColor888(ILushort Pixel, Color888 *Colour)
   return;
 }
 
-
-ILushort Color565ToShort(Color565 *Colour)
-{
-  return (ILushort)((Colour->nRed << 11) | (Colour->nGreen << 5) | (Colour->nBlue));
-}
-
-
-ILushort Color888ToShort(Color888 *Colour)
+/*ILushort Color888ToShort(Color888 *Colour)
 {
   return (ILushort)(((Colour->r >> 3) << 11) | ((Colour->g >> 2) << 5) | (Colour->b >> 3));
-}
+}*/
 
 
 ILuint GenBitMask(ILushort ex0, ILushort ex1, ILuint NumCols, ILushort *In, ILubyte *Alpha, Color888 *OutCol)
@@ -1171,22 +1175,6 @@ void GenAlphaBitMask(ILubyte a0, ILubyte a1, ILubyte *In, ILubyte *Mask, ILubyte
 }
 
 
-ILuint RMSAlpha(ILubyte *Orig, ILubyte *Test)
-{
-  ILuint  RMS = 0, i;
-  ILint d;
-
-  for (i = 0; i < 16; i++) {
-    d = Orig[i] - Test[i];
-    RMS += (ILuint)(d*d);
-  }
-
-  //RMS /= 16;
-
-  return RMS;
-}
-
-
 ILuint Distance(Color888 *c1, Color888 *c2)
 {
   return  (c1->r - c2->r) * (c1->r - c2->r) +
@@ -1252,29 +1240,6 @@ void CorrectEndDXT1(ILushort *ex0, ILushort *ex1, ILboolean HasAlpha)
       *ex0 = *ex1;
       *ex1 = Temp;
     }
-  }
-
-  return;
-}
-
-
-void PreMult(ILushort *Data, ILubyte *Alpha)
-{
-  Color888  Colour;
-  ILuint    i;
-
-  for (i = 0; i < 16; i++) {
-    ShortToColor888(Data[i], &Colour);
-    Colour.r = (ILubyte)(((ILuint)Colour.r * Alpha[i]) >> 8);
-    Colour.g = (ILubyte)(((ILuint)Colour.g * Alpha[i]) >> 8);
-    Colour.b = (ILubyte)(((ILuint)Colour.b * Alpha[i]) >> 8);
-
-    /*Colour.r = (ILubyte)(Colour.r * (Alpha[i] / 255.0));
-    Colour.g = (ILubyte)(Colour.g * (Alpha[i] / 255.0));
-    Colour.b = (ILubyte)(Colour.b * (Alpha[i] / 255.0));*/
-
-    Data[i] = Color888ToShort(&Colour);
-    ShortToColor888(Data[i], &Colour);
   }
 
   return;

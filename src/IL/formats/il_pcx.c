@@ -432,7 +432,6 @@ static ILuint PcxEncodeScanline(SIO* io, ILubyte *inBuff, ILuint inLen, ILubyte 
 ILboolean PcxEncode(SIO *io, ILimage *image)
 {
 	ILuint	i, c, PalSize;
-	ILpal	*TempPal;
 	ILimage	*TempImage = image;
 	ILubyte	*TempData;
 
@@ -522,7 +521,7 @@ ILboolean PcxEncode(SIO *io, ILimage *image)
 		if (TempImage->Pal.PalType == IL_PAL_RGB24) {
 			SIOwrite(io, TempImage->Pal.Palette, 1, TempImage->Pal.PalSize);
 		} else {
-			TempPal = iConvertPal(&TempImage->Pal, IL_PAL_RGB24);
+			ILpal	*TempPal = iConvertPal(&TempImage->Pal, IL_PAL_RGB24);
 			if (TempPal == NULL) {
 				if (TempImage->Origin == IL_ORIGIN_LOWER_LEFT)
 					ifree(TempData);

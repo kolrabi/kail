@@ -16,7 +16,7 @@
 
 
 ILboolean iRotate(ILimage *Image, ILfloat Angle) {
-	ILimage	*Temp, *Temp1, *CurImage = NULL;
+	ILimage	*Temp, *Temp1;
 	ILenum	PalType = 0;
 
 	ILimage *  BaseImage = Image;
@@ -27,8 +27,7 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 
 	if (Image->Format == IL_COLOUR_INDEX) {
 		PalType = Image->Pal.PalType;
-		CurImage = Image;
-		Image = iConvertImage(CurImage, iGetPalBaseType(CurImage->Pal.PalType), IL_UNSIGNED_BYTE);
+		Image = iConvertImage(Image, iGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
 	}
 
 	Temp = iluRotate_(Image, Angle);
@@ -69,9 +68,6 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 	ILdouble	Cos, Sin;
 	ILuint		RotOffset, ImgOffset;
 	ILint		MinX, MinY, MaxX, MaxY;
-	ILushort	*ShortPtr;
-	ILuint		*IntPtr;
-	ILdouble	*DblPtr;
 	ILdouble	Point1x, Point1y, Point2x, Point2y, Point3x, Point3y;
 	ILint		SrcX, SrcY;
 
@@ -110,9 +106,9 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 
 	iClearImage(Rotated);
 
-	ShortPtr = (ILushort*)Image->Data;
+/*	ShortPtr = (ILushort*)Image->Data;
 	IntPtr = (ILuint*)Image->Data;
-	DblPtr = (ILdouble*)Image->Data;
+	DblPtr = (ILdouble*)Image->Data;*/
 
 	//if (iluFilter == ILU_NEAREST) {
 	switch (Image->Bpc)
@@ -178,7 +174,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILushort*)(Rotated->Data))[RotOffset + c] = ShortPtr[ImgOffset + c];
+							iGetImageDataUShort(Rotated)[RotOffset + c] = iGetImageDataUShort(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -189,7 +185,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILushort*)(Rotated->Data))[RotOffset + c] = ShortPtr[ImgOffset + c];
+							iGetImageDataUShort(Rotated)[RotOffset + c] = iGetImageDataUShort(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -200,7 +196,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILushort*)(Rotated->Data))[RotOffset + c] = ShortPtr[ImgOffset + c];
+							iGetImageDataUShort(Rotated)[RotOffset + c] = iGetImageDataUShort(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -214,7 +210,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
 							for (c = 0; c < Rotated->Bpp; c++) {
-								((ILushort*)(Rotated->Data))[RotOffset + c] = ShortPtr[ImgOffset + c];
+								iGetImageDataUShort(Rotated)[RotOffset + c] = iGetImageDataUShort(Image)[ImgOffset + c];
 							}
 						}
 					}
@@ -234,7 +230,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILuint*)(Rotated->Data))[RotOffset + c] = IntPtr[ImgOffset + c];
+							iGetImageDataUInt(Rotated)[RotOffset + c] = iGetImageDataUInt(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -245,7 +241,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILuint*)(Rotated->Data))[RotOffset + c] = IntPtr[ImgOffset + c];
+							iGetImageDataUInt(Rotated)[RotOffset + c] = iGetImageDataUInt(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -256,7 +252,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILuint*)(Rotated->Data))[RotOffset + c] = IntPtr[ImgOffset + c];
+							iGetImageDataUInt(Rotated)[RotOffset + c] = iGetImageDataUInt(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -270,7 +266,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
 							for (c = 0; c < Rotated->Bpp; c++) {
-								((ILuint*)(Rotated->Data))[RotOffset + c] = IntPtr[ImgOffset + c];
+								iGetImageDataUInt(Rotated)[RotOffset + c] = iGetImageDataUInt(Image)[ImgOffset + c];
 							}
 						}
 					}
@@ -290,7 +286,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = x * Rotated->Bps + (Image->Width - 1 - y) * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILdouble*)(Rotated->Data))[RotOffset + c] = DblPtr[ImgOffset + c];
+							iGetImageDataDouble(Rotated)[RotOffset + c] = iGetImageDataDouble(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -301,7 +297,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - y) * Rotated->Bps + x * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILdouble*)(Rotated->Data))[RotOffset + c] = DblPtr[ImgOffset + c];
+							iGetImageDataDouble(Rotated)[RotOffset + c] = iGetImageDataDouble(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -312,7 +308,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 						RotOffset = (Image->Height - 1 - x) * Rotated->Bps + y * Rotated->Bpp;
 						ImgOffset = y * Image->Bps + x * Image->Bpp;
 						for (c = 0; c < Rotated->Bpp; c++) {
-							((ILdouble*)(Rotated->Data))[RotOffset + c] = DblPtr[ImgOffset + c];
+							iGetImageDataDouble(Rotated)[RotOffset + c] = iGetImageDataDouble(Image)[ImgOffset + c];
 						}
 					} 
 				} 
@@ -326,7 +322,7 @@ ILAPI ILimage* ILAPIENTRY iluRotate_(ILimage *Image, ILfloat Angle)
 							RotOffset = y * Rotated->Bps + x * Rotated->Bpp;
 							ImgOffset = (ILuint)SrcY * Image->Bps + (ILuint)SrcX * Image->Bpp;
 							for (c = 0; c < Rotated->Bpp; c++) {
-								((ILdouble*)(Rotated->Data))[RotOffset + c] = DblPtr[ImgOffset + c];
+								iGetImageDataDouble(Rotated)[RotOffset + c] = iGetImageDataDouble(Image)[ImgOffset + c];
 							}
 						}
 					}

@@ -126,7 +126,6 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
   uint16   photometric, planarconfig, orientation;
   uint16   samplesperpixel, bitspersample, *sampleinfo, extrasamples;
   uint32  w, h, d, tilewidth, tilelength;
-  tmsize_t linesize = 0;
   // ILubyte  *pImageData;
   ILuint   i, ProfileLen, DirCount = 0;
   void   *Buffer;
@@ -162,6 +161,8 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
 
   Image = NULL;
   for (i = 0; i < DirCount; i++) {
+    tmsize_t linesize;
+
     TIFFSetDirectory(tif, (tdir_t)i);
     TIFFGetField(tif, TIFFTAG_IMAGEWIDTH,  &w);
     TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &h);
@@ -270,9 +271,9 @@ static ILboolean iLoadTiffInternal(ILimage* image) {
           }
 
           if (photometric == PHOTOMETRIC_MINISWHITE) { //invert channel
-            tmsize_t t2, k;
+            tmsize_t k;
             for (j = 0; (uint32)j < linesread; ++j) {
-              t2 = j*linesize;
+              tmsize_t t2 = j*linesize;
               //this works for 16bit images as well: the two bytes
               //making up a pixel can be inverted independently
               for (k = 0; (ILuint)k < Image->Bps; ++k)
@@ -705,21 +706,12 @@ static TIFF *iTIFFOpen(SIO *io, char *Mode)
 {
   TIFF *tif;
 
-  if (Mode[0] == 'w')
-    tif = TIFFClientOpen("TIFFMemFile", Mode,
-              io,
-              _tiffFileReadProc, _tiffFileWriteProc,
-              _tiffFileSeekProc, _tiffFileCloseProc,
-              _tiffFileSizeProc, _tiffDummyMapProc,
-              _tiffDummyUnmapProc);
-  else
-    tif = TIFFClientOpen("TIFFMemFile", Mode,
-              io,
-              _tiffFileReadProc, _tiffFileWriteProc,
-              _tiffFileSeekProc, _tiffFileCloseProc,
-              _tiffFileSizeProc, _tiffDummyMapProc,
-              _tiffDummyUnmapProc);
-  
+  tif = TIFFClientOpen("TIFFMemFile", Mode,
+            io,
+            _tiffFileReadProc, _tiffFileWriteProc,
+            _tiffFileSeekProc, _tiffFileCloseProc,
+            _tiffFileSizeProc, _tiffDummyMapProc,
+            _tiffDummyUnmapProc);
   return tif;
 }
 

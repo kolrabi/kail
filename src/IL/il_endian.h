@@ -55,9 +55,12 @@
 #define INLINE static inline
 #endif
 
+#define SWAP_BYTES(x, y) { ILubyte t = (x); (x) = (y); (y) = t; }
+
 #ifndef NOINLINE
 INLINE void iSwapUShort(ILushort *s)  {
-	*s = (ILushort)(((*s)>>8) | ((*s)<<8));
+	ILubyte *tmp = (ILubyte*)s;
+	SWAP_BYTES(tmp[0], tmp[1]);
 }
 
 INLINE void iSwapShort(ILshort *s) {
@@ -65,7 +68,9 @@ INLINE void iSwapShort(ILshort *s) {
 }
 
 INLINE void iSwapUInt(ILuint *i) {
-	*i = ((*i)>>24) | (((*i)>>8) & 0xff00) | (((*i)<<8) & 0xff0000) | ((*i)<<24);
+	ILubyte *tmp = (ILubyte*)i;
+	SWAP_BYTES(tmp[0], tmp[3]);
+	SWAP_BYTES(tmp[1], tmp[2]);
 }
 
 INLINE void iSwapInt(ILint *i) {
@@ -73,58 +78,58 @@ INLINE void iSwapInt(ILint *i) {
 }
 
 INLINE void iSwapFloat(ILfloat *f) {
-	iSwapUInt((ILuint*)f);
+	ILubyte *tmp = (ILubyte*)f;
+	SWAP_BYTES(tmp[0], tmp[3]);
+	SWAP_BYTES(tmp[1], tmp[2]);
 }
 
 INLINE void iSwapDouble(ILdouble *d) {
-	ILubyte t,*b = (ILubyte*)d;
-	#define dswap(x,y) t=b[x]; b[x]=b[y]; b[y]=t;
-	dswap(0,7);
-	dswap(1,6);
-	dswap(2,5);
-	dswap(3,4);
-	#undef dswap
+	ILubyte *tmp = (ILubyte*)d;
+	SWAP_BYTES(tmp[0], tmp[7]);
+	SWAP_BYTES(tmp[1], tmp[6]);
+	SWAP_BYTES(tmp[2], tmp[5]);
+	SWAP_BYTES(tmp[3], tmp[4]);
 }
 
 
 INLINE ILushort GetLittleUShort(SIO* io) {
 	ILushort s;
-	io->read(io->handle, &s, sizeof(ILushort), 1);
+	SIOread(io, &s, sizeof(ILushort), 1);
 	UShort(&s);
 	return s;
 }
 
 INLINE ILshort GetLittleShort(SIO* io) {
 	ILshort s;
-	io->read(io->handle, &s, sizeof(ILshort), 1);
+	SIOread(io, &s, sizeof(ILshort), 1);
 	Short(&s);
 	return s;
 }
 
 INLINE ILuint GetLittleUInt(SIO* io) {
 	ILuint i;
-	io->read(io->handle, &i, sizeof(ILuint), 1);
+	SIOread(io, &i, sizeof(ILuint), 1);
 	UInt(&i);
 	return i;
 }
 
 INLINE ILint GetLittleInt(SIO* io) {
 	ILint i;
-	io->read(io->handle, &i, sizeof(ILint), 1);
+	SIOread(io, &i, sizeof(ILint), 1);
 	Int(&i);
 	return i;
 }
 
 INLINE ILfloat GetLittleFloat(SIO* io) {
 	ILfloat f;
-	io->read(io->handle, &f, sizeof(ILfloat), 1);
+	SIOread(io, &f, sizeof(ILfloat), 1);
 	Float(&f);
 	return f;
 }
 
 INLINE ILdouble GetLittleDouble(SIO* io) {
 	ILdouble d;
-	io->read(io->handle, &d, sizeof(ILdouble), 1);
+	SIOread(io, &d, sizeof(ILdouble), 1);
 	Double(&d);
 	return d;
 }
@@ -132,7 +137,7 @@ INLINE ILdouble GetLittleDouble(SIO* io) {
 
 INLINE ILushort GetBigUShort(SIO* io) {
 	ILushort s;
-	io->read(io->handle, &s, sizeof(ILushort), 1);
+	SIOread(io, &s, sizeof(ILushort), 1);
 	BigUShort(&s);
 	return s;
 }
@@ -140,7 +145,7 @@ INLINE ILushort GetBigUShort(SIO* io) {
 
 INLINE ILshort GetBigShort(SIO* io) {
 	ILshort s;
-	io->read(io->handle, &s, sizeof(ILshort), 1);
+	SIOread(io, &s, sizeof(ILshort), 1);
 	BigShort(&s);
 	return s;
 }
@@ -148,7 +153,7 @@ INLINE ILshort GetBigShort(SIO* io) {
 
 INLINE ILuint GetBigUInt(SIO* io) {
 	ILuint i;
-	io->read(io->handle, &i, sizeof(ILuint), 1);
+	SIOread(io, &i, sizeof(ILuint), 1);
 	BigUInt(&i);
 	return i;
 }
@@ -156,7 +161,7 @@ INLINE ILuint GetBigUInt(SIO* io) {
 
 INLINE ILint GetBigInt(SIO* io) {
 	ILint i;
-	io->read(io->handle, &i, sizeof(ILint), 1);
+	SIOread(io, &i, sizeof(ILint), 1);
 	BigInt(&i);
 	return i;
 }
@@ -164,7 +169,7 @@ INLINE ILint GetBigInt(SIO* io) {
 
 INLINE ILfloat GetBigFloat(SIO* io) {
 	ILfloat f;
-	io->read(io->handle, &f, sizeof(ILfloat), 1);
+	SIOread(io, &f, sizeof(ILfloat), 1);
 	BigFloat(&f);
 	return f;
 }
@@ -172,7 +177,7 @@ INLINE ILfloat GetBigFloat(SIO* io) {
 
 INLINE ILdouble GetBigDouble(SIO* io) {
 	ILdouble d;
-	io->read(io->handle, &d, sizeof(ILdouble), 1);
+	SIOread(io, &d, sizeof(ILdouble), 1);
 	BigDouble(&d);
 	return d;
 }

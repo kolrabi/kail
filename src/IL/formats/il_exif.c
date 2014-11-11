@@ -182,15 +182,15 @@ ILboolean iExifSave(ILimage *Image) {
   ILushort  Version       = 42;
   ILuint    IFD0Offset    = 8;
   ILushort  IFD0Count     = 0;
-  ILuint    IFD0DirSize   = 2 + 4, IFD0DataSize     = 0;
+  ILuint    IFD0DirSize   = 2 + 4; // , IFD0DataSize     = 0;
   ILushort  ExifCount     = 0;
   ILuint    ExifDirSize   = 0, ExifDataSize     = 0;
   ILushort  GPSCount      = 0;
   ILuint    GPSDirSize    = 0, GPSDataSize      = 0;
   ILushort  InteropCount  = 0;
-  ILuint    InteropDirSize = 0, InteropDataSize  = 0;
-  ILmeta *  Meta          = Image->MetaTags;
-  ILushort Num, TmpShort;
+  ILuint    InteropDirSize = 0; // , InteropDataSize  = 0;
+  ILmeta *  Meta;
+  ILushort  Num, TmpShort;
 
   ILuint    DataOffset = 0, TmpUint;
 
@@ -200,7 +200,7 @@ ILboolean iExifSave(ILimage *Image) {
     if (Meta->IFD == IL_TIFF_IFD0) {
       IFD0Count ++;
       IFD0DirSize += 12;
-      if (Meta->Size > 4) IFD0DataSize += Meta->Size;
+      // if (Meta->Size > 4) IFD0DataSize += Meta->Size;
     } else if (Meta->IFD == IL_TIFF_IFD_EXIF) {
       ExifCount ++;
       ExifDirSize += 12;
@@ -212,7 +212,7 @@ ILboolean iExifSave(ILimage *Image) {
     } else if (Meta->IFD == IL_TIFF_IFD_INTEROP) {
       InteropCount ++;
       InteropDirSize += 12;
-      if (Meta->Size > 4) InteropDataSize += Meta->Size;
+      // if (Meta->Size > 4) InteropDataSize += Meta->Size;
     }
     Meta = Meta->Next;
   }
@@ -253,25 +253,25 @@ ILboolean iExifSave(ILimage *Image) {
   }
 
   if (ExifCount > 0) {
-    TmpShort = IL_TIFF_IFD_EXIF;    SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_TIFF_IFD_EXIF;  SIOwrite(io, &TmpShort, 2, 1);
     TmpShort = IL_EXIF_TYPE_IFD;  SIOwrite(io, &TmpShort, 2, 1);
-    TmpUint  = 1;                   SIOwrite(io, &TmpUint, 4, 1);
-    TmpUint  = DataOffset;      SIOwrite(io, &TmpUint, 4, 1);
+    TmpUint  = 1;                 SIOwrite(io, &TmpUint, 4, 1);
+    TmpUint  = DataOffset;        SIOwrite(io, &TmpUint, 4, 1);
   }
 
   if (GPSCount > 0) {
-    TmpShort = IL_TIFF_IFD_GPS;     SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_TIFF_IFD_GPS;   SIOwrite(io, &TmpShort, 2, 1);
     TmpShort = IL_EXIF_TYPE_IFD;  SIOwrite(io, &TmpShort, 2, 1);
-    TmpUint  = 1;                   SIOwrite(io, &TmpUint, 4, 1);
+    TmpUint  = 1;                 SIOwrite(io, &TmpUint, 4, 1);
     TmpUint  = DataOffset + ExifDataSize + ExifDirSize;   SIOwrite(io, &TmpUint, 4, 1);
   }
 
   if (InteropCount) {
-    TmpShort = IL_TIFF_IFD_INTEROP;     SIOwrite(io, &TmpShort, 2, 1);
-    TmpShort = IL_EXIF_TYPE_IFD;      SIOwrite(io, &TmpShort, 2, 1);
-    TmpUint  = 1;                       SIOwrite(io, &TmpUint, 4, 1);
+    TmpShort = IL_TIFF_IFD_INTEROP;       SIOwrite(io, &TmpShort, 2, 1);
+    TmpShort = IL_EXIF_TYPE_IFD;          SIOwrite(io, &TmpShort, 2, 1);
+    TmpUint  = 1;                         SIOwrite(io, &TmpUint, 4, 1);
     TmpUint  = DataOffset + ExifDataSize + ExifDirSize + 
-               GPSDataSize + GPSDirSize;   SIOwrite(io, &TmpUint, 4, 1);
+               GPSDataSize + GPSDirSize;  SIOwrite(io, &TmpUint, 4, 1);
   }
   TmpUint  = 0; SIOwrite(io, &TmpUint, 4, 1);
 

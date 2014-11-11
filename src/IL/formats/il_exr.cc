@@ -72,7 +72,7 @@ static ILboolean iCheckExr(EXRHEAD *Header) {
 
 
 // Nothing to do here in the constructor.
-ilIStream::ilIStream(SIO *io) : Imf::IStream("N/A"), io(io) {
+ilIStream::ilIStream(SIO *_io) : Imf::IStream("N/A"), io(_io) {
 }
 
 bool ilIStream::read(char c[], int n) {
@@ -171,11 +171,11 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 }
 
 // Nothing to do here in the constructor.
-ilOStream::ilOStream(SIO *io) : Imf::OStream("N/A"), io(io) {
+ilOStream::ilOStream(SIO *_io) : Imf::OStream("N/A"), io(_io) {
 }
 
 void ilOStream::write(const char c[], int n) {
-	if (SIOwrite(this->io, c, 1, n) != n)
+	if (SIOwrite(this->io, c, 1, n) != (ILuint)n)
 		throw std::length_error("SIOwrite() failed"); // TODO: create own exception?
 }
 

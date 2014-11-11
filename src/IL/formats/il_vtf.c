@@ -611,7 +611,7 @@ ILboolean VtfInitMipmaps(ILimage *BaseImage, VTFHEAD *Header)
 // Internal function used to save the Vtf.
 static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	ILimage	*TempImage = BaseImage;
-	ILubyte	*TempData, *CompData;
+	ILubyte	*TempData;
 	ILuint	Format, i, CompSize;
 	ILenum	Compression;
 	SIO *io = &BaseImage->io;
@@ -740,6 +740,8 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 			return IL_FALSE;
 	}
 	else {  // Do DXT compression here and write.
+		ILubyte *CompData;
+		
 		// We have to find out how much we are writing first.
 		CompSize = ilGetDXTCData(NULL, 0, Compression);
 		if (CompSize == 0) {

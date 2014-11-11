@@ -440,7 +440,6 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   char  *AuthComment  = iGetString(image, IL_META_USER_COMMENT);
   ILboolean Compress;
   ILuint    RleLen;
-  ILubyte   *Rle;
   ILenum    Format;
   ILpal   * TempPal = NULL;
   ILimage   *TempImage = NULL;
@@ -591,7 +590,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   if (!Compress) {
     SIOwrite(io, TempData, sizeof(ILubyte), TempImage->SizeOfData);
   } else {
-    Rle = (ILubyte*)ialloc(TempImage->SizeOfData + TempImage->SizeOfData / 2 + 1);  // max
+    ILubyte *Rle = (ILubyte*)ialloc(TempImage->SizeOfData + TempImage->SizeOfData / 2 + 1);  // max
     if (Rle == NULL) {
       ifree(AuthName);
       ifree(AuthComment);

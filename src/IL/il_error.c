@@ -17,12 +17,11 @@
 //  If you go past the stack size for this, it cycles the errors, almost like
 //  a LRU algo.
 ILAPI void ILAPIENTRY iSetErrorReal(ILenum Error) {
-  ILuint i;
-
   IL_ERROR_STACK *ErrorStack = &iGetTLSData()->CurError;
 
   ErrorStack->ilErrorPlace++;
   if (ErrorStack->ilErrorPlace >= IL_ERROR_STACK_SIZE) {
+    ILuint i;
     iTrace("**** Too many errors, dropping oldest one...");
     for (i = 0; i < IL_ERROR_STACK_SIZE - 2; i++) {
       ErrorStack->ilErrorNum[i] = ErrorStack->ilErrorNum[i+1];

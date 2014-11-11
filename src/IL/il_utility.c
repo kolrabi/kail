@@ -157,7 +157,7 @@ ILAPI ILuint ILAPIENTRY iGetMaskFormat(ILenum Format, ILubyte channel)
 ILAPI ILboolean ILAPIENTRY iFormatHasAlpha(ILenum Format)
 {
 	// TODO: paletted images
-	return Format == IL_RGBA || Format == IL_BGRA || Format == IL_LUMINANCE_ALPHA;
+	return Format == IL_RGBA || Format == IL_BGRA || Format == IL_LUMINANCE_ALPHA || Format == IL_ALPHA;
 }
 
 

@@ -34,17 +34,17 @@ static void dumpMeta(ILuint image) {
   }
 
   count = ilGetIntegerv(IL_META_FSTOP, tmp);
-  fprintf(stderr, "FSTOP: %d: %d/%d\n", count, (ILuint)tmp[0], (ILuint)tmp[1]);
+  fprintf(stderr, "FSTOP: %d: %u/%u\n", count, (ILuint)tmp[0], (ILuint)tmp[1]);
 
   count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
   et = ilGetFloat(IL_META_EXPOSURE_TIME);
-  fprintf(stderr, "Exp:   %d: %d/%d: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
+  fprintf(stderr, "Exp:   %d: %u/%u: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
 
   ilSetFloat(IL_META_EXPOSURE_TIME, 1.0f/20.0f);
 
   count = ilGetIntegerv(IL_META_EXPOSURE_TIME, tmp);
   et = ilGetFloat(IL_META_EXPOSURE_TIME);
-  fprintf(stderr, "Exp:   %d: %d/%d: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
+  fprintf(stderr, "Exp:   %d: %u/%u: %f = 1/%f\n", count, (ILuint)tmp[0], (ILuint)tmp[1], et, 1.0/et);
 
 
   fprintf(stderr, "Make:  " IL_SFMT "\n", ilGetString(IL_META_MAKE));

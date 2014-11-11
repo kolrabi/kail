@@ -114,7 +114,8 @@ GifHandleExtensionSubBlock(
     case GifExt_Comment: {
       char tmp[257];
       memcpy(tmp, SubBlock, SubBlockLength);
-      tmp[SubBlockLength] = 0;
+      // tmp[SubBlockLength] = 0;
+      // TODO: use them somehow (metadata?)
       return IL_TRUE;
     }
 

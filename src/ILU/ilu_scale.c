@@ -155,11 +155,8 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
 
 ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter)
 {
-  ILuint    x1, x2;
-  ILuint    NewX1, NewX2, NewX3, x, c;
-  ILdouble  ScaleX, t1, t2, f;
-  ILushort  *ShortPtr, *SShortPtr;
-  ILuint    *IntPtr, *SIntPtr;
+  ILuint    NewX1, NewX2, x, c;
+  ILdouble  ScaleX;
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -168,58 +165,28 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filte
 
   ScaleX = (ILdouble)Width / Image->Width;
 
-  ShortPtr = (ILushort*)Image->Data;
-  SShortPtr = (ILushort*)Scaled->Data;
-  IntPtr = (ILuint*)Image->Data;
-  SIntPtr = (ILuint*)Scaled->Data;
-
   if (Filter == ILU_NEAREST) {
-    switch (Image->Bpc)
-    {
-      case 1:
-        for (x = 0; x < Width; x++) {
-          NewX1 = x * Scaled->Bpp;
-          NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
-          for (c = 0; c < Scaled->Bpp; c++) {
-            Scaled->Data[NewX1 + c] = Image->Data[NewX2 + c];
-          }
-        }
-        break;
-      case 2:
-        for (x = 0; x < Width; x++) {
-          NewX1 = x * Scaled->Bpp;
-          NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
-          for (c = 0; c < Scaled->Bpp; c++) {
-            SShortPtr[NewX1 + c] = ShortPtr[NewX2 + c];
-          }
-        }
-        break;
-      case 4:
-        for (x = 0; x < Width; x++) {
-          NewX1 = x * Scaled->Bpp;
-          NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
-          for (c = 0; c < Scaled->Bpp; c++) {
-            SIntPtr[NewX1 + c] = IntPtr[NewX2 + c];
-          }
-        }
-        break;
+    for (x = 0; x < Width; x++) {
+      NewX1 = x * Scaled->Bpp * Scaled->Bpc;
+      NewX2 = (ILuint)(x / ScaleX) * Image->Bpp * Image->Bpc;
+      memcpy(Scaled->Data + NewX1, Image->Data + NewX2, Scaled->Bpp * Scaled->Bpc);
     }
-  }
-  else {  // IL_LINEAR or IL_BILINEAR
+  } else {  // IL_LINEAR or IL_BILINEAR
+    ILuint NewX3;
     switch (Image->Bpc)
     {
       case 1:
         NewX3 = 0;
         for (x = 0; x < Width; x++) {
-          t1 = x / (ILdouble)Width;
-          t2 = t1 * Width - (ILuint)(t1 * Width);
-          f = (1.0 - cos(t2 * IL_PI)) * .5;
+          ILdouble t1 = x / (ILdouble)Width;
+          ILdouble t2 = t1 * Width - (ILuint)(t1 * Width);
+          ILdouble f = (1.0 - cos(t2 * IL_PI)) * .5;
           NewX1 = ((ILuint)(t1 * Width / ScaleX)) * Image->Bpp;
           NewX2 = ((ILuint)(t1 * Width / ScaleX) + 1) * Image->Bpp;
 
           for (c = 0; c < Scaled->Bpp; c++) {
-            x1 = Image->Data[NewX1 + c];
-            x2 = Image->Data[NewX2 + c];
+            ILubyte x1 = Image->Data[NewX1 + c];
+            ILubyte x2 = Image->Data[NewX2 + c];
 
             Scaled->Data[NewX3 + c] = (ILubyte)(x1 * (1.0 - f) + x2 * f);
           }
@@ -230,17 +197,17 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filte
       case 2:
         NewX3 = 0;
         for (x = 0; x < Width; x++) {
-          t1 = x / (ILdouble)Width;
-          t2 = t1 * Width - (ILuint)(t1 * Width);
-          f = (1.0 - cos(t2 * IL_PI)) * .5;
+          ILdouble t1 = x / (ILdouble)Width;
+          ILdouble t2 = t1 * Width - (ILuint)(t1 * Width);
+          ILdouble f = (1.0 - cos(t2 * IL_PI)) * .5;
           NewX1 = ((ILuint)(t1 * Width / ScaleX)) * Image->Bpp;
           NewX2 = ((ILuint)(t1 * Width / ScaleX) + 1) * Image->Bpp;
 
           for (c = 0; c < Scaled->Bpp; c++) {
-            x1 = ShortPtr[NewX1 + c];
-            x2 = ShortPtr[NewX2 + c];
+            ILushort x1 = iGetImageDataUShort(Image)[NewX1 + c];
+            ILushort x2 = iGetImageDataUShort(Image)[NewX2 + c];
 
-            SShortPtr[NewX3 + c] = (ILushort)(x1 * (1.0 - f) + x2 * f);
+            iGetImageDataUShort(Scaled)[NewX3 + c] = (ILushort)(x1 * (1.0 - f) + x2 * f);
           }
 
           NewX3 += Scaled->Bpp;
@@ -249,22 +216,23 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filte
       case 4:
         NewX3 = 0;
         for (x = 0; x < Width; x++) {
-          t1 = x / (ILdouble)Width;
-          t2 = t1 * Width - (ILuint)(t1 * Width);
-          f = (1.0 - cos(t2 * IL_PI)) * .5;
+          ILdouble t1 = x / (ILdouble)Width;
+          ILdouble t2 = t1 * Width - (ILuint)(t1 * Width);
+          ILdouble f = (1.0 - cos(t2 * IL_PI)) * .5;
           NewX1 = ((ILuint)(t1 * Width / ScaleX)) * Image->Bpp;
           NewX2 = ((ILuint)(t1 * Width / ScaleX) + 1) * Image->Bpp;
 
           for (c = 0; c < Scaled->Bpp; c++) {
-            x1 = IntPtr[NewX1 + c];
-            x2 = IntPtr[NewX2 + c];
+            ILuint x1 = iGetImageDataUInt(Image)[NewX1 + c];
+            ILuint x2 = iGetImageDataUInt(Image)[NewX2 + c];
 
-            SIntPtr[NewX3 + c] = (ILuint)(x1 * (1.0 - f) + x2 * f);
+            iGetImageDataUInt(Scaled)[NewX3 + c] = (ILuint)(x1 * (1.0 - f) + x2 * f);
           }
 
           NewX3 += Scaled->Bpp;
         }
         break;
+        // FIXME: ILfloat, ILdouble
     }
   }
 

@@ -40,8 +40,6 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 	ILuint		NewX1, NewX2, NewY1, NewY2, NewZ1, NewZ2, x, y, z, c;
 	ILdouble	ScaleX, ScaleY, ScaleZ;
 	ILuint		ImgBps, SclBps, ImgPlane, SclPlane;
-	ILushort	*ShortPtr, *SShortPtr;
-	ILuint		*IntPtr, *SIntPtr;
 
 	ScaleX = (ILfloat)Width / Image->Width;
 	ScaleY = (ILfloat)Height / Image->Height;
@@ -74,8 +72,6 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 			break;
 
 		case 2:
-			ShortPtr = (ILushort*)Image->Data;
-			SShortPtr = (ILushort*)Scaled->Data;
 			for (z = 0; z < Depth; z++) {
 				NewZ1 = z * SclPlane;
 				NewZ2 = (ILuint)(z / ScaleZ) * ImgPlane;
@@ -86,8 +82,8 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 						NewX1 = x * Scaled->Bpp;
 						NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							SShortPtr[NewZ1 + NewY1 + NewX1 + c] =
-								ShortPtr[NewZ2 + NewY2 + NewX2 + c];
+							iGetImageDataUShort(Scaled)[NewZ1 + NewY1 + NewX1 + c] =
+								iGetImageDataUShort(Image)[NewZ2 + NewY2 + NewX2 + c];
 						}
 					}
 				}
@@ -95,8 +91,6 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 			break;
 
 		case 4:
-			IntPtr = (ILuint*)Image->Data;
-			SIntPtr = (ILuint*)Scaled->Data;
 			for (z = 0; z < Depth; z++) {
 				NewZ1 = z * SclPlane;
 				NewZ2 = (ILuint)(z / ScaleZ) * ImgPlane;
@@ -107,8 +101,8 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 						NewX1 = x * Scaled->Bpp;
 						NewX2 = (ILuint)(x / ScaleX) * Image->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							SIntPtr[NewZ1 + NewY1 + NewX1 + c] =
-								IntPtr[NewZ2 + NewY2 + NewX2 + c];
+							iGetImageDataUInt(Scaled)[NewZ1 + NewY1 + NewX1 + c] =
+								iGetImageDataUInt(Image)[NewZ2 + NewY2 + NewX2 + c];
 						}
 					}
 				}
@@ -125,8 +119,6 @@ ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 	ILuint		Size, NewX1, NewX2, NewY1, NewZ1, x, y, z, c;
 	ILdouble	ScaleX, ScaleY, ScaleZ, x1, x2, t1, t2, t4, f, ft;
 	ILuint		ImgBps, SclBps, ImgPlane, SclPlane;
-	ILushort	*ShortPtr, *SShortPtr;
-	ILuint		*IntPtr, *SIntPtr;
 
 	ScaleX = (ILfloat)Width / Image->Width;
 	ScaleY = (ILfloat)Height / Image->Height;
@@ -165,8 +157,6 @@ ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 			break;
 
 		case 2:
-			ShortPtr = (ILushort*)Image->Data;
-			SShortPtr = (ILushort*)Scaled->Data;
 			for (z = 0; z < Depth; z++) {
 				NewZ1 = (ILuint)(z / ScaleZ) * ImgPlane;
 				for (y = 0; y < Height; y++) {
@@ -182,9 +172,9 @@ ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 
 						Size = z * SclPlane + y * SclBps + x * Scaled->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							x1 = ShortPtr[NewZ1 + NewY1 + NewX1 + c];
-							x2 = ShortPtr[NewZ1 + NewY1 + NewX2 + c];
-							SShortPtr[Size + c] = (ILubyte)((1.0 - f) * x1 + f * x2);
+							x1 = iGetImageDataUShort(Image)[NewZ1 + NewY1 + NewX1 + c];
+							x2 = iGetImageDataUShort(Image)[NewZ1 + NewY1 + NewX2 + c];
+							iGetImageDataUShort(Scaled)[Size + c] = (ILubyte)((1.0 - f) * x1 + f * x2);
 						}
 					}
 				}
@@ -192,8 +182,6 @@ ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 			break;
 
 		case 4:
-			IntPtr = (ILuint*)Image->Data;
-			SIntPtr = (ILuint*)Scaled->Data;
 			for (z = 0; z < Depth; z++) {
 				NewZ1 = (ILuint)(z / ScaleZ) * ImgPlane;
 				for (y = 0; y < Height; y++) {
@@ -209,9 +197,9 @@ ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint
 
 						Size = z * SclPlane + y * SclBps + x * Scaled->Bpp;
 						for (c = 0; c < Scaled->Bpp; c++) {
-							x1 = IntPtr[NewZ1 + NewY1 + NewX1 + c];
-							x2 = IntPtr[NewZ1 + NewY1 + NewX2 + c];
-							SIntPtr[Size + c] = (ILubyte)((1.0 - f) * x1 + f * x2);
+							x1 = iGetImageDataUInt(Image)[NewZ1 + NewY1 + NewX1 + c];
+							x2 = iGetImageDataUInt(Image)[NewZ1 + NewY1 + NewX2 + c];
+							iGetImageDataUInt(Scaled)[Size + c] = (ILubyte)((1.0 - f) * x1 + f * x2);
 						}
 					}
 				}

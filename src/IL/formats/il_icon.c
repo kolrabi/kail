@@ -33,23 +33,6 @@
   #endif
 #endif
 
-typedef struct ICONDIR {
-  WORD reserved;
-  WORD iconType;
-  WORD iconCount;
-} ICONDIR;
-
-typedef struct ICONDIRENTRY {
-  BYTE width;
-  BYTE height;
-  BYTE colorsInPalette;
-  BYTE reserved;
-  WORD variant1;
-  WORD variant2;
-  DWORD dataSize;
-  DWORD dataOffset;
-} ICONDIRENTRY;
-
 #ifndef IL_NO_PNG
 static ILboolean iLoadIconPNG(SIO *io, ICOIMAGE *Icon);
 #endif
@@ -57,8 +40,8 @@ static ILboolean iLoadIconPNG(SIO *io, ICOIMAGE *Icon);
 // Internal function to get the header and check it.
 static ILboolean iIsValidIcon(SIO *io)
 {
-  ICONDIR dir;
-  ICONDIRENTRY entry;
+  ICODIR dir;
+  ICODIRENTRY entry;
 
   // Icons are difficult to detect, but it may suffice
   // We need at least one correct image header in the icon
@@ -68,20 +51,25 @@ static ILboolean iIsValidIcon(SIO *io)
   read += SIOread(io, &entry, 1, sizeof(entry));
   SIOseek(io, Start, IL_SEEK_SET);
 
-  if (read == sizeof(dir) + sizeof(entry)
-  &&  dir.reserved == 0
-  &&  (dir.iconType == 1 || dir.iconType == 2)
-  &&  dir.iconCount > 0
-  &&  (entry.reserved == 0 || entry.reserved == 0xff)
-  &&  entry.dataSize > 0 
-  //&&  entry.dataSize >= entry.width * entry.height
-  &&  entry.dataOffset >= (DWORD) read)
-  //&&  entry.dataSize + entry.dataOffset < fileSize // would disclude incomplete icons
-  {
-    return IL_TRUE;
-  } else {
+  if (read != sizeof(dir) + sizeof(entry))
     return IL_FALSE;
-  }
+
+  if (dir.Reserved != 0)
+    return IL_FALSE;
+
+  if (dir.Type != 1 && dir.Type != 2)
+    return IL_FALSE;
+
+  if (dir.Count == 0)
+    return IL_FALSE;
+
+  if (entry.Reserved != 0 && entry.Reserved != 0xFF)
+    return IL_FALSE;
+
+  if (entry.SizeOfData == 0 && entry.Offset < read)
+    return IL_FALSE;
+
+  return IL_TRUE;
 }
 
 // Internal function used to load the icon.
@@ -90,9 +78,9 @@ static ILboolean iLoadIconInternal(ILimage* image) {
   ICODIRENTRY *DirEntries = NULL;
   ICOIMAGE  *IconImages = NULL;
   ILimage   *Image = NULL;
-  ILint   i;
+  ILint     i;
   ILuint    Size, PadSize, ANDPadSize, j, k, l, m, x, w, CurAndByte; //, AndBytes;
-  ILuint Bps;
+  ILuint    Bps;
   ILboolean BaseCreated = IL_FALSE;
   ILubyte   PNGTest[3];
   SIO *io;
@@ -543,7 +531,7 @@ static ILboolean ico_readpng_get_image(struct IconData* data, ICOIMAGE *Icon) {
                &bit_depth, &data->ico_color_type, NULL, NULL, NULL);
 
   if (bit_depth < 8) {  // Expanded earlier for grayscale, now take care of palette and rgb
-    bit_depth = 8;
+    //bit_depth = 8;
     png_set_packing(data->ico_png_ptr);
   }
 

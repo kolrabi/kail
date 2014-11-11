@@ -161,7 +161,7 @@ iLoadBlp1(ILimage *TargetImage) {
   ILimage   *Image = TargetImage;
   ILboolean BaseCreated = IL_FALSE;
 #ifndef IL_NO_JPG
-  ILubyte   *JpegHeader, *JpegData;
+  ILubyte   *JpegHeader;
   ILuint    JpegHeaderSize;
 #endif//IL_NO_JPG
 
@@ -188,6 +188,8 @@ iLoadBlp1(ILimage *TargetImage) {
       }
 
       for (i = 0; i < 16; i++) {  // Possible maximum of 16 mipmaps
+        ILubyte *JpegData;
+        
         //@TODO: Check return value?
         SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);
 
@@ -298,7 +300,7 @@ iLoadBlp1(ILimage *TargetImage) {
             return IL_FALSE;
           }
           // Seek to the data and read it.
-          SIOseek(io, Header.MipOffsets[i], IL_SEEK_SET);           
+          SIOseek(io, Header.MipOffsets[0], IL_SEEK_SET);           
           if (SIOread(io, DataAndAlpha, Header.Width * Header.Height, 1) != 1) {
             ifree(DataAndAlpha);
             ifree(Palette);
@@ -393,7 +395,6 @@ iCheckBlp2(const BLP2HEAD *Header) {
 static ILboolean
 iLoadBlpInternal(ILimage *TargetImage) {
   BLP2HEAD  Header;
-  ILubyte   *CompData;
   ILimage   *Image = TargetImage;
   ILuint    Mip, j, x, y, CompSize, AlphaSize, AlphaOff;
   ILboolean BaseCreated = IL_FALSE;
@@ -569,6 +570,8 @@ iLoadBlpInternal(ILimage *TargetImage) {
 
     case BLP_DXTC:
       for (Mip = 0; Mip < 16; Mip++) {  // Possible maximum of 16 mipmaps
+        ILubyte   *CompData;
+        
         //@TODO: Other formats
         //if (Header.AlphaBits == 0)
         //  if (!iTexImage(Image, Header.Width, Header.Height, 1, 3, IL_RGB, IL_UNSIGNED_BYTE, NULL))

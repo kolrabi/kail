@@ -111,6 +111,10 @@ static ILimage * iGetImage(ILuint Image) {
     return NULL;
   }
 
+  if (Image == 0) {
+    return NULL;
+  }
+
   return ImageStack[Image];
 }
 
@@ -121,6 +125,7 @@ ILimage * iGetSelectedImage(const IL_IMAGE_SELECTION *CurSel) {
   if (CurSel == NULL) CurSel = iGetSelection();
 
   Image = iGetImage(CurSel->CurName);
+  if (Image == NULL) return NULL;
 
   for (i=0; i<CurSel->CurFrame; i++) {
     if (Image) Image = Image->Next;
@@ -321,13 +326,10 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
   Image->MetaTags = NULL;
 
   ifree(Image);
-  Image = NULL;
-
-  return;
 }
 
 
-ILboolean iIsValidPal(ILpal *Palette)
+ILAPI ILboolean ILAPIENTRY iIsValidPal(ILpal *Palette)
 {
   if (Palette == NULL)
     return IL_FALSE;
@@ -356,7 +358,6 @@ ILAPI void ILAPIENTRY iClosePalReal(ILpal *Palette)
     return;
   ifree(Palette->Palette);
   ifree(Palette);
-  return;
 }
 
 //! Sets the current mipmap level
@@ -578,8 +579,6 @@ static void* iRecalloc(void *Ptr, ILuint OldSize, ILuint NewSize)
       memcpy(Temp, Ptr, CopySize);
       ifree(Ptr);
     }
-
-    Ptr = Temp;
 
     if (OldSize < NewSize)
       imemclear((ILubyte*)Temp + OldSize, NewSize - OldSize);

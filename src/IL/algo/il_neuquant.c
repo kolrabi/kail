@@ -249,7 +249,6 @@ static ILuint NeuQuantContest(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
   ILuint i, bestpos, bestbiaspos;
   ILint  dist, biasdist, betafreq;
   ILint  bestd, bestbiasd;
-  NeuPixel *n;
   ILint  *p, *f;
 
   bestd       = 0x7FFFFFFF; // ~(((ILint) 1)<<31);
@@ -260,7 +259,7 @@ static ILuint NeuQuantContest(NeuQuantContext *ctx, ILint b, ILint g, ILint r)
   f           = ctx->freq;
 
   for (i=0; i<ctx->netsizethink; i++) {
-    n     = &ctx->network[i];
+    NeuPixel *n = &ctx->network[i];
     dist  = abs(n->b - b);
     dist += abs(n->g - g);
     dist += abs(n->r - r);

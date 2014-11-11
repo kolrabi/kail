@@ -136,6 +136,10 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat);
 ILboolean iFixImages(ILimage *Image, ILimage *BaseImage);
 ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile);
 
+ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
+ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
+ILboolean iConvR16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
+
 // Miscellaneous functions
 char*     iGetString(ILimage *Image, ILenum StringName);  // Internal version of ilGetString
 ILuint    iDuplicateImage(ILimage *Image);

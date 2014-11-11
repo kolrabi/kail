@@ -214,11 +214,7 @@ ILboolean iEnlargeCanvas(ILimage *Image, ILuint Width, ILuint Height, ILuint Dep
 }
 
 ILboolean iInvertAlpha(ILimage *Image) {
-  ILuint    i, *IntPtr, NumPix;
-  ILubyte   *Data;
-  ILushort  *ShortPtr;
-  ILfloat   *FltPtr;
-  ILdouble  *DblPtr;
+  ILuint    i, NumPix;
   ILubyte   Bpp;
 
   if (Image == NULL) {
@@ -233,42 +229,36 @@ ILboolean iInvertAlpha(ILimage *Image) {
       return IL_FALSE;
   }
 
-  Data   = Image->Data;
   Bpp    = Image->Bpp;
   NumPix = Image->Width * Image->Height * Image->Depth;
 
   switch (Image->Type) {
     case IL_BYTE:
     case IL_UNSIGNED_BYTE:
-      Data += (Bpp - 1);
-      for( i = Bpp - 1; i < NumPix; i++, Data += Bpp )
-        *(Data) = ~*(Data);
+      for( i = Bpp - 1; i < NumPix * Bpp; i+=Bpp )
+        iGetImageDataUByte(Image)[i] = IL_MAX_UNSIGNED_BYTE - iGetImageDataUByte(Image)[i];
       break;
 
     case IL_SHORT:
     case IL_UNSIGNED_SHORT:
-      ShortPtr = ((ILushort*)Data) + Bpp-1; 
-      for (i = Bpp - 1; i < NumPix; i++, ShortPtr += Bpp)
-        *(ShortPtr) = ~*(ShortPtr);
+      for( i = Bpp - 1; i < NumPix * Bpp; i+=Bpp )
+        iGetImageDataUShort(Image)[i] = IL_MAX_UNSIGNED_SHORT - iGetImageDataUShort(Image)[i];
       break;
 
     case IL_INT:
     case IL_UNSIGNED_INT:
-      IntPtr = ((ILuint*)Data) + Bpp-1;
-      for (i = Bpp - 1; i < NumPix; i++, IntPtr += Bpp)
-        *(IntPtr) = ~*(IntPtr);
+      for( i = Bpp - 1; i < NumPix * Bpp; i+=Bpp )
+        iGetImageDataUInt(Image)[i] = IL_MAX_UNSIGNED_INT - iGetImageDataUInt(Image)[i];
       break;
 
     case IL_FLOAT:
-      FltPtr = ((ILfloat*)Data) + Bpp - 1;
-      for (i = Bpp - 1; i < NumPix; i++, FltPtr += Bpp)
-        *(FltPtr) = 1.0f - *(FltPtr);
+      for( i = Bpp - 1; i < NumPix * Bpp; i+=Bpp )
+        iGetImageDataFloat(Image)[i] = 1.0f - iGetImageDataFloat(Image)[i];
       break;
 
     case IL_DOUBLE:
-      DblPtr = ((ILdouble*)Data) + Bpp - 1;
-      for (i = Bpp - 1; i < NumPix; i++, DblPtr += Bpp)
-        *(DblPtr) = 1.0f - *(DblPtr);
+      for( i = Bpp - 1; i < NumPix * Bpp; i+=Bpp )
+        iGetImageDataDouble(Image)[i] = 1.0 - iGetImageDataDouble(Image)[i];
       break;
   }
 
@@ -277,9 +267,8 @@ ILboolean iInvertAlpha(ILimage *Image) {
 
 
 ILboolean iNegative(ILimage *Image) {
-  ILuint    i, j, c, *IntPtr, NumPix, Bpp;
-  ILubyte   *Data;
-  ILushort  *ShortPtr;
+  ILuint    i, j, NumPix, Bpp;
+  // ILubyte   *Data;
   ILubyte   *RegionMask;
 
   if (Image == NULL) {
@@ -288,15 +277,19 @@ ILboolean iNegative(ILimage *Image) {
   }
 
   if (Image->Format == IL_COLOUR_INDEX) {
+    /*
     if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE) {
       iSetError(ILU_ILLEGAL_OPERATION);
       return IL_FALSE;
     }
     Data = Image->Pal.Palette;
     i = Image->Pal.PalSize;
-  }
-  else {
-    Data = Image->Data;
+    */
+    // FIXME
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  } else {
+    // Data = Image->Data;
     i = Image->SizeOfData;
   }
 
@@ -308,59 +301,87 @@ ILboolean iNegative(ILimage *Image) {
   Bpp = Image->Bpp;
 
   if (RegionMask) {
-    switch (Image->Bpc)
+    ILuint c;
+    switch (Image->Type)
     {
-      case 1:
-        for (j = 0, i = 0; j < NumPix; j += Bpp, i++, Data += Bpp) {
+      case IL_BYTE:
+      case IL_UNSIGNED_BYTE:
+        for (j = 0, i = 0; j < NumPix; j += Bpp, i++) {
           for (c = 0; c < Bpp; c++) {
             if (RegionMask[i])
-              *(Data+c) = ~*(Data+c);
+              iGetImageDataUByte(Image)[j+c] = IL_MAX_UNSIGNED_BYTE - iGetImageDataUByte(Image)[j+c];
           }
         }
         break;
 
-      case 2:
-        ShortPtr = (ILushort*)Data;
-        for (j = 0, i = 0; j < NumPix; j += Bpp, i++, ShortPtr += Bpp) {
+      case IL_SHORT:
+      case IL_UNSIGNED_SHORT:
+        for (j = 0, i = 0; j < NumPix; j += Bpp, i++) {
           for (c = 0; c < Bpp; c++) {
             if (RegionMask[i])
-              *(ShortPtr+c) = ~*(ShortPtr+c);
+              iGetImageDataUShort(Image)[j+c] = IL_MAX_UNSIGNED_SHORT - iGetImageDataUShort(Image)[j+c];
           }
         }
         break;
 
-      case 4:
-        IntPtr = (ILuint*)Data;
-        for (j = 0, i = 0; j < NumPix; j += Bpp, i++, IntPtr += Bpp) {
+      case IL_INT:
+      case IL_UNSIGNED_INT:
+        for (j = 0, i = 0; j < NumPix; j += Bpp, i++) {
           for (c = 0; c < Bpp; c++) {
             if (RegionMask[i])
-              *(IntPtr+c) = ~*(IntPtr+c);
+              iGetImageDataUInt(Image)[j+c] = IL_MAX_UNSIGNED_INT - iGetImageDataUInt(Image)[j+c];
+          }
+        }
+        break;
+
+      case IL_FLOAT:
+        for (j = 0, i = 0; j < NumPix; j += Bpp, i++) {
+          for (c = 0; c < Bpp; c++) {
+            if (RegionMask[i])
+              iGetImageDataFloat(Image)[j+c] = 1.0f - iGetImageDataFloat(Image)[j+c];
+          }
+        }
+        break;
+
+      case IL_DOUBLE:
+        for (j = 0, i = 0; j < NumPix; j += Bpp, i++) {
+          for (c = 0; c < Bpp; c++) {
+            if (RegionMask[i])
+              iGetImageDataDouble(Image)[j+c] = 1.0f - iGetImageDataDouble(Image)[j+c];
           }
         }
         break;
     }
   }
   else {
-    switch (Image->Bpc)
+    switch (Image->Type)
     {
-      case 1:
-        for (j = 0; j < NumPix; j++, Data++) {
-          *(Data) = ~*(Data);
-        }
+      case IL_BYTE:
+      case IL_UNSIGNED_BYTE:
+        for (j = 0, i = 0; j < NumPix; j ++)
+          iGetImageDataUByte(Image)[j] = IL_MAX_UNSIGNED_BYTE - iGetImageDataUByte(Image)[j];
         break;
 
-      case 2:
-        ShortPtr = (ILushort*)Data;
-        for (j = 0; j < NumPix; j++, ShortPtr++) {
-          *(ShortPtr) = ~*(ShortPtr);
-        }
+      case IL_SHORT:
+      case IL_UNSIGNED_SHORT:
+        for (j = 0, i = 0; j < NumPix; j ++)
+          iGetImageDataUShort(Image)[j] = IL_MAX_UNSIGNED_SHORT - iGetImageDataUShort(Image)[j];
         break;
 
-      case 4:
-        IntPtr = (ILuint*)Data;
-        for (j = 0; j < NumPix; j++, IntPtr++) {
-          *(IntPtr) = ~*(IntPtr);
-        }
+      case IL_INT:
+      case IL_UNSIGNED_INT:
+        for (j = 0, i = 0; j < NumPix; j ++)
+          iGetImageDataUInt(Image)[j] = IL_MAX_UNSIGNED_INT - iGetImageDataUInt(Image)[j];
+        break;
+
+      case IL_FLOAT:
+        for (j = 0, i = 0; j < NumPix; j ++)
+          iGetImageDataFloat(Image)[j] = 1.0f - iGetImageDataFloat(Image)[j];
+        break;
+
+      case IL_DOUBLE:
+        for (j = 0, i = 0; j < NumPix; j ++)
+          iGetImageDataDouble(Image)[j] = 1.0f - iGetImageDataDouble(Image)[j];
         break;
     }
   }
@@ -375,9 +396,8 @@ ILboolean iNegative(ILimage *Image) {
 //  http://www-classic.be.com/aboutbe/benewsletter/volume_III/Issue2.html#Insight
 //  Hope they don't mind too much. =]
 ILboolean iWave(ILimage *Image, ILfloat Angle) {
-  ILint Delta;
   ILuint  y;
-  ILubyte *DataPtr, *TempBuff;
+  ILubyte *TempBuff;
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -390,7 +410,8 @@ ILboolean iWave(ILimage *Image, ILfloat Angle) {
   }
 
   for (y = 0; y < Image->Height; y++) {
-    Delta = (ILint)
+    ILubyte *DataPtr;
+    ILint Delta = (ILint)
       (30 * sin((10 * Angle +     y) * IL_DEGCONV) +
        15 * sin(( 7 * Angle + 3 * y) * IL_DEGCONV));
 
@@ -640,15 +661,15 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
   Size = Original->Width * Original->Height * Original->Depth * Bpp;
 
   for (i = 0; i<Size; i++) {
-    Sum1 += ((ILfloat*)(Image1->Data))[i] * ((ILfloat*)(Image1->Data))[i];
-    Sum2 += ((ILfloat*)(Image2->Data))[i] * ((ILfloat*)(Image2->Data))[i];
+    Sum1 += iGetImageDataFloat(Image1)[i] * iGetImageDataFloat(Image1)[i];
+    Sum2 += iGetImageDataFloat(Image2)[i] * iGetImageDataFloat(Image2)[i];
   }
 
   Sum1 = (ILfloat)(sqrt(Sum1));
   Sum2 = (ILfloat)(sqrt(Sum2));
 
   for (i = 0; i<Size; i++) {
-    Result += ((ILfloat*)Image1->Data)[i]/Sum1 * ((ILfloat*)Image2->Data)[i]/Sum2;
+    Result += iGetImageDataFloat(Image1)[i]/Sum1 * iGetImageDataFloat(Image2)[i]/Sum2;
   }
 
   Result = (ILfloat)(sqrt(Result));
@@ -662,8 +683,6 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
 
 ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blue, ILfloat Tolerance, const ILubyte *ClearCol) {
   ILint TolVal;
-  ILint Distance, Dist1, Dist2, Dist3;
-  ILuint  i; //, NumPix;
 
   if (Image == NULL) {
     iSetError(ILU_ILLEGAL_OPERATION);
@@ -679,6 +698,8 @@ ILboolean iReplaceColour(ILimage *Image, ILubyte Red, ILubyte Green, ILubyte Blu
     //@TODO what is this?
   }
   else {
+    ILint Distance, Dist1, Dist2, Dist3;
+    ILuint  i;
     switch (Image->Format)
     {
       case IL_RGB:
@@ -733,9 +754,6 @@ ILboolean iEqualize(ILimage *Image) {
   ILuint      j = 0; // index variable
   ILuint      Sum = 0;
   ILuint      NumPixels, Bpp;
-  ILint       Intensity;
-  ILfloat     Scale;
-  ILint       IntensityNew;
   ILimage *   LumImage;
   ILuint      NewColour[4];
   ILubyte   * BytePtr;
@@ -787,6 +805,10 @@ ILboolean iEqualize(ILimage *Image) {
 
   // Transform image using new SumHistm as a LUT
   for (i = 0; i < NumPixels; i++) {
+    ILint       Intensity;
+    ILint       IntensityNew;
+    ILfloat     Scale;
+
     Intensity = LumImage->Data[i];
 
     // Look up the normalized intensity

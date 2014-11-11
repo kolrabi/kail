@@ -7,9 +7,19 @@ PROJECT                 ( KaIL C CXX )
 
 INCLUDE                 ( CTest )
 
+OPTION                  ( TEST_COVERAGE          "Test code coverage" FALSE )
+
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
   SET                   ( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
   SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror" )
+
+  IF                      ( TEST_COVERAGE )
+    MESSAGE               ( "Enabling code coverage testing" )
+    SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage" )
+    SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" )
+    SET                   ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage ")
+    SET                   ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage " )
+  ENDIF                   (  )
 
   IF                    ( MINGW )
     SET                   ( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} -static-libgcc -static-libstdc++" )
@@ -32,11 +42,21 @@ INCLUDE                 ( CheckCCompilerFlag )
 INCLUDE                 ( TestBigEndian )
 
 IF                      ("${CMAKE_C_COMPILER_ID}" MATCHES "Clang")
-  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Weverything -Wextra -Wno-documentation-unknown-command -Wno-cast-align" )
+  SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -pedantic -Weverything -Wextra -Wno-documentation-unknown-command -Werror" )
   IF ( NOT WIN32 )
     SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=undefined,address -fno-omit-frame-pointer" )
   ENDIF ()
   SET                   ( RESTRICT_KEYWORD TRUE )
+  IF                      ( TEST_COVERAGE )
+    MESSAGE               ( "Enabling code coverage testing" )
+
+    FIND_LIBRARY          ( PROFILE_RT_LIB NAMES libprofile_rt.a )
+    MESSAGE ("Profile lib: ${PROFILE_RT_LIB}")
+    SET                   ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage" )
+    SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage" )
+    SET                   ( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -fprofile-arcs -ftest-coverage ")
+    SET                   ( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -fprofile-arcs -ftest-coverage " )
+  ENDIF                   ( )
 ENDIF()
 
 # HACK: prefer static 
@@ -171,6 +191,9 @@ OPTION                  ( IL_NO_WDP              "Disable support for WDP format
 OPTION                  ( IL_NO_XPM              "Disable support for XPM format" FALSE )
 
 SET                     ( IL_NO_SKIA             TRUE )
+
+SET                     ( ILU_STATIC ${IL_STATIC_LIB} )
+SET                     ( ILUT_STATIC ${IL_STATIC_LIB} )
 
 IF                      ( NOT IL_NO_JPG )
   IF                    ( MINGW )

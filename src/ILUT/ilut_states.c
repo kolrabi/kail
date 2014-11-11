@@ -100,13 +100,7 @@ void ilutDefaultStates() {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
 
-  ilutStates[ilutCurrentPos].ilutUsePalettes = IL_FALSE;
-  ilutStates[ilutCurrentPos].ilutForceIntegerFormat = IL_FALSE;
-  ilutStates[ilutCurrentPos].ilutOglConv = IL_FALSE;  // IL_TRUE ?
-  ilutStates[ilutCurrentPos].ilutDXTCFormat = 0;
-  ilutStates[ilutCurrentPos].ilutUseS3TC = IL_FALSE;
-  ilutStates[ilutCurrentPos].ilutGenS3TC = IL_FALSE;
-  ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget = IL_FALSE;
+  ilutStates[ilutCurrentPos].Flags = 0;
   ilutStates[ilutCurrentPos].MaxTexW = 256;
   ilutStates[ilutCurrentPos].MaxTexH = 256;
   ilutStates[ilutCurrentPos].MaxTexD = 1;
@@ -129,12 +123,10 @@ void ilutDefaultStates() {
 ILconst_string ILAPIENTRY ilutGetString(ILenum StringName) {
   switch (StringName)
   {
-    case ILUT_VENDOR:
-      return _ilutVendor;
+    case ILUT_VENDOR:      return _ilutVendor;
     //changed 2003-09-04
-    case ILUT_VERSION_NUM:
-      return _ilutVersion;
-    default:
+    case ILUT_VERSION_NUM: return _ilutVersion;
+    default:         
       iSetError(ILUT_INVALID_PARAM);
       break;
   }
@@ -155,35 +147,20 @@ ILboolean ILAPIENTRY ilutDisable(ILenum Mode) {
   return Result;
 }
 
+#define SETFLAG(x, b, v) (x) = ((x) & (~(ILuint)(b))) | ((v)?(b):0)
+#define GETFLAG(x, b)    (!!((x) & (ILuint)(b)))
 
 ILboolean ilutAble(ILenum Mode, ILboolean Flag) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
+
   switch (Mode) {
-    case ILUT_PALETTE_MODE:
-      ilutStates[ilutCurrentPos].ilutUsePalettes = Flag;
-      break;
-
-    case ILUT_FORCE_INTEGER_FORMAT:
-      ilutStates[ilutCurrentPos].ilutForceIntegerFormat = Flag;
-      break;
-
-    case ILUT_OPENGL_CONV:
-      ilutStates[ilutCurrentPos].ilutOglConv = Flag;
-      break;
-
-    case ILUT_GL_USE_S3TC:
-      ilutStates[ilutCurrentPos].ilutUseS3TC = Flag;
-      break;
-
-    case ILUT_GL_GEN_S3TC:
-      ilutStates[ilutCurrentPos].ilutGenS3TC = Flag;
-      break;
-
-    case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget = Flag;
-      break;
-
+    case ILUT_PALETTE_MODE:                 SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_USE_PALETTES, Flag);      break;
+    case ILUT_FORCE_INTEGER_FORMAT:         SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_FORCE_INT_FORMAT, Flag);  break;
+    case ILUT_OPENGL_CONV:                  SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_OGL_CONV, Flag);  break;
+    case ILUT_GL_USE_S3TC:                  SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_USE_S3TC, Flag);  break;
+    case ILUT_GL_GEN_S3TC:                  SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_GEN_S3TC, Flag);  break;
+    case ILUT_GL_AUTODETECT_TEXTURE_TARGET: SETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_AUTODETECT_TARGET, Flag);  break;
 
     default:
       iSetError(ILUT_INVALID_ENUM);
@@ -199,24 +176,12 @@ ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode) {
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
 
   switch (Mode) {
-    case ILUT_PALETTE_MODE:
-      return ilutStates[ilutCurrentPos].ilutUsePalettes;
-
-    case ILUT_FORCE_INTEGER_FORMAT:
-      return ilutStates[ilutCurrentPos].ilutForceIntegerFormat;
-
-    case ILUT_OPENGL_CONV:
-      return ilutStates[ilutCurrentPos].ilutOglConv;
-
-    case ILUT_GL_USE_S3TC:
-      return ilutStates[ilutCurrentPos].ilutUseS3TC;
-
-    case ILUT_GL_GEN_S3TC:
-      return ilutStates[ilutCurrentPos].ilutGenS3TC;
-
-    case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      return ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget;
-
+    case ILUT_PALETTE_MODE:                 return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_USE_PALETTES);
+    case ILUT_FORCE_INTEGER_FORMAT:         return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_FORCE_INT_FORMAT);
+    case ILUT_OPENGL_CONV:                  return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_OGL_CONV);
+    case ILUT_GL_USE_S3TC:                  return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_USE_S3TC);
+    case ILUT_GL_GEN_S3TC:                  return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_GEN_S3TC);
+    case ILUT_GL_AUTODETECT_TEXTURE_TARGET: return GETFLAG(ilutStates[ilutCurrentPos].Flags, ILUT_STATE_FLAG_AUTODETECT_TARGET);
 
     default:
       iSetError(ILUT_INVALID_ENUM);
@@ -232,38 +197,7 @@ ILboolean ILAPIENTRY ilutIsDisabled(ILenum Mode) {
 
 
 void ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param) {
-  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
-  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
-
-  switch (Mode)   {
-    case ILUT_PALETTE_MODE:
-      *Param = ilutStates[ilutCurrentPos].ilutUsePalettes;
-      break;
-
-    case ILUT_FORCE_INTEGER_FORMAT:
-      *Param = ilutStates[ilutCurrentPos].ilutForceIntegerFormat;
-      break;
-
-    case ILUT_OPENGL_CONV:
-      *Param = ilutStates[ilutCurrentPos].ilutOglConv;
-      break;
-
-    case ILUT_GL_USE_S3TC:
-      *Param = ilutStates[ilutCurrentPos].ilutUseS3TC;
-      break;
-
-    case ILUT_GL_GEN_S3TC:
-      *Param = ilutStates[ilutCurrentPos].ilutGenS3TC;
-      break;
-
-    case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      *Param = ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget;
-      break;
-
-    default:
-      iSetError(ILUT_INVALID_ENUM);
-  }
-  return;
+  *Param = ilutIsEnabled(Mode);
 }
 
 
@@ -279,48 +213,23 @@ void ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param) {
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
 
   switch (Mode) {
-    case ILUT_MAXTEX_WIDTH:
-      *Param = ilutStates[ilutCurrentPos].MaxTexW;
-      break;
-    case ILUT_MAXTEX_HEIGHT:
-      *Param = ilutStates[ilutCurrentPos].MaxTexH;
-      break;
-    case ILUT_MAXTEX_DEPTH:
-      *Param = ilutStates[ilutCurrentPos].MaxTexD;
-      break;
-    case ILUT_VERSION_NUM:
-      *Param = ILUT_VERSION;
-      break;
+    case ILUT_MAXTEX_WIDTH:         *Param = ilutStates[ilutCurrentPos].MaxTexW;      break;
+    case ILUT_MAXTEX_HEIGHT:        *Param = ilutStates[ilutCurrentPos].MaxTexH;      break;
+    case ILUT_MAXTEX_DEPTH:         *Param = ilutStates[ilutCurrentPos].MaxTexD;      break;
+    case ILUT_VERSION_NUM:          *Param = ILUT_VERSION;      break;
+    
     case ILUT_PALETTE_MODE: // unused
-      *Param = ilutStates[ilutCurrentPos].ilutUsePalettes;
-      break;
     case ILUT_FORCE_INTEGER_FORMAT: 
-      *Param = ilutStates[ilutCurrentPos].ilutForceIntegerFormat;
-      break;
     case ILUT_OPENGL_CONV:
-      *Param = ilutStates[ilutCurrentPos].ilutOglConv;
-      break;
     case ILUT_GL_USE_S3TC:
-      *Param = ilutStates[ilutCurrentPos].ilutUseS3TC;
-      break;
     case ILUT_GL_GEN_S3TC:
-      *Param = ilutStates[ilutCurrentPos].ilutUseS3TC;
-      break;
     case ILUT_S3TC_FORMAT:
-      *Param = (ILint)ilutStates[ilutCurrentPos].ilutDXTCFormat;
-      break;
     case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      *Param = (ILint)ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget;
-      break;
-    case ILUT_D3D_MIPLEVELS:
-      *Param = (ILint)ilutStates[ilutCurrentPos].D3DMipLevels;
-      break;
-    case ILUT_D3D_ALPHA_KEY_COLOR:
-      *Param = ilutStates[ilutCurrentPos].D3DAlphaKeyColor;
-      break;
-    case ILUT_D3D_POOL:
-      *Param = (ILint)ilutStates[ilutCurrentPos].D3DPool;
-      break;
+                                    *Param = ilutGetBoolean(Mode); break;
+
+    case ILUT_D3D_MIPLEVELS:        *Param = (ILint)ilutStates[ilutCurrentPos].D3DMipLevels;      break;
+    case ILUT_D3D_ALPHA_KEY_COLOR:  *Param = ilutStates[ilutCurrentPos].D3DAlphaKeyColor;      break;
+    case ILUT_D3D_POOL:             *Param = (ILint)ilutStates[ilutCurrentPos].D3DPool;      break;
 
     default:
       iSetError(ILUT_INVALID_ENUM);
@@ -366,7 +275,7 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
   switch (Mode) {
     case ILUT_S3TC_FORMAT:
       if (Param >= IL_DXT1 && Param <= IL_DXT5) {
-        ilutStates[ilutCurrentPos].ilutDXTCFormat = (ILenum)Param;
+        ilutStates[ilutCurrentPos].DXTCFormat = (ILenum)Param;
       }
       break;
 
@@ -388,24 +297,6 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
       }
       break;
 
-    case ILUT_GL_USE_S3TC:
-      if (Param == IL_TRUE || Param == IL_FALSE) {
-        ilutStates[ilutCurrentPos].ilutUseS3TC = (ILboolean)Param;
-      }
-      break;
-
-    case ILUT_GL_GEN_S3TC:
-      if (Param == IL_TRUE || Param == IL_FALSE) {
-        ilutStates[ilutCurrentPos].ilutGenS3TC = (ILboolean)Param;
-      }
-      break;
-
-    case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
-      if (Param == IL_TRUE || Param == IL_FALSE) {
-        ilutStates[ilutCurrentPos].ilutAutodetectTextureTarget = (ILboolean)Param;
-      }
-      break;
-
     case ILUT_D3D_MIPLEVELS:
       if (Param >= 0) {
         ilutStates[ilutCurrentPos].D3DMipLevels = (ILuint)Param;
@@ -420,6 +311,15 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
       if (Param >= 0 && Param <= 2) {
         ilutStates[ilutCurrentPos].D3DPool = (ILenum)Param;
       }
+      break;
+
+    case ILUT_PALETTE_MODE: // unused
+    case ILUT_FORCE_INTEGER_FORMAT: 
+    case ILUT_OPENGL_CONV:
+    case ILUT_GL_USE_S3TC:
+    case ILUT_GL_GEN_S3TC:
+    case ILUT_GL_AUTODETECT_TEXTURE_TARGET:
+      ilutAble(Mode, (ILboolean)Param);
       break;
 
     default:
@@ -447,10 +347,19 @@ void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
 
   //memcpy(&ilutStates[ilutCurrentPos], &ilutStates[ilutCurrentPos - 1], sizeof(ILUT_STATES));
 
+  tls->ilutStates[tls->ilutCurrentPos].DXTCFormat = tls->ilutStates[tls->ilutCurrentPos-1].DXTCFormat;
+  tls->ilutStates[tls->ilutCurrentPos].Flags = 0;
+
+  tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_FORCE_INT_FORMAT;
+
   if (Bits & ILUT_OPENGL_BIT) {
-    tls->ilutStates[tls->ilutCurrentPos].ilutUsePalettes = tls->ilutStates[tls->ilutCurrentPos-1].ilutUsePalettes;
-    tls->ilutStates[tls->ilutCurrentPos].ilutOglConv     = tls->ilutStates[tls->ilutCurrentPos-1].ilutOglConv;
+    tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_USE_PALETTES;
+    tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_OGL_CONV;
+    tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_USE_S3TC;
+    tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_GEN_S3TC;
+    tls->ilutStates[tls->ilutCurrentPos].Flags |= tls->ilutStates[tls->ilutCurrentPos-1].Flags & ILUT_STATE_FLAG_AUTODETECT_TARGET;
   }
+
   if (Bits & ILUT_D3D_BIT) {
     tls->ilutStates[tls->ilutCurrentPos].D3DMipLevels     = tls->ilutStates[tls->ilutCurrentPos-1].D3DMipLevels;
     tls->ilutStates[tls->ilutCurrentPos].D3DAlphaKeyColor = tls->ilutStates[tls->ilutCurrentPos-1].D3DAlphaKeyColor;
@@ -474,6 +383,11 @@ void ILAPIENTRY ilutPopAttrib() {
 
   // Should we check here to see if ilutCurrentPos is too large?
   tls->ilutCurrentPos--;
+}
+
+ILenum ilutGetCurrentFlags() {
+  ILUT_TLS_DATA *tls = iGetTLSData();
+  return tls->ilutStates[tls->ilutCurrentPos].Flags;
 }
 
 

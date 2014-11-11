@@ -17,11 +17,13 @@
 #include <limits.h>
 
 
+static ILint iGetNoiseValue(ILuint Factor1, ILuint Factor2) {
+  return (ILint)((ILuint)(rand()) % Factor2 - Factor1);
+}
+
 ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
-  ILuint    i, j, c, Factor, Factor2, NumPix;
+  ILuint    i, j, c, Factor1, Factor2, NumPix;
   ILint   Val;
-  ILushort  *ShortPtr;
-  ILuint    *IntPtr;
   ILubyte   *RegionMask;
 
   if (Image == NULL) {
@@ -38,67 +40,69 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
   switch (Image->Bpc)
   {
     case 1:
-      Factor = (ILubyte)(Tolerance * (UCHAR_MAX / 2));
-      if (Factor == 0)
-        return IL_TRUE;
-      Factor2 = Factor + Factor;
+      Factor1 = (ILubyte)(Tolerance * (IL_MAX_UNSIGNED_BYTE / 2));
+      Factor2 = Factor1 + Factor1;
+      if (Factor1 == 0) return IL_TRUE;
+
       for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
         if (RegionMask) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
+        Val = iGetNoiseValue(Factor1, Factor2);
         for (c = 0; c < Image->Bpp; c++) {
-          if ((ILshort)Image->Data[i + c] + Val > UCHAR_MAX)
-            Image->Data[i + c] = UCHAR_MAX;
-          else if ((ILint)Image->Data[i + c] + Val < 0)
-            Image->Data[i + c] = 0;
+          ILint NewVal = (ILint)iGetImageDataUByte(Image)[i + c] + Val;
+          if (NewVal > IL_MAX_UNSIGNED_BYTE)
+            iGetImageDataUByte(Image)[i + c] = IL_MAX_UNSIGNED_BYTE;
+          else if (NewVal < 0)
+            iGetImageDataUByte(Image)[i + c] = 0;
           else
-            Image->Data[i + c] += Val;
+            iGetImageDataUByte(Image)[i + c] += Val;
         }
       }
       break;
     case 2:
-      Factor = (ILushort)(Tolerance * (USHRT_MAX / 2));
-      if (Factor == 0)
-        return IL_TRUE;
-      Factor2 = Factor + Factor;
-      ShortPtr = (ILushort*)Image->Data;
+      Factor1 = (ILushort)(Tolerance * (IL_MAX_UNSIGNED_SHORT / 2));
+      Factor2 = Factor1 + Factor1;
+      if (Factor1 == 0) return IL_TRUE;
+
       for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
         if (RegionMask) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
+        Val = iGetNoiseValue(Factor1, Factor2);
         for (c = 0; c < Image->Bpp; c++) {
-          if ((ILint)ShortPtr[i + c] + Val > USHRT_MAX)
-            ShortPtr[i + c] = USHRT_MAX;
-          else if ((ILint)ShortPtr[i + c] + Val < 0)
-            ShortPtr[i + c] = 0;
+          ILint NewVal = (ILint)iGetImageDataUShort(Image)[i + c] + Val;
+          if (NewVal > IL_MAX_UNSIGNED_SHORT)
+            iGetImageDataUShort(Image)[i + c] = IL_MAX_UNSIGNED_SHORT;
+          else if (NewVal < 0)
+            iGetImageDataUShort(Image)[i + c] = 0;
           else
-            ShortPtr[i + c] += Val;
+            iGetImageDataUShort(Image)[i + c] = (ILushort)NewVal;
         }
       }
       break;
+      // FIXME: ILfloat, ILdouble
     case 4:
-      Factor = (ILuint)(Tolerance * (UINT_MAX / 2));
-      if (Factor == 0)
-        return IL_TRUE;
-      Factor2 = Factor + Factor;
-      IntPtr = (ILuint*)Image->Data;
+      Factor1 = (ILuint)(Tolerance * (IL_MAX_UNSIGNED_INT / 2));
+      Factor2 = Factor1 + Factor1;
+      if (Factor1 == 0) return IL_TRUE;
+
       for (i = 0, j = 0; i < NumPix; i += Image->Bpp, j++) {
         if (RegionMask) {
           if (!RegionMask[j])
             continue;
         }
-        Val = (ILint)((ILuint)(rand()) % Factor2 - Factor);
+        Val = iGetNoiseValue(Factor1, Factor2);
         for (c = 0; c < Image->Bpp; c++) {
-          if ((ILint64)IntPtr[i + c] + Val > UINT_MAX)
-            IntPtr[i + c] = UINT_MAX;
-          else if ((ILint)IntPtr[i + c] + Val < 0)
-            IntPtr[i + c] = 0;
+          ILint64 NewVal = (ILint64)iGetImageDataUInt(Image)[i + c] + Val;
+          if (NewVal > IL_MAX_UNSIGNED_INT)
+            iGetImageDataUInt(Image)[i + c] = IL_MAX_UNSIGNED_INT;
+          else if (NewVal < 0)
+            iGetImageDataUInt(Image)[i + c] = 0;
           else
-            IntPtr[i + c] += (ILuint)Val;
+            iGetImageDataUInt(Image)[i + c] = (ILuint)NewVal;
         }
       }
       break;

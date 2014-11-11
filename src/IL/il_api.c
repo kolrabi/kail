@@ -1086,7 +1086,7 @@ ILboolean ILAPIENTRY ilLoadDataF(ILHANDLE File, ILuint Width, ILuint Height, ILu
  */
 ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp) {
   ILimage *Image;
-  ILboolean Result = IL_FALSE;
+  ILboolean Result;
 
   iLockState();
   Image = iLockCurImage();

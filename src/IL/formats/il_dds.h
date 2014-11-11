@@ -181,40 +181,14 @@ enum PixFormat
 
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
-ILuint		DecodePixelFormat(DDS_CONTEXT *ctx, ILuint *CompFormat);
-void		DxtcReadColor(ILushort Data, Color8888* Out);
-void		DxtcReadColors(const ILubyte* Data, Color8888* Out);
 ILboolean	DecompressDXT1(ILimage *lImage, const void *lCompData);
 ILboolean	DecompressDXT2(ILimage *lImage, const void *lCompData);
 ILboolean	DecompressDXT3(ILimage *lImage, const void *lCompData);
 ILboolean	DecompressDXT4(ILimage *lImage, const void *lCompData);
 ILboolean	DecompressDXT5(ILimage *lImage, const void *lCompData);
-ILboolean	iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
-void		CorrectPreMult(ILimage *image);
-void		GetBitsFromMask(ILuint Mask, ILuint *ShiftLeft, ILuint *ShiftRight);
-ILboolean	iSaveDdsInternal(ILimage *);
-ILboolean	WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags);
-//ILushort	*CompressTo565(ILimage *Image);
-//ILubyte		*CompressTo88(ILimage *Image);
-ILuint		Compress(ILimage *Image, ILenum DXTCFormat);
-ILboolean	GetBlock(ILushort *Block, ILushort *Data, ILimage *Image, ILuint XPos, ILuint YPos);
-ILboolean	GetAlphaBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos);
-ILboolean	Get3DcBlock(ILubyte *Block, ILubyte *Data, ILimage *Image, ILuint XPos, ILuint YPos, ILubyte channel);
-void		ShortToColor565(ILushort Pixel, Color565 *Colour);
-void		ShortToColor888(ILushort Pixel, Color888 *Colour);
-ILushort	Color565ToShort(Color565 *Colour);
-ILushort	Color888ToShort(Color888 *Colour);
-ILuint		GenBitMask(ILushort ex0, ILushort ex1, ILuint NumCols, ILushort *In, ILubyte *Alpha, Color888 *OutCol);
-void		GenAlphaBitMask(ILubyte a0, ILubyte a1, ILubyte *In, ILubyte *Mask, ILubyte *Out);
-ILuint		RMSAlpha(ILubyte *Orig, ILubyte *Test);
-ILuint		Distance(Color888 *c1, Color888 *c2);
-void		ChooseEndpoints(ILushort *Block, ILushort *ex0, ILushort *ex1);
-void		ChooseAlphaEndpoints(ILubyte *Block, ILubyte *a0, ILubyte *a1);
-void		CorrectEndDXT1(ILushort *ex0, ILushort *ex1, ILboolean HasAlpha);
-void		PreMult(ILushort *Data, ILubyte *Alpha);
 
+ILboolean iSaveDdsInternal(ILimage *);
 
-// extern ILuint CubemapDirections[CUBEMAP_SIDES];
-
+void DxtcReadColor(ILushort Data, Color8888* Out);
 
 #endif//DDS_H

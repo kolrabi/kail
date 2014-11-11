@@ -238,6 +238,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   MetaNew->Length   = Count;
   MetaNew->Size     = Size;
   MetaNew->Data     = ialloc(Size);
+  MetaNew->Next     = NULL;
   memcpy(MetaNew->Data, Data, Size);
 
 #ifdef _UNICODE
@@ -249,7 +250,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   if (!Image->MetaTags)
     Image->MetaTags = MetaNew;
   else 
-    Meta->Next = MetaNew;
+    Image->MetaTags->Next = MetaNew;
 
   return IL_TRUE;
 }
@@ -258,7 +259,6 @@ ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILint MaxCount) {
   ILuint count, size;
   ILenum Type;
   void *data;
-  ILuint i;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
 
   if (!Desc) {
@@ -298,6 +298,7 @@ ILuint iGetMetaiv(ILimage *Image, ILenum MetaID, ILint *Param, ILint MaxCount) {
   }
 
   if (Param) {
+    ILuint i;
     for (i = 0; i<count; i++) {
       switch (Type) {
         case IL_EXIF_TYPE_BYTE:     Param[i] = (ILint)((ILubyte*)  data)[i]; break;
@@ -365,7 +366,6 @@ ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILint MaxCount)
   ILuint count, size;
   ILenum Type;
   void *data;
-  ILuint i;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
 
   if (!Desc) {
@@ -383,6 +383,7 @@ ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILint MaxCount)
   }
 
   if (Param) {
+    ILuint i;
     for (i = 0; i<count; i++) {
       switch (Type) {
         case IL_EXIF_TYPE_BYTE:     Param[i] = ((ILubyte*)  data)[i]; break;
@@ -517,16 +518,19 @@ ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, ILconst_string String) {
       ifree(Meta->Data);
 
       if (!String) {
-        Meta->Type = IL_EXIF_TYPE_NONE;
+        Meta->Type    = IL_EXIF_TYPE_NONE;
+        Meta->Length  = 0;
+        Meta->Size    = 0;
+        Meta->Data    = NULL;
+        Meta->String  = NULL;
+      } else {
+        Length = iStrLen(String) * sizeof(*String);
+        Meta->Type    = Desc->Type;
+        Meta->Length  = Length + 1;
+        Meta->Size    = Length + 1;
+        Meta->Data    = iStrDup(String);
+        Meta->String  = iStrDup(String);
       }
-
-      Length = iStrLen(String) * sizeof(*String);
-
-      Meta->Type    = Desc->Type;
-      Meta->Length  = Length + 1;
-      Meta->Size    = Length + 1;
-      Meta->Data    = iStrDup(String);
-      Meta->String  = iStrDup(String);
      
       return IL_TRUE;
     }
