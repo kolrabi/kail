@@ -272,7 +272,7 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 				}
 
 				// Keep a copy of the DXTC data if the user wants it.
-				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+				if (iIsEnabled(IL_KEEP_DXTC_DATA) == IL_TRUE) {
 					Image->DxtcSize = SizeOfData;
 					Image->DxtcData = CompData;
 					Image->DxtcFormat = IL_DXT1;

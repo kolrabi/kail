@@ -206,7 +206,7 @@ static ILuint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint 
 	{
 		Pixel = 0;
 		if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
-			return ~0UL;
+			return ~0U;
 		
 		UShort(&Pixel);
 
@@ -216,14 +216,14 @@ static ILuint iGetScanLine(SIO *io, ILubyte *ScanLine, iSgiHeader *Head, ILuint 
 
 		if (Pixel & 0x80) {  // If top bit set, then it is a "run"
 			if (SIOread(io, ScanLine, Head->Bpc, Count) != Count)
-				return ~0UL;
+				return ~0U;
 
 			BppRead += Head->Bpc * Count + Head->Bpc;
 			ScanLine += Head->Bpc * Count;
 			CurPos += Head->Bpc * Count;
 		}	else {
 			if (SIOread(io, &Pixel, Head->Bpc, 1) != 1)
-				return ~0UL;
+				return ~0U;
 
 			UShort(&Pixel);
 			if (Head->Bpc == 1) {

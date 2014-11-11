@@ -308,7 +308,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							return IL_FALSE;
 						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
-						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+						if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 							Image->DxtcSize = SizeOfData;
 							Image->DxtcData = CompData;
 							Image->DxtcFormat = IL_DXT5;
@@ -326,7 +326,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							return IL_FALSE;
 						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
-						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+						if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 							Image->DxtcSize = SizeOfData;
 							Image->DxtcData = CompData;
 							Image->DxtcFormat = IL_DXT3;
@@ -344,7 +344,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							return IL_FALSE;
 						SIOread(io, CompData, 1, SizeOfData);
 						// Keep a copy of the DXTC data if the user wants it.
-						if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+						if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 							Image->DxtcSize = SizeOfData;
 							Image->DxtcData = CompData;
 							Image->DxtcFormat = IL_DXT5;
@@ -617,7 +617,7 @@ static ILboolean iSaveVtfInternal(ILimage* BaseImage) {
 	SIO *io = &BaseImage->io;
 
 	// Find out if the user has specified to use DXT compression.
-	Compression = (ILenum)ilGetInteger(IL_VTF_COMP);
+	Compression = (ILenum)iGetInteger(BaseImage, IL_VTF_COMP);
 
 	//@TODO: Other formats
 	if (Compression == IL_DXT_NO_COMP) {

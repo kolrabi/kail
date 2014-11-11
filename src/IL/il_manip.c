@@ -21,7 +21,7 @@ static ILboolean iCopyPixels1D(ILimage *Image, ILuint XOff, ILuint Width, void *
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;
@@ -58,7 +58,7 @@ static ILboolean iCopyPixels2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint 
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;
@@ -103,7 +103,7 @@ static ILboolean iCopyPixels3D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint 
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;
@@ -227,7 +227,7 @@ static ILboolean iSetPixels1D(ILimage *Image, ILint XOff, ILuint Width, void *Da
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;
@@ -272,7 +272,7 @@ static ILboolean iSetPixels2D(ILimage *Image, ILint XOff, ILint YOff, ILuint Wid
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;
@@ -329,7 +329,7 @@ static ILboolean iSetPixels3D(ILimage *Image, ILint XOff, ILint YOff, ILint ZOff
   ILubyte *Temp = (ILubyte*)Data, *TempData = Image->Data;
 
   if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       TempData = iGetFlipped(Image);
       if (TempData == NULL)
         return IL_FALSE;

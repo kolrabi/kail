@@ -51,7 +51,7 @@ static ILboolean iLoadRawInternal(ILimage *Image)
 		return IL_FALSE;
 
 	if (ilIsEnabled(IL_ORIGIN_SET)) {
-		Image->Origin = (ILenum)ilGetInteger(IL_ORIGIN_MODE);
+		Image->Origin = (ILenum)iGetInteger(Image, IL_ORIGIN_MODE);
 	}	else {
 		Image->Origin = IL_ORIGIN_UPPER_LEFT;
 	}

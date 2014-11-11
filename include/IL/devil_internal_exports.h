@@ -132,7 +132,7 @@ INLINE ILHANDLE SIOopenRO(SIO *io, ILconst_string FileName) {
     io->lumpSize = SIOtell(io);
     SIOseek(io, OrigPos, SEEK_SET);
   } else {
-    io->lumpSize = ~0UL;
+    io->lumpSize = ~0U;
   }
   return io->handle;
 }
@@ -297,6 +297,7 @@ ILAPI ILimage*  ILAPIENTRY iConvertImage    (ILimage *Image, ILenum DestFormat, 
 ILAPI ILimage*  ILAPIENTRY iNewImage        (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILubyte Bpc);
 ILAPI ILimage*  ILAPIENTRY iNewImageFull    (ILuint Width, ILuint Height, ILuint Depth, ILubyte Bpp, ILenum Format, ILenum Type, void *Data);
 ILAPI ILuint    ILAPIENTRY iGetiv           (ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCount);
+ILAPI ILint     ILAPIENTRY iGetInteger      (ILimage *Image, ILenum Mode);
 ILAPI ILuint    ILAPIENTRY iGetfv           (ILimage *Image, ILenum Mode, ILfloat *Param, ILint MaxCount);
 ILAPI void      ILAPIENTRY iSetiv           (ILimage *Image, ILenum Mode, const ILint *Param);
 ILAPI void      ILAPIENTRY iSetfv           (ILimage *Image, ILenum Mode, const ILfloat *Param);

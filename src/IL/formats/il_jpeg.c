@@ -395,7 +395,7 @@ static ILboolean iSaveJpegInternal(ILimage* image) {
 	// Set the quality output
 	jpeg_set_quality(&JpegInfo, iGetInt(IL_JPG_QUALITY), IL_TRUE);
 	// Sets progressive saving here
-	if (ilGetBoolean(IL_JPG_PROGRESSIVE))
+	if (iIsEnabled(IL_JPG_PROGRESSIVE))
 		jpeg_simple_progression(&JpegInfo);
 
 	jpeg_start_compress(&JpegInfo, IL_TRUE);

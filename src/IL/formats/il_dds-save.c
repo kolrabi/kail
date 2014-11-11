@@ -279,7 +279,7 @@ ILboolean WriteHeader(ILimage *Image, ILenum DXTCFormat, ILuint CubeFlags)
   //changed 20040516: set mipmap flag on mipmap images
   //(non-compressed .dds files still not supported,
   //though)
-  if (ilGetInteger(IL_NUM_MIPMAPS) > 0)
+  if (iGetInteger(Image, IL_NUM_MIPMAPS) > 0)
     ddsCaps1 |= DDS_MIPMAP | DDS_COMPLEX;
   if (CubeFlags != 0) {
     ddsCaps1 |= DDS_COMPLEX;

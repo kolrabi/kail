@@ -650,7 +650,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
 
 			if (!iTexImage(image, ctx->Width, ctx->Height, ctx->Depth, channels, format, IL_UNSIGNED_BYTE, NULL))
 				return IL_FALSE;
-			if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE && ctx->CompData) {
+			if (iIsEnabled(IL_KEEP_DXTC_DATA) && ctx->CompData) {
 				image->DxtcData = (ILubyte*)ialloc(ctx->Head.LinearSize);
 				if (image->DxtcData == NULL)
 					return IL_FALSE;
@@ -849,7 +849,7 @@ ILboolean ReadMipmaps(DDS_CONTEXT *ctx, ILuint CompFormat)
 		if (!ReadData(ctx))
 			goto mip_fail;
 
-		if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE && isCompressed == IL_TRUE && ctx->CompData) {
+		if (iIsEnabled(IL_KEEP_DXTC_DATA) && isCompressed == IL_TRUE && ctx->CompData) {
 			ctx->Image->DxtcData = (ILubyte*)ialloc(ctx->Head.LinearSize);
 			if (ctx->Image->DxtcData == NULL)
 				return IL_FALSE;

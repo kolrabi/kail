@@ -116,7 +116,7 @@ static ILboolean iLoadDoomInternal(ILimage *Image)
 	}
 
 	// Converts palette entry 247 (cyan) to transparent.
-	if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
+	if (iIsEnabled(IL_CONV_PAL)) {
 		ILubyte	*NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
 		if (NewData == NULL) {
 			return IL_FALSE;
@@ -176,7 +176,7 @@ static ILboolean iLoadDoomFlatInternal(ILimage *Image)
 	if (SIOread(io, Image->Data, 1, 4096) != 4096)
 		return IL_FALSE;
 
-	if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
+	if (iIsEnabled(IL_CONV_PAL)) {
 			ILubyte	*NewData = (ILubyte*)ialloc(Image->SizeOfData * 4);
 		if (NewData == NULL) {
 			return IL_FALSE;

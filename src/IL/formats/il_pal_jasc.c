@@ -105,7 +105,7 @@ static ILboolean iLoadJascPal(ILimage *Image)
 
 //! Saves a Paint Shop Pro formatted palette (.pal) file.
 static ILboolean iSaveJascPal(ILimage *Image) {
-	ILuint	i, PalBpp, NumCols = (ILuint)ilGetInteger(IL_PALETTE_NUM_COLS);
+	ILuint	i, PalBpp, NumCols = (ILuint)iGetInteger(Image, IL_PALETTE_NUM_COLS);
 	SIO *io = &Image->io;
   ILpal *ConvPal;
 

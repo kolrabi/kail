@@ -379,6 +379,13 @@ ILuint ILAPIENTRY iGetiv(ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCou
   return iGetMetaiv(Image, Mode, Param, MaxCount);
 }
 
+ILAPI ILint ILAPIENTRY iGetInteger(ILimage *Image, ILenum Mode)
+{
+  ILint Data = 0;
+  iGetiv(Image, Mode, &Data, 1);
+  return Data;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
 /// Float

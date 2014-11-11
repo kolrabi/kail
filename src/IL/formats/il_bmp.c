@@ -992,7 +992,7 @@ static ILboolean iSaveBitmapInternal(ILimage* image)
   SaveLittleInt(io, 3780); // vert.  px/m (Obsolete)
 
   if (TempImage->Pal.PalType != IL_PAL_NONE) {
-    SaveLittleInt(io, ilGetInteger(IL_PALETTE_NUM_COLS));  // Num colours used
+    SaveLittleInt(io, iGetInteger(TempImage, IL_PALETTE_NUM_COLS));  // Num colours used
   } else {
     SaveLittleInt(io, 0);
   }

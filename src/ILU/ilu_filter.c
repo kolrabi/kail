@@ -564,7 +564,7 @@ ILboolean iScaleAlpha(ILimage *Image, ILfloat scale) {
       {
         case IL_PAL_RGBA32:
         case IL_PAL_BGRA32:
-          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          PalBPP = (ILuint)iGetInteger(Image, IL_PALETTE_BPP);
           for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             alpha = (ILint)(Image->Pal.Palette[i+3] * scale);
             if (alpha > UCHAR_MAX) alpha = UCHAR_MAX;
@@ -692,7 +692,7 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
         case IL_PAL_RGB24:
         case IL_PAL_RGB32:
         case IL_PAL_RGBA32:
-          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          PalBPP = (ILuint)iGetInteger(Image, IL_PALETTE_BPP);
           for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             red = (ILint)(Image->Pal.Palette[i] * r);
             grn = (ILint)(Image->Pal.Palette[i+1] * g);
@@ -712,7 +712,7 @@ ILboolean iScaleColours(ILimage *Image, ILfloat r, ILfloat g, ILfloat b) {
         case IL_PAL_BGR24:
         case IL_PAL_BGR32:
         case IL_PAL_BGRA32:
-          PalBPP = (ILuint)ilGetInteger(IL_PALETTE_BPP);
+          PalBPP = (ILuint)iGetInteger(Image, IL_PALETTE_BPP);
           for (i = 0; i < Image->Pal.PalSize; i += PalBPP) {
             red = (ILint)(Image->Pal.Palette[i+2] * r);
             grn = (ILint)(Image->Pal.Palette[i+1] * g);

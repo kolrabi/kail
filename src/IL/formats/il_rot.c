@@ -212,7 +212,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 					return IL_FALSE;
 				}
 
-				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+				if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 					Image->DxtcSize   = CompSize;
 					Image->DxtcData   = CompData;
 					Image->DxtcFormat = IL_DXT1;
@@ -244,7 +244,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 					return IL_FALSE;
 				}
 
-				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+				if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 					Image->DxtcSize = CompSize;
 					Image->DxtcData = CompData;
 					Image->DxtcFormat = IL_DXT3;
@@ -276,7 +276,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				}
 
 				// Keeps a copy
-				if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+				if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
 					Image->DxtcSize   = CompSize;
 					Image->DxtcData   = CompData;
 					Image->DxtcFormat = IL_DXT5;

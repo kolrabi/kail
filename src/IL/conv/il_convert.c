@@ -827,7 +827,7 @@ ILboolean iAddAlphaKey(ILimage *Image)
       return IL_FALSE;
     }
 
-    Size = (ILuint)ilGetInteger(IL_PALETTE_NUM_COLS);
+    Size = (ILuint)iGetInteger(Image, IL_PALETTE_NUM_COLS);
     if (Size == 0) {
       iSetError(IL_INTERNAL_ERROR);
       return IL_FALSE;
@@ -1020,31 +1020,31 @@ static ILboolean iFixImage(ILimage *Image, ILimage *BaseImage)
 {
   Image->BaseImage = BaseImage;
   
-  if (ilIsEnabled(IL_ORIGIN_SET)) {
-    if ((ILenum)ilGetInteger(IL_ORIGIN_MODE) != Image->Origin) {
+  if (iIsEnabled(IL_ORIGIN_SET)) {
+    if ((ILenum)iGetInteger(Image, IL_ORIGIN_MODE) != Image->Origin) {
       if (!iFlipImage(Image)) {
         return IL_FALSE;
       }
     }
   }
 
-  if (ilIsEnabled(IL_TYPE_SET)) {
-    if ((ILenum)ilGetInteger(IL_TYPE_MODE) != Image->Type) {
-      if (!iConvertImages(Image, Image->Format, (ILenum)ilGetInteger(IL_TYPE_MODE))) {
+  if (iIsEnabled(IL_TYPE_SET)) {
+    if ((ILenum)iGetInteger(Image, IL_TYPE_MODE) != Image->Type) {
+      if (!iConvertImages(Image, Image->Format, (ILenum)iGetInteger(Image, IL_TYPE_MODE))) {
         return IL_FALSE;
       }
     }
   }
-  if (ilIsEnabled(IL_FORMAT_SET)) {
-    if ((ILenum)ilGetInteger(IL_FORMAT_MODE) != Image->Format) {
-      if (!iConvertImages(Image, (ILenum)ilGetInteger(IL_FORMAT_MODE), Image->Type)) {
+  if (iIsEnabled(IL_FORMAT_SET)) {
+    if ((ILenum)iGetInteger(Image, IL_FORMAT_MODE) != Image->Format) {
+      if (!iConvertImages(Image, (ILenum)iGetInteger(Image, IL_FORMAT_MODE), Image->Type)) {
         return IL_FALSE;
       }
     }
   }
 
   if (Image->Format == IL_COLOUR_INDEX) {
-    if (ilGetBoolean(IL_CONV_PAL) == IL_TRUE) {
+    if (iIsEnabled(IL_CONV_PAL)) {
       if (!iConvertImages(Image, IL_BGR, IL_UNSIGNED_BYTE)) {
         return IL_FALSE;
       }

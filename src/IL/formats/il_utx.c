@@ -482,7 +482,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
           }
 
           // Keep a copy of the DXTC data if the user wants it.
-          if (ilGetInteger(IL_KEEP_DXTC_DATA) == IL_TRUE) {
+          if (iIsEnabled(IL_KEEP_DXTC_DATA)) {
             Image->DxtcData = CompData;
             Image->DxtcFormat = IL_DXT1;
             CompData = NULL;

@@ -413,7 +413,7 @@ ILimage *iNeuQuant(ILimage *Image, ILuint NumCols)
   NeuQuantContext ctx;
 
   TempImage = iConvertImage(Image, IL_BGR, IL_UNSIGNED_BYTE);
-  sample    = (ILuint)ilGetInteger(IL_NEU_QUANT_SAMPLE);
+  sample    = (ILuint)iGetInteger(Image, IL_NEU_QUANT_SAMPLE);
 
   if (TempImage == NULL)
     return NULL;
