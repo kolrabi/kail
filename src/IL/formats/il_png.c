@@ -419,11 +419,17 @@ ILboolean iSavePngInternal(ILimage* image) {
 	switch (image->Type)
 	{
 		case IL_BYTE:
+			Temp = iConvertImage(image, image->Format, IL_UNSIGNED_BYTE);
+			if (Temp == NULL) {
+				png_destroy_write_struct(&png_ptr, &info_ptr);
+				return IL_FALSE;
+			}
+			BitDepth = 8;
+			break;
 		case IL_UNSIGNED_BYTE:
 			Temp = image;
 			BitDepth = 8;
 			break;
-		case IL_SHORT:
 		case IL_UNSIGNED_SHORT:
 			Temp = image;
 			BitDepth = 16;
@@ -433,6 +439,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 		case IL_HALF:
 		case IL_FLOAT:
 		case IL_DOUBLE:
+		case IL_SHORT:
 			Temp = iConvertImage(image, image->Format, IL_UNSIGNED_SHORT);
 			if (Temp == NULL) {
 				png_destroy_write_struct(&png_ptr, &info_ptr);
@@ -451,6 +458,7 @@ ILboolean iSavePngInternal(ILimage* image) {
 			PngType = PNG_COLOR_TYPE_PALETTE;
 			break;
 		case IL_LUMINANCE:
+		case IL_ALPHA:
 			PngType = PNG_COLOR_TYPE_GRAY;
 			break;
 		case IL_LUMINANCE_ALPHA: //added 20050328

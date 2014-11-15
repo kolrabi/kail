@@ -94,6 +94,21 @@ ILAPI ILenum ILAPIENTRY iGetTypeBpc(ILubyte Bpc)
 	return 0;
 }
 
+ILAPI ILuint ILAPIENTRY iGetMaxType(ILenum Type)
+{
+	ILuint Max;
+  switch (Type)
+  {
+    case IL_UNSIGNED_BYTE:  Max = IL_MAX_UNSIGNED_BYTE;   break;
+    case IL_BYTE:           Max = IL_MAX_BYTE;            break;
+    case IL_UNSIGNED_SHORT: Max = IL_MAX_UNSIGNED_SHORT;  break;
+    case IL_SHORT:          Max = IL_MAX_SHORT;           break;
+    case IL_UNSIGNED_INT:   Max = IL_MAX_UNSIGNED_INT;    break;
+    case IL_INT:            Max = IL_MAX_INT;             break;
+    default:                Max = 1;
+  }
+  return Max;
+}
 
 // Returns the bpp of any palette type (PalType)
 ILAPI ILubyte ILAPIENTRY iGetBppPal(ILenum PalType)

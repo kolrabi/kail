@@ -622,7 +622,7 @@ ILboolean iCompareImage(ILimage * Image, ILimage * Original) {
 }
 
 ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
-  ILfloat Result = 0.0, Sum1 = 0.0, Sum2 = 0.0;
+  ILfloat Result = 0.0, DiffSum = 0.0f;
   ILimage *Image1, *Image2;
   ILuint  Size, i;
   ILubyte Bpp;
@@ -646,8 +646,8 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
       return 0.0f;
   }
 
-  Bpp = IL_MAX(iGetBppFormat(Original->Format), iGetBppFormat(Image->Format));
-  Format = iGetFormatBpp(Bpp);
+  Format = (iFormatHasAlpha(Image->Format) || iFormatHasAlpha(Original->Format)) ?  IL_RGBA : IL_RGB;
+  Bpp = iGetBppFormat(Format);
 
   Image1 = iConvertImage(Image, Format, IL_FLOAT);
   if (!Image1) return 0.0;
@@ -659,20 +659,12 @@ ILfloat iSimilarity(ILimage * Image, ILimage * Original) {
   }
 
   Size = Original->Width * Original->Height * Original->Depth * Bpp;
-
   for (i = 0; i<Size; i++) {
-    Sum1 += iGetImageDataFloat(Image1)[i] * iGetImageDataFloat(Image1)[i];
-    Sum2 += iGetImageDataFloat(Image2)[i] * iGetImageDataFloat(Image2)[i];
+    ILfloat diff = iGetImageDataFloat(Image1)[i] - iGetImageDataFloat(Image2)[i];
+    DiffSum += diff * diff;
   }
 
-  Sum1 = (ILfloat)(sqrt(Sum1));
-  Sum2 = (ILfloat)(sqrt(Sum2));
-
-  for (i = 0; i<Size; i++) {
-    Result += iGetImageDataFloat(Image1)[i]/Sum1 * iGetImageDataFloat(Image2)[i]/Sum2;
-  }
-
-  Result = (ILfloat)(sqrt(Result));
+  Result = 1.0f - DiffSum / (ILfloat)Size;
 
   iCloseImage(Image1);
   iCloseImage(Image2);

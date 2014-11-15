@@ -103,6 +103,7 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
     NewImage->Pal.PalSize = 0;
     NewImage->Pal.PalType = IL_PAL_NONE;
     NewImage->Format = DestFormat;
+    NewImage->Type = IL_UNSIGNED_BYTE;
     NewImage->Bpp = LumBpp;
     NewImage->Bps = NewImage->Width * LumBpp;
     NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
@@ -159,7 +160,8 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
     NewImage->Pal.PalSize = 0;
     NewImage->Pal.PalType = IL_PAL_NONE;
     NewImage->Format = DestFormat;
-    NewImage->Bpp = LumBpp;
+    NewImage->Type = IL_UNSIGNED_BYTE;
+    NewImage->Bpp = 1;
     NewImage->Bps = NewImage->Width * 1;  // Alpha is only one byte.
     NewImage->SizeOfData = NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
     NewImage->Data = (ILubyte*)ialloc(NewImage->SizeOfData);
@@ -168,14 +170,12 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
 
     if (HasAlpha) {
       for (i = 0; i < Image->SizeOfData; i++) {
-        NewImage->Data[i*2] = Temp[Image->Data[i] * 2];
-        NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
+        NewImage->Data[i]   = Temp[Image->Data[i] * 2];
+        // NewImage->Data[i*2+1] = Temp[Image->Data[i] * 2 + 1];
       }
     }
     else {  // No alpha, opaque.
-      for (i = 0; i < Image->SizeOfData; i++) {
-        NewImage->Data[i] = 0xFF;
-      }
+      memset(NewImage->Data, 0xFF, NewImage->SizeOfData);
     }
 
     ifree(Temp);
@@ -279,7 +279,8 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
   }
 
   // We don't support 16-bit color indices (or higher).
-  if (DestFormat == IL_COLOUR_INDEX && DestType >= IL_SHORT) {
+  if (DestFormat == IL_COLOUR_INDEX && DestType != IL_UNSIGNED_BYTE) {
+    iTrace("***** 16-bit color indices (or higher) are not yet supported");
     iSetError(IL_INVALID_CONVERSION);
     return NULL;
   }
@@ -311,7 +312,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
     NewImage->SizeOfPlane = NewImage->Bps * NewImage->Height;
     NewImage->SizeOfData = NewImage->SizeOfPlane * NewImage->Depth;
   }
-  else if (DestFormat == IL_COLOUR_INDEX && Image->Format != IL_LUMINANCE) {
+  else if (DestFormat == IL_COLOUR_INDEX && Image->Format != IL_LUMINANCE) {    
     if (iGetInt(IL_QUANTIZATION_MODE) == IL_NEU_QUANT)
       return iNeuQuant(Image, (ILuint)iGetInt(IL_MAX_QUANT_INDICES));
     else // Assume IL_WU_QUANT otherwise.
@@ -324,6 +325,7 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
     }
 
     if (iGetBppFormat(DestFormat) == 0) {
+      iTrace("***** Unknown destination format: %04x", DestFormat);
       iSetError(IL_INVALID_PARAM);
       ifree(NewImage);
       return NULL;
@@ -342,17 +344,32 @@ ILAPI ILimage* ILAPIENTRY iConvertImage(ILimage *Image, ILenum DestFormat, ILenu
       NewImage->Pal.PalSize = 768;
       NewImage->Pal.PalType = IL_PAL_RGB24;
       NewImage->Pal.Palette = (ILubyte*)ialloc(768);
+      
+      if (NewImage->Pal.Palette == NULL) {
+        ifree(NewImage);  // iCloseImage not needed.
+        return NULL;
+      }
+
       for (i = 0; i < 256; i++) {
         NewImage->Pal.Palette[i * 3    ] = 
         NewImage->Pal.Palette[i * 3 + 1] = 
         NewImage->Pal.Palette[i * 3 + 2] = (ILubyte)i;
       }
-      NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
-      if (NewImage->Data == NULL) {
-        iCloseImage(NewImage);
-        return NULL;
+
+      if (Image->Type == IL_UNSIGNED_BYTE) {
+        NewImage->Data = (ILubyte*)ialloc(Image->SizeOfData);
+        if (NewImage->Data == NULL) {
+          iCloseImage(NewImage);
+          return NULL;
+        }
+        memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
+      } else {
+        NewImage->Data = (ILubyte*)iConvertBuffer(Image->SizeOfData, IL_LUMINANCE, IL_LUMINANCE, Image->Type, IL_UNSIGNED_BYTE, NULL, Image->Data);
+        if (NewImage->Data == NULL) {
+          ifree(NewImage);  // iCloseImage not needed.
+          return NULL;
+        }
       }
-      memcpy(NewImage->Data, Image->Data, Image->SizeOfData);
     }
     else {
       NewImage->Data = (ILubyte*)iConvertBuffer(Image->SizeOfData, Image->Format, DestFormat, Image->Type, DestType, NULL, Image->Data);
@@ -393,8 +410,8 @@ ILboolean ILAPIENTRY iConvertImages(ILimage *BaseImage, ILenum DestFormat, ILenu
 
     // We don't copy the colour profile here, since it stays the same.
     //  Same with the DXTC data.
-    BaseImage->Format       = DestFormat;
-    BaseImage->Type         = DestType;
+    BaseImage->Format       = Image->Format;
+    BaseImage->Type         = Image->Type;
     BaseImage->Bpc          = iGetBpcType(DestType);
     BaseImage->Bpp          = iGetBppFormat(DestFormat);
     BaseImage->Bps          = BaseImage->Width * BaseImage->Bpc * BaseImage->Bpp;

@@ -198,6 +198,13 @@ enum {
 };
 
 // limits
+#define IL_MIN_BYTE                 SCHAR_MIN
+#define IL_MIN_UNSIGNED_BYTE        0
+#define IL_MIN_SHORT                SHRT_MIN
+#define IL_MIN_UNSIGNED_SHORT       0
+#define IL_MIN_INT                  INT_MIN
+#define IL_MIN_UNSIGNED_INT         0
+
 #define IL_MAX_BYTE                 SCHAR_MAX
 #define IL_MAX_UNSIGNED_BYTE        UCHAR_MAX
 #define IL_MAX_SHORT                SHRT_MAX

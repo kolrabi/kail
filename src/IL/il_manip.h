@@ -246,6 +246,16 @@ INLINE void ILAPIENTRY ilFloatToHalfV (const void *Float, void *Half) {
 	*((ILushort*)Half) = ilFloatToHalf(*((ILuint*)Float));
 }
 
+INLINE ILfloat iGetHalf(const void *Half) {
+	ILfloat temp;
+	ilHalfToFloatV(Half, &temp);
+	return temp;
+}
+
+INLINE void iSetHalf(ILfloat f, void *Half) {
+	ilFloatToHalfV(&f, Half);
+}
+
 #endif //NOINLINE
 
 ILboolean iDefaultImage(ILimage *Image);

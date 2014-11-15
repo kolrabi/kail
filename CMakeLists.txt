@@ -10,8 +10,8 @@ INCLUDE                 ( CTest )
 OPTION                  ( TEST_COVERAGE          "Test code coverage" FALSE )
 
 IF                      ( CMAKE_COMPILER_IS_GNUCC )
-  SET                   ( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99" )
-  SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror" )
+  SET                   ( CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -Wall -Wextra -Werror -std=gnu99 -fopenmp" )
+  SET                   ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -fopenmp" )
 
   IF                      ( TEST_COVERAGE )
     MESSAGE               ( "Enabling code coverage testing" )

@@ -254,6 +254,7 @@ ILAPI ILubyte   ILAPIENTRY iGetBppFormat(ILenum Format);
 ILAPI ILenum    ILAPIENTRY iGetFormatBpp(ILubyte Bpp);
 ILAPI ILubyte   ILAPIENTRY iGetBpcType(ILenum Type);
 ILAPI ILenum    ILAPIENTRY iGetTypeBpc(ILubyte Bpc);
+ILAPI ILuint    ILAPIENTRY iGetMaxType(ILenum Type);
 ILAPI ILubyte   ILAPIENTRY iGetBppPal(ILenum PalType);
 ILAPI ILenum    ILAPIENTRY iGetPalBaseType(ILenum PalType);
 ILAPI ILuint    ILAPIENTRY iGetMaskFormat(ILenum Format, ILubyte channel);
