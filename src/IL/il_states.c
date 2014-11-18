@@ -18,7 +18,7 @@
 #include "il_states.h"
 #include "il_stack.h"
 #include "il_meta.h"
-#include "il_pixel.h"
+#include "conv/il_convert.h"
 
 #include <stdlib.h>
 
@@ -929,84 +929,21 @@ void iClearIndex(ILuint Index) {
 }
 
 
-ILAPI void ILAPIENTRY iGetClear(void *Colours, ILenum Format, ILenum Type) {
+ILAPI void ILAPIENTRY iGetClear(void *Colour, ILenum Format, ILenum Type) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
 
-  const void *From = ilStates[ilCurrentPos].ClearColour;
-  const void *To   = Colours;
-  
-  switch (Type) {
-    case IL_BYTE:
-    case IL_UNSIGNED_BYTE:
-      switch (Format) {
-        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILubyte, To, IL_MAX_UNSIGNED_BYTE); break;
-        case IL_COLOUR_INDEX:     (*(ILubyte*)Colours) = (ILubyte)ilStates[ilCurrentPos].ClearIndex; break;
-        default:                  iSetError(IL_INTERNAL_ERROR); return;
-      }
-      break;
-      
-    case IL_SHORT:
-    case IL_UNSIGNED_SHORT:
-      switch (Format) {
-        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILushort, To, IL_MAX_UNSIGNED_SHORT); break;
-        case IL_COLOUR_INDEX:     (*(ILushort*)Colours) = (ILushort)ilStates[ilCurrentPos].ClearIndex; break;
-        default:                  iSetError(IL_INTERNAL_ERROR); return;
-      }
-      break;
-      
-    case IL_INT:
-    case IL_UNSIGNED_INT:
-      switch (Format) {
-        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILuint, To, IL_MAX_UNSIGNED_INT); break;
-        case IL_COLOUR_INDEX:     (*(ILuint*)Colours) = ilStates[ilCurrentPos].ClearIndex; break;
-        default:                  iSetError(IL_INTERNAL_ERROR); return;
-      }
-      break;
-      
-    case IL_FLOAT:
-      switch (Format) {
-        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILfloat, To, 1.0f); break;
-        case IL_COLOUR_INDEX:     
-        default:                  iSetError(IL_INTERNAL_ERROR); return;
-      }        
-      break;
+  void * From     = ilStates[ilCurrentPos].ClearColour;
+  ILuint FromSize = sizeof(ilStates[ilCurrentPos].ClearColour);
 
-    case IL_DOUBLE:
-      switch (Format) {
-        case IL_RGB:              iPixelConv3f(     ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_RGBA:             iPixelConv4f(     ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_BGR:              iPixelConv3Swapf( ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_BGRA:             iPixelConv4Swapf( ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_LUMINANCE:        iPixelConv3Lf(    ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_LUMINANCE_ALPHA:  iPixelConv4LAf(   ILfloat, From, 1.0f, ILdouble, To, 1.0); break;
-        case IL_COLOUR_INDEX:     
-        default:                  iSetError(IL_INTERNAL_ERROR); return;
-      }        
-     
-    default:
-      iSetError(IL_INTERNAL_ERROR);
-      return;
+  void *Conv = iConvertBuffer(FromSize, IL_RGBA, Format, IL_FLOAT, Type, NULL, From);
+  if (Conv) {
+    ILuint Size = iGetBppFormat(Format) * iGetBpcType(Type);
+    memcpy(Colour, From, Size);
+    if (Conv != From)
+      ifree(Conv);
+  } else {
+    iSetError(IL_INTERNAL_ERROR);
   }
 }

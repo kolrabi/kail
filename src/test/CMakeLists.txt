@@ -50,8 +50,6 @@ ADD_TEST                ( ILUErrorStrings   ILtestILUError                  )
 ADD_TEST                ( IOOpenFile        ILtestIO          open_read ${CMAKE_CURRENT_SOURCE_DIR}/TestFile.txt )
 ADD_TEST                ( IOOpenLump        ILtestIO          open_read_lump ABCDefghijk )
 
-ADD_TEST                ( Convert           ILtestConvert     ${REF_CLR} )
-
 SET                     ( ILU_IMAGE ${CMAKE_SOURCE_DIR}/images/dougie.png )
 ADD_TEST                ( ILUAlienify       ILtestILU         ${ILU_IMAGE} ilu_alienify.png alienify )
 ADD_TEST                ( ILUBlurAvg        ILtestILU         ${ILU_IMAGE} ilu_bluravg.png  bluravg )
@@ -104,6 +102,9 @@ ADD_TEST                ( QuantNeu          ILtestAlgoNeuQuant   ${REF_CLR} )
 ADD_TEST                ( BMPRLE            ILtestAlgoBMPRLE     ${REF_CLR} )
 ADD_TEST                ( SGIRLE            ILtestAlgoSGIRLE     ${REF_CLR} )
 ADD_TEST                ( TGARLE            ILtestAlgoTGARLE     ${REF_CLR} )
+
+
+ADD_TEST                ( Convert           ILtestConvert     ${REF_CLR} )
 
 ADD_TEST                ( DDSNocomp         ILtestAlgoDDS     ${REF_CLR} 0 070B test_nocomp.dds )
 ADD_TEST                ( DDSDXT1           ILtestAlgoDDS     ${REF_CLR} 0 0706 test_dxt1.dds )

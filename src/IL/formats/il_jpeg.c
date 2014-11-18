@@ -376,7 +376,7 @@ static ILboolean iSaveJpegInternal(ILimage* image) {
 	jpeg_create_compress(&JpegInfo);
 
 	//jpeg_stdio_dest(&JpegInfo, JpegFile);
-	devil_jpeg_write_init(&JpegInfo, &TempImage->io);
+	devil_jpeg_write_init(&JpegInfo, io);
 
 	JpegInfo.image_width = TempImage->Width;  // image width and height, in pixels
 	JpegInfo.image_height = TempImage->Height;

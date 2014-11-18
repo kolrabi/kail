@@ -110,8 +110,8 @@ static void TestFrom(ILenum fromFormat, ILenum fromType, ILuint reference) {
       // alpha textures from the test image when converted to RGBA look nothing
       // like the original rgba test image, so we have to be a little more
       // generous here
-      if (*format == IL_ALPHA)
-        needed = 0.75f;
+      if (*format == IL_ALPHA || fromFormat == IL_ALPHA)
+        needed = 0.45f;
 
       if (similarity < needed || FilterNum != -1) {
         CHECK(testSaveImage(tmp, image));

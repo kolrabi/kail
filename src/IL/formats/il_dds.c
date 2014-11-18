@@ -21,6 +21,23 @@
 #include "il_dds.h"
 #include "il_manip.h"
 
+#include "pack_push.h"
+
+typedef struct {
+	ILubyte alpha[8];
+	ILubyte colours[4];
+	ILuint  mask;
+} DxtcDXT3Data;
+
+typedef struct {
+	ILubyte alpha[2];
+	ILubyte alphamask[6];
+	ILubyte colours[4];
+	ILuint  mask;
+} DxtcDXT5Data;
+
+#include "pack_pop.h"
+
 static ILboolean	ReadData(DDS_CONTEXT *);
 static ILboolean	AllocImage(DDS_CONTEXT *, ILuint CompFormat);
 static ILboolean	DdsDecompress(DDS_CONTEXT *, ILuint CompFormat);
@@ -540,8 +557,10 @@ static ILboolean ReadData(DDS_CONTEXT *ctx)
 	}
 
 	if (ctx->Head.Flags1 & DDS_LINEARSIZE) {
+		iTrace("---- DDS_LINEARSIZE %u", ctx->Head.LinearSize);
 		//Head.LinearSize = Head.LinearSize * Depth;
 
+		ctx->CompSize = ctx->Head.LinearSize;
 		ctx->CompData = (ILubyte*)ialloc(ctx->Head.LinearSize);
 		if (ctx->CompData == NULL) {
 			return IL_FALSE;
@@ -556,6 +575,8 @@ static ILboolean ReadData(DDS_CONTEXT *ctx)
 	else {
 		Bps = ctx->Width * ctx->Head.RGBBitCount / 8;
 		ctx->CompSize = Bps * ctx->Height * ctx->Depth;
+
+		iTrace("---- !DDS_LINEARSIZE %u %u", Bps, ctx->CompSize);
 
 		ctx->CompData = (ILubyte*)ialloc(ctx->CompSize);
 		if (ctx->CompData == NULL) {
@@ -1023,11 +1044,7 @@ ILboolean DecompressDXT3(ILimage *lImage, const void *lCompData)
 	ILuint		bitmask, Offset;
 	ILushort	word;
 	const ILubyte		*alpha;
-	const struct Data {
-		ILubyte alpha[8];
-		ILubyte colours[4];
-		ILuint  mask;
-	} *Temp = lCompData;
+	const DxtcDXT3Data *Data = (const void *)lCompData;
 
 	if (!lCompData)
 		return IL_FALSE;
@@ -1035,11 +1052,11 @@ ILboolean DecompressDXT3(ILimage *lImage, const void *lCompData)
 	for (z = 0; z < lImage->Depth; z++) {
 		for (y = 0; y < lImage->Height; y += 4) {
 			for (x = 0; x < lImage->Width; x += 4) {
-				alpha = Temp->alpha;
-				DxtcReadColors(Temp->colours, colours);
-				bitmask = Temp->mask;
+				alpha = Data->alpha;
+				DxtcReadColors(Data->colours, colours);
+				bitmask = Data->mask;
 				UInt(&bitmask);
-				Temp ++;
+				Data ++;
 
 				// Four-color block: derive the other two colors.    
 				// 00 = color_0, 01 = color_1, 10 = color_2, 11 = color_3
@@ -1110,32 +1127,25 @@ ILboolean DecompressDXT5(ILimage *lImage, const void *lCompData)
 	ILubyte		alphas[8];
 	const ILubyte *alphamask;
 	ILuint		bits;
-	const struct Data {
-		ILubyte alpha[2];
-		ILubyte alphamask[6];
-		ILubyte colours[4];
-		ILuint  mask;
-	} *Temp = lCompData;
+	const DxtcDXT5Data *Data = lCompData;
 
-	iTrace("----");
 	if (!lCompData)
 		return IL_FALSE;
 
-	iTrace("----");
 	for (z = 0; z < lImage->Depth; z++) {
 		for (y = 0; y < lImage->Height; y += 4) {
 			for (x = 0; x < lImage->Width; x += 4) {
 				if (y >= lImage->Height || x >= lImage->Width)
 					break;
 
-				alphas[0] = Temp->alpha[0];
-				alphas[1] = Temp->alpha[1];
-				alphamask = Temp->alphamask;
+				alphas[0] = Data->alpha[0];
+				alphas[1] = Data->alpha[1];
+				alphamask = Data->alphamask;
 
-				DxtcReadColors(Temp->colours, colours);
-				bitmask = Temp->mask;
+				DxtcReadColors(Data->colours, colours);
+				bitmask = Data->mask;
 				UInt(&bitmask);
-				Temp ++;
+				Data ++;
 
 				// Four-color block: derive the other two colors.    
 				// 00 = color_0, 01 = color_1, 10 = color_2, 11 = color_3
@@ -1387,18 +1397,13 @@ ILboolean DecompressAti1n(DDS_CONTEXT *ctx)
 ILboolean DecompressRXGB(DDS_CONTEXT *ctx)
 {
 	ILuint		x, y, z, i, j, k, Select;
-	const Color565	*color_0, *color_1;
 	Color8888	colours[4], *col;
 	ILuint		bitmask, Offset;
 	ILubyte		alphas[8];
 	const ILubyte *alphamask;
 	ILuint		bits;
-	const struct Data {
-		ILubyte alphas[2];
-		ILubyte alphamask[6];
-		Color565 colors[2];
-		ILuint bitmask;
-	} *Temp = (const void*)ctx->CompData;
+	const DxtcDXT5Data *Data = (const void *)ctx->CompData;
+	ILuint DataOffset = sizeof(*Data);
 
 	if (!ctx->CompData)
 		return IL_FALSE;
@@ -1409,23 +1414,21 @@ ILboolean DecompressRXGB(DDS_CONTEXT *ctx)
 				if (y >= ctx->Height || x >= ctx->Width)
 					break;
 
-				alphas[0] = Temp->alphas[0];
-				alphas[1] = Temp->alphas[1];
-				alphamask = Temp->alphamask;
-				color_0   = Temp->colors;
-				color_1   = Temp->colors + 1;
-				bitmask 	= Temp->bitmask;
-				Temp ++;
+				if (DataOffset > ctx->CompSize) {
+					iTrace("**** End of data reached");
+					iSetError(IL_INVALID_FILE_HEADER);
+					return IL_FALSE;
+				}
 
-				colours[0].r = (ILubyte)(color_0->nRed   << 3);
-				colours[0].g = (ILubyte)(color_0->nGreen << 2);
-				colours[0].b = (ILubyte)(color_0->nBlue  << 3);
-				colours[0].a = 0xFF;
+				alphas[0] = Data->alpha[0];
+				alphas[1] = Data->alpha[1];
+				alphamask = Data->alphamask;
+				DxtcReadColors(Data->colours, colours);
+				bitmask 	= Data->mask;
+				UInt(&bitmask);
 
-				colours[1].r = (ILubyte)(color_1->nRed   << 3);
-				colours[1].g = (ILubyte)(color_1->nGreen << 2);
-				colours[1].b = (ILubyte)(color_1->nBlue  << 3);
-				colours[1].a = 0xFF;
+				Data     		++;
+				DataOffset 	+= sizeof(*Data);
 
 				// Four-color block: derive the other two colors.    
 				// 00 = color_0, 01 = color_1, 10 = color_2, 11 = color_3

@@ -75,9 +75,9 @@ typedef struct Color888
 
 typedef struct Color565
 {
-	unsigned nBlue  : 5;		// order of names changes
-	unsigned nGreen : 6;		//  byte order of output to 32 bit
-	unsigned nRed	: 5;
+	ILubyte nBlue  : 5;		// order of names changes
+	ILubyte nGreen : 6;		//  byte order of output to 32 bit
+	ILubyte nRed	 : 5;
 } Color565;
 
 

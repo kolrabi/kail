@@ -2,6 +2,7 @@
 #define IL_CONV_H
 
 #include "il_internal.h"
+#include "il_manip.h"
 
 #define iBytes(ptr)    ((ILbyte*)  (void*)(ptr))
 #define iShorts(ptr)   ((ILshort*) (void*)(ptr))

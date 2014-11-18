@@ -581,7 +581,7 @@ static ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
 static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
 {
   ILuint read;
-  DWORD * start, * stop, * pixel;
+  //DWORD * start, * stop, * pixel;
   SIO *io = &image->io;
 
   // Update the current image with the new dimensions
@@ -597,11 +597,11 @@ static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
   // Convert data: ABGR to BGRA
   // @TODO: bitfields are not supported here yet ... would mean that at least one color channel 
   // could use more than 8 bits precision
-  start = (DWORD*)(void*) ilGetData();
-  stop = start + image->Width * image->Height;
+  //start = (DWORD*)(void*) ilGetData();
+  //stop = start + image->Width * image->Height;
 
-    for (pixel = start; pixel < stop; ++pixel)
-    (*pixel) = (ILuint)(((*pixel) & 255) << 24) + ((*pixel) >> 8);
+  //for (pixel = start; pixel < stop; ++pixel)
+  //  (*pixel) = (ILuint)(((*pixel) & 255) << 24) + ((*pixel) >> 8);
 
   if ((ILuint)read == image->SizeOfPlane) {
     return IL_TRUE;

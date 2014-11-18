@@ -11,8 +11,6 @@
 //-----------------------------------------------------------------------------
 
 #include "il_internal.h"
-#include "il_manip.h"
-#include "il_pixel.h"
 #include "il_convert.h"
 
 #include <limits.h>
