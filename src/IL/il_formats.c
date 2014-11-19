@@ -58,6 +58,10 @@ iInitFormats() {
   ADD_FORMAT(COL_PAL);
   ADD_FORMAT(PLT_PAL);
 
+#ifndef IL_NO_FTX
+  ADD_FORMAT(FTX);
+#endif
+
 #ifndef IL_NO_CUT
   ADD_FORMAT(CUT);
 #endif
@@ -109,9 +113,6 @@ iInitFormats() {
 #endif
 #ifndef IL_NO_FITS
   ADD_FORMAT(FITS);
-#endif
-#ifndef IL_NO_FTX
-  ADD_FORMAT(FTX);
 #endif
 #ifndef IL_NO_HDR
   ADD_FORMAT(HDR);
