@@ -77,7 +77,7 @@ void ilDefaultStates() {
   StateStruct->ilHints.CompressHint   = IL_USE_COMPRESSION;
 
   // clear errors
-  while (ilGetError() != IL_NO_ERROR)
+  while (iGetError() != IL_NO_ERROR)
     ;
 
   return;
@@ -873,7 +873,7 @@ ILint iGetInt(ILenum Mode) {
   iGetiv(NULL, Mode, &r, 1);
 
   //check if an error occured, set another error
-  err = ilGetError();
+  err = iGetError();
   if (r == -1 && err == IL_INVALID_ENUM) {
     iSetErrorReal(IL_INTERNAL_ERROR);
   } else {

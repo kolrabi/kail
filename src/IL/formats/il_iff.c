@@ -33,7 +33,7 @@ typedef struct {
 static iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *stack);
 static void iff_end_read_chunk(SIO *io, iff_chunk_stack *stack);
 static ILubyte *iff_read_data(SIO *io, ILuint size);
-static ILboolean iLoadIffInternal(ILimage *);
+ILboolean iLoadIffInternal(ILimage *);
 
 
 /* Define the IFF tags we are looking for in the file. */
@@ -76,7 +76,7 @@ static ILboolean iIsValidIff(SIO *io) {
   return chunkInfo.chunkType == IFF_TAG_CIMG;
 }
 
-static ILboolean iLoadIffInternal(ILimage *Image)
+ILboolean iLoadIffInternal(ILimage *Image)
 {
   iff_chunk       chunkInfo;
   iff_chunk_stack chunkStack;
@@ -106,6 +106,7 @@ static ILboolean iLoadIffInternal(ILimage *Image)
   // -- File should begin with a FOR4 chunk of type CIMG
   chunkInfo = iff_begin_read_chunk(io, &chunkStack);
   if (chunkInfo.chunkType != IFF_TAG_CIMG) {
+    iTrace("**** Found chunk type %08x instead of %08x", chunkInfo.chunkType, IFF_TAG_CIMG);
     iSetError(IL_ILLEGAL_FILE_VALUE);
     return IL_FALSE;
   }

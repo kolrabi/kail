@@ -581,27 +581,18 @@ static ILboolean ilReadUncompBmp24(ILimage* image, BMPHEAD * Header)
 static ILboolean ilReadUncompBmp32(ILimage* image, BMPHEAD * Header)
 {
   ILuint read;
-  //DWORD * start, * stop, * pixel;
   SIO *io = &image->io;
 
   // Update the current image with the new dimensions
   if (!prepareBMP(image, Header,  4, IL_BGRA))
-  {
     return IL_FALSE;
-  }
 
   // Read pixel data
   SIOseek(io, Header->bfDataOff, IL_SEEK_SET);
   read = SIOread(io, image->Data, 1, image->SizeOfPlane);
 
-  // Convert data: ABGR to BGRA
-  // @TODO: bitfields are not supported here yet ... would mean that at least one color channel 
-  // could use more than 8 bits precision
-  //start = (DWORD*)(void*) ilGetData();
-  //stop = start + image->Width * image->Height;
-
-  //for (pixel = start; pixel < stop; ++pixel)
-  //  (*pixel) = (ILuint)(((*pixel) & 255) << 24) + ((*pixel) >> 8);
+  // Converting data from ABGR to BGRA seems not be neccessary
+  // However, endianness conversion might be
 
   if ((ILuint)read == image->SizeOfPlane) {
     return IL_TRUE;
@@ -821,6 +812,7 @@ static ILboolean iLoadBitmapInternal(ILimage* image)
   }
 
   iGetBmpHead(io, &Header);
+  iTrace("---- %u", Header.biWidth);
   if (!iCheckBmp(&Header)) {
     iGetOS2Head(io, &Os2Head);
     if (!iCheckOS2(&Os2Head)) {

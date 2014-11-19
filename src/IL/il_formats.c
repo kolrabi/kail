@@ -50,14 +50,37 @@ iInitFormats() {
 
   ILformatEntry *entry; 
 
+
+  // FIXME: JASC_PAL and HALO_PAL use the same extension!
+  ADD_FORMAT(JASC_PAL);
+  ADD_FORMAT(HALO_PAL);
+  ADD_FORMAT(ACT_PAL);
+  ADD_FORMAT(COL_PAL);
+  ADD_FORMAT(PLT_PAL);
+
+#ifndef IL_NO_CUT
+  ADD_FORMAT(CUT);
+#endif
+
+  // moved tga to end of list because it has no magic number
+  // in header to assure that this is really a tga... (20040218)
+#ifndef IL_NO_TGA
+  ADD_FORMAT(TGA);
+#endif
+
+  // Some file types have a weak signature, so we test for these formats 
+  // after checking for most other formats
+#ifndef IL_NO_ICO
+  ADD_FORMAT(ICO);
+#endif
+
+  ADD_FORMAT(EXIF);
+
 #ifndef IL_NO_BLP
   ADD_FORMAT(BLP);
 #endif
 #ifndef IL_NO_BMP
   ADD_FORMAT(BMP);
-#endif
-#ifndef IL_NO_CUT
-  ADD_FORMAT(CUT);
 #endif
 #ifndef IL_NO_CHEAD
   ADD_FORMAT(CHEAD);
@@ -96,12 +119,16 @@ iInitFormats() {
 #ifndef IL_NO_ICNS
   ADD_FORMAT(ICNS);
 #endif
+
+// This will detect ILBM before IFF. ILBM will defer to IFF loading routines
+// on failure.
 #ifndef IL_NO_IFF
   ADD_FORMAT(IFF);
 #endif
 #ifndef IL_NO_ILBM
   ADD_FORMAT(ILBM);
 #endif
+
 #ifndef IL_NO_IWI
   ADD_FORMAT(IWI);
 #endif
@@ -184,27 +211,6 @@ iInitFormats() {
 #endif
 #ifndef IL_NO_XPM
   ADD_FORMAT(XPM);
-#endif
-
-  ADD_FORMAT(EXIF);
-
-  // FIXME: JASC_PAL and HALO_PAL use the same extension!
-  ADD_FORMAT(JASC_PAL);
-  ADD_FORMAT(HALO_PAL);
-  ADD_FORMAT(ACT_PAL);
-  ADD_FORMAT(COL_PAL);
-  ADD_FORMAT(PLT_PAL);
-
-  // Some file types have a weak signature, so we test for these formats 
-  // after checking for most other formats
-#ifndef IL_NO_ICO
-  ADD_FORMAT(ICO);
-#endif
-
-  //moved tga to end of list because it has no magic number
-  //in header to assure that this is really a tga... (20040218)
-#ifndef IL_NO_TGA
-  ADD_FORMAT(TGA);
 #endif
 
   entry = FormatHead; 
@@ -290,13 +296,14 @@ iIdentifyFormat(SIO *io) {
   pos = SIOtell(io);
 
   while (entry) {
-    if (entry->format->Validate && entry->format->Validate(io))
+    if (entry->format->Validate && entry->format->Validate(io)) {
       return entry->id;
+    }
 
     SIOseek(io, pos, IL_SEEK_SET);
     entry = entry->next;
   }
-  iTrace("**** unknown format");
+  iTrace("**** Unknown format");
   return IL_TYPE_UNKNOWN;
 }
 

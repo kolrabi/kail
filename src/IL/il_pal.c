@@ -223,7 +223,7 @@ ILAPI ILpal* ILAPIENTRY iConvertPal(ILpal *Pal, ILenum DestFormat)
           if (NewPal->Palette == NULL)
             goto alloc_error;
           if ((Pal->PalType == IL_PAL_BGR24 && (DestFormat == IL_PAL_RGB32 || DestFormat == IL_PAL_RGBA32)) ||
-            (Pal->PalType == IL_PAL_RGB24 && (DestFormat == IL_PAL_BGR32 || DestFormat == IL_PAL_BGRA32))) {
+              (Pal->PalType == IL_PAL_RGB24 && (DestFormat == IL_PAL_BGR32 || DestFormat == IL_PAL_BGRA32))) {
               for (i = 0, j = 0; i < Pal->PalSize; i += 3, j += 4) {
                 NewPal->Palette[j]   = Pal->Palette[i+2];
                 NewPal->Palette[j+1] = Pal->Palette[i+1];

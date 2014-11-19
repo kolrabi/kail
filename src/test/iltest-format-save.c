@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
 
   ilEnable(IL_ORIGIN_SET);    // flip image on load if necessary
   ilEnable(IL_FILE_MODE);     // overwrite files
+  ilSetInteger(IL_QUANTIZATION_MODE, IL_NEU_QUANT);
 
   // load reference image
   ilGenImages(1, &reference);
