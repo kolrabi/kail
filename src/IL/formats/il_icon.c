@@ -113,18 +113,14 @@ static ILboolean iLoadIconInternal(ILimage* image) {
     return IL_FALSE;
   }
 
-  DirEntries = (ICODIRENTRY*)ialloc(sizeof(ICODIRENTRY) * IconDir.Count);
-  IconImages = (ICOIMAGE*)   ialloc(sizeof(ICOIMAGE)    * IconDir.Count);
+  DirEntries = (ICODIRENTRY*)icalloc(sizeof(ICODIRENTRY), IconDir.Count);
+  IconImages = (ICOIMAGE*)   icalloc(sizeof(ICOIMAGE),    IconDir.Count);
 
   if (DirEntries == NULL || IconImages == NULL) {
     ifree(DirEntries);
     ifree(IconImages);
     return IL_FALSE;
   }
-
-  // Make it easier for file_read_error.
-  for (i = 0; i < IconDir.Count; i++)
-    imemclear(&IconImages[i], sizeof(ICOIMAGE));
 
   for (i = 0; i < IconDir.Count; ++i) {
     if (SIOread(io, DirEntries + i, 1, sizeof(ICODIRENTRY)) != sizeof(ICODIRENTRY)) {
@@ -162,7 +158,7 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       // Need to go back the 4 bytes that were just read.
       SIOseek(io, DirEntries[i].Offset, IL_SEEK_SET);
 
-      if (SIOread(io, IconImages + i, 1, sizeof(ICOIMAGE)) != sizeof(ICOIMAGE)) {
+      if (SIOread(io, &IconImages[i].Head, 1, sizeof(INFOHEAD)) != sizeof(INFOHEAD)) {
         goto file_read_error;
       }
 
@@ -212,6 +208,9 @@ static ILboolean iLoadIconInternal(ILimage* image) {
       ANDPadSize = (4 - ((IconImages[i].Head.Width                             + 7) / 8) % 4) % 4;  // AND is 1 bit/pixel
       Size =       (    Bps + PadSize) * (ILuint)(IconImages[i].Head.Height / 2);
 
+      if (IconImages[i].Head.SizeImage > Size)
+        Size = IconImages[i].Head.SizeImage;
+
       IconImages[i].Data = (ILubyte*)ialloc(Size);
       if (IconImages[i].Data == NULL)
         goto file_read_error;
@@ -221,12 +220,16 @@ static ILboolean iLoadIconInternal(ILimage* image) {
 
       Size = (Bps + ANDPadSize) * (ILuint)(IconImages[i].Head.Height / 2);
 
-      IconImages[i].AND = (ILubyte*)ialloc(Size);
-      if (IconImages[i].AND == NULL)
-        goto file_read_error;
+      if (IconImages[i].Head.BitCount < 32) {
+        IconImages[i].AND = (ILubyte*)ialloc(Size);
+        if (IconImages[i].AND == NULL)
+          goto file_read_error;
 
-      if (SIOread(io, IconImages[i].AND, 1, Size) != Size)
-        goto file_read_error;
+        if (SIOread(io, IconImages[i].AND, 1, Size) != Size) {
+          ifree(IconImages[i].AND);
+          //goto file_read_error;
+        }
+      }
     }
   }
 
@@ -413,6 +416,87 @@ file_read_error:
   if (DirEntries)
     ifree(DirEntries);
   return IL_FALSE;
+}
+
+// Internal function used to load the icon.
+static ILboolean iSaveIconInternal(ILimage* image) {
+  ILimage   *Image = NULL;
+  SIO *io;
+  ILuint    Start, ImageNum;
+
+  if (image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  io = &image->io;
+
+  Start = SIOtell(io);
+
+  SaveLittleUShort(io, 0); // Reserved (must be 0)
+  SaveLittleUShort(io, 1); // Type (1 for icons, 2 for cursors)
+  SaveLittleUShort(io, iGetInteger(image, IL_NUM_IMAGES)+1);  // How many different images?
+
+  for (Image = image; Image; Image = Image->Next) {
+    if (Image->Width > 256 || Image->Height > 256) {
+      iTrace("----- Image dimension larger than 256. Icon file won't be compatible with older system.")
+    }
+
+    SIOputc(io, Image->Width  > 256 ? 0 : (ILubyte)Image->Width);  // Width, in pixels
+    SIOputc(io, Image->Height > 256 ? 0 : (ILubyte)Image->Height); // Height, in pixels
+    SIOputc(io, 0); // Number of colors in image (0 if >=8bpp)
+    SIOputc(io, 0); // Reserved (must be 0)
+    SaveLittleUShort(io, 0); // Colour planes
+    SaveLittleUShort(io, 0); // Bits per pixel
+    SaveLittleUInt(io, 0);   // How many bytes in this resource? (Update later)
+    SaveLittleUInt(io, 0);  // Offset from beginning of the file (Update later)
+  }
+
+  ImageNum = 0;
+  for (Image = image; Image; Image = Image->Next) {
+    ILuint Pos = SIOtell(io);
+    ILuint Pos2;
+    ILubyte *Buffer = iConvertBuffer(Image->SizeOfData, Image->Format, IL_BGRA, Image->Type, IL_UNSIGNED_BYTE, &Image->Pal, Image->Data);
+
+    if (!Buffer) {
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
+
+    SIOseek(io, Start + 6 + sizeof(ICODIRENTRY) * ImageNum + 12, IL_SEEK_SET);
+    SaveLittleUInt(io, Pos);
+    SIOseek(io, Pos, IL_SEEK_SET);
+
+    // TODO: add support for PNG writing
+
+    SaveLittleUInt(io, sizeof(INFOHEAD));
+    SaveLittleUInt(io, Image->Width);
+    SaveLittleUInt(io, Image->Height * 2);
+    SaveLittleUShort(io, 1);
+    SaveLittleUShort(io, 32);
+    SaveLittleUInt(io, 0);
+    SaveLittleUInt(io, Image->Width * Image->Height * 4);
+    SaveLittleUInt(io, 0);
+    SaveLittleUInt(io, 0);
+    SaveLittleUInt(io, 0);
+    SaveLittleUInt(io, 0);
+
+    if (!SIOwrite(io, Buffer, Image->Width * Image->Height * 4, 1)) {
+      ifree(Buffer);
+      return IL_FALSE;
+    }
+    Pos2 = SIOtell(io);
+
+    SIOseek(io, Start + 6 + sizeof(ICODIRENTRY) * ImageNum +  8, IL_SEEK_SET);
+    SaveLittleUInt(io, Pos2-Pos);
+    SIOseek(io, Pos2, IL_SEEK_SET);
+
+    ifree(Buffer);
+
+    ImageNum++;
+  }
+
+  return IL_TRUE;
 }
 
 #ifndef IL_NO_PNG
@@ -677,7 +761,7 @@ static ILconst_string iFormatExtsICO[] = {
 ILformat iFormatICO = { 
   /* .Validate = */ iIsValidIcon, 
   /* .Load     = */ iLoadIconInternal, 
-  /* .Save     = */ NULL, 
+  /* .Save     = */ iSaveIconInternal, 
   /* .Exts     = */ iFormatExtsICO
 };
 
