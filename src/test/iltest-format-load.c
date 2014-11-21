@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
   CHECK(testLoadImage(argv[2], image));
   dumpMeta(image);
 
-  CHECK(testSaveImage("test.png", image));
+  CHECK(testSaveImage("test-load.jpg", image));
   /*
   CHECK(testSaveImage("test.tiff", image));
   CHECK(testSaveImage("test.jpeg", image));
@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
   iluScale((ILuint)ilGetIntegerImage(reference, IL_IMAGE_WIDTH), (ILuint)ilGetIntegerImage(reference, IL_IMAGE_HEIGHT), 1);
   similarity = iluSimilarity(reference);
   fprintf(stderr, "Similarity: %f\n", similarity);
-  // CHECK_GREATER(similarity, 0.95);
+   CHECK_GREATER(similarity, 0.95);
 
   // cleanup
   ilDeleteImages(1, &image);  

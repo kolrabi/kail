@@ -56,6 +56,9 @@ SET                     ( REF_BL     ${CMAKE_SOURCE_DIR}/images/dougie-bl.png )
 # red/green only reference (for 3DC compression)
 SET                     ( REF_RG     ${CMAKE_SOURCE_DIR}/images/dougie-rg.png )
 
+# red/green only reference (for rxgb compression)
+SET                     ( REF_RXGB   ${CMAKE_SOURCE_DIR}/images/dougie-rxgb.png )
+
 # animated reference
 SET                     ( REF_ANI    ${CMAKE_SOURCE_DIR}/images/animated-ref.png )
 
@@ -137,7 +140,7 @@ ADD_TEST                ( Load_DDS3                 ILtestFormatLoad  ${REF_CLR}
 ADD_TEST                ( Load_DDS4                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt5.dds         600 400 1 0 )
 ADD_TEST                ( Load_DDS5                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-ati1.dds         600 400 1 0 )
 ADD_TEST                ( Load_DDS6                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-ati2.dds         600 400 1 0 )
-ADD_TEST                ( Load_DDS7                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie-dxt5-rxgb.dds    600 400 1 0 )
+ADD_TEST                ( Load_DDS7                 ILtestFormatLoad  ${REF_RXGB} ${FMT_PFX}/dougie-dxt5-rxgb.dds    600 400 1 0 )
 
 ADD_TEST                ( Load_DICOM                ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.dicom  600 400 1 0 )
 # DOOM has no autodetection
@@ -196,6 +199,7 @@ SET                     ( TMP_PFX    ${CMAKE_BINARY_DIR} )
 
 ADD_TEST                ( Save_BLP                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.blp    )
 ADD_TEST                ( Save_BMP                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.bmp    )
+ADD_TEST                ( Save_CUT_PAL              ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.pal    0476  )
 ADD_TEST                ( Save_CUT                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.cut    )
 ADD_TEST                ( Save_DCX                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.dcx    )
 ADD_TEST                ( Save_DDS                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.dds    )

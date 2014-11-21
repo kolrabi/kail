@@ -89,6 +89,7 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
     case IL_TGACOMP:      MaxRun = TGA_MAX_RUN;     break;
     case IL_SGICOMP:      MaxRun = SGI_MAX_RUN;     break;
     case IL_BMPCOMP:      MaxRun = BMP_MAX_RUN;     break;
+    case IL_CUTCOMP:      MaxRun = CUT_MAX_RUN;     break;
     default:  
       iSetError(IL_INVALID_PARAM);
       return IL_FALSE;
@@ -115,6 +116,8 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
                                   *q++ = (ILubyte)DiffCount;
                                   break;
 
+        case IL_CUTCOMP:          DiffCount --; *q++ = (ILubyte)DiffCount;
+                                  break;
         case IL_SGICOMP:          *q++ = (ILubyte)(DiffCount | 0x80);         
                                   break;
       }
@@ -138,6 +141,7 @@ ILboolean iRleCompressLine(const ILubyte *p, ILuint n, ILubyte bpp,
     if( SameCount > 0 ) { // create a RLE packet
       switch(CompressMode) {
         case IL_TGACOMP:          *q++ = (ILubyte)((SameCount - 1) | 0x80);         break;
+        case IL_CUTCOMP:          *q++ = (ILubyte)(SameCount | 0x80);               break;
         case IL_SGICOMP:
         case IL_BMPCOMP:          *q++ = (ILubyte)(SameCount);                      break;
       }

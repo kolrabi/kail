@@ -137,6 +137,79 @@ static ILboolean iLoadHaloPal(ILimage *Image) {
 	return IL_TRUE;
 }
 
+static ILboolean iSaveHaloPal(ILimage *Image) {
+	ILuint		i;
+	SIO *			io;
+	ILuint 		BlockPos;
+	ILimage * ConvertedImage;
+	ILpal *   Pal;
+
+	if (Image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &Image->io;
+
+	if (Image->Format == IL_COLOUR_INDEX && Image->Type == IL_UNSIGNED_BYTE)
+		ConvertedImage = Image;
+	else
+		ConvertedImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
+
+	if (ConvertedImage == NULL) {
+		return IL_FALSE;
+	}
+
+	Pal = iConvertPal(&ConvertedImage->Pal, IL_PAL_RGB24);
+	if (ConvertedImage != Image)
+		iCloseImage(ConvertedImage);
+
+	if (!Pal) {
+		return IL_FALSE;
+	}
+
+	SIOputc(io, 'A');
+	SIOputc(io, 'H');
+	SaveLittleUShort(io, 0xe3);
+	SaveLittleUShort(io, 0);
+	SIOputc(io, 10);
+	SIOputc(io, 0);
+	SaveLittleUInt(io, 0);
+	SaveLittleUShort(io, 255);
+	SaveLittleUShort(io, 255);
+	SaveLittleUShort(io, 255);
+	SaveLittleUShort(io, 255);
+	SIOpad(io, 20);
+
+	BlockPos = 40;
+
+	for (i = 0; i < 256; i++) {
+		ILuint AfterPos = BlockPos + 3 * sizeof(ILushort);
+		if (AfterPos > 512) {
+			// tuple would cross 512 byte boundary, pad to beginning of next block
+			SIOpad(io, 512 - BlockPos);
+			BlockPos = 0;
+		}
+
+		if (i * 3 + 2 < Pal->PalSize) {
+			SaveLittleUShort(io, Pal->Palette[i*3+0]);
+			SaveLittleUShort(io, Pal->Palette[i*3+1]);
+			SaveLittleUShort(io, Pal->Palette[i*3+2]);
+		} else {
+			SaveLittleUShort(io, 0xFFFF);
+			SaveLittleUShort(io, 0xFFFF);
+			SaveLittleUShort(io, 0xFFFF);
+		}
+		BlockPos += 3 * sizeof(ILushort);
+	}
+	if (BlockPos)
+		SIOpad(io, 512 - BlockPos%512);
+
+	iClosePal(Pal);
+
+	return IL_TRUE;
+}
+
 static ILconst_string iFormatExtsHALO_PAL[] = { 
 	IL_TEXT("pal"),
   NULL 
@@ -145,6 +218,6 @@ static ILconst_string iFormatExtsHALO_PAL[] = {
 ILformat iFormatHALO_PAL = { 
   /* .Validate = */ iIsValidHaloPal, 
   /* .Load     = */ iLoadHaloPal, 
-  /* .Save     = */ NULL,
+  /* .Save     = */ iSaveHaloPal,
   /* .Exts     = */ iFormatExtsHALO_PAL
 };

@@ -361,7 +361,7 @@ enum {
 #define IL_STACK_OVERFLOW       0x050E
 #define IL_STACK_UNDERFLOW      0x050F
 #define IL_INVALID_CONVERSION   0x0510
-#define IL_BAD_DIMENSIONS       0x0511 // unused
+#define IL_BAD_DIMENSIONS       0x0511
 #define IL_FILE_READ_ERROR      0x0512
 #define IL_FILE_WRITE_ERROR     0x0512
 

@@ -15,6 +15,7 @@
 #ifndef IL_NO_CUT
 #include "il_manip.h"
 #include "il_pal.h"
+#include "algo/il_rle.h"
 
 // Wrap it just in case...
 #include "pack_push.h"
@@ -176,6 +177,64 @@ iLoadCutInternal(ILimage* image) {
 	return IL_TRUE;
 }
 
+static ILboolean 
+iSaveCutInternal(ILimage* Image) {
+	SIO *       io;
+	ILuint      y = 0;
+	ILimage * 	ConvertedImage;
+	ILubyte *   LineBuffer;
+	ILuint      LineSize = 0;
+
+	if (Image == NULL) {
+		iSetError(IL_ILLEGAL_OPERATION);
+		return IL_FALSE;
+	}
+
+	io = &Image->io;
+
+	if (Image->Width > IL_MAX_UNSIGNED_SHORT || Image->Height > IL_MAX_UNSIGNED_SHORT) {
+		iSetError(IL_BAD_DIMENSIONS);
+		return IL_FALSE;
+	}
+
+	if (Image->Format == IL_COLOUR_INDEX && Image->Type == IL_UNSIGNED_BYTE)
+		ConvertedImage = Image;
+	else
+		ConvertedImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
+
+	if (ConvertedImage == NULL) {
+		return IL_FALSE;
+	}
+
+	// header
+	SaveLittleUShort(io, Image->Width);
+	SaveLittleUShort(io, Image->Height);
+	SaveLittleUShort(io, 0);
+
+	LineBuffer = ialloc(Image->Width * 2 + 1);
+	if (!LineBuffer) {
+		if (ConvertedImage != Image)
+			iCloseImage(ConvertedImage);
+		return IL_FALSE;
+	}
+
+	for (y=0; y<ConvertedImage->Height; y++) {
+		ILuint yOffset = y;
+		if ( ConvertedImage->Origin != IL_ORIGIN_UPPER_LEFT)
+			yOffset = (ConvertedImage->Height - y - 1);
+
+		iRleCompressLine( ConvertedImage->Data + ConvertedImage->Bps*yOffset, ConvertedImage->Width, 1, LineBuffer, &LineSize, IL_CUTCOMP);
+		SaveLittleUShort(io, LineSize);
+		SIOwrite(io, LineBuffer, LineSize, 1);
+	}
+
+	if (ConvertedImage != Image)
+		iCloseImage(ConvertedImage);
+	ifree(LineBuffer);
+
+	return IL_TRUE;
+}
+
 static ILconst_string iFormatExtsCUT[] = { 
 	IL_TEXT("cut"), 
 	NULL 
@@ -184,7 +243,7 @@ static ILconst_string iFormatExtsCUT[] = {
 ILformat iFormatCUT = { 
 	/* .Validate = */ iIsValidCut, 
 	/* .Load     = */ iLoadCutInternal, 
-	/* .Save     = */ NULL, 
+	/* .Save     = */ iSaveCutInternal, 
 	/* .Exts     = */ iFormatExtsCUT
 };
 

@@ -87,4 +87,16 @@ static inline ILboolean testSaveImage(const char *file_, ILuint image) {
   return bRet;
 }
 
+static inline ILboolean testSaveImageFormat(const char *file_, ILuint image, ILenum format) {
+  ILchar    file[1024];
+  ILboolean bRet;
+
+  charToILchar(file_, file, 1024);
+
+  fprintf(stderr, "saving  %s\n", file_);
+
+  ilBindImage(image);
+  bRet = ilSave(format, file);
+  return bRet;
+}
 #endif

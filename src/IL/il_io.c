@@ -175,6 +175,7 @@ ILboolean ILAPIENTRY iLoad(ILimage *Image, ILenum Type, ILconst_string FileName)
 
     return bRet;
   } else {
+    iTrace("***** Could not open file "IL_SFMT, FileName);
     iSetError(IL_COULD_NOT_OPEN_FILE);
     return IL_FALSE;
   }
@@ -257,6 +258,7 @@ ILboolean ILAPIENTRY iSave(ILimage *Image, ILenum Type, ILconst_string FileName)
 
   format = iGetFormat(Type);
   if (!format || !format->Save) {
+    iTrace("**** Unknown format %04x", Type);
     iSetError(IL_FORMAT_NOT_SUPPORTED);
     return IL_FALSE;
   }
