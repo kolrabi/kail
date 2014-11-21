@@ -168,7 +168,7 @@ ADD_TEST                ( Load_PCX                  ILtestFormatLoad  ${REF_CLR}
 ADD_TEST                ( Load_PIC                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pic    600 400 1 0 )
 ADD_TEST                ( Load_PIX                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pix    600 400 1 0 )
 ADD_TEST                ( Load_PNG                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.png    600 400 1 0 )
-ADD_TEST                ( Load_PBM                  ILtestFormatLoad  ${REF_BL}  ${FMT_PFX}/dougie.pbm    600 400 1 0 )
+ADD_TEST                ( Load_PBM                  ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.pbm    600 400 1 0 )
 ADD_TEST                ( Load_PGM                  ILtestFormatLoad  ${REF_BW}  ${FMT_PFX}/dougie.pgm    600 400 1 0 )
 ADD_TEST                ( Load_PPM                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.ppm    600 400 1 0 )
 ADD_TEST                ( Load_PNM                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.pnm    600 400 1 0 )

@@ -375,7 +375,7 @@ static ILboolean iGetWord(SIO *io, ILboolean final,	ILbyte *SmallBuff) {
 
 static ILboolean iSavePbmInternal(ILimage *Image)
 {
-	ILuint		Bpp, MaxVal = UCHAR_MAX, i = 0, j;
+	ILuint		Bpp, /*MaxVal = UCHAR_MAX, */i = 0, j;
 	ILenum		Type = 0;
 	ILuint		LinePos = 0;  // Cannot exceed 70 for pnm's!
 	ILboolean	Binary = IL_FALSE;
@@ -393,14 +393,6 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 
 	Type = IL_PBM_ASCII;
 /*
-	if (iGetHint(IL_COMPRESSION_HINT) == IL_USE_COMPRESSION) {
-		Type += 3;
-		Binary = IL_TRUE;
-	}
-	else {
-		Binary = IL_FALSE;
-	}*/
-
 	if (Image->Type == IL_UNSIGNED_BYTE) {
 		MaxVal = UCHAR_MAX;
 	}
@@ -415,7 +407,7 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 		iSetError(IL_FORMAT_NOT_SUPPORTED);
 		return IL_FALSE;
 	}
-
+*/
 	switch (Type)
 	{
 		case IL_PBM_ASCII:
@@ -423,13 +415,11 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 			SIOputs(io, "P1\n");
 			TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
 			break;
-		//case IL_PBM_BINARY:  // Don't want to mess with saving bits just yet...
-			//Bpp = 1;
-			//ilprintf("P4\n");
-			//break;
+
 		case IL_PBM_BINARY:
 			iSetError(IL_FORMAT_NOT_SUPPORTED);
 			return IL_FALSE;
+
 		default:
 			iSetError(IL_INTERNAL_ERROR);
 			return IL_FALSE;
@@ -449,8 +439,7 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 			iCloseImage(TempImage);
 			return IL_FALSE;
 		}
-	}
-	else {
+	}	else {
 		TempData = TempImage->Data;
 	}
 
@@ -460,9 +449,9 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 	while (i < TempImage->SizeOfPlane) {
 		for (j = 0; j < Bpp; j++) {
 			if (Binary) {
-				Image->io.putchar((ILubyte)(TempData[i] < 68 ? 1 : 0), Image->io.handle);
+				SIOputc(io, (ILubyte)(TempData[i] < 68 ? 1 : 0));
 			}	else {
-				if (TempData[i] < 68)
+				if (TempData[i] < 128)
 					SIOputs(io, "1 ");
 				else
 					SIOputs(io, "0 ");
