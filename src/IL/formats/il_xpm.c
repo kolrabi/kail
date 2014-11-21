@@ -566,6 +566,89 @@ static ILboolean iLoadXpmInternal(ILimage *Image) {
 #undef BUFFER_SIZE
 }
 
+static ILboolean iSaveXpmInternal(ILimage *Image) {
+  ILimage *   ConvertedImage;
+  SIO *       io;
+  const char *InternalName = "IL_IMAGE";
+  const char *Name;
+  char        tmp[256];
+  ILuint      i, x, y;
+  ILpal *     Pal;
+
+  if (Image == NULL) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  io = &Image->io;
+
+  if (Image->Format == IL_COLOUR_INDEX && Image->Type == IL_UNSIGNED_BYTE)
+    ConvertedImage = Image;
+  else
+    ConvertedImage = iConvertImage(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
+
+  if (ConvertedImage == NULL) {
+    return IL_FALSE;
+  }
+
+  Pal = iConvertPal(&ConvertedImage->Pal, IL_PAL_RGB24);
+  if (!Pal) {
+    if (ConvertedImage != Image)
+      iCloseImage(ConvertedImage);
+
+    return IL_FALSE;
+  }
+
+  Name = iGetString(Image, IL_META_DOCUMENT_NAME);
+  if (Name == NULL)
+    Name = InternalName;
+
+  // header
+  SIOputs(io, "/* XPM */\n");
+
+  SIOputs(io, "static char * ");
+  SIOputs(io, Name);
+  SIOputs(io, "[] = {\n");
+
+  snprintf(tmp, sizeof(tmp), "  \"%u %u 256 2\", \n", ConvertedImage->Width, ConvertedImage->Height);
+  SIOputs(io, tmp);
+
+  for (i=0; i<256; i++) {
+    snprintf(tmp, sizeof(tmp), "  \"%02x c #%02x%02x%02x\", \n", 
+      i,
+      Pal->Palette[i*3+0],
+      Pal->Palette[i*3+1],
+      Pal->Palette[i*3+2]
+    );
+    SIOputs(io, tmp);
+  }
+  iClosePal(Pal);
+
+  for (y=0; y<ConvertedImage->Height; y++) {
+    ILuint yOffset = y;
+    if ( ConvertedImage->Origin != IL_ORIGIN_UPPER_LEFT)
+      yOffset = (ConvertedImage->Height - y - 1);
+
+    SIOputs(io, "  \"");
+    for (x=0; x<ConvertedImage->Width; x++) {
+      snprintf(tmp, sizeof(tmp), "%02x", ConvertedImage->Data[x+yOffset*ConvertedImage->Bps]);
+      SIOputs(io, tmp);
+    }
+    if (y+1 < ConvertedImage->Height)
+      SIOputs(io, "\",\n");
+    else
+      SIOputs(io, "\"\n");
+  }
+  SIOputs(io, "}\n");
+
+  if (ConvertedImage != Image)
+    iCloseImage(ConvertedImage);
+
+  return IL_TRUE;
+
+#undef BUFFER_SIZE
+}
+
 static ILconst_string iFormatExtsXPM[] = { 
   IL_TEXT("xpm"), 
   NULL 
@@ -574,7 +657,7 @@ static ILconst_string iFormatExtsXPM[] = {
 ILformat iFormatXPM = { 
   /* .Validate = */ iIsValidXpm, 
   /* .Load     = */ iLoadXpmInternal, 
-  /* .Save     = */ NULL, 
+  /* .Save     = */ iSaveXpmInternal, 
   /* .Exts     = */ iFormatExtsXPM
 };
 

@@ -186,7 +186,7 @@ ADD_TEST                ( Load_TIFF                 ILtestFormatLoad  ${REF_CLR}
 # UTX has no autodetection
 # VTF has no autodetection
 # WAL has no autodetection
-ADD_TEST                ( Load_WBMP                 ILtestFormatLoad  ${REF_BL}  ${FMT_PFX}/dougie.wbmp   600 400 1 0 )
+ADD_TEST                ( Load_WBMP                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.wbmp   600 400 1 0 )
 # WDP TODO is not yet implemented
 ADD_TEST                ( Load_XPM                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.xpm    600 400 1 0 )
 
@@ -231,7 +231,7 @@ ADD_TEST                ( Save_PIX                  ILtestFormatSave  ${REF_CLR}
 ADD_TEST                ( Save_PNG                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.png    )
 ADD_TEST                ( Save_PPM                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.ppm    )
 ADD_TEST                ( Save_PGM                  ILtestFormatSave  ${REF_BW}  ${TMP_PFX}/dougie.pgm    )
-ADD_TEST                ( Save_PBM                  ILtestFormatSave  ${REF_BL}  ${TMP_PFX}/dougie.pbm    )
+ADD_TEST                ( Save_PBM                  ILtestFormatSave  ${REF_BW}  ${TMP_PFX}/dougie.pbm    )
 ADD_TEST                ( Save_PNM                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.pnm    )
 ADD_TEST                ( Save_PSD                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.psd    )
 ADD_TEST                ( Save_PSP                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.psp    )
@@ -247,7 +247,7 @@ ADD_TEST                ( Save_TIFF                 ILtestFormatSave  ${REF_CLR}
 # UTX
 # VTF
 # WAL
-ADD_TEST                ( Save_WBMP                 ILtestFormatSave  ${REF_BW}  ${TMP_PFX}/dougie.wbmp   )
+ADD_TEST                ( Save_WBMP                 ILtestFormatSave  ${REF_BL}  ${TMP_PFX}/dougie.wbmp   )
 # WDP TODO
 ADD_TEST                ( Save_XPM                  ILtestFormatSave  ${REF_CLR} ${TMP_PFX}/dougie.xpm    )
 
