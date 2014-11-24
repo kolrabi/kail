@@ -15,6 +15,10 @@
 
 #include "il_internal.h"
 
-ILboolean ilLoadJp2LInternal(ILimage* image, const void *Lump, ILuint Size);
+#ifndef IL_NO_JP2
 
+ILboolean ilLoadJp2LInternal(ILimage* image, const void *Lump, ILuint Size);
+ILboolean iLoadJp2Internal(ILimage* Image);
+
+#endif
 #endif//JP2_H

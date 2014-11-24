@@ -83,6 +83,8 @@ typedef struct GifImageDescriptor {
 	ILubyte  Flags;
 } GifImageDescriptor;
 
+#include "pack_pop.h"
+
 typedef struct GifLoadingContext {
 	ILimage * Target;
 	ILimage * Image;
@@ -127,7 +129,5 @@ typedef struct LZWInputStream {
 	ILubyte   OutputBuffer[4096];
 	ILuint    OutputBufferLen;
 } LZWInputStream;
-
-#include "pack_pop.h"
 
 #endif//GIF_H

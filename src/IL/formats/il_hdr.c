@@ -63,7 +63,8 @@ static ILboolean iIsValidHdr(SIO* io)
 	ILuint Start = SIOtell(io);
 	ILuint read = SIOread(io, header, 1, sizeof(header));
 	SIOseek(io, Start, IL_SEEK_SET);
-	return read == 10 && memcmp(header, "#?RADIANCE", 10) == 0;
+	return ( read == 10 && memcmp(header, "#?RADIANCE", 10) == 0 ) 
+	    || ( read == 10 && memcmp(header, "#?RGBE",      6) == 0 );
 }
 
 static void ReadScanline(ILimage* image, ILubyte *scanline, ILuint w) {
@@ -267,7 +268,7 @@ float2rgbe(unsigned char rgbe[4], float red, float green, float blue)
     rgbe[0] = rgbe[1] = rgbe[2] = rgbe[3] = 0;
   }
   else {
-    v = (float)(frexp(v,&e) * 256.0/v);
+    v = (float)(frexp(v,&e) * 255.0/v);
     rgbe[0] = (unsigned char) (red * v);
     rgbe[1] = (unsigned char) (green * v);
     rgbe[2] = (unsigned char) (blue * v);
@@ -279,7 +280,7 @@ float2rgbe(unsigned char rgbe[4], float red, float green, float blue)
 static ILboolean RGBE_WriteHeader(SIO *io, ILuint width, ILuint height, rgbe_header_info *info)
 {
 	char tmp[512];
-	char *programtype = "RGBE";
+	char *programtype = "RADIANCE";
 
 	if (info && (info->valid & RGBE_VALID_PROGRAMTYPE))
 		programtype = (char*) info->programtype;
@@ -447,8 +448,8 @@ static ILboolean iSaveHdrInternal(ILimage* image)
 	while(TempImage->Height-- > 0) {
 		rgbe[0] = 2;
 		rgbe[1] = 2;
-		rgbe[2] = (ILubyte)TempImage->Width >> 8;
-		rgbe[3] = (ILubyte)TempImage->Width & 0xFF;
+		rgbe[2] = (ILubyte)(TempImage->Width >> 8);
+		rgbe[3] = (ILubyte)(TempImage->Width & 0xFF);
 		if (SIOwrite(&image->io, rgbe, sizeof(rgbe), 1) < 1) {
 			free(buffer);
 			if (image != TempImage)

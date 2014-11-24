@@ -47,6 +47,9 @@ TARGET_LINK_LIBRARIES   ( ILtestConvert   ${ILLIB} ILU )
 # true color reference
 SET                     ( REF_CLR    ${CMAKE_SOURCE_DIR}/images/dougie.png )
 
+# true color reference, letterboxed square
+SET                     ( REF_LB     ${CMAKE_SOURCE_DIR}/images/dougie-lb.png )
+
 # grayscale reference
 SET                     ( REF_BW     ${CMAKE_SOURCE_DIR}/images/dougie-bw.png )
 
@@ -152,7 +155,7 @@ ADD_TEST                ( Load_GIF                  ILtestFormatLoad  ${REF_CLR}
 ADD_TEST                ( Load_GIFAnim              ILtestFormatLoad  ${REF_ANI} ${FMT_PFX}/animated.gif  256 256 1 99 ) # special resolution, 100 frames
 ADD_TEST                ( Load_HDR                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.hdr    600 400 1 0 )
 # CHEAD has no autodetection
-ADD_TEST                ( Load_ICNS                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.icns   512 512 1 5 ) # special resolution, 6 "frames"
+ADD_TEST                ( Load_ICNS                 ILtestFormatLoad  ${REF_LB}  ${FMT_PFX}/dougie.icns   512 512 1 5 ) # special resolution, 6 "frames"
 ADD_TEST                ( Load_ICON                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.ico    600 400 1 0 )
 ADD_TEST                ( Load_IFF                  ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.iff    600 400 1 0 )
 ADD_TEST                ( Load_ILBM                 ILtestFormatLoad  ${REF_CLR} ${FMT_PFX}/dougie.lbm    600 400 1 0 )

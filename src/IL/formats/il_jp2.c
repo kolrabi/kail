@@ -59,7 +59,7 @@ static ILboolean iIsValidJp2(SIO* io) {
 }
 
 //! This is separated so that it can be called for other file types, such as .icns.
-static ILboolean iLoadJp2Internal(ILimage* Image) {
+ILboolean iLoadJp2Internal(ILimage* Image) {
 	SIO *io;
 	ILboolean bRet;
     jas_stream_t *Stream = NULL;
@@ -143,7 +143,6 @@ static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 	if (!Jp2Image)
 	{
 		iSetError(IL_ILLEGAL_FILE_VALUE);
-		jas_stream_close(Stream);
 		return IL_FALSE;
 	}
 

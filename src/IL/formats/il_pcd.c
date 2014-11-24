@@ -18,6 +18,18 @@
 #include "il_manip.h"
 #include "il_color.h"
 
+static ILboolean iIsValidPCD(SIO *io) {
+	ILubyte Sig[7];
+	ILuint  Start = SIOtell(io);
+	ILuint  Read;
+
+	SIOseek(io, 0x800, IL_SEEK_CUR);
+	Read = SIOread(io, Sig, 1, sizeof(Sig));
+	SIOseek(io, Start, IL_SEEK_SET);
+
+	return Read == sizeof(Sig) && !memcmp(Sig, "PCD_IPI", 7);
+}
+
 static ILboolean iLoadPcdInternal(ILimage* image) {
 	ILubyte	VertOrientation;
 	ILuint	Width, Height, i, Total, x, CurPos = 0;
@@ -125,7 +137,7 @@ static ILconst_string iFormatExtsPCD[] = {
 };
 
 ILformat iFormatPCD = { 
-  /* .Validate = */ NULL, // TODO: iIsValidPCD, 
+  /* .Validate = */ iIsValidPCD, 
   /* .Load     = */ iLoadPcdInternal, 
   /* .Save     = */ NULL, 
   /* .Exts     = */ iFormatExtsPCD
