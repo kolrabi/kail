@@ -258,7 +258,7 @@ ADD_TEST                ( Save_XPM                  ILtestFormatSave  ${REF_CLR}
 # test all possible format and type conversions (slow)
 # -----------------------------------------------------------------------------
 
-# ADD_TEST                ( Convert            ILtestConvert     ${REF_CLR} )
+ADD_TEST                ( Convert            ILtestConvert     ${REF_CLR} )
 
 # -----------------------------------------------------------------------------
 # test ILU functionality, mainly just applying filters and writing images

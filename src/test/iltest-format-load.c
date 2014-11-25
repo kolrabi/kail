@@ -52,7 +52,50 @@ static void dumpMeta(ILuint image) {
   fprintf(stderr, "SW:    " IL_SFMT "\n", ilGetString(IL_META_SOFTWARE));
   ilSetString(IL_META_SOFTWARE, ilGetString(IL_VERSION_NUM));
 }
+/*
+static ILuint rand32() {
+  return rand() ^ (rand()<<16);
+}
 
+static ILboolean testFuzzImage(ILuint image, const char *fileName) {
+  FILE *f = fopen(fileName, "rb");
+  if (!f) return IL_FALSE;
+
+  fseek(f, 0, SEEK_END);
+  ILuint Size = ftell(f);
+
+  char *dataOriginal = malloc(Size);
+  char *dataFuzzed   = malloc(Size);
+
+  fseek(f, 0, SEEK_SET);
+  fread(dataOriginal, Size, 1, f);
+  fclose(f);
+
+  srand(0);
+
+  for (int i=0; i<1000; i++) {
+    fprintf(stderr, "Fuzzing round %d...\n", i); fflush(stderr);
+
+    ILuint sizeFuzzed = Size - (rand32()%Size);
+    memcpy(dataFuzzed, dataOriginal, sizeFuzzed);
+
+    for (int j=0; j<100; j++) {
+      dataFuzzed[rand32()%sizeFuzzed] = rand();
+      dataFuzzed[rand32()%sizeFuzzed] ^= (1<<(rand()%8));
+    }
+
+    ilBindImage(image);
+    ilLoadL(ilDetermineTypeL(dataFuzzed, sizeFuzzed), dataFuzzed, sizeFuzzed);
+
+    while(ilGetError())
+      ;
+  }
+
+  free(dataOriginal);
+  free(dataFuzzed);
+  return IL_TRUE;
+}
+*/
 int main(int argc, char **argv) {
   ILuint    image, reference;
   ILfloat   similarity;
@@ -101,7 +144,9 @@ int main(int argc, char **argv) {
   iluScale((ILuint)ilGetIntegerImage(reference, IL_IMAGE_WIDTH), (ILuint)ilGetIntegerImage(reference, IL_IMAGE_HEIGHT), 1);
   similarity = iluSimilarity(reference);
   fprintf(stderr, "Similarity: %f\n", similarity);
-   CHECK_GREATER(similarity, 0.90);
+  CHECK_GREATER(similarity, 0.90);
+
+  //CHECK(testFuzzImage(image, argv[2]));
 
   // cleanup
   ilDeleteImages(1, &image);  

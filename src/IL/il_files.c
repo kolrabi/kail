@@ -196,7 +196,7 @@ void iSetInputLumpIO(SIO *io, void *Lump, ILuint Size) {
 void ILAPIENTRY iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 {
   if (image != NULL) {
-    if (image->io.handle != NULL) {
+    if (image->io.handle != NULL && image->io.handle != &image->io) {
       if (image->io.close == NULL) {
         iTrace("**** Image already has an open file but no close function. Possible leak.");
       } else {
@@ -213,7 +213,7 @@ void ILAPIENTRY iSetInputLump(ILimage *image, const void *Lump, ILuint Size)
 // Tells DevIL that we're writing to a file, not a lump
 void ILAPIENTRY iSetOutputFile(ILimage *image, ILHANDLE File) {
   if (image != NULL) {
-    if (image->io.handle != NULL) {
+    if (image->io.handle != NULL && image->io.handle != &image->io) {
       if (image->io.close == NULL) {
         iTrace("**** Image already has an open file but no close function. Possible leak.");
       } else {
@@ -231,7 +231,7 @@ void ILAPIENTRY iSetOutputFile(ILimage *image, ILHANDLE File) {
 //  "fake" writing functions in il_size.c.
 void iSetOutputFake(ILimage *image) {
   if (image != NULL) {
-    if (image->io.handle != NULL) {
+    if (image->io.handle != NULL && image->io.handle != &image->io) {
       if (image->io.close == NULL) {
         iTrace("**** Image already has an open file but no close function. Possible leak.");
       } else {

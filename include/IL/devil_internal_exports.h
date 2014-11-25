@@ -406,6 +406,12 @@ extern FILE *iTraceOut;
 #define iAssert(x)
 #endif
 
+// check if p is completely inside buf
+#define iCheckBuffer(p, buf, size) ( \
+  ( (const ILubyte*)(p) >= (const ILubyte*)buf ) && \
+  ( (const ILubyte*)(p) + sizeof(*(p)) <= (const ILubyte*)buf + size ) \
+)
+
 #ifdef __cplusplus
 }
 #endif

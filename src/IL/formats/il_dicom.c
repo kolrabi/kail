@@ -39,7 +39,7 @@ typedef struct DICOMHEAD
 
 static ILboolean  SkipElement(SIO *io, DICOMHEAD *Header, ILushort GroupNum, ILushort ElementNum);
 static ILboolean  GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, void *Number);
-static ILboolean  GetUID(SIO *io, ILubyte *UID);
+static ILboolean  GetUID(SIO *io, ILubyte *UID, ILuint MaxLen);
 static ILushort   GetGroupNum(SIO *io,DICOMHEAD *Header);
 static ILushort   GetShort(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
 static ILuint     GetInt(SIO *io,DICOMHEAD *Header, ILushort GroupNum);
@@ -78,7 +78,7 @@ static ILboolean iGetDicomHead(SIO* io, DICOMHEAD *Header) {
 
           case 0x10:
             //@TODO: Look at pg. 60 of 07_05pu.pdf (PS 3.5) for more UIDs.
-            if (!GetUID(io, UID))
+            if (!GetUID(io, UID, 64))
               return IL_FALSE;
             if (!strncmp((const char*)UID, "1.2.840.10008.1.2.2", 64))  // Explicit big endian
               Header->BigEndian = IL_TRUE;
@@ -403,7 +403,7 @@ static ILboolean GetNumericValue(SIO *io, DICOMHEAD *Header, ILushort GroupNum, 
 }
 
 
-static ILboolean GetUID(SIO *io, ILubyte *UID) {
+static ILboolean GetUID(SIO *io, ILubyte *UID, ILuint MaxLen) {
   ILubyte   VR1, VR2;
   ILushort  ValLen;
 
@@ -418,6 +418,8 @@ static ILboolean GetUID(SIO *io, ILubyte *UID) {
     return IL_FALSE;
 
   ValLen = GetLittleUShort(io);
+  if (ValLen > MaxLen) ValLen = MaxLen;
+
   if (SIOread(io, UID, ValLen, 1) != 1)
     return IL_FALSE;
   UID[64] = 0;  // Just to make sure that our string is terminated.

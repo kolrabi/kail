@@ -711,7 +711,7 @@ ILboolean DdsDecompress(DDS_CONTEXT *ctx, ILuint CompFormat)
 			return DecompressARGB(ctx, CompFormat);
 
 		case PF_DXT1:
-			return DecompressDXT1(ctx->Image, ctx->CompData);
+			return DecompressDXT1(ctx->Image, ctx->CompData, ctx->CompSize);
 
 		case PF_DXT2:
 			return DecompressDXT2(ctx->Image, ctx->CompData);
@@ -937,7 +937,7 @@ void DxtcReadColor(ILushort Data, Color8888* Out)
 	Out->b = (ILubyte)(b << 3 | r >> 2);
 }
 
-ILboolean DecompressDXT1(ILimage *lImage, const void *lCompData)
+ILboolean DecompressDXT1(ILimage *lImage, const void *lCompData, ILuint CompSize)
 {
 	ILuint		x, y, z, i, j, k, Select;
 	Color8888	colours[4], *col;
@@ -958,6 +958,11 @@ ILboolean DecompressDXT1(ILimage *lImage, const void *lCompData)
 	for (z = 0; z < lImage->Depth; z++) {
 		for (y = 0; y < lImage->Height; y += 4) {
 			for (x = 0; x < lImage->Width; x += 4) {
+				if (!iCheckBuffer(Temp, lCompData, CompSize)) {
+					iTrace("**** Unexpected end of compressed data");
+					iSetError(IL_INTERNAL_ERROR);
+					return IL_FALSE;
+				}
 				color_0 = Temp->colors[0];
 				UShort(&color_0);
 
@@ -1010,6 +1015,12 @@ ILboolean DecompressDXT1(ILimage *lImage, const void *lCompData)
 
 						if (((x + i) < lImage->Width) && ((y + j) < lImage->Height)) {
 							Offset = z * lImage->SizeOfPlane + (y + j) * lImage->Bps + (x + i) * lImage->Bpp;
+
+							if (Offset+3 >= lImage->SizeOfData) {
+								iTrace("**** Buffer overrun!");
+								iSetError(IL_INTERNAL_ERROR);
+								return IL_FALSE;
+							}
 							lImage->Data[Offset + 0] = col->r;
 							lImage->Data[Offset + 1] = col->g;
 							lImage->Data[Offset + 2] = col->b;

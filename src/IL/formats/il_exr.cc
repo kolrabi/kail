@@ -104,27 +104,35 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 	Array<Rgba> pixels;
 	Box2i dataWindow;
 	ILfloat *FloatData;
-
-	ilIStream File(&iCurImage->io);
-	RgbaInputFile in(File);
-
+  int dw, dh, dx, dy;
 	Rgba a;
 
-  dataWindow       = in.dataWindow();
-  /* pixelAspectRatio = */ in.pixelAspectRatio();
-
-  int dw, dh, dx, dy;
- 
-	dw = dataWindow.max.x - dataWindow.min.x + 1;
-  dh = dataWindow.max.y - dataWindow.min.y + 1;
-  dx = dataWindow.min.x;
-  dy = dataWindow.min.y;
-
-  pixels.resizeErase (dw * dh);
-	in.setFrameBuffer (pixels - dx - dy * dw, 1, dw);
-
 	try {
+		ilIStream File(&iCurImage->io);
+		RgbaInputFile in(File);
+
+	  dataWindow       = in.dataWindow();
+	  /* pixelAspectRatio = */ in.pixelAspectRatio();
+ 
+		dw = dataWindow.max.x - dataWindow.min.x + 1;
+	  dh = dataWindow.max.y - dataWindow.min.y + 1;
+	  dx = dataWindow.min.x;
+	  dy = dataWindow.min.y;
+
+	  pixels.resizeErase (dw * dh);
+		in.setFrameBuffer (pixels - dx - dy * dw, 1, dw);
+
 		in.readPixels (dataWindow.min.y, dataWindow.max.y);
+
+		if (iTexImage(iCurImage, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
+			return IL_FALSE;
+
+		// Determine where the origin is in the original file.
+		if (in.lineOrder() == INCREASING_Y)
+			iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
+		else
+			iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
+
   } catch (const exception &e) {
 		// If some of the pixels in the file cannot be read,
 		// print an error message, and return a partial image
@@ -133,15 +141,6 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 		(void)e;  // Prevent the compiler from yelling at us about this being unused.
 		return IL_FALSE;
   }
-
-	if (iTexImage(iCurImage, dw, dh, 1, 4, IL_RGBA, IL_FLOAT, NULL) == IL_FALSE)
-		return IL_FALSE;
-
-	// Determine where the origin is in the original file.
-	if (in.lineOrder() == INCREASING_Y)
-		iCurImage->Origin = IL_ORIGIN_UPPER_LEFT;
-	else
-		iCurImage->Origin = IL_ORIGIN_LOWER_LEFT;
 
 	// Better to access FloatData instead of recasting everytime.
 	FloatData = (ILfloat*)iCurImage->Data;

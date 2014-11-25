@@ -624,7 +624,7 @@ iLoadBlpInternal(ILimage *TargetImage) {
               ifree(CompData);
               return IL_FALSE;
             }
-            if (!DecompressDXT1(Image, CompData)) {
+            if (!DecompressDXT1(Image, CompData, CompSize)) {
               ifree(CompData);
               return IL_FALSE;
             }

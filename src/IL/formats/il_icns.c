@@ -104,6 +104,13 @@ static ILboolean iLoadIcnsInternal(ILimage* image) {
     ILboolean ok = IL_TRUE;
 
     SIOread(io, Entry.ID, 4, 1);
+
+    if (!isalnum(Entry.ID[0]) || !isalnum(Entry.ID[1]) || !isalnum(Entry.ID[2]) || !isalnum(Entry.ID[3])) {
+      iTrace("**** Non-ASCII icon type found");
+      iSetError(IL_INVALID_FILE_HEADER);
+      return IL_FALSE;
+    }
+
     Entry.Size = GetBigUInt(io);
 
     EntryEnd = SIOtell(io) + Entry.Size - 8;

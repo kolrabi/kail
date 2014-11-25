@@ -487,7 +487,7 @@ static ILboolean iLoadUtxInternal(ILimage *image) {
             Image->DxtcFormat = IL_DXT1;
             CompData = NULL;
           }
-          if (DecompressDXT1(Image, CompData) == IL_FALSE) {
+          if (DecompressDXT1(Image, CompData, Image->DxtcSize) == IL_FALSE) {
             ifree(CompData);
             return IL_FALSE;
           }

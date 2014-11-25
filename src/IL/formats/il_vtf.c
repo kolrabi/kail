@@ -314,7 +314,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							Image->DxtcFormat = IL_DXT5;
 							CompData = NULL;
 						}
-						bVtf = DecompressDXT1(Image, CompData);
+						bVtf = DecompressDXT1(Image, CompData, SizeOfData);
 						break;
 
 					// DXT3 compression
