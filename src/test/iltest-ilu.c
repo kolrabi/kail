@@ -137,6 +137,12 @@ int main(int argc, char **argv) {
   } else if (!strcmp(argv[3], "wave")) {
     iluEnlargeImage(0.5f,0.5f,1.0f);
     iluWave(30);
+  } else if (!strcmp(argv[3], "histogram")) {
+    ILuint Values[24];
+    CHECK(iluHistogram(Values, 24));
+    for (int i=0; i<24; i++) {
+      fprintf(stderr, "%2d: %6u\n", i, Values[i]);
+    }
   } else {
     CHECK(0);
   }

@@ -136,9 +136,9 @@ ILboolean iFastConvert(ILimage *Image, ILenum DestFormat);
 ILboolean iFixImages(ILimage *Image, ILimage *BaseImage);
 ILboolean iApplyProfile(ILimage *Image, ILstring InProfile, ILstring OutProfile);
 
-ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
-ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
-ILboolean iConvR16ToFloat32(ILuint* dest, ILushort* src, ILuint size);
+ILboolean iConvFloat16ToFloat32(ILuint* dest, const ILushort* src, ILuint size);
+ILboolean iConvG16R16ToFloat32(ILuint* dest, const ILushort* src, ILuint size);
+ILboolean iConvR16ToFloat32(ILuint* dest, const ILushort* src, ILuint size);
 
 // Miscellaneous functions
 char*     iGetString(ILimage *Image, ILenum StringName);  // Internal version of ilGetString
@@ -156,6 +156,7 @@ ILboolean iImageToDxtcData(ILimage *image, ILenum Format);
 ILboolean iSetData(ILimage *Image, void *Data);
 ILboolean iSetDuration(ILimage *Image, ILuint Duration);
 ILboolean iTexImageDxtc(ILimage* image, ILuint w, ILuint h, ILuint d, ILenum DxtFormat, const ILubyte* data);
+
 
 // TODO: put all functions that have a corresponding il* public api function equivalent into internal exports
 

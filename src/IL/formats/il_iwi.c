@@ -295,7 +295,7 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 				}
 
 				// Decompress the DXT3 data into Image (ith mipmap).
-				if (!DecompressDXT3(Image, CompData)) {
+				if (!DecompressDXT3(Image, CompData, SizeOfData)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
@@ -315,7 +315,7 @@ static ILboolean IwiReadImage(ILimage *BaseImage, IWIHEAD *Header, ILuint NumMip
 				}
 
 				// Decompress the DXT5 data into Image (ith mipmap).
-				if (!DecompressDXT5(Image, CompData)) {
+				if (!DecompressDXT5(Image, CompData, SizeOfData)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}

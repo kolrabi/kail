@@ -8,7 +8,7 @@ future:
   - IL:
     - More tests:
       - BLP1
-      - BMP: OS/2, Uncompressed 1,4,8,16,32 bit, RLE 4bit
+      - BMP: OS/2, Uncompressed RLE 4bit
       - blitting
       - conversions
       - mipmaps for formats that support them (DDS)
@@ -37,7 +37,6 @@ future:
     - support n-dimensional images (eg. for fits)
 
   - ILU:
-    - iluHistogram(ILfloat *Values, ILuint len);
     - ILU_SIMILARITY_MODE:
       - ILU_SIMILARITY_PIXELS
       - ILU_SIMILARITY_HISTOGRAM

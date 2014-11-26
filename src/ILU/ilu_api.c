@@ -785,9 +785,25 @@ ILboolean ILAPIENTRY iluSwapColours() {
   SIMPLE_FUNC(Image, ILboolean, iSwapColours(Image));
 } 
 
-
+/**
+ * Some weird wavy thing.
+ * @param  Angle Some angle.
+ * @ingroup ilu_filter
+ */
 ILboolean ILAPIENTRY iluWave(ILfloat Angle) {
   SIMPLE_FUNC(Image, ILboolean, iWave(Image, Angle));
+}
+
+/**
+ * Get a histogram of an image.
+ * Will store one value per channel spread over to whole supplied array.
+ * @param  Values Where to store the pixel counts.
+ * @param  Count  Number of entries in the value array, must be a multiple 
+ *                of the image's (or its palette's) number of channels.
+ * @ingroup ilu_colour
+  */
+ILboolean ILAPIENTRY iluHistogram(ILuint *Values, ILuint Count) {
+  SIMPLE_FUNC(Image, ILboolean, iHistogram(Image, Values, Count));
 }
 
 /** @} */

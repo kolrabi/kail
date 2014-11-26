@@ -107,6 +107,8 @@ ILimage *iluScale3DNear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint H
 ILimage *iluScale3DLinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 ILimage *iluScale3DBilinear_(ILimage *Image, ILimage *Scaled, ILuint Width, ILuint Height, ILuint Depth);
 
+ILboolean iHistogram(ILimage *Image, ILuint *Values, ILuint Size);
+
 #define imemclear(x,y) memset(x,0,y);
 
 

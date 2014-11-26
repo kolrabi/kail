@@ -181,11 +181,14 @@ enum PixFormat
 
 // Internal functions
 ILboolean	iCheckDds(DDSHEAD *Head);
-ILboolean	DecompressDXT1(ILimage *lImage, const void *lCompData, ILuint CompSize);
-ILboolean	DecompressDXT2(ILimage *lImage, const void *lCompData);
-ILboolean	DecompressDXT3(ILimage *lImage, const void *lCompData);
-ILboolean	DecompressDXT4(ILimage *lImage, const void *lCompData);
-ILboolean	DecompressDXT5(ILimage *lImage, const void *lCompData);
+ILboolean	DecompressDXT1(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	DecompressDXT2(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	DecompressDXT3(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	DecompressDXT4(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	DecompressDXT5(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	DecompressAti1n(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean	Decompress3Dc(ILimage *Image, const void *CompData, ILuint CompSize);
+ILboolean DecompressRXGB(ILimage *Image, const void *CompData, ILuint CompSize);
 
 ILboolean iSaveDdsInternal(ILimage *);
 

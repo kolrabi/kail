@@ -927,3 +927,59 @@ ILboolean iNormalize(ILimage *Image) {
 
   return IL_TRUE;
 }
+
+ILboolean iHistogram(ILimage *Image, ILuint *Values, ILuint Size) 
+{
+  ILuint Bpp;
+  ILuint BufferCount;
+  ILuint i,j;
+  ILfloat F;
+
+  if (Image == NULL) {
+    iSetError(ILU_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
+  BufferCount = Image->Width * Image->Height * Image->Depth;
+
+  if (Image->Format == IL_COLOUR_INDEX) {
+    Bpp = iGetBppPal(Image->Pal.PalType);
+    F = (ILfloat)(Size / Bpp - 1);
+
+    if ((Size % Bpp) || !Size) {
+      iTrace("**** Size must be a multiple of image palette format channel count");
+      iSetError(ILU_INVALID_PARAM);
+      return IL_FALSE;
+    }
+
+    imemclear(Values, Size*sizeof(ILuint));
+
+    for (i=0; i<BufferCount; i++) {
+      ILubyte *Color = &Image->Pal.Palette[Image->Data[i]*Bpp];
+      for (j=0; j<Bpp; j++) {
+        ILuint k = (ILuint)(F * Color[j] / 255.0f)*Bpp+j;
+        Values[k]++;
+      }
+    }
+  } else {
+    Bpp = iGetBppFormat(Image->Format);
+    F = (ILfloat)(Size / Bpp - 1);
+
+    if (Size % Bpp) {
+      iTrace("**** Size must be a multiple of image format channel count");
+      iSetError(ILU_INVALID_PARAM);
+      return IL_FALSE;
+    }
+
+    imemclear(Values, Size*sizeof(ILuint));
+
+    for (i=0; i<BufferCount; i++) {
+      for (j=0; j<Bpp; j++) {
+        ILuint k = (ILuint)(F * iGetPixelElement(Image->Data, i*Bpp+j, Image->Type))*Bpp+j;
+        Values[k]++;
+      }
+    }
+  }
+
+  return IL_TRUE;
+}

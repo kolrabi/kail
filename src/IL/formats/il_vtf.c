@@ -332,7 +332,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							Image->DxtcFormat = IL_DXT3;
 							CompData = NULL;
 						}
-						bVtf = DecompressDXT3(Image, CompData);
+						bVtf = DecompressDXT3(Image, CompData, SizeOfData);
 						break;
 
 					// DXT5 compression
@@ -350,7 +350,7 @@ static ILboolean iLoadVtfInternal(ILimage* BaseImage) {
 							Image->DxtcFormat = IL_DXT5;
 							CompData = NULL;
 						}
-						bVtf = DecompressDXT5(Image, CompData);
+						bVtf = DecompressDXT5(Image, CompData, SizeOfData);
 						break;
 
 					// Uncompressed BGR(A) data (24-bit and 32-bit)

@@ -79,6 +79,244 @@
 extern "C" {
 #endif
 
+#if defined(_MSC_VER)
+  #pragma warning(push)
+  #pragma warning(disable : 4756)  // Disables 'named type definition in parentheses' warning
+#endif
+
+//-----------------------------------------------
+// Overflow handler for float-to-half conversion;
+// generates a hardware floating-point overflow,
+// which may be trapped by the operating system.
+//-----------------------------------------------
+INLINE ILfloat /*ILAPIENTRY*/ iFloatToHalfOverflow() {
+  ILfloat f = 1e10;
+  ILint j;
+  for (j = 0; j < 10; j++)
+    f *= f;       // this will overflow before
+  // the for loop terminates
+  return f;
+}
+#if defined(_MSC_VER)
+  #pragma warning(pop)
+#endif
+
+//-----------------------------------------------------
+// Float-to-half conversion -- general case, including
+// zeroes, denormalized numbers and exponent overflows.
+//-----------------------------------------------------
+INLINE ILushort ILAPIENTRY iFloatToHalf(ILuint i) {
+  //
+  // Our floating point number, f, is represented by the bit
+  // pattern in integer i.  Disassemble that bit pattern into
+  // the sign, s, the exponent, e, and the significand, m.
+  // Shift s into the position where it will go in in the
+  // resulting half number.
+  // Adjust e, accounting for the different exponent bias
+  // of float and half (127 versus 15).
+  //
+
+  register int s =  (i >> 16) & 0x00008000;
+  register int e = ((i >> 23) & 0x000000ff) - (127 - 15);
+  register int m =   i        & 0x007fffff;
+
+  //
+  // Now reassemble s, e and m into a half:
+  //
+
+  if (e <= 0)
+  {
+    if (e < -10)
+    {
+      //
+      // E is less than -10.  The absolute value of f is
+      // less than HALF_MIN (f may be a small normalized
+      // float, a denormalized float or a zero).
+      //
+      // We convert f to a half zero.
+      //
+
+      return 0;
+    }
+
+    //
+    // E is between -10 and 0.  F is a normalized float,
+    // whose magnitude is less than HALF_NRM_MIN.
+    //
+    // We convert f to a denormalized half.
+    // 
+
+    m = (m | 0x00800000) >> (1 - e);
+
+    //
+    // Round to nearest, round "0.5" up.
+    //
+    // Rounding may cause the significand to overflow and make
+    // our number normalized.  Because of the way a half's bits
+    // are laid out, we don't have to treat this case separately;
+    // the code below will handle it correctly.
+    // 
+
+    if (m &  0x00001000)
+      m += 0x00002000;
+
+    //
+    // Assemble the half from s, e (zero) and m.
+    //
+
+    return (ILushort)(s | (m >> 13));
+  }
+  else if (e == 0xff - (127 - 15))
+  {
+    if (m == 0)
+    {
+      //
+      // F is an infinity; convert f to a half
+      // infinity with the same sign as f.
+      //
+
+      return (ILushort)(s | 0x7c00);
+    }
+    else
+    {
+      //
+      // F is a NAN; we produce a half NAN that preserves
+      // the sign bit and the 10 leftmost bits of the
+      // significand of f, with one exception: If the 10
+      // leftmost bits are all zero, the NAN would turn 
+      // into an infinity, so we have to set at least one
+      // bit in the significand.
+      //
+
+      m >>= 13;
+      return (ILushort)(s | 0x7c00 | m | (m == 0));
+    }
+  }
+  else
+  {
+    //
+    // E is greater than zero.  F is a normalized float.
+    // We try to convert f to a normalized half.
+    //
+
+    //
+    // Round to nearest, round "0.5" up
+    //
+
+    if (m &  0x00001000)
+    {
+      m += 0x00002000;
+
+      if (m & 0x00800000)
+      {
+        m =  0;   // overflow in significand,
+        e += 1;   // adjust exponent
+      }
+    }
+
+    //
+    // Handle exponent overflow
+    //
+
+    if (e > 30)
+    {
+      iFloatToHalfOverflow(); // Cause a hardware floating point overflow;
+      return (ILushort)(s | 0x7c00);  // if this returns, the half becomes an
+    }         // infinity with the same sign as f.
+
+    //
+    // Assemble the half from s, e and m.
+    //
+
+    return (ILushort)(s | (e << 10) | (m >> 13));
+  }
+}
+
+// Taken from OpenEXR
+INLINE ILuint ILAPIENTRY iHalfToFloat (ILushort y) {
+
+  int s = (y >> 15) & 0x00000001;
+  int e = (y >> 10) & 0x0000001f;
+  int m =  y      & 0x000003ff;
+
+  if (e == 0)
+  {
+    if (m == 0)
+    {
+      //
+      // Plus or minus zero
+      //
+
+      return (ILuint)s << 31;
+    }
+    else
+    {
+      //
+      // Denormalized number -- renormalize it
+      //
+
+      while (!(m & 0x00000400))
+      {
+        m <<= 1;
+        e -=  1;
+      }
+
+      e += 1;
+      m &= ~0x00000400;
+    }
+  }
+  else if (e == 31)
+  {
+    if (m == 0)
+    {
+      //
+      // Positive or negative infinity
+      //
+
+      return (ILuint)(s << 31) | 0x7f800000;
+    }
+    else
+    {
+      //
+      // Nan -- preserve sign and significand bits
+      //
+
+      return (ILuint)((s << 31) | 0x7f800000 | (m << 13));
+    }
+  }
+
+  //
+  // Normalized number
+  //
+
+  e = e + (127 - 15);
+  m = m << 13;
+
+  //
+  // Assemble s, e and m.
+  //
+
+  return (ILuint)((s << 31) | (e << 23) | m);
+}
+
+INLINE void ILAPIENTRY iHalfToFloatV (const void *Half, void *Float) {
+  *((ILuint*)Float) = iHalfToFloat(*((ILushort*)Half));
+}
+
+INLINE void ILAPIENTRY iFloatToHalfV (const void *Float, void *Half) {
+  *((ILushort*)Half) = iFloatToHalf(*((ILuint*)Float));
+}
+
+INLINE ILfloat iGetHalf(const void *Half) {
+  ILfloat temp;
+  iHalfToFloatV(Half, &temp);
+  return temp;
+}
+
+INLINE void iSetHalf(ILfloat f, void *Half) {
+  iFloatToHalfV(&f, Half);
+}
+
 //! Basic Palette struct
 typedef struct ILpal {
     ILubyte* Palette; //!< the image palette (if any)
@@ -212,11 +450,67 @@ typedef struct ILimage {
 #endif
 } ILimage;
 
+#define iBytes(ptr)    ((ILbyte*)  (void*)(ptr))
+#define iShorts(ptr)   ((ILshort*) (void*)(ptr))
+#define iInts(ptr)     ((ILint*)   (void*)(ptr))
+#define iUBytes(ptr)   ((ILubyte*) (void*)(ptr))
+#define iUShorts(ptr)  ((ILushort*)(void*)(ptr))
+#define iUInts(ptr)    ((ILuint*)  (void*)(ptr))
+#define iFloats(ptr)   ((ILfloat*) (void*)(ptr))
+#define iDoubles(ptr)  ((ILdouble*)(void*)(ptr))
+
 INLINE ILubyte  *iGetImageDataUByte(ILimage *img)   { return img->Data; }
-INLINE ILushort *iGetImageDataUShort(ILimage *img)  { return (ILushort*)(void*)img->Data; }
-INLINE ILuint   *iGetImageDataUInt(ILimage *img)    { return (ILuint*)(void*)img->Data; }
-INLINE ILfloat  *iGetImageDataFloat(ILimage *img)   { return (ILfloat*)(void*)img->Data; }
-INLINE ILdouble *iGetImageDataDouble(ILimage *img)  { return (ILdouble*)(void*)img->Data; }
+INLINE ILushort *iGetImageDataUShort(ILimage *img)  { return iUShorts(img->Data); }
+INLINE ILuint   *iGetImageDataUInt(ILimage *img)    { return iUInts(img->Data); }
+INLINE ILfloat  *iGetImageDataFloat(ILimage *img)   { return iFloats(img->Data); }
+INLINE ILdouble *iGetImageDataDouble(ILimage *img)  { return iDoubles(img->Data); }
+
+INLINE void iCopyPixelElement( const void *Src, ILuint SrcIndex, void *Dest, ILuint DestIndex, ILuint Bpc ) {
+  memcpy( iUBytes(Dest) + DestIndex * Bpc, iUBytes(Src) + SrcIndex * Bpc, Bpc );
+}
+
+INLINE ILfloat iGetPixelElement( const void *Buffer, ILuint Index, ILenum Type) {
+  switch(Type) {
+    case IL_UNSIGNED_BYTE:  return (iUBytes(Buffer) [Index]               ) / (ILfloat)IL_MAX_UNSIGNED_BYTE; 
+    case IL_BYTE:           return ((iBytes(Buffer)  [Index] - IL_MIN_BYTE ) & IL_MAX_UNSIGNED_BYTE ) / (ILfloat)IL_MAX_UNSIGNED_BYTE;          
+    case IL_UNSIGNED_SHORT: return (iUShorts(Buffer)[Index]               ) / (ILfloat)IL_MAX_UNSIGNED_SHORT;
+    case IL_SHORT:          return ((iShorts(Buffer) [Index] - IL_MIN_SHORT) & IL_MAX_UNSIGNED_SHORT )/ (ILfloat)IL_MAX_UNSIGNED_SHORT;         
+    case IL_UNSIGNED_INT:   return (iUInts(Buffer)  [Index]               ) / (ILfloat)IL_MAX_UNSIGNED_INT;
+    case IL_INT:            return ((iInts(Buffer)   [Index] - IL_MIN_INT  ) & IL_MAX_UNSIGNED_INT ) / (ILfloat)IL_MAX_UNSIGNED_INT;           
+    case IL_FLOAT:          return iFloats(Buffer)  [Index];
+    case IL_DOUBLE:         return iDoubles(Buffer) [Index];
+    case IL_HALF:           return iGetHalf( iShorts(Buffer)+Index );
+  }
+  return 0.0;
+}
+
+INLINE void iSetPixelElement( void *Buffer, ILuint Index, ILenum Type, ILdouble val ) {
+  switch(Type) {
+    case IL_UNSIGNED_BYTE:  iUBytes(Buffer) [Index] = val * IL_MAX_UNSIGNED_BYTE; break;
+    case IL_BYTE:           iBytes(Buffer)  [Index] = val * IL_MAX_UNSIGNED_BYTE + IL_MIN_BYTE; break;
+    case IL_UNSIGNED_SHORT: iUShorts(Buffer)[Index] = val * IL_MAX_UNSIGNED_SHORT; break;
+    case IL_SHORT:          iShorts(Buffer) [Index] = val * IL_MAX_UNSIGNED_SHORT + IL_MIN_SHORT; break;
+    case IL_UNSIGNED_INT:   iUInts(Buffer)  [Index] = val * IL_MAX_UNSIGNED_INT; break;
+    case IL_INT:            iInts(Buffer)   [Index] = val * IL_MAX_UNSIGNED_INT + IL_MIN_INT; break;
+    case IL_FLOAT:          iFloats(Buffer) [Index] = val; break;
+    case IL_DOUBLE:         iDoubles(Buffer)[Index] = val; break;
+    case IL_HALF:           iSetHalf( val, iShorts(Buffer)+Index ); break;
+  }
+}
+
+INLINE void iSetPixelElementMax( void *Buffer, ILuint Index, ILenum Type ) {
+  switch(Type) {
+    case IL_UNSIGNED_BYTE:  iUBytes(Buffer) [Index] = IL_MAX_UNSIGNED_BYTE; break;
+    case IL_BYTE:           iBytes(Buffer)  [Index] = IL_MAX_BYTE; break;
+    case IL_UNSIGNED_SHORT: iUShorts(Buffer)[Index] = IL_MAX_UNSIGNED_SHORT; break;
+    case IL_SHORT:          iShorts(Buffer) [Index] = IL_MAX_SHORT; break;
+    case IL_UNSIGNED_INT:   iUInts(Buffer)  [Index] = IL_MAX_UNSIGNED_INT; break;
+    case IL_INT:            iInts(Buffer)   [Index] = IL_MAX_INT; break;
+    case IL_FLOAT:          iFloats(Buffer) [Index] = 1.0f; break;
+    case IL_DOUBLE:         iDoubles(Buffer)[Index] = 1.0; break;
+    case IL_HALF:           iSetHalf( 1.0f, iShorts(Buffer)+Index ); break;
+  }
+}
 
 // Memory functions
 ILAPI void*         ILAPIENTRY ialloc   (ILsizei Size);

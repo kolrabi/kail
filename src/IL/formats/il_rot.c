@@ -239,7 +239,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				}
 
 				// ...and decompress it.
-				if (!DecompressDXT3(Image, CompData)) {
+				if (!DecompressDXT3(Image, CompData, CompSize)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}
@@ -270,7 +270,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 				}
 
 				// ...and decompress it.
-				if (!DecompressDXT5(Image, CompData)) {
+				if (!DecompressDXT5(Image, CompData, CompSize)) {
 					ifree(CompData);
 					return IL_FALSE;
 				}

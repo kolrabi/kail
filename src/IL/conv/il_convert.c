@@ -987,13 +987,13 @@ ILboolean iRemoveAlpha(ILimage *Image)
   return IL_TRUE;
 }
 
-ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+ILboolean iConvFloat16ToFloat32(ILuint* dest, const ILushort* src, ILuint size)
 {
   ILuint i;
   for (i = 0; i < size; ++i, ++dest, ++src) {
     //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
     //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-    *dest = ilHalfToFloat(*src);
+    *dest = iHalfToFloat(*src);
   }
 
   return IL_TRUE;
@@ -1002,14 +1002,14 @@ ILboolean iConvFloat16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
 
 // Same as iConvFloat16ToFloat32, but we have to set the blue channel to 1.0f.
 //  The destination format is RGB, and the source is R16G16 (little endian).
-ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+ILboolean iConvG16R16ToFloat32(ILuint* dest, const ILushort* src, ILuint size)
 {
   ILuint i;
   for (i = 0; i < size; i += 3) {
     //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
     //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-    *dest++ = ilHalfToFloat(*src++);
-    *dest++ = ilHalfToFloat(*src++);
+    *dest++ = iHalfToFloat(*src++);
+    *dest++ = iHalfToFloat(*src++);
     *((ILfloat*)dest++) = 1.0f;
   }
 
@@ -1019,13 +1019,13 @@ ILboolean iConvG16R16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
 
 // Same as iConvFloat16ToFloat32, but we have to set the green and blue channels
 //  to 1.0f.  The destination format is RGB, and the source is R16.
-ILboolean iConvR16ToFloat32(ILuint* dest, ILushort* src, ILuint size)
+ILboolean iConvR16ToFloat32(ILuint* dest, const ILushort* src, ILuint size)
 {
   ILuint i;
   for (i = 0; i < size; i += 3) {
     //float: 1 sign bit, 8 exponent bits, 23 mantissa bits
     //half: 1 sign bit, 5 exponent bits, 10 mantissa bits
-    *dest++ = ilHalfToFloat(*src++);
+    *dest++ = iHalfToFloat(*src++);
     *((ILfloat*)dest++) = 1.0f;
     *((ILfloat*)dest++) = 1.0f;
   }

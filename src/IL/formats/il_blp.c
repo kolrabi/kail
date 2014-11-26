@@ -644,14 +644,14 @@ iLoadBlpInternal(ILimage *TargetImage) {
               case 0:  // All three of
               case 1:  //  these refer to
               case 8:  //  DXT3...
-                if (!DecompressDXT3(Image, CompData)) {
+                if (!DecompressDXT3(Image, CompData, CompSize)) {
                   ifree(CompData);
                   return IL_FALSE;
                 }
                 break;
 
               case 7:  // DXT5 compression
-                if (!DecompressDXT5(Image, CompData)) {
+                if (!DecompressDXT5(Image, CompData, CompSize)) {
                   ifree(CompData);
                   return IL_FALSE;
                 }
