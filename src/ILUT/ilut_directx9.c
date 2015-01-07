@@ -812,23 +812,22 @@ static ILimage *iD3D9MakeCompliant(ILimage *ilutCurImage, IDirect3DDevice9 *Devi
   {
     ILubyte *data;
     ILubyte *maxdata;
-    ILuint t;
 
-      data=(Converted->Data);
-      maxdata=(Converted->Data+Converted->SizeOfData);
-      while(data<maxdata)
+    data=(Converted->Data);
+    maxdata=(Converted->Data+Converted->SizeOfData);
+    while(data<maxdata)
+    {
+      ILuint t = (data[2]<<16) + (data[1]<<8) + (data[0]) ;
+
+      if((t&0x00ffffff)==(color&0x00ffffff))
       {
-        t= (data[2]<<16) + (data[1]<<8) + (data[0]) ;
-
-        if((t&0x00ffffff)==(color&0x00ffffff))
-        {
-          data[0]=0;
-          data[1]=0;
-          data[2]=0;
-          data[3]=0;
-        }
-        data+=4;
+        data[0]=0;
+        data[1]=0;
+        data[2]=0;
+        data[3]=0;
       }
+      data+=4;
+    }
   }
 
   // Images must have their origin in the upper left.

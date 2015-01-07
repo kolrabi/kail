@@ -18,48 +18,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef __APPLE__
-#include <OpenGL/glext.h>
-#include <dlfcn.h>
-void *aglGetProcAddress( const GLubyte *name ) {
-  // deprecated code! and wasn't working
-  /*NSSymbol symbol;
-  char* symbolName;
-  // prepend a '_' for the Unix C symbol mangling convention
-  int len = strlen((const char*)name);
-  symbolName = malloc(len + 2);
-  memcpy(symbolName+1, (const char*)name, len );
-  symbolName[0] = '_';
-  symbol = NULL;
-  if (NSIsSymbolNameDefined(symbolName))
-      symbol = NSLookupAndBindSymbol(symbolName);
-  free(symbolName);
-  return symbol ? NSAddressOfSymbol(symbol) : NULL;
-  */
-  // not deprecated code! and isn't working :( 
-  // now the address is directly known with glext.h include
-  const int len = strlen((const char*)name);
-  char *symbolName = calloc(len + 2,1);
-  void *result;
-  
-  memcpy(symbolName+1, (const char*)name, len );
-  symbolName[0] = '_';
-  printf("searching %s as %s ",name,symbolName);
-  void *image = dlopen(NULL,RTLD_LAZY); // brutal solution
-  if( image == NULL ) {
-    free(symbolName);
-    return NULL;
-  }
-  result = dlsym(image,symbolName);
-  free(symbolName);
-  return result;
-}
-#endif
-
 #ifdef _MSC_VER
   #pragma comment(lib, "opengl32.lib")
   #pragma comment(lib, "Glu32.lib")
-//  #pragma comment(lib, "freeglut.lib")
 #endif
 
 #ifdef linux
@@ -119,46 +80,51 @@ static void GetSettings(ILUT_TEXTURE_SETTINGS_GL *settings) {
 
 static ILboolean iInitGLExtensions()
 {
-//#ifndef GL_VERSION_1_3
   #if (defined (_WIN32) || defined(_WIN64))
+
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
-      IsExtensionSupported("GL_EXT_texture_compression_s3tc")) {
-        ilGLCompressed2D = (ILGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
+        IsExtensionSupported("GL_EXT_texture_compression_s3tc")) {
+      ilGLCompressed2D = (ILGLCOMPRESSEDTEXIMAGE2DARBPROC)wglGetProcAddress("glCompressedTexImage2DARB");
     }
     if (IsExtensionSupported("GL_EXT_texture3D")) {
       ilGLTexImage3D = (ILGLTEXIMAGE3DARBPROC)wglGetProcAddress("glTexImage3D");
-      ilGLTexImage3D = (ILGLTEXIMAGE3DARBPROC)wglGetProcAddress("glTexSubImage3D");
+      ilGLTexSubImage3D = (ILGLTEXSUBIMAGE3DARBPROC)wglGetProcAddress("glTexSubImage3D");
     }
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
-      IsExtensionSupported("GL_EXT_texture_compression_s3tc") &&
-      IsExtensionSupported("GL_EXT_texture3D")) {
-        ilGLCompressed3D = (ILGLCOMPRESSEDTEXIMAGE3DARBPROC)wglGetProcAddress("glCompressedTexImage3DARB");
+        IsExtensionSupported("GL_EXT_texture_compression_s3tc") &&
+        IsExtensionSupported("GL_EXT_texture3D")) {
+      ilGLCompressed3D = (ILGLCOMPRESSEDTEXIMAGE3DARBPROC)wglGetProcAddress("glCompressedTexImage3DARB");
     }
-  #elif linux
+    return IL_TRUE;
+
+  #elif defined(__APPLE__)
+
+    // Mac OS X headers are OpenGL 1.4 compliant already.
+    ilGLCompressed2D  = glCompressedTexImage2DARB;
+    ilGLTexImage3D    = glTexImage3D;
+    ilGLTexSubImage3D = glTexSubImage3D;
+    ilGLCompressed3D  = glCompressedTexImage3DARB;
+
+  #elif defined(HAVE_GL_GLX_H)
+
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
-      IsExtensionSupported("GL_EXT_texture_compression_s3tc")) {
+        IsExtensionSupported("GL_EXT_texture_compression_s3tc")) {
         ilGLCompressed2D = (ILGLCOMPRESSEDTEXIMAGE2DARBPROC)
           glXGetProcAddressARB((const GLubyte*)"glCompressedTexImage2DARB");
     }
     if (IsExtensionSupported("GL_EXT_texture3D")) {
       ilGLTexImage3D = (ILGLTEXIMAGE3DARBPROC)glXGetProcAddressARB((const GLubyte*)"glTexImage3D");
+      ilGLTexSubImage3D = (ILGLTEXSUBIMAGE3DARBPROC)glXGetProcAddress("glTexSubImage3D");
     }
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
-      IsExtensionSupported("GL_EXT_texture_compression_s3tc") &&
-      IsExtensionSupported("GL_EXT_texture3D")) {
-        ilGLCompressed3D = (ILGLCOMPRESSEDTEXIMAGE3DARBPROC)glXGetProcAddressARB((const GLubyte*)"glCompressedTexImage3DARB");
+        IsExtensionSupported("GL_EXT_texture_compression_s3tc") &&
+        IsExtensionSupported("GL_EXT_texture3D")) {
+      ilGLCompressed3D = (ILGLCOMPRESSEDTEXIMAGE3DARBPROC)glXGetProcAddressARB((const GLubyte*)"glCompressedTexImage3DARB");
     }
-  #elif defined(__APPLE__)
-    // Mac OS X headers are OpenGL 1.4 compliant already.
-    ilGLCompressed2D = glCompressedTexImage2DARB;//(ILGLCOMPRESSEDTEXIMAGE2DARBPROC)aglGetProcAddress((const GLubyte *)"glCompressedTexImage2DARB");
-    ilGLTexImage3D = glTexImage3D;
-    ilGLCompressed3D = glCompressedTexImage3DARB;
+    return IL_TRUE;
   #else
     return IL_FALSE;  // @TODO: Find any other systems that we could be on.
   #endif
-//#else
-//#endif//GL_VERSION_1_3
-  return IL_TRUE;
 }
 
 // Absolutely *have* to call this if planning on using the image library with OpenGL.
@@ -293,7 +259,6 @@ static ILuint GLGetDXTCNum(ILenum DXTCFormat) {
 static ILboolean ILAPIENTRY ilutGLTexImage_(GLint Level, GLuint Target, ILimage *Image, ILUT_TEXTURE_SETTINGS_GL *Settings)
 {
   ILimage *ImageCopy;
-  ILuint  Size;
 
   if (Image == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
@@ -309,7 +274,7 @@ static ILboolean ILAPIENTRY ilutGLTexImage_(GLint Level, GLuint Target, ILimage 
     }
 
     if ((Settings->Flags & ILUT_STATE_FLAG_GEN_S3TC)) {
-      Size = iGetDXTCData(Image, NULL, 0, Settings->DXTCFormat);
+      ILuint  Size = iGetDXTCData(Image, NULL, 0, Settings->DXTCFormat);
       if (Size != 0) {
           ILubyte *Buffer = (ILubyte*)ialloc(Size);
         if (Buffer == NULL) {         
@@ -821,7 +786,7 @@ ILboolean ILAPIENTRY ilutGLScreenie() {
 
   // Could go above 128 easily...
   for (i = 0; i < 128; i++) {
-    snprintf(Buff, sizeof(Buff), "screen%d.tga", i);
+    snprintf(Buff, sizeof(Buff), "screen%04u.tga", i);
     File = fopen(Buff, "rb");
 
     if (!File)

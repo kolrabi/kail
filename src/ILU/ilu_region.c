@@ -270,7 +270,6 @@ ILubyte *iScanFill(ILimage *Image) {
 
   if (TLSData->RegionPointsf) {
     ifree(TLSData->RegionPointsi);
-    TLSData->RegionPointsi = NULL;
   }
 
   return iRegionMask;
@@ -278,7 +277,6 @@ ILubyte *iScanFill(ILimage *Image) {
 error:
   if (TLSData->RegionPointsf) {
     ifree(TLSData->RegionPointsi);
-    TLSData->RegionPointsi = NULL;
   }
 
   // Free edge records that have been allocated.

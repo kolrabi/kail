@@ -15,11 +15,11 @@
  *
  * @defgroup IL Image Library
  *              Loading, saving and converting images.
- * @ingroup IL 
+ * @ingroup IL
  * @{
- * 
+ *
  * @defgroup state        Global State
- *                        General state and settings. 
+ *                        General state and settings.
  * @defgroup setup        Initialization / Deinitalization
  *                        Setting up the IL
  * @defgroup image_mgt    Image Management
@@ -31,7 +31,7 @@
  * @defgroup file         Image File Operations
  *                        Loading, saving, determining type of image files.
  * @defgroup register     User Defined Image Types
- *                        Registering and unregistering loaders/savers for user
+ *                  file      Registering and unregistering loaders/savers for user
  *                        defined image types.
  */
 
@@ -40,7 +40,7 @@
 #include "il_states.h"
 #include "il_alloc.h"
 #include "il_manip.h"
-#include "il_register.h" 
+#include "il_register.h"
 
 /**
  * @def SIMPLE_PROC(img, f)
@@ -69,7 +69,7 @@
 
 /**
  * Sets the current face if the currently bound image is a cubemap.
- * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the
  * @a Number is the number of sub images down the chain, NOT the
  * absolute face index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
@@ -81,7 +81,7 @@ ILboolean ILAPIENTRY ilActiveFace(ILuint Number) {
 
 /**
  * Sets the current animation frame.
- * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the
  * @a Number is the number of sub images down the chain, NOT the
  * absolute frame index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
@@ -93,7 +93,7 @@ ILboolean ILAPIENTRY ilActiveImage(ILuint Number) {
 
 /**
  * Sets the current image layer.
- * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the
  * @a Number is the number of sub images down the chain, NOT the
  * absolute layer index. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
@@ -105,7 +105,7 @@ ILboolean ILAPIENTRY ilActiveLayer(ILuint Number) {
 
 /**
  * Sets the current mipmap level.
- * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the 
+ * @note If IL_IMAGE_SELECTION_MODE is set to IL_RELATIVE (default), the
  * @a Number is the number of sub images down the chain, NOT the
  * absolute mipmap level. To go back to the base image use ilBindImage.
  * @ingroup image_mgt
@@ -116,8 +116,8 @@ ILboolean ILAPIENTRY ilActiveMipmap(ILuint Number) {
 }
 
 /**
- * Adds an opaque alpha channel to the currently bound image. 
- * If IL_USE_KEY_COLOUR is enabled, the colour set with ilKeyColour will 
+ * Adds an opaque alpha channel to the currently bound image.
+ * If IL_USE_KEY_COLOUR is enabled, the colour set with ilKeyColour will
  * be transparent.
  * @ingroup image_manip
  */
@@ -130,7 +130,7 @@ ILboolean ILAPIENTRY ilAddAlpha() {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName) {
-  SIMPLE_FUNC(Image, ILboolean, iApplyPal(Image, FileName));  
+  SIMPLE_FUNC(Image, ILboolean, iApplyPal(Image, FileName));
 }
 
 /**
@@ -143,15 +143,15 @@ ILboolean ILAPIENTRY ilApplyPal(ILconst_string FileName) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilApplyProfile(ILstring InProfile, ILstring OutProfile) {
-  SIMPLE_FUNC(Image, ILboolean, iApplyProfile(Image, InProfile, OutProfile));  
+  SIMPLE_FUNC(Image, ILboolean, iApplyProfile(Image, InProfile, OutProfile));
 }
 
-/** 
+/**
  * Makes Image the current active image - similar to glBindTexture().
  *
- * This automatically resets the state to the first sub image, face 
+ * This automatically resets the state to the first sub image, face
  * (if applicable) and top level mipmap.
- * 
+ *
  * @param Image Name of image to bind.
  * @ingroup state
  */
@@ -163,8 +163,8 @@ void ILAPIENTRY ilBindImage(ILuint Image) {
 /**
  * Blit a region of pixels from a @a Source image into the currently bound image.
  * @ingroup image_manip
- */ 
-ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ, 
+ */
+ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint DestZ,
                                            ILuint SrcX,  ILuint SrcY,   ILuint SrcZ,
                                            ILuint Width, ILuint Height, ILuint Depth)
 {
@@ -177,18 +177,48 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
     iSetError(IL_INVALID_PARAM);
     return IL_FALSE;
   }
-  
+
   iLockState();
   Image       = iLockCurImage();
   SourceImage = iLockImage(Source);
   iUnlockState();
 
   Result      = iBlit(Image, SourceImage, DestX, DestY, DestZ, SrcX, SrcY, SrcZ, Width, Height, Depth);
-  
+
   iUnlockImage(Image);
   iUnlockImage(SourceImage);
 
   return Result;
+}
+
+/**
+ * Checks if a given image format can be automatically detected from data.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilCanIdentifyFormat(ILenum Format) {
+  const ILformat *fmt = iGetFormat(Format);
+  if (!fmt) return IL_FALSE;
+  return fmt->Validate != NULL;
+}
+
+/**
+ * Checks if a given image format can be loaded.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilCanLoadFormat(ILenum Format) {
+  const ILformat *fmt = iGetFormat(Format);
+  if (!fmt) return IL_FALSE;
+  return fmt->Load != NULL;
+}
+
+/**
+ * Checks if a given image format can be saved.
+ * @ingroup file
+ */
+ILboolean ILAPIENTRY ilCanSaveFormat(ILenum Format) {
+  const ILformat *fmt = iGetFormat(Format);
+  if (!fmt) return IL_FALSE;
+  return fmt->Save != NULL;
 }
 
 /**
@@ -198,10 +228,10 @@ ILboolean ILAPIENTRY ilBlit(ILuint Source, ILint DestX,  ILint DestY,   ILint De
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilClampNTSC(void) {
-  SIMPLE_FUNC(Image, ILboolean, iClampNTSC(Image)); 
+  SIMPLE_FUNC(Image, ILboolean, iClampNTSC(Image));
 }
 
-/** 
+/**
  * Set a new clear colour to use by ilClearImage().
  * @ingroup state
  */
@@ -210,7 +240,7 @@ void ILAPIENTRY ilClearColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILcla
   iClearColour(Red, Green, Blue, Alpha);
 }
 
-/** 
+/**
  * Set a new clear colour index to use by ilClearImage().
  * @ingroup state
  */
@@ -224,7 +254,7 @@ void ILAPIENTRY ilClearIndex(ILuint Index) {
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilClearImage() {
-  SIMPLE_FUNC(Image, ILboolean, iClearImage(Image)); 
+  SIMPLE_FUNC(Image, ILboolean, iClearImage(Image));
 }
 
 /**
@@ -272,7 +302,7 @@ ILAPI ILubyte* ILAPIENTRY ilCompressDXT(ILubyte *Data, ILuint Width, ILuint Heig
  * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilConvertImage(ILenum DestFormat, ILenum DestType) {
-  SIMPLE_FUNC(Image, ILboolean, iConvertImages(Image, DestFormat, DestType)); 
+  SIMPLE_FUNC(Image, ILboolean, iConvertImages(Image, DestFormat, DestType));
 }
 
 /**
@@ -338,9 +368,9 @@ ILboolean ILAPIENTRY ilCopyImage(ILuint Src)
  *                @a IL_SUB_LAYER to create layers.
  * @param Num     The number of images to create.
  * @return        The number of images actually created.
- * @note The original version behaved a little differently, it only created one 
- *       sub image of the given type and the rest were added as frames in the 
- *       animation chain. I believe this was a bug and fixed it. However if your 
+ * @note The original version behaved a little differently, it only created one
+ *       sub image of the given type and the rest were added as frames in the
+ *       animation chain. I believe this was a bug and fixed it. However if your
  *       program relied on that behaviour, it might be broken now. Be aware of that.
  * @ingroup image_manip
  */
@@ -350,7 +380,7 @@ ILuint ILAPIENTRY ilCreateSubImage(ILenum Type, ILuint Num) {
 
 /**
  * Creates an ugly 64x64 black and yellow checkerboard image.
- * @ingroup image_manip 
+ * @ingroup image_manip
  */
 ILboolean ILAPIENTRY ilDefaultImage() {
   SIMPLE_FUNC(Image, ILboolean, iDefaultImage(Image));
@@ -481,7 +511,7 @@ ILAPI ILboolean ILAPIENTRY ilDxtcDataToSurface() {
  * @a IL_TYPE_SET         | @a IL_FALSE   | Convert image data type on load to match @a IL_TYPE_MODE.
  * @a IL_CONV_PAL         | @a IL_FALSE   | Convert images that use palettes on load to 24 bit RGBA.
  * @a IL_SQUISH_COMPRESS  | @a IL_FALSE   | Use libsquish for compressing DXT formats if available.
- * 
+ *
  * @param  Mode Mode to enable
  * @return      IL_TRUE if successful.
  * @see         ilIsEnabled
@@ -508,10 +538,10 @@ void ILAPIENTRY ilFlipSurfaceDxtcData() {
 
 /**
  * Set the default image format to use. Default value IL_BGRA.
- * The current value can be retrieved by calling @a ilGetInteger with 
+ * The current value can be retrieved by calling @a ilGetInteger with
  * the parameter @a IL_FORMAT_MODE.
  * @param  Mode New default format.
- * @return      IL_TRUE if successful, on failure IL_FALSE is returned and 
+ * @return      IL_TRUE if successful, on failure IL_FALSE is returned and
  *              an error is set.
  * @ingroup state
  */
@@ -520,7 +550,7 @@ ILboolean ILAPIENTRY ilFormatFunc(ILenum Mode)
   return iFormatFunc(Mode);
 }
 
-/** 
+/**
  * Create one single new image on the image stack.
  * @ingroup image_mgt
  */
@@ -530,7 +560,7 @@ ILuint ILAPIENTRY ilGenImage(void) {
   return Image;
 }
 
-/** 
+/**
  * Creates Num images and puts their index in Images - similar to glGenTextures().
  * @ingroup image_mgt
  */
@@ -566,7 +596,7 @@ void ILAPIENTRY ilGetBooleanv(ILenum Mode, ILboolean *Param)
   iUnlockState();
 
   iGetiv(Image, Mode, &Temp, 1);
-  iUnlockImage(Image);  
+  iUnlockImage(Image);
 
   *Param = Temp ? IL_TRUE : IL_FALSE;
 }
@@ -599,8 +629,8 @@ ILubyte* ILAPIENTRY ilGetData(void) {
 
 /**
  * Compress image data using internal DXTC compression and
- * copy the data into the supplied buffer and returns the number 
- * of bytes written. If Buffer is NULL no data is written and only 
+ * copy the data into the supplied buffer and returns the number
+ * of bytes written. If Buffer is NULL no data is written and only
  * the minimum size of the Buffer is returned.
  * @ingroup data
  */
@@ -609,7 +639,7 @@ ILuint ILAPIENTRY ilGetDXTCData(void *Buffer, ILuint BufferSize, ILenum DXTCForm
 }
 
 
-/** 
+/**
  * Gets the last error on the error stack
  * @return  An enum describing the last error.
  * @ingroup state
@@ -703,7 +733,19 @@ ILfloat ILAPIENTRY ilGetFloat(ILenum Mode) {
 
   iGetfv(Image, Mode, &Result, 1);
   iUnlockImage(Image);
-  return Result;  
+  return Result;
+}
+
+/**
+ * Gets file extensions by which a given format is identified.
+ * @return Pointer to an array containing file extensions, last entry in
+ *         array is NULL. If format is unknown, NULL is returned.
+ * @ingroup file
+ */
+ILAPI const ILconst_string *ILAPIENTRY ilGetFormatExts(ILenum Format) {
+  const ILformat *fmt = iGetFormat(Format);
+  if (!fmt) return NULL;
+  return fmt->Exts;
 }
 
 /**
@@ -776,7 +818,7 @@ ILint ILAPIENTRY ilGetInteger(ILenum Mode) {
  * image by calling ilGetInteger().
  *
  * Valid Modes are:
- * 
+ *
  * Mode                       | Description
  * -------------------------- | -----------------------------------
  * IL_DXTC_DATA_FORMAT        | Format of the retained compressed DXTC data (if IL_KEEP_DXTC_DATA is enabled on load).
@@ -826,7 +868,7 @@ ILint ILAPIENTRY ilGetIntegerImage(ILuint ImageName, ILenum Mode) {
 }
 
 /**
- * Get the current position into the memory lump (if any is set) 
+ * Get the current position into the memory lump (if any is set)
  * of the currently bound image.
  * @ingroup file
  */
@@ -883,7 +925,7 @@ ILubyte* ILAPIENTRY ilGetPalette(void) {
  * @a IL_META_IMAGE_DESCRIPTION   | RW  | String describing the image contents.
  *
  * Strings marked with RW can also be set using ilSetString();
- * 
+ *
  * @param  StringName String to get.
  * @note   If it belongs to the current image the returned string is valid only
  *         as long as the image exists!
@@ -896,9 +938,9 @@ ILconst_string ILAPIENTRY ilGetString(ILenum StringName) {
 /**
  * Specifies implementation-dependent performance hints. These are only recommendations
  * for the image library and it is free to ignore them.
- * 
+ *
  * Valid @a Targets are:
- * 
+ *
  * Target                 | Default           | Description
  * ---------------------- | ----------------- | ---------------------------------------------
  * @a IL_MEM_SPEED_HINT   | IL_FASTEST        | Preference between speed and memory usage. Can be @a IL_LESS_MEM or @a IL_FASTEST.
@@ -910,7 +952,7 @@ void ILAPIENTRY ilHint(ILenum Target, ILenum Mode) {
 }
 
 /**
- * Convert the DXTC data of the currently bound image and its 
+ * Convert the DXTC data of the currently bound image and its
  * mipmaps into image data.
  * @ingroup data
  */
@@ -985,7 +1027,7 @@ ILboolean ILAPIENTRY ilIsValid(ILenum Type, ILconst_string FileName) {
   io = Image->io;
 
   // If we can open the file, determine file type from contents
-  // This is more reliable than the file name extension 
+  // This is more reliable than the file name extension
   if (SIOopenRO(&io, FileName)) {
     Result = iIsValidIO(Type, &io);
     SIOclose(&io);
@@ -1045,7 +1087,7 @@ void ILAPIENTRY ilKeyColour(ILclampf Red, ILclampf Green, ILclampf Blue, ILclamp
 }
 
 /**
- * Attempts to load an image from a file.  The file format is specified 
+ * Attempts to load an image from a file.  The file format is specified
  * by the user.
  * @param Type Format of this file. Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
  * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
@@ -1100,7 +1142,7 @@ ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, ILuint H
 
 
 /**
- * Attempts to load an image from a file stream.  The file format is 
+ * Attempts to load an image from a file stream.  The file format is
  * specified by the user.
  * @param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
  * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
@@ -1135,7 +1177,7 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
 
   if (Type == IL_TYPE_UNKNOWN)
     Type = iDetermineTypeFuncs(Image);
- 
+
   Result = iLoadFuncs2(Image, Type);
   iUnlockImage(Image);
 
@@ -1143,7 +1185,7 @@ ILboolean ILAPIENTRY ilLoadF(ILenum Type, ILHANDLE File) {
 }
 
 /**
- * Attempts to load an image using the currently set IO functions. 
+ * Attempts to load an image using the currently set IO functions.
  * The file format is specified by the user.
  * @param Type Format of this file.  Acceptable values are IL_BLP, IL_BMP, IL_CUT, IL_DCX, IL_DDS,
  * IL_DICOM, IL_DOOM, IL_DOOM_FLAT, IL_DPX, IL_EXR, IL_FITS, IL_FTX, IL_GIF, IL_HDR, IL_ICO, IL_ICNS,
@@ -1178,7 +1220,7 @@ ILboolean ILAPIENTRY ilLoadFuncs(ILenum Type) {
 
 
 /**
- * Attempts to load an image from a file with various different methods 
+ * Attempts to load an image from a file with various different methods
  * before failing - very generic.
  * The ilLoadImage function allows a general interface to the specific internal file-loading
  * routines.  First, it finds the extension and checks to see if any user-registered functions
@@ -1216,7 +1258,7 @@ ILboolean ILAPIENTRY ilLoadImage(ILconst_string FileName) {
     iUnlockImage(Image);
     return IL_FALSE;
   }
- 
+
   type = iDetermineType(Image, FileName);
   Result = IL_FALSE;
 
@@ -1262,7 +1304,7 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
   }
 
   iSetInputLump(Image, (void*)Lump, Size);
-  Result = iLoadFuncs2(Image, Type); 
+  Result = iLoadFuncs2(Image, Type);
   iUnlockImage(Image);
   return Result;
 }
@@ -1273,7 +1315,7 @@ ILboolean ILAPIENTRY ilLoadL(ILenum Type, const void *Lump, ILuint Size) {
  */
 ILboolean ILAPIENTRY ilLoadPal(ILconst_string FileName) {
   SIMPLE_FUNC(Image, ILboolean, iLoadPal(Image, FileName));
-} 
+}
 
 /**
  * Adds an alpha channel if not present and sets it to the given value.
@@ -1284,7 +1326,7 @@ void ILAPIENTRY ilModAlpha(ILdouble AlphaValue) {
   SIMPLE_PROC(Image, iSetAlpha(Image, AlphaValue));
 }
 
-/** 
+/**
  * Sets the default origin to be used.
  * @param Mode The default origin to use. Valid values are:
  *        - IL_ORIGIN_LOWER_LEFT
@@ -1296,7 +1338,7 @@ ILboolean ILAPIENTRY ilOriginFunc(ILenum Mode) {
 }
 
 /**
- * Overlays the image found in Src on top of the current bound image 
+ * Overlays the image found in Src on top of the current bound image
  * at the coords specified.
  * @ingroup image_manip
  */
@@ -1330,7 +1372,7 @@ void ILAPIENTRY ilPopAttrib(void) {
   iPopAttrib();
 }
 
-/** 
+/**
  * Pushes the states indicated by Bits onto the state stack.
  * States not indicated by Bits will be set to their default values.
  * Bits can be a combination of:
@@ -1342,7 +1384,7 @@ void ILAPIENTRY ilPopAttrib(void) {
  * - IL_PAL_BIT
  * - IL_FORMAT_SPECIFIC_BIT
  *
- * @todo Create a version of ilPushAttrib() and ilPopAttrib() that behaves 
+ * @todo Create a version of ilPushAttrib() and ilPopAttrib() that behaves
  *       more like OpenGL
  * @ingroup state
  */
@@ -1454,6 +1496,14 @@ void ILAPIENTRY ilRegisterType(ILenum Type) {
 }
 
 /**
+ * Removes the alpha channel from the currently bound image.
+ * @ingroup image_manip
+ */
+ILboolean ILAPIENTRY ilRemoveAlpha() {
+  SIMPLE_FUNC(Image, ILboolean, iRemoveAlpha(Image));
+}
+
+/**
  * Unregisters a load extension - doesn't have to be called.
  * @ingroup register
  */
@@ -1524,7 +1574,7 @@ ILboolean ILAPIENTRY ilSave(ILenum Type, ILconst_string FileName) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName) {
-  SIMPLE_FUNC(Image, ILboolean, iSaveData(Image, FileName));  
+  SIMPLE_FUNC(Image, ILboolean, iSaveData(Image, FileName));
 }
 
 /**
@@ -1551,7 +1601,7 @@ ILuint ILAPIENTRY ilSaveF(ILenum Type, ILHANDLE File) {
 }
 
 /**
- * Attempts to load an image using the currently set IO functions. 
+ * Attempts to load an image using the currently set IO functions.
  * The file format is specified by the user.
  * @param type The image/palette file type to save.
  * @ingroup file
@@ -1569,11 +1619,11 @@ ILAPI ILboolean ILAPIENTRY ilSaveFuncs(ILenum type) {
  * @ingroup file
  */
 ILboolean ILAPIENTRY ilSaveImage(ILconst_string FileName) {
-  SIMPLE_FUNC(Image, ILboolean, iSaveImage(Image, FileName)); 
+  SIMPLE_FUNC(Image, ILboolean, iSaveImage(Image, FileName));
 }
 
 /**
- * Attempts to save an image to a memory buffer.  
+ * Attempts to save an image to a memory buffer.
  * The file format is specified by the user.
  * @param Type Format of this image file.  Acceptable values are IL_BMP, IL_CHEAD, IL_DDS, IL_EXR,
  * IL_HDR, IL_JP2, IL_JPG, IL_PCX, IL_PNG, IL_PNM, IL_PSD, IL_RAW, IL_SGI, IL_TGA, IL_TIF,
@@ -1611,7 +1661,7 @@ ILuint ILAPIENTRY ilSaveL(ILenum Type, void *Lump, ILuint Size) {
  */
 ILboolean ILAPIENTRY ilSavePal(ILconst_string FileName) {
   SIMPLE_FUNC(Image, ILboolean, iSavePal(Image, FileName));
-} 
+}
 
 /**
  * Adds an alpha channel if not present and sets it to the given value.
@@ -1634,7 +1684,7 @@ ILboolean ILAPIENTRY ilSetData(void *Data) {
   SIMPLE_FUNC(Image, ILboolean, iSetData(Image, Data));
 }
 
-/** 
+/**
  * Set the duration of the currently bound image.
  * Only useful if the image is part of an animation chain.
  * @ingroup data
@@ -1707,10 +1757,10 @@ void ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param) {
  * Sets the memory allocation and deallocation functions.
  *
  * When changing the @a freeFunc all allocated memory up to that point
- * will still be freed by the function that was set when that memory was 
+ * will still be freed by the function that was set when that memory was
  * allocated. This means the correct function will be called for every
  * allocated object.
- * 
+ *
  * @param  mallocFunc The function to call to allocate memory or NULL to reset to the default.
  * @param  freeFunc   The function to call to free memory or NULL to reset to the default.
  * @ingroup setup
@@ -1721,7 +1771,7 @@ void ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc) {
   iUnlockState();
 }
 
-/** 
+/**
  * Set an image meta tag.
  */
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data) {
@@ -1736,11 +1786,11 @@ void ILAPIENTRY ilSetPixels(ILint XOff, ILint YOff, ILint ZOff, ILuint Width, IL
   SIMPLE_PROC(Image, iSetPixels(Image, XOff, YOff, ZOff, Width, Height, Depth, Format, Type, Data));
 }
 
-/** 
+/**
  * Allows you to override the default file-reading functions.
  * @ingroup file
  */
-ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc, 
+ILboolean ILAPIENTRY ilSetRead(fOpenProc aOpen, fCloseProc aClose, fEofProc aEof, fGetcProc aGetc,
   fReadProc aRead, fSeekProc aSeek, fTellProc aTell)
 {
   ILimage *Image;
@@ -1780,7 +1830,7 @@ void ILAPIENTRY ilSetString(ILenum StringName, ILconst_string String) {
  * Allows you to override the default file-writing functions.
  * @ingroup file
  */
-ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek, 
+ILboolean ILAPIENTRY ilSetWrite(fOpenProc Open, fCloseProc Close, fPutcProc Putc, fSeekProc Seek,
   fTellProc Tell, fWriteProc Write)
 {
   ILimage *Image;
@@ -1842,7 +1892,7 @@ ILboolean ILAPIENTRY ilTexImage(ILuint Width, ILuint Height, ILuint Depth, ILuby
 }
 
 /**
- * Sets the currently bound image data. Like ilTexImage but from 
+ * Sets the currently bound image data. Like ilTexImage but from
  * DXTC compressed data.
  * @param Width Specifies the new image width.  This cannot be 0.
  * @param Height Specifies the new image height.  This cannot be 0.

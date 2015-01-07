@@ -119,44 +119,6 @@ static ILmetaDesc *iGetMetaDesc(ILenum MetaID) {
   return NULL;
 }
 
-/*
-static ILmetaDesc *iGetMetaDescFromExifID(ILenum IFD, ILenum ID) {
-  ILuint i;
-  for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
-    if (MetaDescriptions[i].ExifIFD == IFD && MetaDescriptions[i].ExifID == ID)
-      return &MetaDescriptions[i];
-  }
-  return NULL;
-}
-*/
-
-ILint iGetMetaLen(ILenum MetaID) {
-  ILuint i;
-  for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
-    if (MetaDescriptions[i].MetaID == MetaID)
-      return MetaDescriptions[i].Length;
-  }
-  return 0;
-}
-
-ILint iGetMetaLenf(ILenum MetaID) {
-  ILuint i;
-  for (i=0; i<sizeof(MetaDescriptions) / sizeof(MetaDescriptions[0]); i++) {
-    if (MetaDescriptions[i].MetaID == MetaID) {
-      if (MetaDescriptions[i].Type == IL_EXIF_TYPE_RATIONAL ||
-          MetaDescriptions[i].Type == IL_EXIF_TYPE_SRATIONAL)
-        return MetaDescriptions[i].Length / 2;
-
-      if (MetaDescriptions[i].Type == IL_EXIF_TYPE_BLOB ||
-          MetaDescriptions[i].Type == IL_EXIF_TYPE_ASCII)
-        return 0;
-
-      return MetaDescriptions[i].Length;
-    }
-  }
-  return 0;
-}
-
 ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID) {
   ILmeta *Exif = Image->MetaTags;
   while(Index) {

@@ -10,6 +10,7 @@
 #cmakedefine ILUT_USE_DIRECTX9 1
 #cmakedefine ILUT_USE_OPENGL 1
 #cmakedefine ILUT_USE_SDL 1
+#cmakedefine ILUT_USE_SDL2 1
 #cmakedefine ILUT_USE_X11 1
 #cmakedefine ILUT_USE_XRENDER 1
 #cmakedefine ILUT_USE_XSHM 1

@@ -51,7 +51,6 @@ class ilIStream : public Imf::IStream
     //virtual char *  readMemoryMapped (int n);
     virtual Imf::Int64  tellg ();
     virtual void  seekg (Imf::Int64 Pos);
-    virtual void  clear ();
 
   protected:
     SIO *io;

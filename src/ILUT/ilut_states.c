@@ -375,8 +375,7 @@ void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
 void ILAPIENTRY ilutPopAttrib() {
   ILUT_TLS_DATA *tls = iGetTLSData();
 
-  if (tls->ilutCurrentPos <= 0) {
-    tls->ilutCurrentPos = 0;
+  if (tls->ilutCurrentPos == 0) {
     iSetError(ILUT_STACK_UNDERFLOW);
     return;
   }

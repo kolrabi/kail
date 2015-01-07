@@ -28,6 +28,10 @@ IF                      ( ILUT_USE_SDL )
   SET                   ( SOURCES ${SOURCES} ilut_sdlsurface.c )
 ENDIF                   ( )
 
+IF                      ( ILUT_USE_SDL2 )
+  SET                   ( SOURCES ${SOURCES} ilut_sdl2surface.c )
+ENDIF                   ( )
+
 IF                      ( ILUT_USE_X11 )
   SET                   ( SOURCES ${SOURCES} ilut_x11.c )
 ENDIF                   ( )

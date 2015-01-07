@@ -25,7 +25,6 @@
 static BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
   BITMAP *Bitmap;
   ILimage *TempImage;
-  ILuint i = 0, j = 0;
 
   if (Image == NULL) {
     iSetError(ILUT_ILLEGAL_OPERATION);
@@ -53,6 +52,7 @@ static BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
 
   // Should we make this toggleable?
   if (TempImage->Format == IL_COLOUR_INDEX && TempImage->Pal.PalType != IL_PAL_NONE && Pal) {
+    ILuint i = 0, j = 0;
     // Use the image's palette if there is one
     ILpal *TmpPal = iConvertPal(&TempImage->Pal, IL_PAL_RGB24);
     if (!TmpPal) {

@@ -33,10 +33,10 @@
 // IL-specific #define's
 //
 
-#define IL_VERSION_1_9_0
-#define IL_VERSION_1_9_0
-#define IL_VERSION_1_10_0
-#define IL_VERSION              11000
+#define IL_VERSION_1_9_0 1
+#define IL_VERSION_1_10_0 1
+#define IL_VERSION_1_11_0 1
+#define IL_VERSION              11100
 
 #define IL_VARIANT_KAIL
 
@@ -50,7 +50,7 @@ extern "C" {
 //
 
 #include <IL/config.h>
-  
+
 #include <stdio.h>
 #include <limits.h>
 #ifdef _UNICODE
@@ -100,10 +100,10 @@ extern "C" {
 
 // This is from Win32's <windef.h>
 #if (defined(_MSC_VER) && _MSC_VER >= 800) || defined(_STDCALL_SUPPORTED) || defined(__BORLANDC__) || defined(__LCC__)
-  #define ILAPIENTRY            __stdcall 
+  #define ILAPIENTRY            __stdcall
 //#elif defined(linux) || defined(MACOSX) || defined(__CYGWIN__) //fix bug 840364
 #elif defined( __GNUC__ ) && defined(_WIN32)
-  // this should work for any of the above commented platforms 
+  // this should work for any of the above commented platforms
   // plus any platform using GCC
   #define ILAPIENTRY            __stdcall
 #else
@@ -113,38 +113,38 @@ extern "C" {
 // This is from Win32's <wingdi.h> and <winnt.h>
 #if defined(__LCC__)
   #define ILAPI __stdcall
-  #define ILAPI_DEPRECATED 
+  #define ILAPI_DEPRECATED
 #elif defined(_WIN32) //changed 20031221 to fix bug 840421
   #ifdef IL_STATIC_LIB
     #define ILAPI
-    #define ILAPI_DEPRECATED 
+    #define ILAPI_DEPRECATED
   #else
     #ifdef _IL_BUILD_LIBRARY
       #if defined(_MSC_VER) && _MSC_VER >= 1300
         // __declspec(deprecated) is supported by MSVC 7.0 and later.
         #define ILAPI_DEPRECATED __declspec(dllexport deprecated)
       #else
-        #define ILAPI_DEPRECATED 
+        #define ILAPI_DEPRECATED
       #endif
 
       #define ILAPI __declspec(dllexport)
     #else
-      #define ILAPI 
+      #define ILAPI
       #define ILAPI_DEPRECATED __declspec(deprecated)
     #endif
   #endif
 #elif defined(__APPLE__)
   #define ILAPI extern
-  #define ILAPI_DEPRECATED 
+  #define ILAPI_DEPRECATED
 #else
   #define ILAPI
-  #define ILAPI_DEPRECATED 
+  #define ILAPI_DEPRECATED
 #endif
 
 ///////////////////////////////////////////////////////////////////////////
 //
 // Type definitions
-// 
+//
 
 typedef unsigned int                ILenum;
 typedef unsigned char               ILboolean;
@@ -178,7 +178,7 @@ typedef double                      ILclampd;
 #ifdef _UNICODE
   typedef wchar_t                   ILchar;
   #define IL_TEXT(s)                L##s
-  #ifdef _MSC_VER     
+  #ifdef _MSC_VER
     #define IL_SFMT                 "%S"
   #else
     #define IL_SFMT                 "%ls"
@@ -215,7 +215,7 @@ enum {
 ///////////////////////////////////////////////////////////////////////////
 //
 // Useful macros
-// 
+//
 
 #define IL_MAX(a,b)             (((a) > (b)) ? (a) : (b))
 #define IL_MIN(a,b)             (((a) < (b)) ? (a) : (b))
@@ -225,7 +225,7 @@ enum {
 ///////////////////////////////////////////////////////////////////////////
 //
 // DevIL constants
-// 
+//
 
 // Image data formats. Matches OpenGL's right now.
 #define IL_COLOUR_INDEX         0x1900
@@ -283,7 +283,7 @@ enum {
 #define IL_DOOM_FLAT            0x0423  //!< DooM flats - no specific extension
 #define IL_ICO                  0x0424  //!< Microsoft Windows Icons and Cursors - .ico and .cur extensions
 #define IL_JPG                  0x0425  //!< JPEG - .jpg, .jpe and .jpeg extensions
-#define IL_JFIF                 0x0425  //!< 
+#define IL_JFIF                 0x0425  //!<
 #define IL_ILBM                 0x0426  //!< Amiga IFF (FORM ILBM) - .iff, .ilbm, .lbm extensions
 #define IL_PCD                  0x0427  //!< Kodak PhotoCD - .pcd extension
 #define IL_PCX                  0x0428  //!< ZSoft PCX - .pcx extension
@@ -299,12 +299,12 @@ enum {
 #define IL_WAL                  0x0432  //!< Quake 2 Texture - .wal extension
 #define IL_LIF                  0x0434  //!< Homeworld Texture - .lif extension
 #define IL_MNG                  0x0435  //!< Multiple-image Network Graphics - .mng extension
-#define IL_JNG                  0x0435  //!< 
+#define IL_JNG                  0x0435  //!<
 #define IL_GIF                  0x0436  //!< Graphics Interchange Format - .gif extension
 #define IL_DDS                  0x0437  //!< DirectDraw Surface - .dds extension
 #define IL_DCX                  0x0438  //!< ZSoft Multi-PCX - .dcx extension
 #define IL_PSD                  0x0439  //!< Adobe PhotoShop - .psd extension
-#define IL_EXIF                 0x043A  //!< 
+#define IL_EXIF                 0x043A  //!<
 #define IL_PSP                  0x043B  //!< PaintShop Pro - .psp extension
 #define IL_PIX                  0x043C  //!< PIX - .pix extension
 #define IL_PXR                  0x043D  //!< Pixar - .pxr extension
@@ -342,7 +342,7 @@ enum {
 #define IL_COL_PAL              0x0478
 #define IL_PLT_PAL              0x0479
 
-// Internal Error Types 
+// Internal Error Types
 #define IL_NO_ERROR             0x0000
 
 #define IL_INVALID_ENUM         0x0501
@@ -574,7 +574,7 @@ enum {
 #define IL_META_GPS_DEST_LONGITUDE_REF        0x1100A // E / W
 #define IL_META_GPS_DEST_BEARING_REF          0x1100B // T: true, M: magnetic
 #define IL_META_GPS_DEST_DISTANCE_REF         0x1100C // K: km, M: miles, N: knots
-#define IL_META_GPS_DATESTAMP                 0x1100D // 
+#define IL_META_GPS_DATESTAMP                 0x1100D //
 
 // Metadata integers
 #define IL_META_PAGE_NUMBER                   0x20000
@@ -592,7 +592,7 @@ enum {
 #define IL_META_SUBJECT_DISTANCE              0x2000B // 2 ints (1 rational)
 #define IL_META_METERING_MODE                 0x2000C
 #define IL_META_LIGHT_SOURCE                  0x2000D
-#define IL_META_FLASH                         0x2000E 
+#define IL_META_FLASH                         0x2000E
 #define IL_META_FOCAL_LENGTH                  0x2000F // 2 ints (1 rational)
 #define IL_META_FLASH_ENERGY                  0x20010 // 2 ints (1 rational)
 #define IL_META_SUBJECT_AREA                  0x20011 // 2-3 ints
@@ -647,7 +647,7 @@ enum {
 #define IL_METERING_MODE_OTHER                255
 
 #define IL_LIGHT_SOURCE_UNKNOWN               0
-#define IL_LIGHT_SOURCE_DAYLIGHT              1 
+#define IL_LIGHT_SOURCE_DAYLIGHT              1
 #define IL_LIGHT_SOURCE_FLUORESCENT           2
 #define IL_LIGHT_SOURCE_TUNGSTEN              3
 #define IL_LIGHT_SOURCE_FLASH                 4
@@ -691,7 +691,7 @@ enum {
 // #define IL_TAG_EXIF_FOCAL_PLANE_X_RESOLUTION  0xA20E
 // #define IL_TAG_EXIF_FOCAL_PLANE_Y_RESOLUTION  0xA20F
 // #define IL_TAG_EXIF_FOCAL_PLANE_RESOULTION_UNIT 0xA210
-// 
+//
 // #define IL_TAG_EXIF_SUBJECT_LOCATION          0xA214
 // #define IL_TAG_EXIF_EXPOSURE_INDEX            0xA215
 // #define IL_TAG_EXIF_FILE_SOURCE               0xA300
@@ -764,7 +764,7 @@ typedef ILenum    (ILAPIENTRY *IL_SAVEPROC) (ILconst_string);
 ///////////////////////////////////////////////////////////////////////////
 //
 // ImageLib Functions
-// 
+//
 
 // State
 ILAPI void      ILAPIENTRY ilBindImage(ILuint Image);
@@ -895,12 +895,12 @@ ILAPI ILboolean ILAPIENTRY ilLoadDataL(void *Lump, ILuint Size, ILuint Width, IL
 ILAPI ILboolean ILAPIENTRY ilSaveData(ILconst_string FileName);
 
 
-#ifdef IL_VERSION_1_9_0
+#if defined(IL_VERSION_1_9_0) && defined(IL_VARIANT_KAIL)
 ILAPI ILboolean ILAPIENTRY ilAddAlpha(void);
 ILAPI ILint     ILAPIENTRY ilGetIntegerImage(ILuint Image, ILenum Mode);
 #endif
 
-#ifdef IL_VERSION_1_10_0
+#if defined(IL_VERSION_1_10_0) && defined(IL_VARIANT_KAIL)
 ILAPI ILboolean ILAPIENTRY ilEnumMetadata(ILuint Index, ILenum *IFD, ILenum *ID);
 ILAPI ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data);
 ILAPI ILboolean ILAPIENTRY ilSetMetadata(ILenum IFD, ILenum ID, ILenum Type, ILuint Count, ILuint Size, const void *Data);
@@ -913,8 +913,15 @@ ILAPI void      ILAPIENTRY ilClearMetadata(void);
 ILAPI void      ILAPIENTRY ilSetFloat(ILenum Mode, ILfloat Param);
 ILAPI void      ILAPIENTRY ilSetFloatv(ILenum Mode, ILfloat *Param);
 ILAPI void      ILAPIENTRY ilSetIntegerv(ILenum Mode, ILint *Param);
-#endif 
+#endif
 
+#if defined(IL_VERSION_1_11_0) && defined(IL_VARIANT_KAIL)
+ILAPI ILboolean ILAPIENTRY ilRemoveAlpha(void);
+ILAPI ILboolean ILAPIENTRY ilCanIdentifyFormat(ILenum Format);
+ILAPI ILboolean ILAPIENTRY ilCanLoadFormat(ILenum Format);
+ILAPI ILboolean ILAPIENTRY ilCanSaveFormat(ILenum Format);
+ILAPI const ILconst_string *ILAPIENTRY ilGetFormatExts(ILenum Format);
+#endif
 
 // For all those weirdos that spell "colour" without the 'u'.
 #define ilClearColor  ilClearColour

@@ -104,7 +104,7 @@ void          ilDefaultStates(void);
 ILenum        iGetHint(ILenum Target);
 ILint         iGetInt(ILenum Mode);
 
-void          ilRemoveRegistered(void);
+void          iRemoveRegistered(void);
 ILenum        iGetError(void);
 ILconst_string iGetILString(ILimage *Image, ILenum StringName);
 void          iHint(ILenum Target, ILenum Mode);

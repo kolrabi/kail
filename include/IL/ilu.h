@@ -28,7 +28,8 @@
 #define ILU_VERSION_1_7_8 1
 #define ILU_VERSION_1_9_0 1
 #define ILU_VERSION_1_10_0 1
-#define ILU_VERSION       1100
+#define ILU_VERSION_1_11_0 1
+#define ILU_VERSION       11100
 
 #include <IL/il.h>
 
@@ -205,7 +206,7 @@ ILAPI ILboolean       ILAPIENTRY iluNormalize       (void);
 ILAPI ILfloat         ILAPIENTRY iluSimilarity      (ILuint Id);
 #endif
 
-#if defined ILU_VERSION_1_10_0 && defined IL_VARIANT_KAIL
+#if defined ILU_VERSION_1_11_0 && defined IL_VARIANT_KAIL
 ILAPI ILboolean       ILAPIENTRY iluHistogram       (ILuint *Values, ILuint Size);
 #endif
 

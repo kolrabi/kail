@@ -139,7 +139,7 @@ ILboolean iRemoveSave(ILconst_string Ext) {
 
 
 // Automatically removes all registered formats.
-void ilRemoveRegistered()
+void iRemoveRegistered()
 {
   iFormatL *TempNodeL = LoadProcs;
   iFormatS *TempNodeS = SaveProcs;

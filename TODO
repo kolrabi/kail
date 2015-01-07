@@ -10,13 +10,8 @@ future:
       - BLP1
       - BMP: OS/2, Uncompressed RLE 4bit
       - blitting
-      - conversions
       - mipmaps for formats that support them (DDS)
       - layers for formats that support them (PSD, FITS)
-    - ilIsEnabled(IL_PNG) etc. or something similar to check for supported 
-      formats. (is that read or write?)
-    - select file format based on content for files with extensions that are
-      shared among formats (eg. .iff, .pal)
     - New pixel formats for IL_SHORT: 
       - IL_RGB_555
       - IL_RGB_565
@@ -46,5 +41,5 @@ future:
     - some kind of iluMixSlices (eg. convert FITS to colour)?
 
   - ILUT:
-    - SDL2 backend
+    - Tests
     - Finish DirectX10/11 support

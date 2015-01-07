@@ -155,7 +155,7 @@ ILAPI ILimage* ILAPIENTRY iluScale_(ILimage *Image, ILuint Width, ILuint Height,
 
 ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filter)
 {
-  ILuint    NewX1, NewX2, x, c;
+  ILuint    NewX1, NewX2, x;
   ILdouble  ScaleX;
 
   if (Image == NULL) {
@@ -172,7 +172,7 @@ ILimage *iluScale1D_(ILimage *Image, ILimage *Scaled, ILuint Width, ILenum Filte
       memcpy(Scaled->Data + NewX1, Image->Data + NewX2, Scaled->Bpp * Scaled->Bpc);
     }
   } else {  // IL_LINEAR or IL_BILINEAR
-    ILuint NewX3;
+    ILuint NewX3, c;
     switch (Image->Bpc)
     {
       case 1:

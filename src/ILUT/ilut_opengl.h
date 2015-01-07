@@ -20,12 +20,11 @@
 #ifdef _WIN32
 	#include <windows.h>
 	#include <GL/gl.h>
-#elif linux
+#elif defined(__APPLE__)
+  #include <mach-o/dyld.h>
+  void* aglGetProcAddress (const GLubyte *name);
+#elif defined(HAVE_GL_GLX_H)
 	#include <GL/gl.h>
-	#include <GL/glx.h>  // patch #1504388. X86_64 Problems by Hans de Goede
-#elif defined __APPLE__
-	#include <mach-o/dyld.h>
-	void* aglGetProcAddress (const GLubyte *name);
 #endif
 
 typedef void (ILAPIENTRY * ILGLTEXIMAGE3DARBPROC) (GLenum target, GLint level, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, const GLvoid *data);

@@ -27,7 +27,9 @@
 
 #define ILUT_VERSION_1_7_8 1
 #define ILUT_VERSION_1_9_0 1
-#define ILUT_VERSION       190
+#define ILUT_VERSION_1_10_0 1
+#define ILUT_VERSION_1_11_0 1
+#define ILUT_VERSION        11100
 
 #include <IL/il.h>
 #include <IL/ilu.h>
@@ -330,19 +332,22 @@ ILAPI ILboolean     ILAPIENTRY ilutRenderer(ILenum Renderer);
 
 // ImageLib Utility Toolkit's SDL Functions
 #ifdef ILUT_USE_SDL
-  #include <SDL/sdl.h>
+  struct SDL_Surface;
 
   ILAPI struct SDL_Surface* ILAPIENTRY ilutConvertToSDLSurface  (unsigned int flags);
   ILAPI struct SDL_Surface* ILAPIENTRY ilutSDLSurfaceLoadImage  (ILstring FileName);
   ILAPI ILboolean           ILAPIENTRY ilutSDLSurfaceFromBitmap (struct SDL_Surface *Bitmap);
 #endif//ILUT_USE_SDL
 
-/*
-// ImageLib Utility Toolkit's BeOS Functions
-#ifdef  ILUT_USE_BEOS
-  ILAPI BBitmap ILAPIENTRY ilutConvertToBBitmap(void);
-#endif//ILUT_USE_BEOS
-*/
+
+// ImageLib Utility Toolkit's SDL2 Functions
+#ifdef ILUT_USE_SDL2
+  struct SDL_Surface;
+
+  ILAPI struct SDL_Surface* ILAPIENTRY ilutConvertToSDL2Surface (unsigned int flags);
+  ILAPI struct SDL_Surface* ILAPIENTRY ilutSDL2SurfaceLoadImage (ILstring FileName);
+  ILAPI ILboolean           ILAPIENTRY ilutSDL2SurfaceFromBitmap(struct SDL_Surface *Bitmap);
+#endif//ILUT_USE_SDL
 
 #ifdef __cplusplus
 }

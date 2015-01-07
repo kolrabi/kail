@@ -88,9 +88,6 @@ void ilIStream::seekg(Imf::Int64 Pos) {
 	SIOseek(this->io, Pos, IL_SEEK_SET);  // I am assuming this is seeking from the beginning.
 }
 
-void ilIStream::clear() {
-}
-
 using namespace Imath;
 using namespace Imf;
 using namespace std;
@@ -104,10 +101,11 @@ static ILboolean iLoadExrInternal(ILimage *iCurImage) {
 	Array<Rgba> pixels;
 	Box2i dataWindow;
 	ILfloat *FloatData;
-  int dw, dh, dx, dy;
+  ILint dw, dh;
 	Rgba a;
 
 	try {
+		ILint dx,dy;
 		ilIStream File(&iCurImage->io);
 		RgbaInputFile in(File);
 

@@ -644,6 +644,8 @@ void iShutDownIL()
   if (!IsInit)
     return;
 
+  iRemoveRegistered();
+
   while (TempFree != NULL) {
     FreeNames = (iFree*)TempFree->Next;
     ifree(TempFree);

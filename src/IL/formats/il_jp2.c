@@ -96,40 +96,6 @@ ILboolean iLoadJp2Internal(ILimage* Image) {
 }
 
 
-//! This is separated so that it can be called for other file types, such as .icns.
-ILboolean ilLoadJp2LInternal(ILimage* Image, const void *Lump, ILuint Size) {
-    jas_stream_t *Stream;
-    ILboolean bRet;
-
-	if (Image == NULL) {
-		iSetError(IL_ILLEGAL_OPERATION);
-		return IL_FALSE;
-	}
-
-	// initialize jasper once
-	if (!JasperInit) {
-		if (jas_init()) {
-			iSetError(IL_LIB_JP2_ERROR);
-			return IL_FALSE;
-		}
-		JasperInit = IL_TRUE;
-	}
-
-	// open stream
-	Stream = jas_stream_memopen((char*)Lump, (ILint)Size);
-	if (!Stream)
-	{
-		iSetError(IL_COULD_NOT_OPEN_FILE);
-		return IL_FALSE;
-	}
-
-	bRet = iLoadJp2InternalStream(Image, Stream);
-
-	// Close the input stream.
-	jas_stream_close(Stream);
-	return bRet;
-}
-
 // Internal function used to load the Jpeg2000 stream.
 static ILboolean iLoadJp2InternalStream(ILimage* image, void	*StreamP)
 {

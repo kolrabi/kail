@@ -1,11 +1,34 @@
+????-??-?? Björn Paetzel <kolrabi@kolrabi.de>, kaIL 1.11.0
+	* DCX save support
+	* LIF save support
+	* FTX save support and format detection
+	* ICO save support
+	* Halo CUT + PAL save support
+	* XPM save support
+	* PCD format detection
+	* Fixed crash when using ilSetInteger when no image was bound.
+	* Fixed some deadlock issues
+	* Fixed DXT3/DXT5/RXGB DDS import
+	* Fixed PBM export
+	* Fixed ilutPopAttrib() bug
+	* Added modern ICNS data formats + PNG encoding
+	* Added histogram generation with iluHistogram()
+	* Added querying of supported format with ilCanIdentifyFormat(),
+	  ilCanLoadFormat(), ilCanSaveFormat()
+	* Added querying of supported format file name extentions with
+	  ilGetFormatExts()
+	* Added ilRemoveAlpha()
+	* Added ILUT support for SDL2 surfaces
+	* Build fixes
+
 2014-08-21 Björn Paetzel <kolrabi@kolrabi.de>, kaIL 1.10.0
-  * Added IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOLUTE ), 
-    changes behaviour of ilActive*(); 
+  * Added IL_IMAGE_OFFSET_MODE ( values IL_RELATIVE or IL_ABSOLUTE ),
+    changes behaviour of ilActive*();
   * Fixed DPX import
   * Added PXR export
   * Added support for Metadata (EXIF)
   * Fixed PNM/PGM/PBM/PPM export
-  * ilDetermineSize() now works with image formats that need to read 
+  * ilDetermineSize() now works with image formats that need to read
     from the file that is being written (eg. TIFF).
 
 2014-06-29 Björn Paetzel <kolrabi@kolrabi.de>, KaIL 1.9.0
@@ -47,9 +70,9 @@
 	  when the index for the transparent color pointed beyond
 	  the current palette
 	* Converted several files to cpp
-	
+
 2014-03-17 Björn Ganster <mail@bjoern-ganster.de>
-	* Fixed a bug for .ico files that contain png data that 
+	* Fixed a bug for .ico files that contain png data that
 	  caused a NULL pointer exception when no mask was specified
 
 2009-03-08 Matěj Týč <bubla@users.sf.net>
@@ -111,7 +134,7 @@
 	* lib/Makefile.am: Added il_utx.c to source line.
 	* il_internal.h: Added .utx loading declarations.
 	* il_io.c: Added loading calls for .utx files.
-	
+
 2009-02-28 Denton Woods <doomwiz@users.sf.net>
 	* il_states.c / il_states.h: Added ilVtfCompression to IL_STATES.
 	* il_vtf.c: Added more formats to saving.
@@ -136,11 +159,11 @@
 	* lib/Makefile.am: Added il_dpx.c and il_dpx.h to source/include lines.
 	* il_internal.h: Added .dpx loading declarations.
 	* il_io.c: Added loading calls for .dpx files.
-		
+
 2009-02-25 Denton Woods <doomwiz@users.sf.net>
 	* il_iwi.c:329: Changed IL_MAX parameter from 16 to 8 (copy+paste error).
 	* WindowsTest.cpp: Added mipmap functionality to 0-9 keys (0 goes to main image).
-	
+
 2009-02-24 Denton Woods <doomwiz@users.sf.net>
 	* vc9 Unicode projects: Changed settings to use x64 and x86 directories for .obj files.
 	* test/in: Removed this directory.
@@ -215,7 +238,7 @@
 	* lib/Makefile.am and src-IL/src/Makefile.am: Added il_rot.c to source line.
 	* il.h: Added IL_ROT define.
 	* il_internal.h: Added Rot loading declarations.
-	
+
 2009-02-15 Matěj Týč <bubla@users.sf.net>
 	* src-ILU/ilur: Added the ilur - commandline ILU frontend
 	* bin, examples/Makefile.am: Moved examples's Makefile.am to bin
@@ -227,7 +250,7 @@
 	* il_blp.c (iLoadBlp1): Support for mipmaps added.
 	* il_gif.h: Moved iCopyPalette declaration out of here into il_internal.h.
 	* il_gif.c: Moved iCopyPalette definition out of here into il_pal.c.
-	* projects/Mathematica: Added this folder.	
+	* projects/Mathematica: Added this folder.
 	* il_fits.c (iCheckFits): Implemented this.
 	* il_fits.c (iLoadFitsInternal): Renormalized float and double data.
 	* il_blp.c (iLoadBlp1): Added seeks to image data (not necessarily following palette).
@@ -417,7 +440,7 @@
 	* lib/Makefile.am: Added il_size.c.
 	* simple.c: Added iluInit call.
 	* il_dds-save.c (GetAlphaBlock): Applied code from GetBlock, since it was still reading out of bounds.
-	* il_psd.c (ParseResources):808: Added check for ResourceSize being too small.  
+	* il_psd.c (ParseResources):808: Added check for ResourceSize being too small.
 	  834-837: Added check to insure that we are not copying from past the end of Resource.
 	* il_hdr.c:527-528: Changed order so that beg_run+run_count is tested first.
 	* il_psd.c:829: Subtracted an additional 4 for the Size obtained in the lines before.
@@ -462,7 +485,7 @@
 	* il_dds-save.c:343: Fixed bug #1067590 - Removed this line, which caused crashes.
 	* il_pic.c (iLoadPicInternal): Fixed ilTexImage call, moved it after channel information read.
 	* il_pic.c (readScanline):294-295: Added check for alpha channel.
-	* il_pic.c: Added ilSetError calls throughout. 
+	* il_pic.c: Added ilSetError calls throughout.
 	* il_sgi.c (iLoadSgiInternal): Fixed bug #1060946 - Removed IL_LUMINANCE_ALPHA filetype.
 	* WindowsTest.cpp:52,53: Changed border size to accomodate Windows Vista/7.
 	* il_endian.h:20: Changed to give __BIG_ENDIAN__ a value of 1.  The Google cached page of
@@ -511,7 +534,7 @@
 	* il_io.h, include/IL/il.h, il_states.h: Changed some normal strings to constant
 	strings (in ilSave, ilIsValid and ilGetString)
 	* configure.ac, lib/Makefile.am: Added wbmp compilation support
-	* il_jp2.c, il_wbmp.c: Fixed a typo that prevented compilation 
+	* il_jp2.c, il_wbmp.c: Fixed a typo that prevented compilation
 	* include/IL/devil_cpp_wrapper.hpp: Added a hopefully harmless solution for
 	the initialization of DevIL.
 
@@ -566,7 +589,7 @@
 2009-01-09 Denton Woods <doomwiz@users.sf.net>
 	* ilut_opengl.h: Moved ILGLCOMPRESSEDTEXIMAGE2DARBPROC typedef out of #ifdefs.
 	* ilut_opengl.c: Added ilutGLSetTex2D and ilutGLSetTex3D.  Changed ilutGLSetTex to
-	just call ilutGLSetTex2D.  Did the same thing for ilutGLSubTex.  Added checks for 
+	just call ilutGLSetTex2D.  Did the same thing for ilutGLSubTex.  Added checks for
 	volume image extensions.  Renamed MakeGLCompliant to MakeGLCompliant2D.  Added
 	MakeGLCompliant3D.
 	* ilut_opengl.c (ilutGLScreen): Added check for ilTexImage failing.
