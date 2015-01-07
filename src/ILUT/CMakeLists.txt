@@ -77,6 +77,8 @@ IF                      ( ILUT_USE_ALLEGRO )
   TARGET_LINK_LIBRARIES ( ILUT ${ALLEGRO_LIBRARY} )
 ENDIF                   ()
 
+CONFIGURE_FILE          ( ${CMAKE_CURRENT_SOURCE_DIR}/ILUT.pc.in ${CMAKE_CURRENT_BINARY_DIR}/ILUT.pc ESCAPE_QUOTES )
+INSTALL                 ( FILES ${CMAKE_CURRENT_BINARY_DIR}/ILUT.pc DESTINATION lib/pkgconfig )
 
 INSTALL                 ( TARGETS ILUT
                           RUNTIME DESTINATION bin

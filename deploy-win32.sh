@@ -12,7 +12,7 @@
 #
 
 # The release we are building
-RELEASE="1.10.0"
+RELEASE="1.11.0"
 PACKAGE="kail"
 
 # Would create dependencies on dlls

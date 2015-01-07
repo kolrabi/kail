@@ -1,0 +1,7 @@
+Name:         ILUT
+Description:  kolrabi's another Image Library - ILUT part (connection to higher level libraries)
+Version:      @VERSION@
+URL:          http://codesklave.de/kail
+Libs:         -L"@CMAKE_INSTALL_PREFIX@/lib" -lILUT -lILU -l@LIBNAME@
+Libs.private: -lILUT -lILU -l@LIBNAME@
+Cflags:       -I"@CMAKE_INSTALL_PREFIX@/include" @IL_CFLAGS@

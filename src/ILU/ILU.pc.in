@@ -1,0 +1,7 @@
+Name:         ILU
+Description:  kolrabi's another Image Library - ILU part (image library utilities)
+Version:      @VERSION@
+URL:          http://codesklave.de/kail
+Libs:         -L"@CMAKE_INSTALL_PREFIX@/lib" -lILU -l@LIBNAME@
+Libs.private: -lILU -l@LIBNAME@
+Cflags:       -I"@CMAKE_INSTALL_PREFIX@/include" @IL_CFLAGS@

@@ -170,6 +170,9 @@ ENDIF                   ()
 
 TARGET_LINK_LIBRARIES   ( ${LIBNAME} ${LINK_LIBS} )
 
+CONFIGURE_FILE          ( ${CMAKE_CURRENT_SOURCE_DIR}/IL.pc.in ${CMAKE_CURRENT_BINARY_DIR}/IL.pc ESCAPE_QUOTES )
+INSTALL                 ( FILES ${CMAKE_CURRENT_BINARY_DIR}/IL.pc DESTINATION lib/pkgconfig )
+
 INSTALL                 ( TARGETS ${LIBNAME}
                           RUNTIME DESTINATION bin
                           LIBRARY DESTINATION lib

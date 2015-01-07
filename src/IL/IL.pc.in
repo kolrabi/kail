@@ -1,0 +1,7 @@
+Name:         IL
+Description:  kolrabi's another Image Library - IL part (just image loading)
+Version:      @VERSION@
+URL:          http://codesklave.de/kail
+Libs:         -L"@CMAKE_INSTALL_PREFIX@/lib" -l@LIBNAME@
+Libs.private: -l@LIBNAME@
+Cflags:       -I"@CMAKE_INSTALL_PREFIX@/include" @IL_CFLAGS@

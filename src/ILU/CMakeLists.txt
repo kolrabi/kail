@@ -43,8 +43,11 @@ ENDIF                   ()
 IF                      ( MINGW )
   SET_TARGET_PROPERTIES ( ILU PROPERTIES LINK_FLAGS
                           "-Wl,--output-def,${CMAKE_BINARY_DIR}/ILU.def")
-  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/ILU.def DESTINATION lib)  
+  INSTALL               ( FILES ${CMAKE_BINARY_DIR}/ILU.def DESTINATION lib)
 ENDIF                   ()
+
+CONFIGURE_FILE          ( ${CMAKE_CURRENT_SOURCE_DIR}/ILU.pc.in ${CMAKE_CURRENT_BINARY_DIR}/ILU.pc ESCAPE_QUOTES )
+INSTALL                 ( FILES ${CMAKE_CURRENT_BINARY_DIR}/ILU.pc DESTINATION lib/pkgconfig )
 
 INSTALL                 ( TARGETS ILU
                           RUNTIME DESTINATION bin
