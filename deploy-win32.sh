@@ -16,7 +16,7 @@ RELEASE="1.11.0"
 PACKAGE="kail"
 
 # Would create dependencies on dlls
-GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE -DILUT_USE_ALLEGRO=FALSE" 
+GLOBAL_OPTIONS="$GLOBAL_OPTIONS -DILUT_USE_SDL=FALSE -DILUT_USE_SDL2=FALSE -DILUT_USE_ALLEGRO=FALSE" 
 
 # Defined based on the selected toolchain
 case $BITNESS in
@@ -63,14 +63,21 @@ VC_LIB=lib.exe
 
 # TODO: check if lib.exe can be run, if not, disable building VC package
 
+if ! $VC_LIB -NOLOGO ; then
+  echo "Warning: $VC_LIB could not be executed, disabling VC package building"
+  VC_LIB=
+fi
+
 function build() {
   NAME="$1"
   OPTIONS="$2 $GLOBAL_OPTIONS"
-  BUILD_PATH="$BASE_PATH/build/MinGW/$NAME"
-  DEPLOY_PATH="$BASE_PATH/deploy/MinGW/$NAME"
-  MSVC_PATH="$BASE_PATH/deploy/VC/$NAME"
+  BUILD_PATH="$BASE_PATH/build/MinGW/$ARCH/$NAME"
+  DEPLOY_PATH="$BASE_PATH/deploy/MinGW/$ARCH/$NAME"
+  MSVC_PATH="$BASE_PATH/deploy/VC/$ARCH/$NAME"
 
-  echo DEPLOY_PATH: $DEPLOY_PATH
+  echo "BUILD_PATH:   $BUILD_PATH"
+  echo "DEPLOY_PATH:  $DEPLOY_PATH"
+  echo "MSVC_PATH:    $MSVC_PATH"
 
   # initialize deployment path
   rm -rf "$DEPLOY_PATH" &&
@@ -85,33 +92,40 @@ function build() {
       # create mingw target directories      
       mkdir -p  "$DEPLOY_PATH/$BUILD" || exit $?
 
-      # create msvc target directories      
-      mkdir -p "$MSVC_PATH/$BUILD/bin" "$MSVC_PATH/$BUILD/include" "$MSVC_PATH/$BUILD/lib" &&
-
       # build 
       cmake "$BASE_PATH" -G "MSYS Makefiles" $OPTIONS "-DCMAKE_INSTALL_PREFIX=$DEPLOY_PATH/$BUILD" "-DCMAKE_BUILD_TYPE=$BUILD" &&
       cmake --build . --target install --config "$BUILD" &&
 
       # add license and changelog
-      cp "$BASE_PATH/COPYING" "$DEPLOY_PATH/$BUILD" &&
-      cp "$BASE_PATH/ChangeLog" "$DEPLOY_PATH/$BUILD" &&
-      
-      # copy includes and dlls
-      cp -r "$DEPLOY_PATH/$BUILD/include/"* "$MSVC_PATH/$BUILD/include" &&
-      cp "$DEPLOY_PATH/$BUILD/bin/"*.dll "$MSVC_PATH/$BUILD/bin" &&
+      cp "$BASE_PATH/ChangeLog"     "$DEPLOY_PATH/$BUILD" &&
+      cp "$BASE_PATH/COPYING"       "$DEPLOY_PATH/$BUILD" &&
+      cp "$BASE_PATH/COPYING.libs"  "$DEPLOY_PATH/$BUILD" &&
 
-      # build import libraries for msvc
-      cp "$DEPLOY_PATH/$BUILD/lib/"*.def "$MSVC_PATH/$BUILD/lib" &&
-      ( 
-        cd "$MSVC_PATH/$BUILD/lib" &&
-        for DEF in *.def; do
-          "$VC_LIB" /machine:i386 "/def:$DEF" || exit $?
-        done
-      ) || exit $?
+      # build visual studio libs
+      if [ ! -z "$VC_LIB" ]; then
+        mkdir -p  "$MSVC_PATH/$BUILD" &&
 
-      # copy licenses
-      cp "$BASE_PATH/COPYING" "$DEPLOY_PATH/$BUILD" &&
-      cp "$BASE_PATH/COPYING.libs" "$DEPLOY_PATH/$BUILD"
+        # add license and changelog
+        cp "$BASE_PATH/ChangeLog"     "$MSVC_PATH/$BUILD" &&
+        cp "$BASE_PATH/COPYING"       "$MSVC_PATH/$BUILD" &&
+        cp "$BASE_PATH/COPYING.libs"  "$MSVC_PATH/$BUILD" &&
+
+        # create msvc target directories      
+        mkdir -p  "$MSVC_PATH/$BUILD/bin" "$MSVC_PATH/$BUILD/include" "$MSVC_PATH/$BUILD/lib" &&
+
+        # copy includes and dlls
+        cp -r "$DEPLOY_PATH/$BUILD/include/"* "$MSVC_PATH/$BUILD/include" &&
+        cp    "$DEPLOY_PATH/$BUILD/bin/"*.dll "$MSVC_PATH/$BUILD/bin"     &&
+
+        # build import libraries for msvc
+        cp "$DEPLOY_PATH/$BUILD/lib/"*.def    "$MSVC_PATH/$BUILD/lib"     &&
+        ( 
+          cd "$MSVC_PATH/$BUILD/lib" &&
+          for DEF in *.def; do
+            "$VC_LIB" "-machine:$ARCH" "-def:$DEF" || exit $?
+          done
+        ) || exit $?
+      fi 
     done
   ) || exit $?
 }
@@ -121,13 +135,16 @@ build Unicode    "-DIL_UNICODE=TRUE"
 
 for BUILD in NonUnicode Unicode; do
 ( 
-  cd "$BASE_PATH/deploy/MinGW/$BUILD" &&
+  cd "$BASE_PATH/deploy/MinGW/$ARCH/$BUILD" &&
   tar czvf "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-MinGW.tgz" Debug Release
   zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-MinGW.zip" Debug Release
 )
 
+if [ ! -z "$VC_LIB" ]; then
 ( 
-  cd "$BASE_PATH/deploy/VC/$BUILD" &&
+  cd "$BASE_PATH/deploy/VC/$ARCH/$BUILD" &&
   zip -r "$BASE_PATH/deploy/$PACKAGE-$RELEASE-$ARCH-$BUILD-VC.zip" Debug Release
 )
+fi
+
 done

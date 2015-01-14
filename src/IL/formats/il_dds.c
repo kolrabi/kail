@@ -891,10 +891,12 @@ static void DxtcReadColors(const ILubyte* Data, Color8888* Out)
   Out[0].r = (ILubyte)(r0 << 3 | r0 >> 2);
   Out[0].g = (ILubyte)(g0 << 2 | g0 >> 3);
   Out[0].b = (ILubyte)(b0 << 3 | b0 >> 2);
+  Out[0].a = 0xFF;
 
   Out[1].r = (ILubyte)(r1 << 3 | r1 >> 2);
   Out[1].g = (ILubyte)(g1 << 2 | g1 >> 3);
   Out[1].b = (ILubyte)(b1 << 3 | b1 >> 2);
+  Out[1].a = 0xFF;
 }
 
 //@TODO: Probably not safe on Big Endian.
@@ -1455,6 +1457,8 @@ ILboolean DecompressRXGB(ILimage *Image, const void *CompData, ILuint CompSize)
 
   if (!CompData)
     return IL_FALSE;
+
+  imemclear(&colours, sizeof(colours));
 
   for (z = 0; z < Image->Depth; z++) {
     for (y = 0; y < Image->Height; y += 4) {

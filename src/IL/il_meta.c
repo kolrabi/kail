@@ -134,6 +134,16 @@ ILboolean iEnumMetadata(ILimage *Image, ILuint Index, ILenum *IFD, ILenum *ID) {
 
 ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
   ILmeta *Exif = Image->MetaTags;
+
+  if (ID >= 0x10000) {
+    // ID is a metaID
+    const ILmetaDesc *desc = iGetMetaDesc(ID);
+    if (!desc) return IL_FALSE;
+
+    IFD = desc->ExifIFD;
+    ID  = desc->ExifID;
+  }
+
   while (Exif) {
     if (Exif->IFD == IFD && Exif->ID == ID) {
       if (Type)     *Type     = Exif->Type;
@@ -155,6 +165,15 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   if (Type > IL_EXIF_TYPE_DOUBLE) {
     iSetError(IL_INVALID_ENUM);
     return IL_FALSE;
+  }
+
+  if (ID >= 0x10000) {
+    // ID is a metaID
+    const ILmetaDesc *desc = iGetMetaDesc(ID);
+    if (!desc) return IL_FALSE;
+
+    IFD = desc->ExifIFD;
+    ID  = desc->ExifID;
   }
 
   // TODO: check for valid type?

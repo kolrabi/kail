@@ -41,10 +41,10 @@
  * @typedef ILsizei
  * An large unsigned integer (like size_t).
  *
- * @typedef ILint16
+ * @typedef ILint64
  * A signed 64 bit integer.
  *
- * @typedef ILint16
+ * @typedef ILint64
  * An unsigned 64 bit integer.
  *
  * @typedef ILfloat
