@@ -16,6 +16,14 @@
 #include "ilut_allegro.h"
 
 /**
+ * @file
+ * @brief Allegro functions.
+ * @ingroup ILUT
+ * @{
+ * @defgroup ilut_allegro Allegro functionality.
+ */
+
+/**
  * Convert image into an allegro BITMAP.
  * @param  Image        Image to convert.
  * @param  Pal          Where to store palette information (if any).
@@ -77,6 +85,8 @@ static BITMAP* iConvertToAlleg(ILimage *Image, PALETTE Pal) {
 /**
  * Convert the currently bound image to an Allegro BITMAP.
  * @param  Pal Where to store a possible colour palette.
+ * @return An Allegro BITMAP.
+ * @ingroup ilut_allegro
  */
 BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal) {
   iLockState();
@@ -93,6 +103,7 @@ BITMAP* ILAPIENTRY ilutConvertToAlleg(PALETTE Pal) {
  * Load an Allegro BITMAP from a file.
  * @param  FileName Name of file to load.
  * @return          The loaded BITMAP if sucessful, NULL otherwise.
+ * @ingroup ilut_allegro
  */
 BITMAP* ILAPIENTRY ilutAllegLoadImage(ILconst_string FileName) {
   PALETTE Pal;
@@ -116,7 +127,7 @@ BITMAP* ILAPIENTRY ilutAllegLoadImage(ILconst_string FileName) {
 #endif//_WIN32_WCE
 
 
-/**
+/*
  * Copy image data from an Allegro BITMAP into the currently bound image.
  * Unfinished.
  * @param  Bitmap BITMAP to use.
@@ -154,5 +165,6 @@ ILboolean ILAPIENTRY ilutAllegFromBitmap(const BITMAP *Bitmap) {
   return IL_TRUE;
 }
 */
+/** @} */
 #endif//ILUT_USE_ALLEGRO
 

@@ -1,21 +1,9 @@
 /**
- * @file include/IL/il.h
- * @brief Image Data types for the IL.
- *
- * @defgroup IL
- * @ingroup IL 
- * @{
- *
- * @defgroup il_consts Constants
- * @ingroup il_consts
- * @{
- *
  * @defgroup il_data_types Image Library Image Data Types
  *                         
  * Defines the underlying data type of each pixel. 
  * @see il_data_formats
- *               
- * @ingroup il_data_types
+ * @ingroup il_consts
  * @{
  *
  * @def IL_BYTE
@@ -67,7 +55,4 @@
  * Image has a BGRA palette with 8 bit components.
  *
  * @}
- * @}
- * @}
- * 
  */

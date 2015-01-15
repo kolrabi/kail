@@ -1,11 +1,6 @@
 /**
- * @file il.h
- *
- * @defgroup IL
- * @ingroup IL 
- * @{
  * @defgroup il_macros Useful macros
- * @ingroup il_macros
+ * @ingroup il
  * @{
  *
  * @def IL_MAX(a,b)
@@ -18,6 +13,4 @@
  * Limits the value @a x to be at least @a min and at most @a max.
  *
  * @}
- * @}
- * 
  */

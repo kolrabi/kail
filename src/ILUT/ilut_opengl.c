@@ -11,6 +11,15 @@
 //-----------------------------------------------------------------------------
 
 
+/**
+ * @addtogroup ILUT Image Library Utility Toolkit
+ * @{
+ * @defgroup ilut_gl OpenGL Functionality
+ * Contains all functions to convert/copy image data from the IL to OpenGL
+ * textures and back.
+ * @{
+ */
+
 #include "ilut_opengl.h"
 
 #ifdef ILUT_USE_OPENGL
@@ -968,3 +977,5 @@ ILboolean IsExtensionSupported(const char *extension)
 
 
 #endif//ILUT_USE_OPENGL
+/** @} */
+/** @} */

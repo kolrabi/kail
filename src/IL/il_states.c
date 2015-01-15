@@ -24,7 +24,7 @@
 
 // Global variables
 static ILconst_string _ilVendor    = IL_TEXT("kolrabi");
-static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.10.0");
+static ILconst_string _ilVersion   = IL_TEXT("kolrabi's another Image Library (kaIL) 1.11.0");
 
 static IL_STATE_STRUCT *iGetStateStruct() {
   return &iGetTLSData()->CurState;

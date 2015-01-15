@@ -1,15 +1,8 @@
 /**
- * @defgroup IL
- * @ingroup IL 
- * @{
- *
- * @defgroup il_consts Constants
- * @ingroup il_consts
- * @{
- *
  * @defgroup il_formats Supported Image File Formats
+ * Constants for each file format.
  *                         
- * @ingroup il_formats
+ * @ingroup il_consts
  * @{
  *
  * @def IL_TYPE_UNKNOWN
@@ -187,7 +180,4 @@
  * Unknown. I couldn't find any information about this.
  *
  * @}
- * @}
- * @}
- * 
  */

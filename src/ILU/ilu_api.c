@@ -15,7 +15,6 @@
  *               Image manipulation utilities beyond just loading
  *               and saving.
  *
- * @ingroup ILU
  * @{
  * 
  * @defgroup ilu_setup  Initialization / Deinitalization
@@ -46,6 +45,8 @@
   f; \
   iUnlockImage(img);  }
 */
+
+/** @internal */
 #define SIMPLE_FUNC(img, r, f) { \
   ILimage *img; r Result; \
   iLockState(); \

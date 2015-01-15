@@ -15,7 +15,6 @@
  *
  * @defgroup IL Image Library
  *              Loading, saving and converting images.
- * @ingroup IL
  * @{
  *
  * @defgroup state        Global State
@@ -24,7 +23,8 @@
  *                        Setting up the IL
  * @defgroup image_mgt    Image Management
  *                        Creating, deleting, copying, selecting images.
- * @defgroup image_meta   Image Meta Data.
+ * @defgroup image_meta   Image Meta Data
+ *                        Data that further describe images.
  * @defgroup image_manip  Image Manipulation
  *                        Perform operations on images.
  * @defgroup data         Image Data Handling
@@ -32,7 +32,7 @@
  * @defgroup file         Image File Operations
  *                        Loading, saving, determining type of image files.
  * @defgroup register     User Defined Image Types
- * @defgroup file         Registering and unregistering loaders/savers for user
+ *                        Registering and unregistering loaders/savers for user
  *                        defined image types.
  */
 
@@ -918,98 +918,98 @@ ILuint64 ILAPIENTRY ilGetLumpPos() {
  *
  *   ID                                 | Type  | Description
  *   ---------------------------------- | ----- | --------------
- *   IL_META_MAKE                       | ASCII | Camera/scanner manufacturer.
- *   IL_META_MODEL                      | ASCII | Camera/scanner model.
- *   IL_META_DOCUMENT_NAME              | ASCII | The name of the document from which this image was scanned.
- *   IL_META_IMAGE_DESCRIPTION          | ASCII | A string that describes the subject of the image.
- *   IL_META_SOFTWARE                   | ASCII | The software that created the image file.
- *   IL_META_DATETIME                   | ASCII | When the image was created ("YYYY:MM:DD HH:MM:SS").
- *   IL_META_ARTIST                     | ASCII | Name of the person who created the image.
- *   IL_META_HOST_COMPUTER              | ASCII | The computer that created the image.
- *   IL_META_COPYRIGHT                  | ASCII | Copyright notice.
- *   IL_META_PAGE_NUMBER                | WORD  | Page number of scanned source.
- *   IL_META_SPECTRAL_SENSITIVITY       | ASCII | ASTM conformal string indicating spectral sensitivity of the sensor of the camera.
- *   IL_META_DATETIME_ORIGINAL          | ASCII | When the original image was created.
- *   IL_META_DATETIME_DIGITIZED         | ASCII | When the image was digitized.
- *   IL_META_SUB_SECOND_TIME            | ASCII | Sub second part of IL_META_DATETIME
- *   IL_META_SUB_SECOND_TIME_ORIGINAL   | ASCII | Sub second part of IL_META_DATETIME_ORIGINAL
- *   IL_META_SUB_SECOND_TIME_DIGITIZED  | ASCII | Sub second part of IL_META_DATETIME_DIGITIZED
- *   IL_META_EXIF_VERSION               | ASCII | Exif version, 0220 -> 2.20
- *   IL_META_COMPRESSION                | WORD  | http://www.awaresystems.be/imaging/tiff/tifftags/compression.html
- *   IL_META_RESOLUTION_UNIT            | WORD  | http://www.awaresystems.be/imaging/tiff/tifftags/resolutionunit.html
- *   IL_META_GPS_LATITUDE_REF           | ASCII | "N" / "S" 
- *   IL_META_GPS_LONGITUDE_REF          | ASCII | "E" / "W"
- *   IL_META_GPS_SATELLITES             | ASCII | Description of the satellites used
- *   IL_META_GPS_STATUS                 | ASCII | Status of the GPS receiver when the image was taken. "A" = Measurement is in progress, "V" = Measurement is interop
- *   IL_META_GPS_MEASURE_MODE           | ASCII | GPS measure mode. "2" = 2D. "3" = 3D.
- *   IL_META_GPS_SPEED_REF              | ASCII | "K": km/h, "M": mp/h, "N": knots
- *   IL_META_GPS_TRACK_REF              | ASCII | Direction of movement over ground reference. "T": true north, "M": magnetic north
- *   IL_META_GPS_IMAGE_DIRECTION_REF    | ASCII | View direction of image reference. "T": true north, "M": magnetic north
- *   IL_META_GPS_MAP_DATUM              | ASCII | Geodesic model used, eg. "TOKYO", "WGS-84".
- *   IL_META_GPS_DEST_LATITUDE_REF      | ASCII | Destination point latitude reference. "N" / "S" 
- *   IL_META_GPS_DEST_LONGITUDE_REF     | ASCII | Destination point longitude reference. "N" / "S" 
- *   IL_META_GPS_DEST_BEARING_REF       | ASCII | Bearing reference. "T": true north, "M": magnetic north
- *   IL_META_GPS_DEST_DISTANCE_REF      | ASCII | Distance to destination point units. "K": km, "M": miles, "N": knots
- *   IL_META_GPS_DATESTAMP              | ASCII | GPS receiver date stamp.
- *   IL_META_EXPOSURE_TIME              | RATIONAL | Exposure time in seconds.
- *   IL_META_FSTOP                      | RATIONAL | Camera lens f stop.
- *   IL_META_EXPOSURE_PROGRAM           | WORD  | See IL_EXPOSURE_PROGRAM_*
- *   IL_META_SHUTTER_SPEED              | RATIONAL | Shutter speed in APEX units.
- *   IL_META_ISO_RATINGS                | WORD * N | ISO speed and latitude as specified in ISO 12232.
  *   IL_META_APERTURE                   | RATIONAL | Lens aperture in APEX units.
+ *   IL_META_ARTIST                     | ASCII | Name of the person who created the image.
  *   IL_META_BRIGHTNESS                 | SRATIONAL | Brightness value in APEX units, if numerator is 0xFFFFFFFF the value is "unknown".
- *   IL_META_EXPOSURE_BIAS              | SRATIONAL | Exposure bias settings.
- *   IL_META_MAX_APERTURE               | RATIONAL  | Smallest aperture of the lens in APEX units.
- *   IL_META_SUBJECT_DISTANCE           | RATIONAL  | Distance to subject in meters, if numerator is 0xFFFFFFFF the value is "infinite", if it is 0 the value is "unknown".
- *   IL_META_METERING_MODE              | WORD      | Metering mode. See IL_METERING_MODE_*
- *   IL_META_LIGHT_SOURCE               | WORD      | Light source. See IL_LIGHT_SOURCE_*
- *   IL_META_FLASH                      | WORD      | Flash usage. See IL_FLASH_*
- *   IL_META_FOCAL_LENGTH               | RATIONAL  | Physical focal length of camera lens.
- *   IL_META_FLASH_ENERGY               | RATIONAL  | Amount of flash energy used.
- *   IL_META_SUBJECT_AREA               | WORD * N  | http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectarea.html
- *   IL_META_X_RESOLUTION               | RATIONAL  | Horizontal pixel resolution.
- *   IL_META_Y_RESOLUTION               | RATIONAL  | Vertical pixel resolution.
  *   IL_META_COLOUR_SPACE               | WORD      | 1: sRGB, 65536: uncalibrated
+ *   IL_META_COMPRESSION                | WORD  | http://www.awaresystems.be/imaging/tiff/tifftags/compression.html
+ *   IL_META_COPYRIGHT                  | ASCII | Copyright notice.
+ *   IL_META_DATETIME                   | ASCII | When the image was created ("YYYY:MM:DD HH:MM:SS").
+ *   IL_META_DATETIME_DIGITIZED         | ASCII | When the image was digitized.
+ *   IL_META_DATETIME_ORIGINAL          | ASCII | When the original image was created.
+ *   IL_META_DOCUMENT_NAME              | ASCII | The name of the document from which this image was scanned.
+ *   IL_META_EXIF_VERSION               | ASCII | Exif version, 0220 -> 2.20
+ *   IL_META_EXPOSURE_BIAS              | SRATIONAL | Exposure bias settings.
  *   IL_META_EXPOSURE_MODE              | WORD      | Exposure mode. 0: Auto, 1: Manual, 2: Bracket
- *   IL_META_WHITE_BALANCE              | WORD      | White balance. 0: Auto, 1: Manual
- *   IL_META_SENSING_METHOD             | WORD      | Sensor type. http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/sensingmethod.html
- *   IL_META_GPS_VERSION                | ASCII     | GPS IFD version, 2200 -> 2.2
- *   IL_META_GPS_LATITUDE               | RATIONAL * 3 | Latitude degrees, minutes, seconds.
- *   IL_META_GPS_LONGITUDE              | RATIONAL * 3 | Longitude degrees, minutes, seconds.
+ *   IL_META_EXPOSURE_PROGRAM           | WORD  | \ref il_meta_exposure_program
+ *   IL_META_EXPOSURE_TIME              | RATIONAL | Exposure time in seconds.
+ *   IL_META_FILESOURCE                 | UNDEFINED    | 3: Digital Still Camera
+ *   IL_META_FLASH                      | WORD      | \ref il_meta_flash
+ *   IL_META_FLASH_ENERGY               | RATIONAL  | Amount of flash energy used.
+ *   IL_META_FLASHPIX_VERSION           | UNDEFINED    | Flashpix version.
+ *   IL_META_FOCAL_LENGTH               | RATIONAL  | Physical focal length of camera lens.
+ *   IL_META_FSTOP                      | RATIONAL | Camera lens f stop.
  *   IL_META_GPS_ALTITUDE               | RATIONAL     | Altitude in meters.
  *   IL_META_GPS_ALTITUDE_REF           | BYTE         | 0: above sea level, 1: below
- *   IL_META_GPS_TIMESTAMP              | RATIONAL * 3 | Timestamp (UTC) hours, minutes, seconds.
- *   IL_META_GPS_DOP                    | RATIONAL     | Degree of precision.
- *   IL_META_GPS_SPEED                  | RATIONAL     | Speed over ground.
- *   IL_META_GPS_TRACK                  | RATIONAL     | Direction over ground in degrees.
- *   IL_META_GPS_IMAGE_DIRECTION        | RATIONAL     | Forward view direction of image in degrees.
- *   IL_META_GPS_DEST_LATITUDE          | RATIONAL * 3 | Destination point latitude degrees, minutes, seconds.
- *   IL_META_GPS_DEST_LONGITUDE         | RATIONAL * 3 | Destination point longitude degrees, minutes, seconds.
+ *   IL_META_GPS_DATESTAMP              | ASCII | GPS receiver date stamp.
  *   IL_META_GPS_DEST_BEARING           | RATIONAL     | Destination point bearing in degrees.
+ *   IL_META_GPS_DEST_BEARING_REF       | ASCII | Bearing reference. "T": true north, "M": magnetic north
  *   IL_META_GPS_DEST_DISTANCE          | RATIONAL     | Destination point distance.
+ *   IL_META_GPS_DEST_DISTANCE_REF      | ASCII | Distance to destination point units. "K": km, "M": miles, "N": knots
+ *   IL_META_GPS_DEST_LATITUDE          | RATIONAL * 3 | Destination point latitude degrees, minutes, seconds.
+ *   IL_META_GPS_DEST_LATITUDE_REF      | ASCII | Destination point latitude reference. "N" / "S" 
+ *   IL_META_GPS_DEST_LONGITUDE         | RATIONAL * 3 | Destination point longitude degrees, minutes, seconds.
+ *   IL_META_GPS_DEST_LONGITUDE_REF     | ASCII | Destination point longitude reference. "N" / "S" 
  *   IL_META_GPS_DIFFERENTIAL           | WORD         | Whether differential correction was applied. 0: no, 1: yes
+ *   IL_META_GPS_DOP                    | RATIONAL     | Degree of precision.
+ *   IL_META_GPS_IMAGE_DIRECTION        | RATIONAL     | Forward view direction of image in degrees.
+ *   IL_META_GPS_IMAGE_DIRECTION_REF    | ASCII | View direction of image reference. "T": true north, "M": magnetic north
+ *   IL_META_GPS_LATITUDE               | RATIONAL * 3 | Latitude degrees, minutes, seconds.
+ *   IL_META_GPS_LATITUDE_REF           | ASCII | "N" / "S" 
+ *   IL_META_GPS_LONGITUDE              | RATIONAL * 3 | Longitude degrees, minutes, seconds.
+ *   IL_META_GPS_LONGITUDE_REF          | ASCII | "E" / "W"
+ *   IL_META_GPS_MAP_DATUM              | ASCII | Geodesic model used, eg. "TOKYO", "WGS-84".
+ *   IL_META_GPS_MEASURE_MODE           | ASCII | GPS measure mode. "2" = 2D. "3" = 3D.
+ *   IL_META_GPS_SATELLITES             | ASCII | Description of the satellites used
+ *   IL_META_GPS_SPEED                  | RATIONAL     | Speed over ground.
+ *   IL_META_GPS_SPEED_REF              | ASCII | "K": km/h, "M": mp/h, "N": knots
+ *   IL_META_GPS_STATUS                 | ASCII | Status of the GPS receiver when the image was taken. "A" = Measurement is in progress, "V" = Measurement is interop
+ *   IL_META_GPS_TIMESTAMP              | RATIONAL * 3 | Timestamp (UTC) hours, minutes, seconds.
+ *   IL_META_GPS_TRACK                  | RATIONAL     | Direction over ground in degrees.
+ *   IL_META_GPS_TRACK_REF              | ASCII | Direction of movement over ground reference. "T": true north, "M": magnetic north
+ *   IL_META_GPS_VERSION                | ASCII     | GPS IFD version, 2200 -> 2.2
+ *   IL_META_HOST_COMPUTER              | ASCII | The computer that created the image.
+ *   IL_META_IMAGE_DESCRIPTION          | ASCII | A string that describes the subject of the image.
+ *   IL_META_ISO_RATINGS                | WORD * N | ISO speed and latitude as specified in ISO 12232.
+ *   IL_META_LIGHT_SOURCE               | WORD      | \ref il_meta_lightsource
+ *   IL_META_MAKE                       | ASCII | Camera/scanner manufacturer.
  *   IL_META_MAKER_NOTE                 | UNDEFINED    | Manufacturer specific information.
- *   IL_META_FLASHPIX_VERSION           | UNDEFINED    | Flashpix version.
- *   IL_META_FILESOURCE                 | UNDEFINED    | 3: Digital Still Camera
+ *   IL_META_MAX_APERTURE               | RATIONAL  | Smallest aperture of the lens in APEX units.
+ *   IL_META_METERING_MODE              | WORD      | \ref il_meta_metering
+ *   IL_META_MODEL                      | ASCII | Camera/scanner model.
+ *   IL_META_PAGE_NUMBER                | WORD  | Page number of scanned source.
+ *   IL_META_RESOLUTION_UNIT            | WORD  | http://www.awaresystems.be/imaging/tiff/tifftags/resolutionunit.html
+ *   IL_META_SENSING_METHOD             | WORD      | Sensor type. http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/sensingmethod.html
+ *   IL_META_SHUTTER_SPEED              | RATIONAL | Shutter speed in APEX units.
+ *   IL_META_SOFTWARE                   | ASCII | The software that created the image file.
+ *   IL_META_SPECTRAL_SENSITIVITY       | ASCII | ASTM conformal string indicating spectral sensitivity of the sensor of the camera.
+ *   IL_META_SUB_SECOND_TIME            | ASCII | Sub second part of IL_META_DATETIME
+ *   IL_META_SUB_SECOND_TIME_DIGITIZED  | ASCII | Sub second part of IL_META_DATETIME_DIGITIZED
+ *   IL_META_SUB_SECOND_TIME_ORIGINAL   | ASCII | Sub second part of IL_META_DATETIME_ORIGINAL
+ *   IL_META_SUBJECT_AREA               | WORD * N  | http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/subjectarea.html
+ *   IL_META_SUBJECT_DISTANCE           | RATIONAL  | Distance to subject in meters, if numerator is 0xFFFFFFFF the value is "infinite", if it is 0 the value is "unknown".
  *   IL_META_USER_COMMENT               | UNDEFINED    | http://www.awaresystems.be/imaging/tiff/tifftags/privateifd/exif/usercomment.html
- * 
+ *   IL_META_WHITE_BALANCE              | WORD      | White balance. 0: Auto, 1: Manual
+ *   IL_META_X_RESOLUTION               | RATIONAL  | Horizontal pixel resolution.
+ *   IL_META_Y_RESOLUTION               | RATIONAL  | Vertical pixel resolution.
+ *   
  * @param       Type      (optional) Where to store the type of the meta data:
  *
  *   Type                     | Description
  *   ------------------------ | -------------------
- *   IL_EXIF_TYPE_NONE        | No data present
- *   IL_EXIF_TYPE_BYTE        | Single unsigned byte
  *   IL_EXIF_TYPE_ASCII       | ASCII encoded string
- *   IL_EXIF_TYPE_WORD        | 16 bit unsigned integer
+ *   IL_EXIF_TYPE_BLOB        | Arbitrary data
+ *   IL_EXIF_TYPE_BYTE        | Single unsigned byte
+ *   IL_EXIF_TYPE_DOUBLE      | A 64 bit floating point value
  *   IL_EXIF_TYPE_DWORD       | 32 bit unsigned integer
+ *   IL_EXIF_TYPE_FLOAT       | A 32 bit floating point value
+ *   IL_EXIF_TYPE_NONE        | No data present
  *   IL_EXIF_TYPE_RATIONAL    | An unsigned rational number consisting of 32 bit unsigned numerator and denominator.
  *   IL_EXIF_TYPE_SBYTE       | Single signed byte
- *   IL_EXIF_TYPE_BLOB        | Arbitrary data
- *   IL_EXIF_TYPE_SWORD       | 16 bit signed integer
  *   IL_EXIF_TYPE_SDWORD      | 32 bit signed integer
  *   IL_EXIF_TYPE_SRATIONAL   | An signed rational number consisting of 32 a bit signed numerator and unsigned denominator.
- *   IL_EXIF_TYPE_FLOAT       | A 32 bit floating point value
- *   IL_EXIF_TYPE_DOUBLE      | A 64 bit floating point value
+ *   IL_EXIF_TYPE_SWORD       | 16 bit signed integer
+ *   IL_EXIF_TYPE_WORD        | 16 bit unsigned integer
  *
  * @param       Count     (optional) Stores the number of entries of given type (except for ASCII and BLOB).
  * @param       Size      (optional) Stores the total size of data.
@@ -1024,7 +1024,7 @@ ILuint64 ILAPIENTRY ilGetLumpPos() {
  * @ingroup     image_meta
  */
 ILboolean ILAPIENTRY ilGetMetadata(ILenum IFD, ILenum ID, ILenum *Type, ILuint *Count, ILuint *Size, void **Data) {
-  SIMPLE_FUNC(Image, ILboolean, iGetMetadata(Image, Category, ID, Type, Count, Size, Data));
+  SIMPLE_FUNC(Image, ILboolean, iGetMetadata(Image, IFD, ID, Type, Count, Size, Data));
 }
 
 /**
@@ -1686,6 +1686,7 @@ void ILAPIENTRY ilResetRead() {
 /**
  * Set memory allocation/deallocation functions back to default.
  * @deprecated Use ilSetMemory(NULL, NULL) instead.
+ * @ingroup setup
  */
 void ILAPIENTRY ilResetMemory() {
   ilSetMemory(NULL, NULL);

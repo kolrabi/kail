@@ -187,6 +187,7 @@
 #define ILUT_X11        5
 #define ILUT_DIRECT3D10 6
 #define ILUT_SDL        7
+#define ILUT_SDL2       8
 
 ///////////////////////////////////////////////////////////////////////////
 //

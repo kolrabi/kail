@@ -1,10 +1,11 @@
 /**
- * @file
- * @brief Data types for the IL.
+ * @addtogroup IL 
+ * @{
+ * @defgroup il_consts Constants
  *
  * @defgroup il_types Data Types
+ * Types used by the API.
  *               
- * @ingroup il_types
  * @{
  * 
  * @typedef ILchar
@@ -44,7 +45,7 @@
  * @typedef ILint64
  * A signed 64 bit integer.
  *
- * @typedef ILint64
+ * @typedef ILuint64
  * An unsigned 64 bit integer.
  *
  * @typedef ILfloat
@@ -91,6 +92,7 @@
  * @def IL_MAX_UNSIGNED_INT
  * The maximal value of an ILuint.
  *
+ * @}
  * @}
  * 
  */

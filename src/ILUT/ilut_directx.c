@@ -11,12 +11,12 @@
 //-----------------------------------------------------------------------------
 
 /**
- * @file
- * @brief DirectX 8 functions.
- * @defgroup ILUT
- * @ingroup ILUT
+ * @addtogroup ILUT Image Library Utility Toolkit
  * @{
- * @defgroup ilut_dx8 DirectX 8 functionality.
+ * @defgroup ilut_dx8 DirectX 8 Functionality
+ * Contains all functions to convert/copy image data from the IL to Direct3D
+ * textures and back.
+ * @{
  */
 
 #include "ilut_internal.h"
@@ -25,6 +25,7 @@
 
 #include <d3d8.h>
 
+/** @internal */
 typedef struct {
   ILboolean UseDXTC;    // use texture compression
   ILuint    MipLevels;  // number of mip maps
@@ -42,11 +43,6 @@ static IDirect3DVolumeTexture8 *  iD3D8VolumeTexture(ILimage *ilutCurImage, IDir
 static D3DFORMAT                  iD3D8Formats[6]           = { D3DFMT_R8G8B8,  D3DFMT_A8R8G8B8,  D3DFMT_L8,  D3DFMT_DXT1,  D3DFMT_DXT3,  D3DFMT_DXT5 };
 static ILboolean                  iD3D8FormatsSupported[6]  = { IL_FALSE,       IL_FALSE,         IL_FALSE,   IL_FALSE,     IL_FALSE,     IL_FALSE    };
 static ILboolean                  iD3D8FormatsChecked       = IL_FALSE;
-
-// called by ilutInit()
-ILboolean ilutD3D8Init() {
-  return IL_TRUE;
-}
 
 static void iD3D8GetSettings(ILUTtextureSettingsDX8 *settings) {
   settings->UseDXTC     = ilutGetBoolean(ILUT_D3D_USE_DXTC);
@@ -337,7 +333,11 @@ static ILboolean iD3D8CreateMipmaps(IDirect3DTexture8 *Texture, ILimage *Image) 
  * - ILUT_D3D_POOL
  * - ILUT_D3D_GEN_DXTC
  * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param FileName Name of file to load
+ * @param Texture Where to store the pointer to the loaded texture.
+ * @retval IL_FALSE if there was an error.
+ * @retval IL_TRUE if successful.
  */
 ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DTexture8 **Texture) {
   ILimage *Temp;
@@ -367,7 +367,11 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFile(IDirect3DDevice8 *Device, ILconst_strin
  * Load a volumetric (3d) image from a file and store it in @a Texture.
  * Uses the following settings:
  * - ILUT_D3D_POOL
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param FileName Name of image file to load
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, ILconst_string FileName, IDirect3DVolumeTexture8 **Texture) {
   ILimage *Temp;
@@ -400,7 +404,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFile(IDirect3DDevice8 *Device, ILconst_st
  * - ILUT_D3D_POOL
  * - ILUT_D3D_GEN_DXTC
  * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param Lump Pointer to image file in memory
+ * @param Size Size of image file in memory in bytes
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, const void *Lump, ILuint Size, IDirect3DTexture8 **Texture) {
   ILUTtextureSettingsDX8 Settings;
@@ -429,7 +438,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileInMemory(IDirect3DDevice8 *Device, const
  * Load a volumetric (3d) image from memory and store it in @a Texture.
  * Uses the following settings:
  * - ILUT_D3D_POOL
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param Lump Pointer to image file in memory
+ * @param Size Size of image file in memory in bytes
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, const void *Lump, ILuint Size, IDirect3DVolumeTexture8 **Texture) {
   ILUTtextureSettingsDX8 Settings;
@@ -462,7 +476,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileInMemory(IDirect3DDevice8 *Device, co
  * - ILUT_D3D_POOL
  * - ILUT_D3D_GEN_DXTC
  * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param SrcModule Loaded module that contains the resource to load.
+ * @param SrcResource Name of the resource to load.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DTexture8 **Texture) {
   HRSRC Resource;
@@ -479,7 +498,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromResource(IDirect3DDevice8 *Device, HMODULE S
  * Load a volumetric (3d) image from a resource and store it in @a Texture.
  * Uses the following settings:
  * - ILUT_D3D_POOL
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param SrcModule Loaded module that contains the resource to load.
+ * @param SrcResource Name of the resource to load.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DVolumeTexture8 **Texture) {
   HRSRC Resource;
@@ -493,13 +517,12 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromResource(IDirect3DDevice8 *Device, HMODUL
 
 /**
  * Load an image from an opened file and store it in @a Texture.
- * Uses the following settings:
- * - ILUT_D3D_USE_DXTC
- * - ILUT_D3D_MIPLEVELS
- * - ILUT_D3D_POOL
- * - ILUT_D3D_GEN_DXTC
- * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param File Handle of open file to use. Must be compatible with currently 
+ *        active image IO routines, see ilSetRead.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DTexture8 **Texture) {
   ILimage *Image, *Temp;
@@ -530,7 +553,12 @@ ILboolean ILAPIENTRY ilutD3D8TexFromFileHandle(IDirect3DDevice8 *Device, ILHANDL
  * Load a volumetric (3d) image from an opened file and store it in @a Texture.
  * Uses the following settings:
  * - ILUT_D3D_POOL
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param File Handle of open file to use. Must be compatible with currently 
+ *        active image IO routines, see ilSetRead.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHANDLE File, IDirect3DVolumeTexture8 **Texture) {
   ILimage *Image, *Temp;
@@ -558,13 +586,9 @@ ILboolean ILAPIENTRY ilutD3D8VolTexFromFileHandle(IDirect3DDevice8 *Device, ILHA
 
 /**
  * Convert the currently bound image into a @a IDirect3DTexture8.
- * Uses the following settings:
- * - ILUT_D3D_USE_DXTC
- * - ILUT_D3D_MIPLEVELS
- * - ILUT_D3D_POOL
- * - ILUT_D3D_GEN_DXTC
- * - ILUT_DXTC_FORMAT (if ILUT_D3D_GEN_DXTC is IL_TRUE)
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @return A newly allocated Direct3D texture containing the image if succesful or
+ *         NULL if there was an error.
  */
 IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
 {
@@ -584,8 +608,10 @@ IDirect3DTexture8* ILAPIENTRY ilutD3D8Texture(IDirect3DDevice8 *Device)
  * Convert the currently bound image into a @a IDirect3DVolumeTexture8
  * Uses the following settings:
  * - ILUT_D3D_POOL
- * @ingroup ilut_dx8
-*/
+ * @param Device Direct3D device to use
+ * @return A newly allocated Direct3D texture containing the image if succesful or
+ *         NULL if there was an error.
+ */
 IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Device)
 {
   iLockState();
@@ -619,7 +645,10 @@ IDirect3DVolumeTexture8* ILAPIENTRY ilutD3D8VolumeTexture(IDirect3DDevice8 *Devi
 
 /**
  * Copy a given @a Surface into the currently bound image.
- * @ingroup ilut_dx8
+ * @param Device Direct3D device to use
+ * @param Surface Surface to copy image frome
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILAPI ILboolean ILAPIENTRY ilutD3D8LoadSurface(IDirect3DDevice8 *Device, IDirect3DSurface8 *Surface)
 {

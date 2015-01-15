@@ -1,15 +1,6 @@
 /**
- * @defgroup IL
- * @ingroup IL 
- * @{
- *
- * @defgroup il_consts Constants
- * @ingroup il_consts
- * @{
- *
  * @defgroup il_errors Error Codes
- *                         
- * @ingroup il_errors
+ * @ingroup il_consts
  * @{
  *
  * @def IL_NO_ERROR
@@ -70,7 +61,7 @@
  * An invalid conversion attempt was tried.
  * 
  * @def IL_BAD_DIMENSIONS
- * Unused.
+ * The image dimensions are larger than supported by the file format.
  *
  * @def IL_FILE_READ_ERROR
  * An error occured while trying to read from a file (eg. end of file). 
@@ -102,8 +93,6 @@
  * @def IL_UNKNOWN_ERROR
  * An unknown error has occured.
  *
- * @}
- * @}
  * @}
  * 
  */

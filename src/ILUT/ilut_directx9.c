@@ -11,12 +11,12 @@
 //-----------------------------------------------------------------------------
  
 /**
- * @file
- * @brief DirectX 9 functions.
- * @defgroup ILUT
- * @ingroup ILUT
+ * @addtogroup ILUT Image Library Utility Toolkit
  * @{
- * @defgroup ilut_dx9 DirectX 9 functionality.
+ * @defgroup ilut_dx9 DirectX 9 Functionality
+ * Contains all functions to convert/copy image data from the IL to Direct3D 9
+ * textures and back.
+ * @{
  */
 
 #include "ilut_internal.h"
@@ -44,9 +44,8 @@ static IDirect3DTexture9 *        iD3D9Texture(ILimage *ilutCurImage, IDirect3DD
 static IDirect3DCubeTexture9 *    iD3D9CubeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings);
 static IDirect3DVolumeTexture9 *  iD3D9VolumeTexture(ILimage *ilutCurImage, IDirect3DDevice9 *Device, ILUTtextureSettingsDX9 *Settings);
 
-#define ILUT_TEXTUREFORMAT_D3D9_COUNT   7
-static D3DFORMAT iD3D9Formats[ILUT_TEXTUREFORMAT_D3D9_COUNT]          = { D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_L8, D3DFMT_DXT1, D3DFMT_DXT3, D3DFMT_DXT5, D3DFMT_A16B16G16R16F};
-static ILboolean iD3D9FormatsSupported[ILUT_TEXTUREFORMAT_D3D9_COUNT] = { IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE };
+static D3DFORMAT iD3D9Formats[7]          = { D3DFMT_R8G8B8, D3DFMT_A8R8G8B8, D3DFMT_L8, D3DFMT_DXT1, D3DFMT_DXT3, D3DFMT_DXT5, D3DFMT_A16B16G16R16F};
+static ILboolean iD3D9FormatsSupported[7] = { IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE, IL_FALSE };
 static ILboolean iD3D9FormatsChecked                                  = IL_FALSE;
 
 // called by ilutInit/ilutRenderer
@@ -73,7 +72,7 @@ static void iD3D9CheckFormats(IDirect3DDevice9 *Device) {
   IDirect3DDevice9_GetDirect3D(Device, (IDirect3D9**)&TestD3D9);
   IDirect3DDevice9_GetDisplayMode(Device, 0, &DispMode);
 
-  for (i = 0; i < ILUT_TEXTUREFORMAT_D3D9_COUNT; i++) {
+  for (i = 0; i < 7; i++) {
     HRESULT hr = IDirect3D9_CheckDeviceFormat(TestD3D9, D3DADAPTER_DEFAULT,
       D3DDEVTYPE_HAL, DispMode.Format, 0, D3DRTYPE_TEXTURE, iD3D9Formats[i]);
     iD3D9FormatsSupported[i] = (ILboolean)SUCCEEDED(hr);
@@ -324,6 +323,14 @@ success:
 }
 
 #ifndef _WIN32_WCE
+/**
+ * Load an image from a file and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param FileName Name of file to load
+ * @param Texture Where to store the pointer to the loaded texture.
+ * @retval IL_FALSE if there was an error.
+ * @retval IL_TRUE if successful.
+ */
 ILboolean ILAPIENTRY ilutD3D9TexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DTexture9 **Texture)
 {
   ILimage *ilutCurImage;
@@ -355,10 +362,11 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFile(IDirect3DDevice9 *Device, ILconst_strin
 #ifndef _WIN32_WCE
 /**
  * Load a cube texture image from a file and store it in @a Texture.
- * Uses the following settings:
- * - ILUT_D3D_MIPLEVELS
- * - ILUT_D3D_POOL
- * @ingroup ilut_dx9
+ * @param Device Direct3D device to use
+ * @param FileName Name of image file to load
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
  */
 ILboolean ILAPIENTRY ilutD3D9CubeTexFromFile(IDirect3DDevice9 *Device,
       ILconst_string FileName, IDirect3DCubeTexture9 **Texture)
@@ -389,6 +397,15 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFile(IDirect3DDevice9 *Device,
 }
 
 #endif//_WIN32_WCE
+/**
+ * Load a cube texture image from a file in memory and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param Lump Pointer to image file in memory
+ * @param Size Size of image file in memory in bytes
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileInMemory(IDirect3DDevice9 *Device,
         void *Lump, ILuint Size, IDirect3DCubeTexture9 **Texture)
 {
@@ -412,6 +429,15 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileInMemory(IDirect3DDevice9 *Device,
   return IL_TRUE;   
 }
  
+/**
+ * Load an cube map from a resource and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param SrcModule Loaded module that contains the resource to load.
+ * @param SrcResource Name of the resource to load.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9CubeTexFromResource(IDirect3DDevice9 *Device,
     HMODULE SrcModule, ILconst_string SrcResource, IDirect3DCubeTexture9 **Texture)
 {
@@ -438,8 +464,17 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromResource(IDirect3DDevice9 *Device,
   iCloseImage(Temp);
 
   return IL_TRUE;
- }
+}
 
+/**
+ * Load cube texture from an opened file and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param File Handle of open file to use. Must be compatible with currently 
+ *        active image IO routines, see ilSetRead.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileHandle(IDirect3DDevice9 *Device,
       ILHANDLE File, IDirect3DCubeTexture9 **Texture)
 {
@@ -468,6 +503,12 @@ ILboolean ILAPIENTRY ilutD3D9CubeTexFromFileHandle(IDirect3DDevice9 *Device,
   return IL_TRUE;
 }
 
+/**
+ * Convert the currently bound image into a @a IDirect3DCubeTexture9.
+ * @param Device Direct3D device to use
+ * @return A newly allocated Direct3D texture containing the image if succesful or
+ *         NULL if there was an error.
+ */
 IDirect3DCubeTexture9* ILAPIENTRY ilutD3D9CubeTexture(IDirect3DDevice9 *Device) {
   ILUTtextureSettingsDX9 Settings;
   ILimage * Image;
@@ -484,6 +525,14 @@ IDirect3DCubeTexture9* ILAPIENTRY ilutD3D9CubeTexture(IDirect3DDevice9 *Device) 
 }
 
 #ifndef _WIN32_WCE
+/**
+ * Load a volume texture from a file and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param FileName Name of file to load
+ * @param Texture Where to store the pointer to the loaded texture.
+ * @retval IL_FALSE if there was an error.
+ * @retval IL_TRUE if successful.
+ */
 ILboolean ILAPIENTRY ilutD3D9VolTexFromFile(IDirect3DDevice9 *Device, ILconst_string FileName, IDirect3DVolumeTexture9 **Texture) {
   ILUTtextureSettingsDX9 Settings;
   ILimage * ilutCurImage;
@@ -512,6 +561,15 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFile(IDirect3DDevice9 *Device, ILconst_st
 #endif//_WIN32_WCE
 
 
+/**
+ * Load an image from memory and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param Lump Pointer to image file in memory
+ * @param Size Size of image file in memory in bytes
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9TexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -531,9 +589,19 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFileInMemory(IDirect3DDevice9 *Device, void 
   *Texture = iD3D9Texture(Temp, Device, &Settings);
   iCloseImage(Temp);
 
-  return IL_TRUE;  }
+  return IL_TRUE;  
+}
 
 
+/**
+ * Load volume texture from file in memory and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param Lump Pointer to image file in memory
+ * @param Size Size of image file in memory in bytes
+ * @param Texture where to store the pointer to the Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9VolTexFromFileInMemory(IDirect3DDevice9 *Device, void *Lump, ILuint Size, IDirect3DVolumeTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -557,6 +625,15 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFileInMemory(IDirect3DDevice9 *Device, vo
 }
 
 
+/**
+ * Load an image from a resource and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param SrcModule Loaded module that contains the resource to load.
+ * @param SrcResource Name of the resource to load.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9TexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -585,6 +662,15 @@ ILboolean ILAPIENTRY ilutD3D9TexFromResource(IDirect3DDevice9 *Device, HMODULE S
 }
 
 
+/**
+ * Load volume texture from a resource and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param SrcModule Loaded module that contains the resource to load.
+ * @param SrcResource Name of the resource to load.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9VolTexFromResource(IDirect3DDevice9 *Device, HMODULE SrcModule, ILconst_string SrcResource, IDirect3DVolumeTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -613,6 +699,15 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromResource(IDirect3DDevice9 *Device, HMODUL
 }
 
 
+/**
+ * Load an image from an opened file and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param File Handle of open file to use. Must be compatible with currently 
+ *        active image IO routines, see ilSetRead.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9TexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -641,6 +736,15 @@ ILboolean ILAPIENTRY ilutD3D9TexFromFileHandle(IDirect3DDevice9 *Device, ILHANDL
 }
 
 
+/**
+ * Load volume texture from an opened file and store it in @a Texture.
+ * @param Device Direct3D device to use
+ * @param File Handle of open file to use. Must be compatible with currently 
+ *        active image IO routines, see ilSetRead.
+ * @param Texture Where to store the pointer to the loaded Direct3D texture
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILboolean ILAPIENTRY ilutD3D9VolTexFromFileHandle(IDirect3DDevice9 *Device, ILHANDLE File, IDirect3DVolumeTexture9 **Texture)
 {
   ILUTtextureSettingsDX9 Settings;
@@ -669,6 +773,12 @@ ILboolean ILAPIENTRY ilutD3D9VolTexFromFileHandle(IDirect3DDevice9 *Device, ILHA
 }
 
 
+/**
+ * Convert the currently bound image into a @a IDirect3DTexture9.
+ * @param Device Direct3D device to use
+ * @return A newly allocated Direct3D texture containing the image if succesful or
+ *         NULL if there was an error.
+ */
 IDirect3DTexture9* ILAPIENTRY ilutD3D9Texture(IDirect3DDevice9 *Device) {
   ILUTtextureSettingsDX9 Settings;
   ILimage * Image;
@@ -731,6 +841,12 @@ static IDirect3DVolumeTexture9* iD3D9VolumeTexture(ILimage *ilutCurImage, IDirec
 }
 
 
+/**
+ * Convert the currently bound image into a @a IDirect3DVolumeTexture9.
+ * @param Device Direct3D device to use
+ * @return A newly allocated Direct3D texture containing the image if succesful or
+ *         NULL if there was an error.
+ */
 IDirect3DVolumeTexture9* ILAPIENTRY ilutD3D9VolumeTexture(IDirect3DDevice9 *Device) {
   ILUTtextureSettingsDX9 Settings;
   ILimage *Image;
@@ -1068,6 +1184,13 @@ static ILboolean iD3D9LoadSurface(ILimage *ilutCurImage, IDirect3DDevice9 *Devic
 }
 
 
+/**
+ * Copy a given @a Surface into the currently bound image.
+ * @param Device Direct3D device to use
+ * @param Surface Surface to copy image frome
+ * @retval IL_TRUE if successful
+ * @retval IL_FALSE if there was an error
+ */
 ILAPI ILboolean ILAPIENTRY ilutD3D9LoadSurface(IDirect3DDevice9 *Device, IDirect3DSurface9 *Surface) {
   ILimage * Image;
   ILboolean Result;
@@ -1083,4 +1206,5 @@ ILAPI ILboolean ILAPIENTRY ilutD3D9LoadSurface(IDirect3DDevice9 *Device, IDirect
 
 #endif//ILUT_USE_DIRECTX9
 
+/** @} */
 /** @} */

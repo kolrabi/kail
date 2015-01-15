@@ -48,11 +48,6 @@ typedef struct {
 	ILboolean ilutWin32Init(void);
 #endif
 
-// ImageLib Utility Toolkit's DirectX8 Functions
-#ifdef ILUT_USE_DIRECTX8
-	ILboolean ilutD3D8Init(void);
-#endif
-
 // ImageLib Utility Toolkit's DirectX9 Functions
 #ifdef ILUT_USE_DIRECTX9
 	ILboolean ilutD3D9Init(void);

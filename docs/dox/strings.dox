@@ -1,18 +1,9 @@
 /**
- * @file il.h
- *
- * @defgroup IL
- * @ingroup IL 
- * @{
- * @defgroup il_consts Constants
- * @ingroup il_consts
- * @{
- *
  * @defgroup il_strings String Identifiers
  *                         
  * For use with ilGetString() / ilSetString()
  *               
- * @ingroup il_strings
+ * @ingroup il_consts
  * @{
  *
  * @def IL_VENDOR
@@ -57,7 +48,4 @@
  * Sets the name of the computer to store that saved the image saving it as IL_TIF.
  *
  * @}
- * @}
- * @}
- * 
  */

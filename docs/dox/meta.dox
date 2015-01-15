@@ -1,0 +1,182 @@
+/**
+ * @defgroup il_meta Image Meta Data      
+ * Defines metadata values.
+ *
+ * @see ilGetMetadata
+ *               
+ * @ingroup il_consts
+ * @{
+ *
+ *
+ * @defgroup il_meta_exposure_program Exposure Programs
+ * Defines values for the IL_META_EXPOSURE_PROGRAM meta data.
+ *
+ * @{
+ *
+ * @def IL_EXPOSURE_PROGRAM_NOT_DEFINED
+ * Exposure program is not defined.
+ *
+ * @def IL_EXPOSURE_PROGRAM_NORMAL
+ * Image was manually exposed.
+ *
+ * @def IL_EXPOSURE_PROGRAM_APERTURE_PRIORITY
+ * Image was taken in aperture priority mode.
+ *
+ * @def IL_EXPOSURE_PROGRAM_SHUTTER_PRIORITY
+ * Image was taken in shutter priority mode. 
+ *
+ * @def IL_EXPOSURE_PROGRAM_CREATIVE
+ * Image was taken in some creative mode.
+ *
+ * @def IL_EXPOSURE_PROGRAM_ACTION
+ * Image was taken in a mode optimized for action or sports.
+ *
+ * @def IL_EXPOSURE_PROGRAM_PORTRAIT
+ * Image was taken in a mode optimized for portraits.
+ *
+ * @def IL_EXPOSURE_PROGRAM_LANDSCAPE
+ * Image was taken in a mode optimized for landscapes.
+ *
+ * @}
+ *
+ *
+ * @defgroup il_meta_metering Metering Mode
+ * Defines values for the IL_META_METERING_MODE meta data.
+ *
+ * @{
+ *
+ * @def IL_METERING_MODE_UNKNOWN
+ * Unknown metering mode was used.
+ *
+ * @def IL_METERING_MODE_AVERAGE
+ * Average image exposure was used for metering.
+ *
+ * @def IL_METERING_MODE_CENTER_WEIGHTED
+ * Average image exposure with more weight on the center area was used for metering.
+ *
+ * @def IL_METERING_MODE_SPOT
+ * Only center area was used for exposure metering.
+ *
+ * @def IL_METERING_MODE_MULTI_SPOT
+ * Exposure metering used multiple areas in the image.
+ *
+ * @def IL_METERING_MODE_PATTERN
+ * Exposure metering used some form of pattern.
+ *
+ * @def IL_METERING_MODE_PARTIAL
+ * Exposure metering used some part of the image.
+ *
+ * @def IL_METERING_MODE_OTHER
+ * Some other method was used for exposure metering.
+ *
+ * @}
+ *
+ *
+ * @defgroup il_meta_lightsource Light Sources
+ * Defines values for the IL_META_LIGHT_SOURCE meta data.
+ *
+ * @{
+ *
+ * @def IL_LIGHT_SOURCE_UNKNOWN
+ * An unknown light source was used.
+ *
+ * @def IL_LIGHT_SOURCE_DAYLIGHT
+ * Image was taken in direct daylight.
+ *
+ * @def IL_LIGHT_SOURCE_FLUORESCENT
+ * Image was taken in fluorescent light.
+ *
+ * @def IL_LIGHT_SOURCE_TUNGSTEN
+ * Image was taken in tungsten/incandescent light.
+ *
+ * @def IL_LIGHT_SOURCE_FLASH
+ * Image was taken using a flash.
+ *
+ * @def IL_LIGHT_SOURCE_FINE_WEATHER
+ * Image was taken in fine weather.
+ *
+ * @def IL_LIGHT_SOURCE_CLOUDY_WEATHER
+ * Image was taken in cloudy weather.
+ *
+ * @def IL_LIGHT_SOURCE_DAYLIGHT_FLUORESCENT
+ * Image was taken in artificial daylight (D 5700-7100K)
+ *
+ * @def IL_LIGHT_SOURCE_DAY_WHITE_FLUORESCENT
+ * Image was taken in artificial white light (N 4600-5400K)
+ *
+ * @def IL_LIGHT_SOURCE_COOL_WHITE_FLUORESCENT
+ * Image was taken in artificial white light (W 3900-4500K)
+ *
+ * @def IL_LIGHT_SOURCE_WHITE_FLUORESCENT
+ * Image was taken in artificial white light (WW 3200-3700K)
+ *
+ * @def IL_LIGHT_SOURCE_STANDARD_LIGHT_A
+ * Image was taken using standard illuminant A (2856K, incandescent)
+ *
+ * @def IL_LIGHT_SOURCE_STANDARD_LIGHT_B
+ * Image was taken using standard illuminant B (4874K, (obsolete) direct sunlight at noon)
+ *
+ * @def IL_LIGHT_SOURCE_STANDARD_LIGHT_C
+ * Image was taken using standard illuminant C (6774K, (obsolete) north sky daylight)
+ *
+ * @def IL_LIGHT_SOURCE_D55
+ * Image was taken using standard illuminant D55 (5503K, mid-morning/afternoon daylight)
+ *
+ * @def IL_LIGHT_SOURCE_D65
+ * Image was taken using standard illuminant D65 (6504K, noon daylight)
+ *
+ * @def IL_LIGHT_SOURCE_D75
+ * Image was taken using standard illuminant D75 (7504K, north sky daylight)
+ *
+ * @def IL_LIGHT_SOURCE_D50
+ * Image was taken using standard illuminant D50 (5003K, horizon light)
+ *
+ * @def IL_LIGHT_SOURCE_ISO_TUNGSTEN
+ * Image was taken using ISO studio tungsten lights.
+ *
+ * @def IL_LIGHT_SOURCE_OTHER
+ * Image was taken using some other source of light.
+ *
+ * @}
+ *
+ *
+ *
+ *
+ * @defgroup il_meta_flash Flash Mode
+ * Defines bit flags for the IL_META_FLASH meta data.
+ *
+ * @{
+ *
+ * @def IL_FLASH_FIRED
+ * When set indicates that the flash has fired.
+ *
+ * @def IL_FLASH_STROBE_RETURN_DETECTED
+ * When set indicates that light returning from the strobes was detected.
+ *
+ * @def IL_FLASH_STROBE_RETURN_NOT_DETECTED
+ * When set indicates that light returning from the strobes was not detected,
+ * even though this is supported.
+ *
+ * @def IL_FLASH_COMPULSORY_FIRING
+ * When set and IL_FLASH_COMPULSORY_SUPPRESSION is not, indicates that flash was
+ * forced to fire.
+ *
+ * @def IL_FLASH_COMPULSORY_SUPPRESSION
+ * When set and IL_FLASH_COMPULSORY_FIRING is not, indicates that flash was
+ * forced to fire.
+ *
+ * @def IL_FLASH_AUTO
+ * A combination of IL_FLASH_COMPULSORY_FIRING and IL_FLASH_COMPULSORY_SUPPRESSION,
+ * indicating automatic decision whether or not to fire the flash.
+ *
+ * @def IL_FLASH_SUPPORTED
+ * When set indicates that a flash was present/supported.
+ *
+ * @def IL_FLASH_RED_EYE_REDUCTION
+ * When set indicates that red eye reduction was used.
+ *
+ * @}
+ *
+ *
+ * @}
+ */

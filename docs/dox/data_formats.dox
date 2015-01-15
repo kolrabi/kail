@@ -1,19 +1,9 @@
 /**
- * @file il.h
- *
- * @defgroup IL
- * @ingroup IL 
- * @{
- * @defgroup il_consts Constants
- * @ingroup il_consts
- * @{
- *
  * @defgroup il_data_formats Image Library Image Colour Formats.
  *                         
  * Defines the the format in which colours are stored. 
  * @see il_data_types
- *               
- * @ingroup il_data_formats
+ * @ingroup il_consts               
  * @{
  *
  * @def IL_COLOUR_INDEX
@@ -35,14 +25,11 @@
  * @def IL_BGRA
  * Colours have 4 components: Blue, green, red and alpha (opacity) (in that order).
  *
- * @def IL_LUMINANCE            0x1909
+ * @def IL_LUMINANCE
  * Colours consists of only an luminance (brightness) component.
  *
- * @def IL_LUMINANCE_ALPHA      0x190A
+ * @def IL_LUMINANCE_ALPHA
  * Colours consists of a luminance (brightness) and an alpha (opacity) component.
  *
  * @}
- * @}
- * @}
- * 
  */

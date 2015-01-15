@@ -1,0 +1,34 @@
+/**
+ * @defgroup il_dxtc_types DXTC Compression types.
+ * @ingroup il_consts
+ * @{
+ *
+ * @def IL_DXT1
+ * DXT1 / BC1 texture compression (color only).
+ *
+ * @def IL_DXT2
+ * DXT2 / BC2 texture compression (color, explicit premultiplied alpha).
+ *
+ * @def IL_DXT3
+ * DXT3 / BC2 texture compression (color, explicit alpha).
+ *
+ * @def IL_DXT4
+ * DXT4 / BC3 texture compression (color, interpolated premultiplied alpha).
+ *
+ * @def IL_DXT5
+ * DXT5 / BC3 texture compression (color, interpolated alpha).
+ *
+ * @def IL_DXT_NO_COMP
+ * Don't use DXTC.
+ *
+ * @def IL_3DC
+ * 3Dc / BC5 texture compression (normal map).
+ *
+ * @def IL_ATI1N
+ * ATI1N texture compression (normal map).
+ *
+ * @def IL_DXT1A
+ * Same as IL_DXT1
+ *
+ * @}
+ */

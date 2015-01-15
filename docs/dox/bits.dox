@@ -1,11 +1,7 @@
 /**
- * @file il.h
- *
- * @defgroup IL
- * @ingroup IL 
- * @{
  * @defgroup il_bits Bit Identifiers
- * @ingroup il_bits
+ * For use with ilPushAttrib().
+ * @ingroup il_consts
  * @{
  *
  * @def IL_ORIGIN_BIT
@@ -36,6 +32,4 @@
  * Save all settings when using ilPushAttrib().
  *
  * @}
- * @}
- * 
  */

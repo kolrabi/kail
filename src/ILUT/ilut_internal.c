@@ -31,10 +31,6 @@ void ILAPIENTRY ilutInit()
   ilutGLInit();  // default renderer is OpenGL
 #endif
 
-#ifdef ILUT_USE_DIRECTX8
-  ilutD3D8Init();
-#endif
-
 #ifdef ILUT_USE_DIRECTX9
   ilutD3D9Init();
 #endif

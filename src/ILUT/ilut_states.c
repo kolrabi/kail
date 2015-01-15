@@ -10,15 +10,13 @@
 //
 //-----------------------------------------------------------------------------
 
+#define SETFLAG(x, b, v) (x) = ((x) & (~(ILuint)(b))) | ((v)?(b):0)
+#define GETFLAG(x, b)    (!!((x) & (ILuint)(b)))
 
 /**
- * @file
- * @brief State machine
- * @defgroup ILUT
+ * @defgroup ilut_state ILUT State
  * @ingroup ILUT
  * @{
- * 
- * @defgroup ilut_state ILUT State
  */
 
 #include "ilut_internal.h"
@@ -26,7 +24,7 @@
 #include "ilut_opengl.h"
 
 static ILconst_string _ilutVendor  = IL_TEXT("kolrabi");
-static ILconst_string _ilutVersion = IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.10.0");
+static ILconst_string _ilutVersion = IL_TEXT("kolrabi's another Image Library Utility Toolkit (ILUT) 1.11.0");
 
 #if IL_THREAD_SAFE_PTHREAD
 #include <pthread.h>
@@ -95,7 +93,6 @@ void iInitThreads_ilut(void) {
   }
 }
 
-// Set all states to their defaults
 void ilutDefaultStates() {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
@@ -109,17 +106,10 @@ void ilutDefaultStates() {
   ilutStates[ilutCurrentPos].D3DAlphaKeyColor = -1;
 }
 
-/*
- * Sets the number of mip map levels for DirectX 8 textures (ILUT_D3D_MIPLEVELS).
- * @ingroup ilut_dx8
+/**
+ * Get a string about the ILUT state.
+ * @param  StringName String to get. (ILUT_VENDOR, ILUT_VERSION_NUM)
  */
-/*void ILAPIENTRY ilutD3D8MipFunc(ILuint NumLevels) {
-  ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
-  ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
-  ilutStates[ilutCurrentPos].D3DMipLevels = NumLevels;
-}
-*/
-
 ILconst_string ILAPIENTRY ilutGetString(ILenum StringName) {
   switch (StringName)
   {
@@ -133,22 +123,32 @@ ILconst_string ILAPIENTRY ilutGetString(ILenum StringName) {
   return NULL;
 }
 
-
+/**
+ * Enable a state.
+ * Valid @a Modes are:
+ *
+ * Mode                   | R/W | Default               | Description
+ * ---------------------- | --- | --------------------- | ---------------------------------------------
+ * ILUT_OPENGL_CONV       | RW  | IL_FALSE              | Use GL_RGB8 and GL_RGBA8 instead of GL_RGB and GL_RGBA, respectively.
+ * ILUT_GL_USE_S3TC       | RW  | IL_FALSE              | Use S3 texture compression.
+ * ILUT_GL_GEN_S3TC       | RW  | IL_FALSE              | Generate S3 texture compression data. 
+ * ILUT_GL_AUTODETECT_TEXTURE_TARGET | RW | IL_FALSE    | Automatically use cube map targets when converting image with cube faces.
+ */
 ILboolean ILAPIENTRY ilutEnable(ILenum Mode) {
   ILboolean Result;
   Result = ilutAble(Mode, IL_TRUE);
   return Result;
 }
 
-
+/**
+ * Disable a state.
+ * @see ilutEnable
+ */
 ILboolean ILAPIENTRY ilutDisable(ILenum Mode) {
   ILboolean Result;
   Result = ilutAble(Mode, IL_FALSE);
   return Result;
 }
-
-#define SETFLAG(x, b, v) (x) = ((x) & (~(ILuint)(b))) | ((v)?(b):0)
-#define GETFLAG(x, b)    (!!((x) & (ILuint)(b)))
 
 ILboolean ilutAble(ILenum Mode, ILboolean Flag) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
@@ -170,7 +170,9 @@ ILboolean ilutAble(ILenum Mode, ILboolean Flag) {
   return IL_TRUE;
 }
 
-
+/**
+ * Check whether a state is enabled.
+ */
 ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
@@ -191,16 +193,23 @@ ILboolean ILAPIENTRY ilutIsEnabled(ILenum Mode) {
 }
 
 
+/**
+ * Check whether a state is disabled.
+ */
 ILboolean ILAPIENTRY ilutIsDisabled(ILenum Mode) {
   return !ilutIsEnabled(Mode);
 }
 
-
+/**
+ * Get a state and store it in the supplied variable.
+ */
 void ILAPIENTRY ilutGetBooleanv(ILenum Mode, ILboolean *Param) {
   *Param = ilutIsEnabled(Mode);
 }
 
-
+/**
+ * Get a state and return it.
+ */
 ILboolean ILAPIENTRY ilutGetBoolean(ILenum Mode) {
   ILboolean Temp = IL_FALSE;
   ilutGetBooleanv(Mode, &Temp);
@@ -208,6 +217,10 @@ ILboolean ILAPIENTRY ilutGetBoolean(ILenum Mode) {
 }
 
 
+/** 
+ * Get the value of a mode and store it in a variable.
+ * @see ilutGetInteger
+ */
 void ILAPIENTRY ilutGetIntegerv(ILenum Mode, ILint *Param) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
@@ -267,7 +280,10 @@ ILint ILAPIENTRY ilutGetInteger(ILenum Mode)
   return Temp;
 }
 
-
+/** 
+ * Set the value of a mode.
+ * @see ilutGetInteger
+ */
 void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
   ILUT_STATES *ilutStates = iGetTLSData()->ilutStates;
   ILuint       ilutCurrentPos = iGetTLSData()->ilutCurrentPos;
@@ -331,7 +347,6 @@ void ILAPIENTRY ilutSetInteger(ILenum Mode, ILint Param) {
 
 /** 
  * Pushes a new set of modes and attributes onto the state stack.
- * @ingroup ilut_state
  */
 void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
   // Should we check here to see if ilCurrentPos is negative?
@@ -370,7 +385,6 @@ void ILAPIENTRY ilutPushAttrib(ILuint Bits) {
 /**
  * Pops the last pushed stack entry off the stack and copies the 
  * bits specified when pushed by ilutPushAttrib to the previous set of states.
- * @ingroup ilut_state
  */
 void ILAPIENTRY ilutPopAttrib() {
   ILUT_TLS_DATA *tls = iGetTLSData();
@@ -384,6 +398,7 @@ void ILAPIENTRY ilutPopAttrib() {
   tls->ilutCurrentPos--;
 }
 
+/** @internal */
 ILenum ilutGetCurrentFlags() {
   ILUT_TLS_DATA *tls = iGetTLSData();
   return tls->ilutStates[tls->ilutCurrentPos].Flags;
@@ -432,7 +447,7 @@ ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer) {
 
     #ifdef ILUT_USE_DIRECTX8
     case ILUT_DIRECT3D8:
-      return ilutD3D8Init();
+      return IL_TRUE;
     #endif
 
     #ifdef ILUT_USE_DIRECTX9
@@ -443,6 +458,11 @@ ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer) {
     #ifdef ILUT_USE_DIRECTX10
     case ILUT_DIRECT3D10:
       return ilutD3D10Init();
+    #endif
+
+    #ifdef ILUT_USE_SDL2
+    case ILUT_SDL2:
+      return IL_TRUE;
     #endif
 
     default:

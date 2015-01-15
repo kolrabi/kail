@@ -21,14 +21,6 @@
 #define __il_h_
 #define __IL_H__
 
-//this define controls if floats and doubles are clampled to [0..1]
-//during conversion. It takes a little more time, but it is the correct
-//way of doing this. If you are sure your floats are always valid,
-//you can undefine this value...
-#define CLAMP_HALF    1
-#define CLAMP_FLOATS  1
-#define CLAMP_DOUBLES 1
-
 //
 // IL-specific #define's
 //
@@ -784,7 +776,7 @@ ILAPI ILboolean ILAPIENTRY ilIsDisabled(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilIsEnabled(ILenum Mode);
 ILAPI ILboolean ILAPIENTRY ilIsImage(ILuint Image);
 ILAPI void      ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param);
-ILAPI void      ILAPIENTRY ilSetMemory(mAlloc, mFree);
+ILAPI void      ILAPIENTRY ilSetMemory(mAlloc mallocFunc, mFree freeFunc);
 ILAPI void      ILAPIENTRY ilSetString(ILenum Mode, ILconst_string String);
 ILAPI void      ILAPIENTRY ilShutDown(void);
 ILAPI void      ILAPIENTRY IL_DEPRECATED(ilResetMemory(void));
