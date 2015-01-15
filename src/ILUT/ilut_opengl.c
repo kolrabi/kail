@@ -123,7 +123,7 @@ static ILboolean iInitGLExtensions()
     }
     if (IsExtensionSupported("GL_EXT_texture3D")) {
       ilGLTexImage3D = (ILGLTEXIMAGE3DARBPROC)glXGetProcAddressARB((const GLubyte*)"glTexImage3D");
-      ilGLTexSubImage3D = (ILGLTEXSUBIMAGE3DARBPROC)glXGetProcAddress("glTexSubImage3D");
+      ilGLTexSubImage3D = (ILGLTEXSUBIMAGE3DARBPROC)glXGetProcAddress((const GLubyte*)"glTexSubImage3D");
     }
     if (IsExtensionSupported("GL_ARB_texture_compression") &&
         IsExtensionSupported("GL_EXT_texture_compression_s3tc") &&

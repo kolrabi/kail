@@ -25,6 +25,8 @@
 #include "il_jp2.h"
 #include "il_png.h"
 
+#include <ctype.h>
+
 static struct {
   const char *ID;
   ILboolean   HasAlpha;
