@@ -93,7 +93,7 @@ ILconst_string iGetILString(ILimage *Image, ILenum StringName) {
   IL_STATE_STRUCT *StateStruct  = iGetStateStruct();
   IL_STATES *ilStates = StateStruct->ilStates;
   ILuint ilCurrentPos = StateStruct->ilCurrentPos;
-  ILimage *BaseImage = Image->BaseImage;
+  ILimage *BaseImage = Image ? Image->BaseImage : NULL;
 
   switch (StringName) {
     case IL_VENDOR:                   return _ilVendor;

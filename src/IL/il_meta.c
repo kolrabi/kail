@@ -456,6 +456,11 @@ const void * iGetMetax(ILimage *Image, ILenum MetaID, ILuint *Size) {
 }
 
 ILconst_string iGetMetaString(ILimage *BaseImage, ILenum MetaID) {
+  if (!BaseImage) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return NULL;
+  }
+
   ILmeta *Meta = BaseImage->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   if (!Desc) {
@@ -479,6 +484,11 @@ ILconst_string iGetMetaString(ILimage *BaseImage, ILenum MetaID) {
 }
 
 ILboolean iSetMetaString(ILimage *Image, ILenum MetaID, ILconst_string String) {
+  if (!Image) {
+    iSetError(IL_ILLEGAL_OPERATION);
+    return IL_FALSE;
+  }
+
   ILmeta *Meta = Image->MetaTags;
   ILmetaDesc *Desc = iGetMetaDesc(MetaID);
   ILuint Length;
