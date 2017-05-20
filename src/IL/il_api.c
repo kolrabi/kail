@@ -1881,7 +1881,7 @@ void ILAPIENTRY ilSetInteger(ILenum Mode, ILint Param) {
 
   iLockState();
   Image = iLockCurImage();
-  iSetiv(Image, Mode, &Param);
+  iSeti(Image, Mode, Param);
   iUnlockImage(Image);
   iUnlockState();
 }

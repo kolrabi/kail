@@ -64,15 +64,16 @@ static ILboolean isValidCutHeader(const CUT_HEAD* header)
 static ILboolean 
 iIsValidCut(SIO* io) {
 	CUT_HEAD	header;
-	ILuint Start = SIOtell(io);
-	ILboolean bRet;
+	ILuint 		Start;
+	ILboolean 	bRet;
 
 	if (io == NULL) {
 		iSetError(IL_ILLEGAL_OPERATION);
 		return IL_FALSE;
 	}
 
-	bRet = SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD) && isValidCutHeader(&header);
+	Start = SIOtell(io);
+	bRet  = SIOread(io, &header, 1, sizeof(CUT_HEAD)) == sizeof(CUT_HEAD) && isValidCutHeader(&header);
 
 	SIOseek(io, Start, IL_SEEK_SET);
 	return bRet;

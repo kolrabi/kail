@@ -33,7 +33,9 @@ static ILuint XpmGetsInternal(SIO* io, char *Buffer, ILuint MaxLen) {
   if (SIOeof(io))
     return 0;
 
-  while ((Current = SIOgetc(io)) != IL_EOF && i < MaxLen - 1) {
+  while (i < MaxLen - 1) {
+    Current = SIOgetc(io);
+
     if (Current == IL_EOF)
       return 0;
     if (Current == '\n') //unix line ending

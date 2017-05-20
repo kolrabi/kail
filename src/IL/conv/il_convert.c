@@ -97,6 +97,10 @@ ILimage *iConvertPalette(ILimage *Image, ILenum DestFormat)
         }
 
         break;
+
+      default:
+        iSetError(IL_INTERNAL_ERROR);
+        goto alloc_error;
     }
 
     NewImage->Pal.Palette = NULL;

@@ -126,7 +126,7 @@ static ILboolean iReadRleSgi(ILimage *Image, iSgiHeader *Head)
 
 	imemclear(TempData, Head->ZSize * sizeof(ILubyte*));  // Just in case ialloc fails then cleanup_error.
 	for (ixPlane = 0; ixPlane < Head->ZSize; ixPlane++) {
-		TempData[ixPlane] = (ILubyte*)ialloc(Head->XSize * Head->YSize * Head->Bpc);
+		TempData[ixPlane] = (ILubyte*)ialloc((ILuint64)Head->XSize * (ILuint64)Head->YSize * (ILuint64)Head->Bpc);
 		if (TempData[ixPlane] == NULL)
 			goto cleanup_error;
 	}

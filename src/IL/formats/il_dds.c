@@ -680,7 +680,7 @@ ILboolean AllocImage(DDS_CONTEXT *ctx, ILuint CompFormat)
   }
 
   image->Origin = IL_ORIGIN_UPPER_LEFT;
-  
+
   return IL_TRUE;
 }
 
@@ -1965,11 +1965,11 @@ ILboolean iDxtcDataToSurface(ILimage* image)
     image->Data = (ILubyte*) ialloc(image->SizeOfData);
   }
 
-  ctx.Image = image;
+  ctx.Image     = image;
   ctx.BaseImage = image;
-  ctx.Width = image->Width;
-  ctx.Height = image->Height;
-  ctx.Depth = image->Depth;
+  ctx.Width     = image->Width;
+  ctx.Height    = image->Height;
+  ctx.Depth     = image->Depth;
 
   switch(image->DxtcFormat)
   {
@@ -1982,6 +1982,7 @@ ILboolean iDxtcDataToSurface(ILimage* image)
       return IL_FALSE;
   }
   ctx.CompData = image->DxtcData;
+  ctx.CompSize = image->DxtcSize;
 
   DdsDecompress(&ctx, CompFormat); //globals suck...fix this // BP: fix'd
 
@@ -2022,10 +2023,10 @@ ILboolean iSurfaceToDxtcData(ILimage* image, ILenum Format)
   }
 
   Data = ialloc(Size);
-    
+
   if (Data == NULL)
     return IL_FALSE;
-            
+
   ilGetDXTCData(Data, Size, Format);
 
   //These have to be after the call to ilGetDXTCData()
@@ -2111,7 +2112,7 @@ ILboolean iTexImageDxtc(ILimage* image, ILuint w, ILuint h, ILuint d, ILenum Dxt
   DataSize = yBlocks * LineSize * d;
 
   Image->DxtcFormat  = DxtFormat;
-        Image->DxtcSize = DataSize;
+  Image->DxtcSize    = DataSize;
   Image->DxtcData    = (ILubyte*) ialloc(DataSize);
 
   if (Image->DxtcData == NULL) {

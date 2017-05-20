@@ -587,6 +587,7 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
       break;
     case IL_ALPHA:
       AlphaOff = 1;
+      break;
     case IL_COLOUR_INDEX: //@TODO use palette with alpha
       ret = iConvertImages(Image, IL_RGBA, Image->Type);
       AlphaOff = 4;
@@ -600,7 +601,7 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
 
   switch (Image->Type)
   {
-    case IL_BYTE: 
+    case IL_BYTE:
     case IL_UNSIGNED_BYTE: {
       const ILubyte alpha = (ILubyte)(AlphaValue * IL_MAX_UNSIGNED_BYTE + .5);
       for (i = AlphaOff-1; i < Size; i += AlphaOff)
@@ -634,7 +635,7 @@ ILboolean iSetAlpha(ILimage *Image, ILdouble AlphaValue)
       break;
     }
   }
-  
+
   return IL_TRUE;
 }
 
@@ -650,7 +651,7 @@ ILboolean iClampNTSC(ILimage *Image) {
   // BP: TODO: should clip to corresponding values instead
   // BP: TODO: palettes?
 
-  if (Image->Type != IL_UNSIGNED_BYTE)  // Should we set an error here? 
+  if (Image->Type != IL_UNSIGNED_BYTE)  // Should we set an error here?
     return IL_FALSE;
 
   for (z = 0; z < Image->Depth; z++) {

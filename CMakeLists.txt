@@ -5,7 +5,7 @@ ENDIF                   ( )
 CMAKE_MINIMUM_REQUIRED  ( VERSION 2.6 )
 PROJECT                 ( KaIL C CXX )
 
-SET                     ( VERSION "1.11.0" )
+SET                     ( VERSION "1.11.1" )
 
 INCLUDE                 ( CTest )
 

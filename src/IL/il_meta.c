@@ -154,7 +154,8 @@ ILboolean iGetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum *Type, ILui
       return IL_TRUE;
     }
     Exif = Exif->Next;
-  } while(Exif);
+  }
+
   return IL_FALSE;
 }
 
@@ -373,8 +374,8 @@ ILuint iGetMetafv(ILimage *Image, ILenum MetaID, ILfloat *Param, ILint MaxCount)
         case IL_EXIF_TYPE_SBYTE:    Param[i] = ((ILbyte*)   data)[i]; break;
         case IL_EXIF_TYPE_SWORD:    Param[i] = ((ILshort*)  data)[i]; break;
         case IL_EXIF_TYPE_SDWORD:   Param[i] = ((ILint*)    data)[i]; break;
-        case IL_EXIF_TYPE_RATIONAL: Param[i] = (float)(((ILuint*)data)[i*2]) / (float)(((ILuint*)data)[i*2+1]);
-        case IL_EXIF_TYPE_SRATIONAL:Param[i] = (float)(((ILint*)data)[i*2])  / (float)(((ILuint*)data)[i*2+1]);
+        case IL_EXIF_TYPE_RATIONAL: Param[i] = (float)(((ILuint*)data)[i*2]) / (float)(((ILuint*)data)[i*2+1]); break;
+        case IL_EXIF_TYPE_SRATIONAL:Param[i] = (float)(((ILint*)data)[i*2])  / (float)(((ILuint*)data)[i*2+1]); break;
       }
     }
   }

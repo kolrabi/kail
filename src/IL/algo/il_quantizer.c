@@ -52,7 +52,7 @@ typedef struct Box
 } Box;
 
 typedef ILint   Histogram [33*33*33];
-typedef ILfloat Histogramf[33*33*32];
+typedef ILfloat Histogramf[33*33*33];
 
 #define HIST(h, x,y,z) ((h)[x + 33*(y + 33 * z)])
 

@@ -496,8 +496,13 @@ ILboolean iSavePngInternal(ILimage* image) {
 	if (image->Format == IL_COLOUR_INDEX) {
 		// set the palette if there is one.  REQUIRED for indexed-color images.
 		TempPal = iConvertPal(&image->Pal, IL_PAL_RGB24);
+		if (!TempPal) {
+			iSetError(IL_INTERNAL_ERROR);
+			goto error_label;
+		}
+
 		png_set_PLTE(png_ptr, info_ptr, (png_colorp)TempPal->Palette,
-			(int)(TempPal->PalSize / iGetBppPal(TempPal->PalType)));
+			(int)(TempPal->PalSize / iGetBppPal(IL_PAL_RGB24)));
 
 		//XIX alpha
 		trans = iGetInt(IL_PNG_ALPHA_INDEX);

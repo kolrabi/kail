@@ -22,7 +22,7 @@
 // Internal function used to get the .pic header from the current file.
 static ILuint iGetPicHead(SIO* io, PIC_HEAD *Header)
 {
-	ILuint read = io->read(io->handle, Header, 1, sizeof(Header));
+	ILuint read = io->read(io->handle, Header, 1, sizeof(*Header));
 
 	Int  (&Header->Magic);
 	Float(&Header->Version);
@@ -176,7 +176,7 @@ static ILboolean channelReadPure(SIO* io, ILubyte *scan, ILint width, ILint noCo
 static ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel, ILint bytes)
 {
 	ILint		noCol;
-	ILint		off[4];
+	ILint		off[4] = {0,0,0,0};
 	ILuint		status=0;
 
 	while (channel) {
@@ -200,6 +200,9 @@ static ILuint readScanline(SIO* io, ILubyte *scan, ILint width, CHANNEL *channel
 			if (bytes == 3)  // Alpha channel in a 24-bit image.  Do not know what to do with this.
 				return 0;
 		}
+
+		if (!noCol)
+			return 0;
 
 		switch(channel->Type & 0x0F)
 		{

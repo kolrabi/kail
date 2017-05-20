@@ -61,24 +61,10 @@ static ILint ILAPIENTRY iDefaultSeek(ILHANDLE Handle, ILint64 Offset, ILuint Mod
 }
 
 static ILboolean ILAPIENTRY iDefaultEof(ILHANDLE Handle) {
-  ILuint OrigPos, FileSize;
-
   if (feof((FILE*)Handle)) {
     clearerr((FILE*)Handle);
     return IL_TRUE;
   }
-
-  // Find out the filesize for checking for the end of file
-  OrigPos = iDefaultTell(Handle);
-  iDefaultSeek(Handle, 0, SEEK_END);
-  
-  FileSize = iDefaultTell(Handle);
-  iDefaultSeek(Handle, OrigPos, SEEK_SET);
-  clearerr((FILE*)Handle);
-
-  if (OrigPos >= FileSize)
-    return IL_TRUE;
-
   return IL_FALSE;
 }
 

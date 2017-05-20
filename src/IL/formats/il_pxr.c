@@ -102,6 +102,10 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
 
   if (Image->Type != IL_UNSIGNED_BYTE) {
     TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
+    if (!TempImage) {
+      iSetError(IL_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
   }
 
   imemclear(&Head, sizeof(Head));

@@ -289,7 +289,7 @@ ILAPI void ILAPIENTRY iCloseImageReal(ILimage *Image)
 
   if (Image->Faces != NULL) {
     iCloseImage(Image->Faces);
-    Image->Mipmaps = NULL;
+    Image->Faces = NULL;
   }
 
   if (Image->Mipmaps != NULL) {

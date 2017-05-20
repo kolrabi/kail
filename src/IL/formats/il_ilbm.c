@@ -262,12 +262,11 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
   /* Update palette informations */
 
   /* There is no palette in 24 bits ILBM file */
-  if ( nbColors>0 && flagHAM==0 )
-  {
+  if ( nbColors>0 && flagHAM==0 ) {
     ILuint nbrcolorsfinal = 1U << nbplanes;
     ptr = &colormap[0];
 
-    for ( i=0; i<nbColors; i++ )  {
+    for ( i=0; i<nbColors; i++ ) {
       scratch_pal[i].r = *ptr++;
       scratch_pal[i].g = *ptr++;
       scratch_pal[i].b = *ptr++;
@@ -278,8 +277,7 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
     /* The 32 last colors are the same but divided by 2 */
     /* Some Amiga pictures save 64 colors with 32 last wrong colors, */
     /* they shouldn't !, and here we overwrite these 32 bad colors. */
-    if ( (nbColors==32 || flagEHB ) && (1<<bmhd.planes)==64 )
-    {
+    if ( (nbColors==32 || flagEHB ) && (1<<bmhd.planes)==64 ) {
         nbColors = 64;
         ptr = &colormap[0];
         for ( i=32; i<64; i++ ) {
@@ -294,8 +292,8 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
     if ( nbrcolorsfinal > (1UL<<bmhd.planes) ) {
       nbrcolorsfinal = (1<<bmhd.planes);
     }
-    for ( i=nbColors; i < (ILuint)nbrcolorsfinal; i++ )
-    {
+
+    for ( i=nbColors; i < (ILuint)nbrcolorsfinal; i++ ) {
       scratch_pal[i].r = scratch_pal[i%nbColors].r;
       scratch_pal[i].g = scratch_pal[i%nbColors].g;
       scratch_pal[i].b = scratch_pal[i%nbColors].b;
@@ -329,90 +327,91 @@ static ILboolean iLoadIlbmInternal(ILimage *Image)
 
               if( count>remainingbytes)
                 iSetError(IL_ILLEGAL_FILE_VALUE );
-              
+
               error = "error reading BODY chunk";
               goto done;
             }
-              
+
             memset( ptr, color, count );
           } else {
             ++count;
 
-          if ( ( count > remainingbytes ) 
-            || !SIOread( io, ptr, count, 1 ) ) {
+            if ( ( count > remainingbytes ) 
+              || !SIOread( io, ptr, count, 1 ) ) {
 
-            if( count>remainingbytes)
-              iSetError(IL_ILLEGAL_FILE_VALUE );
+              if( count>remainingbytes)
+                iSetError(IL_ILLEGAL_FILE_VALUE );
 
-            error = "error reading BODY chunk";
-            goto done;
+              error = "error reading BODY chunk";
+              goto done;
+            }
           }
+
+          ptr += count;
+          remainingbytes -= count;
+
+        } while ( remainingbytes > 0 );
+      } else {
+        if ( !SIOread( io, ptr, bytesperline, 1 ) )  {
+          error = "error reading BODY chunk";
+          goto done;
         }
-
-        ptr += count;
-        remainingbytes -= count;
-
-      } while ( remainingbytes > 0 );
-    } else {
-      if ( !SIOread( io, ptr, bytesperline, 1 ) )  {
-        error = "error reading BODY chunk";
-        goto done;
       }
     }
-  }
 
-  /* One line has been read, store it ! */
+    /* One line has been read, store it ! */
 
-  ptr = Image->Data;
+    ptr = Image->Data;
 
-  if ( nbplanes==24 || flagHAM==1 ) {
-    ptr += h * width * 3;
-  } else {
-    ptr += h * width;
-  }
-
-  if ( isPBM ) {
-     /* File format : 'Packed Bitmap' */
-     memcpy( ptr, MiniBuf, width );
-  } else {                      
-    /* We have to un-interlace the bits ! */
-    if ( nbplanes!=24 && flagHAM==0 ) {
-      size = ( width + 7 ) / 8;
-
-      for ( i=0; i < size; i++ ) {
-        memset( ptr, 0, 8 );
-
-        for ( plane=0; plane < nbplanes; plane++ ) {
-          color = *( MiniBuf + i + ( plane * bytesperline ) );
-          msk = 0x80;
-
-          for ( j=0; j<8; j++ ) {
-            if ( ( plane + j ) <= 7 ) ptr[j] |= (ILubyte)( color & msk ) >> ( 7 - plane - j );
-            else                      ptr[j] |= (ILubyte)( color & msk ) << ( plane + j - 7 );
-            msk >>= 1;
-          }
-        }
-        ptr += 8;
-      }
+    if ( nbplanes==24 || flagHAM==1 ) {
+      ptr += h * width * 3;
     } else {
-      ILuint finalcolor = 0;
-      size = ( width + 7 ) / 8;
+      ptr += h * width;
+    }
 
-      /* 24 bitplanes ILBM : R0...R7,G0...G7,B0...B7 */
-      /* or HAM (6 bitplanes) or HAM8 (8 bitplanes) modes */
-      for ( i=0; i<width; i=i+8 ) {
-        ILubyte maskBit = 0x80;
+    if ( isPBM ) {
+       /* File format : 'Packed Bitmap' */
+       memcpy( ptr, MiniBuf, width );
+    } else {
+      /* We have to un-interlace the bits ! */
+      if ( nbplanes!=24 && flagHAM==0 ) {
+        size = ( width + 7 ) / 8;
 
-        for ( j=0; j<8; j++ ) {
-          ILuint pixelcolor = 0;
-          ILuint maskColor = 1;
-          ILubyte dataBody;
+        for ( i=0; i < size; i++ ) {
+          memset( ptr, 0, 8 );
 
           for ( plane=0; plane < nbplanes; plane++ ) {
-            dataBody = MiniBuf[ plane*size+i/8 ];
+            color = *( MiniBuf + i + ( plane * bytesperline ) );
+            msk = 0x80;
 
-            if ( dataBody & maskBit )
-              pixelcolor = pixelcolor | maskColor;
+            for ( j=0; j<8; j++ ) {
+              if ( ( plane + j ) <= 7 ) ptr[j] |= (ILubyte)( color & msk ) >> ( 7 - plane - j );
+              else                      ptr[j] |= (ILubyte)( color & msk ) << ( plane + j - 7 );
+              msk >>= 1;
+            }
+          }
+          ptr += 8;
+        }
+      } else {
+        ILuint finalcolor = 0;
+        size = ( width + 7 ) / 8;
+
+        /* 24 bitplanes ILBM : R0...R7,G0...G7,B0...B7 */
+        /* or HAM (6 bitplanes) or HAM8 (8 bitplanes) modes */
+        for ( i=0; i<width; i=i+8 ) {
+          ILubyte maskBit = 0x80;
+
+          for ( j=0; j<8; j++ ) {
+            ILuint pixelcolor = 0;
+            ILuint maskColor = 1;
+            ILubyte dataBody;
+
+            for ( plane=0; plane < nbplanes; plane++ ) {
+              dataBody = MiniBuf[ plane*size+i/8 ];
+
+              if ( dataBody & maskBit )
+                pixelcolor = pixelcolor | maskColor;
+
               maskColor  = maskColor<<1;
             }
 

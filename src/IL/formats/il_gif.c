@@ -301,7 +301,11 @@ LZWInputStreamReadCode(
 
   *Code = Stream->InputBits & ((1 << BitsLeftToRead) - 1);
   Stream->InputBitCount -= BitsLeftToRead;
-  Stream->InputBits = (Stream->InputBits >> BitsLeftToRead);// & ((1<<Stream->InputBitCount)-1);
+
+  if (BitsLeftToRead < 32)
+    Stream->InputBits = (Stream->InputBits >> BitsLeftToRead);
+  else
+    Stream->InputBits = 0;
 
   return IL_TRUE;
 }

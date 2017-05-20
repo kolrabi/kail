@@ -471,7 +471,7 @@ static ILboolean iSaveTargaInternal(ILimage* image)
   // clip strings
   if (ID && iCharStrLen(ID) >= 255) ID[255] = 0;
   if (AuthName)     { iCharStrNCpy(Ext.AuthName,     AuthName,     40); ifree(AuthName);     }
-  if (AuthComment)  { iCharStrNCpy(Ext.AuthComments, AuthComment, 324); ifree(AuthComment);  }
+  if (AuthComment)  { iCharStrNCpy(Ext.AuthComments, AuthComment, 323); ifree(AuthComment);  }
   
   if (!idString) idString = iGetString(image, IL_VERSION_NUM);
   if (idString)     { iCharStrNCpy(Ext.SoftwareID,  idString,     40); ifree(idString);   }

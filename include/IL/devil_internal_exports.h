@@ -596,6 +596,7 @@ ILAPI ILuint    ILAPIENTRY iGetiv           (ILimage *Image, ILenum Mode, ILint 
 ILAPI ILint     ILAPIENTRY iGetInteger      (ILimage *Image, ILenum Mode);
 ILAPI ILuint    ILAPIENTRY iGetfv           (ILimage *Image, ILenum Mode, ILfloat *Param, ILint MaxCount);
 ILAPI void      ILAPIENTRY iSetiv           (ILimage *Image, ILenum Mode, const ILint *Param);
+ILAPI void      ILAPIENTRY iSeti            (ILimage *Image, ILenum Mode, ILint Param);
 ILAPI void      ILAPIENTRY iSetfv           (ILimage *Image, ILenum Mode, const ILfloat *Param);
 ILAPI ILubyte*  ILAPIENTRY iGetFlipped      (ILimage *Image);
 ILAPI ILuint    ILAPIENTRY iCopyPixels      (ILimage *Image, ILuint XOff, ILuint YOff, ILuint ZOff, ILuint Width, ILuint Height, ILuint Depth, ILenum Format, ILenum Type, void *Data);

@@ -75,7 +75,7 @@ static ILboolean iLoadRotInternal(ILimage *Image) {
 	ILenum		FormatIL;
 	ILubyte		*CompData = NULL;
 	FORM_HEAD Form;
-	ILimage * BaseImage = Image;
+	ILimage * BaseImage = NULL;
 	ROT_HEAD 	Head;
 	SIO * 		io;
 

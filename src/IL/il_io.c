@@ -58,12 +58,9 @@ char * ILAPIENTRY iMultiByteFromWide(const wchar_t *Wide)
     iSetError(IL_INVALID_PARAM);
     return NULL;
   }
-  if (Length > ULONG_MAX) {
-    iSetError(IL_INTERNAL_ERROR);
-    return NULL;
-  }
+
   Temp = (char*)ialloc(Length);
-  wcstombs(Temp, Wide, Length); 
+  wcstombs(Temp, Wide, Length);
 
   return Temp;
 }

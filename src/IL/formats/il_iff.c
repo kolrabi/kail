@@ -69,7 +69,7 @@ static ILboolean iIsValidIff(SIO *io) {
   iff_chunk_stack chunkStack;
 
   chunkStack.chunkDepth = -1;
-    
+
   chunkInfo = iff_begin_read_chunk(io, &chunkStack);
   SIOseek(io, pos, IL_SEEK_SET);
 
@@ -272,7 +272,7 @@ ILboolean iLoadIffInternal(ILimage *Image)
 iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
 {
   chunkStack->chunkDepth++;
-  
+
   if (chunkStack->chunkDepth >= CHUNK_STACK_SIZE){
     iSetError(IL_STACK_OVERFLOW);
     return chunkStack->chunkStack[0];
@@ -286,14 +286,14 @@ iff_chunk iff_begin_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
   chunkStack->chunkStack[chunkStack->chunkDepth].start = SIOtell(io);
   chunkStack->chunkStack[chunkStack->chunkDepth].tag   = GetBigUInt(io);
   chunkStack->chunkStack[chunkStack->chunkDepth].size  = GetBigUInt(io);
-    
+
   if (chunkStack->chunkStack[chunkStack->chunkDepth].tag == IFF_TAG_FOR4) {
     // -- We have a form, so read the form type tag as well. 
     chunkStack->chunkStack[chunkStack->chunkDepth].chunkType = GetBigUInt(io);
   } else {
     chunkStack->chunkStack[chunkStack->chunkDepth].chunkType = 0;
-  } 
-  
+  }
+
   return chunkStack->chunkStack[chunkStack->chunkDepth];
 }
 
@@ -301,18 +301,23 @@ void iff_end_read_chunk(SIO *io, iff_chunk_stack *chunkStack)
 {
   ILuint end;
   ILuint part;
-  
+
+  if (chunkStack->chunkDepth < 0) {
+    iSetError(IL_STACK_UNDERFLOW);
+    return;
+  }
+
   end = chunkStack->chunkStack[chunkStack->chunkDepth].start 
       + chunkStack->chunkStack[chunkStack->chunkDepth].size + 8;
-    
+
   if (chunkStack->chunkStack[chunkStack->chunkDepth].chunkType != 0) {
     end += 4;
   }
 
-  // Add padding 
+  // Add padding
   part = end % 4;
   if (part != 0) {
-      end += 4U - part;   
+      end += 4U - part;
   }
 
   SIOseek(io, end, IL_SEEK_SET);
@@ -325,7 +330,7 @@ ILubyte * iff_read_data(SIO *io, ILuint size)
   ILubyte *buffer = (ILubyte*)ialloc(size * sizeof(char));
   if (buffer == NULL)
     return NULL;
-  
+
   if (SIOread(io, buffer, size, 1) != 1) {
     ifree(buffer);
     return NULL;
@@ -343,7 +348,7 @@ ILubyte *iffReadUncompressedTile(SIO *io, ILushort width, ILushort height, ILuby
   ILubyte  *data = NULL;
   ILubyte  *iniPixel;
   ILuint   i, j;
-  ILuint   tam = width * height * depth * sizeof(ILubyte);
+  ILuint   tam = (ILuint64)width * (ILuint64)height * (ILuint64)depth * sizeof(ILubyte);
 
   data = (ILubyte*) ialloc(tam);
   if (data == NULL)
@@ -392,7 +397,7 @@ ILubyte *iff_decompress_tile_rle(ILushort width, ILushort height, ILushort depth
   }
 
     // Build all the channels from the decompression into an RGBA array.
-  data = (ILubyte*) ialloc(width * height * depth * sizeof(ILubyte));
+  data = (ILubyte*) ialloc((ILuint64)width * (ILuint64)height * (ILuint64)depth * sizeof(ILubyte));
   if (data == NULL)
     return NULL;
 

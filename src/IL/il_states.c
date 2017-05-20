@@ -358,11 +358,13 @@ ILuint ILAPIENTRY iGetiv(ILimage *Image, ILenum Mode, ILint *Param, ILint MaxCou
     case IL_PALETTE_TYPE:       *Param = (ILint)Image->Pal.PalType; return 1;
     case IL_PALETTE_BPP:        *Param = (ILint)iGetBppPal(Image->Pal.PalType); return 1;
     case IL_PALETTE_BASE_TYPE:  *Param = (ILint)iGetPalBaseType(Image->Pal.PalType); return 1;
-    case IL_PALETTE_NUM_COLS:
-      if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE)
-        *Param = 0;
-      else 
-        *Param = (ILint)(Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType));
+    case IL_PALETTE_NUM_COLS: {
+        ILubyte BppPal = iGetBppPal(Image->Pal.PalType);
+        if (!Image->Pal.Palette || !Image->Pal.PalSize || Image->Pal.PalType == IL_PAL_NONE || BppPal == 0)
+          *Param = 0;
+        else
+          *Param = (ILint)(Image->Pal.PalSize / BppPal);
+      }
       return 1;
 
     case IL_IMAGE_METADATA_COUNT: 
@@ -732,13 +734,13 @@ void iSetString(ILimage *Image, ILenum Mode, ILconst_string String_) {
   }
 }
 
-void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
+void ILAPIENTRY iSeti(ILimage *CurImage, ILenum Mode, const ILint Param) {
   IL_STATE_STRUCT * StateStruct   = iGetStateStruct();
   IL_STATES *       ilStates      = StateStruct->ilStates;
   ILuint            ilCurrentPos  = StateStruct->ilCurrentPos;
-  ILimage *         BaseImage     = CurImage ? CurImage->BaseImage : NULL;
+  // ILimage *         BaseImage     = CurImage ? CurImage->BaseImage : NULL;
 
-  if (!Param) {
+  if (!Mode) {
     iSetError(IL_INVALID_PARAM);
     return;
   }
@@ -746,25 +748,25 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
   switch (Mode)
   {
     // Integer values
-    case IL_FORMAT_MODE:      iFormatFunc((ILenum)*Param);        return;
-    case IL_ORIGIN_MODE:      iOriginFunc((ILenum)*Param);        return;
-    case IL_TYPE_MODE:        iTypeFunc((ILenum)*Param);          return;
+    case IL_FORMAT_MODE:      iFormatFunc((ILenum)Param);        return;
+    case IL_ORIGIN_MODE:      iOriginFunc((ILenum)Param);        return;
+    case IL_TYPE_MODE:        iTypeFunc((ILenum)Param);          return;
 
     case IL_MAX_QUANT_INDICES:
-      if (*Param >= 2 && *Param <= 256) {
-        ilStates[ilCurrentPos].ilQuantMaxIndexs = (ILuint)*Param;
+      if (Param >= 2 && Param <= 256) {
+        ilStates[ilCurrentPos].ilQuantMaxIndexs = (ILuint)Param;
         return;
       }
       break;
     case IL_NEU_QUANT_SAMPLE:
-      if (*Param >= 1 && *Param <= 30) {
-        ilStates[ilCurrentPos].ilNeuSample = (ILuint)*Param;
+      if (Param >= 1 && Param <= 30) {
+        ilStates[ilCurrentPos].ilNeuSample = (ILuint)Param;
         return;
       }
       break;
     case IL_QUANTIZATION_MODE:
-      if (*Param == IL_WU_QUANT || *Param == IL_NEU_QUANT) {
-        ilStates[ilCurrentPos].ilQuantMode = (ILenum)*Param;
+      if (Param == IL_WU_QUANT || Param == IL_NEU_QUANT) {
+        ilStates[ilCurrentPos].ilQuantMode = (ILenum)Param;
         return;
       }
       break;
@@ -775,21 +777,21 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
         iSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      CurImage->Duration = (ILuint)*Param;
+      CurImage->Duration = (ILuint)Param;
       return;
     case IL_IMAGE_OFFX:
       if (CurImage == NULL) {
         iSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      CurImage->OffX = (ILuint)*Param;
+      CurImage->OffX = (ILuint)Param;
       return;
     case IL_IMAGE_OFFY:
       if (CurImage == NULL) {
         iSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      CurImage->OffY = (ILuint)*Param;
+      CurImage->OffY = (ILuint)Param;
       return;
 
     case IL_IMAGE_CUBEFLAGS:
@@ -797,50 +799,50 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
         iSetError(IL_ILLEGAL_OPERATION);
         break;
       }
-      CurImage->CubeFlags = (ILenum)*Param;
+      CurImage->CubeFlags = (ILenum)Param;
       break;
  
     // Format specific values
     case IL_DXTC_FORMAT:
-      if ((*Param >= IL_DXT1 && *Param <= IL_DXT5) || *Param == IL_DXT1A) {
-        ilStates[ilCurrentPos].ilDxtcFormat = (ILenum)*Param;
+      if ((Param >= IL_DXT1 && Param <= IL_DXT5) || Param == IL_DXT1A) {
+        ilStates[ilCurrentPos].ilDxtcFormat = (ILenum)Param;
         return;
       }
       break;
     case IL_JPG_SAVE_FORMAT:
-      if (*Param == IL_JFIF || *Param == IL_EXIF) {
-        ilStates[ilCurrentPos].ilJpgFormat = (ILenum)*Param;
+      if (Param == IL_JFIF || Param == IL_EXIF) {
+        ilStates[ilCurrentPos].ilJpgFormat = (ILenum)Param;
         return;
       }
       break;
     case IL_JPG_QUALITY:
-      if (*Param >= 0 && *Param <= 99) {
-        ilStates[ilCurrentPos].ilJpgQuality = (ILuint)*Param;
+      if (Param >= 0 && Param <= 99) {
+        ilStates[ilCurrentPos].ilJpgQuality = (ILuint)Param;
         return;
       }
       break;
     case IL_PCD_PICNUM:
-      if (*Param >= 0 && *Param <= 2) {
-        ilStates[ilCurrentPos].ilPcdPicNum = (ILuint)*Param;
+      if (Param >= 0 && Param <= 2) {
+        ilStates[ilCurrentPos].ilPcdPicNum = (ILuint)Param;
         return;
       }
       break;
     case IL_PNG_ALPHA_INDEX:
-      if (*Param >= -1 && *Param <= 255) {
-        ilStates[ilCurrentPos].ilPngAlphaIndex = *Param;
+      if (Param >= -1 && Param <= 255) {
+        ilStates[ilCurrentPos].ilPngAlphaIndex = Param;
         return;
       }
       break;
     case IL_VTF_COMP:
-      if (*Param == IL_DXT1 || *Param == IL_DXT5 || *Param == IL_DXT3 || *Param == IL_DXT1A || *Param == IL_DXT_NO_COMP) {
-        ilStates[ilCurrentPos].ilVtfCompression = (ILenum)*Param;
+      if (Param == IL_DXT1 || Param == IL_DXT5 || Param == IL_DXT3 || Param == IL_DXT1A || Param == IL_DXT_NO_COMP) {
+        ilStates[ilCurrentPos].ilVtfCompression = (ILenum)Param;
         return;
       }
       break;
 
     case IL_IMAGE_SELECTION_MODE:
-      if (*Param == IL_RELATIVE || *Param == IL_ABSOLUTE) {
-        ilStates[ilCurrentPos].ilImageSelectionMode = (ILenum)*Param;
+      if (Param == IL_RELATIVE || Param == IL_ABSOLUTE) {
+        ilStates[ilCurrentPos].ilImageSelectionMode = (ILenum)Param;
         return;
       }
       break;
@@ -852,8 +854,25 @@ void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
     case IL_SAVE_INTERLACED:
     case IL_SGI_RLE:
     case IL_TGA_RLE:
-    case IL_KEEP_DXTC_DATA:   iAble(Mode, !!*Param);              return;
+    case IL_KEEP_DXTC_DATA:   iAble(Mode, !!Param);              return;
+  }
 
+  iSetError(IL_INVALID_PARAM);
+}
+
+void ILAPIENTRY iSetiv(ILimage *CurImage, ILenum Mode, const ILint *Param) {
+  // IL_STATE_STRUCT * StateStruct   = iGetStateStruct();
+  // IL_STATES *       ilStates      = StateStruct->ilStates;
+  // ILuint            ilCurrentPos  = StateStruct->ilCurrentPos;
+  ILimage *         BaseImage     = CurImage ? CurImage->BaseImage : NULL;
+
+  if (!Param) {
+    iSetError(IL_INVALID_PARAM);
+    return;
+  }
+
+  switch (Mode)
+  {
     default:
       if (CurImage == NULL) {
         iSetError(IL_ILLEGAL_OPERATION);
