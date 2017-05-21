@@ -188,7 +188,7 @@ static ILboolean ParseChunks(PSP_CTX *ctx)
 
 	do {
 		if (SIOread(ctx->io, &Block, 1, sizeof(Block)) != sizeof(Block)) {
-			ilGetError();  // Get rid of the erroneous IL_FILE_READ_ERROR.
+			iPopError();  // Get rid of the erroneous IL_FILE_READ_ERROR.
 			break;
 		}
 

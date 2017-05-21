@@ -46,8 +46,8 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
       case ILU_SCALE_MITCHELL:
 
         // Not supported yet.
-        if ( Image->Type   != IL_UNSIGNED_BYTE 
-          || Image->Format == IL_COLOUR_INDEX 
+        if ( Image->Type   != IL_UNSIGNED_BYTE
+          || Image->Format == IL_COLOUR_INDEX
           || Image->Depth > 1) {
             iSetError(ILU_ILLEGAL_OPERATION);
             return IL_FALSE;
@@ -98,7 +98,8 @@ ILboolean iScale(ILimage *Image, ILuint Width, ILuint Height, ILuint Depth, ILen
     if (UsePal) {
       if (!iConvertImages(Image, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE))
         return IL_FALSE;
-      iConvertImagePal(Image, PalType);
+      if (!iConvertImagePal(Image, PalType))
+        return IL_FALSE;
     }
     return IL_TRUE;
   }

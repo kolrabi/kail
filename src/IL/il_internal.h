@@ -106,6 +106,7 @@ ILint         iGetInt(ILenum Mode);
 
 void          iRemoveRegistered(void);
 ILenum        iGetError(void);
+void          iPopError(void);
 ILconst_string iGetILString(ILimage *Image, ILenum StringName);
 void          iHint(ILenum Target, ILenum Mode);
 

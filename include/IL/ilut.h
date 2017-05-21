@@ -29,7 +29,7 @@
 #define ILUT_VERSION_1_9_0 1
 #define ILUT_VERSION_1_10_0 1
 #define ILUT_VERSION_1_11_0 1
-#define ILUT_VERSION        11100
+#define ILUT_VERSION        11103
 
 #include <IL/il.h>
 #include <IL/ilu.h>

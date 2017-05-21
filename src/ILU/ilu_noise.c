@@ -40,7 +40,7 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
   switch (Image->Bpc)
   {
     case 1:
-      Factor1 = (ILubyte)(Tolerance * (IL_MAX_UNSIGNED_BYTE / 2));
+      Factor1 = (ILubyte)(Tolerance * IL_MAX_UNSIGNED_BYTE * 0.5f);
       Factor2 = Factor1 + Factor1;
       if (Factor1 == 0) return IL_TRUE;
 
@@ -62,7 +62,7 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
       }
       break;
     case 2:
-      Factor1 = (ILushort)(Tolerance * (IL_MAX_UNSIGNED_SHORT / 2));
+      Factor1 = (ILushort)(Tolerance * IL_MAX_UNSIGNED_SHORT * 0.5f);
       Factor2 = Factor1 + Factor1;
       if (Factor1 == 0) return IL_TRUE;
 
@@ -85,7 +85,7 @@ ILboolean iNoisify(ILimage *Image, ILclampf Tolerance) {
       break;
       // FIXME: ILfloat, ILdouble
     case 4:
-      Factor1 = (ILuint)(Tolerance * (IL_MAX_UNSIGNED_INT / 2));
+      Factor1 = (ILuint)(Tolerance * IL_MAX_UNSIGNED_INT * 0.5f);
       Factor2 = Factor1 + Factor1;
       if (Factor1 == 0) return IL_TRUE;
 

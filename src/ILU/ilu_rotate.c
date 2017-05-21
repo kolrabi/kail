@@ -28,6 +28,11 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 	if (Image->Format == IL_COLOUR_INDEX) {
 		PalType = Image->Pal.PalType;
 		Image = iConvertImage(Image, iGetPalBaseType(Image->Pal.PalType), IL_UNSIGNED_BYTE);
+
+		if (Image == NULL) {
+			iSetError(ILU_INTERNAL_ERROR);
+			return IL_FALSE;
+		}
 	}
 
 	Temp = iluRotate_(Image, Angle);
@@ -37,6 +42,11 @@ ILboolean iRotate(ILimage *Image, ILfloat Angle) {
 			Temp1 = iConvertImage(Temp, IL_COLOUR_INDEX, IL_UNSIGNED_BYTE);
 			iCloseImage(Temp);
 			Temp = Temp1;
+
+			if (Temp == NULL) {
+				iSetError(ILU_INTERNAL_ERROR);
+				return IL_FALSE;
+			}
 		}
 
 		iTexImage(Image, Temp->Width, Temp->Height, Temp->Depth, Temp->Bpp, Temp->Format, Temp->Type, Temp->Data);

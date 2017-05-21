@@ -412,7 +412,7 @@ ILenum ilutGetCurrentFlags() {
  * @see ilutInit
  */
 ILboolean ILAPIENTRY ilutRenderer(ILenum Renderer) {
-  if (Renderer > ILUT_SDL) {
+  if (Renderer > ILUT_SDL2) {
     iSetError(ILUT_INVALID_VALUE);
     return IL_FALSE;
   }

@@ -21,7 +21,7 @@
 
 // According to the ppm specs, it's 70, but PSP
 //  likes to output longer lines.
-#define MAX_BUFFER 180  
+#define MAX_BUFFER 180
 
 static ILboolean	ilReadAsciiPpm(ILimage *, PPMINFO *Info);
 static ILboolean	ilReadBinaryPpm(ILimage *, PPMINFO *Info);
@@ -61,9 +61,8 @@ static ILboolean iIsValidPnm(SIO *io) {
 static ILboolean iLoadPnmInternal(ILimage *Image)
 {
 	PPMINFO		Info;
-	ILboolean PmImage = IL_FALSE;
-//	ILuint		LineInc = 0, SmallInc = 0;
-	ILbyte SmallBuff[MAX_BUFFER];
+	ILboolean 	PmImage = IL_FALSE;
+	ILbyte 		SmallBuff[MAX_BUFFER];
 
 	Info.Type = 0;
 
@@ -104,7 +103,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 			iSetError(IL_INVALID_FILE_HEADER);
 			return IL_FALSE;
 	}
-	
+
 	// Retrieve the width and height
 	if (iGetWord(&Image->io, IL_FALSE, SmallBuff) == IL_FALSE)
 		return IL_FALSE;
@@ -134,7 +133,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	} else {
 		Info.MaxColour = 1;
 	}
-	
+
 	if (Info.Type == IL_PBM_ASCII || Info.Type == IL_PBM_BINARY ||
 		Info.Type == IL_PGM_ASCII || Info.Type == IL_PGM_BINARY) {
 		if (Info.Type == IL_PGM_ASCII) {
@@ -145,7 +144,7 @@ static ILboolean iLoadPnmInternal(ILimage *Image)
 	} else {
 		Info.Bpp = 3;
 	}
-	
+
 	switch (Info.Type) {
 		case IL_PBM_ASCII:
 		case IL_PGM_ASCII:
@@ -319,27 +318,20 @@ static ILboolean ilReadBitPbm(ILimage *Image, PPMINFO *Info) {
 static ILboolean iGetWord(SIO *io, ILboolean final,	ILbyte *SmallBuff) {
 	ILint WordPos = 0;
 	ILint Current = 0;
-	ILboolean Started = IL_FALSE;
-	ILboolean Looping = IL_TRUE;
 
 	if (SIOeof(io))
 		return IL_FALSE;
 
-	while (Looping) {
+	while (1) {
 		while ((Current = SIOgetc(io)) != IL_EOF && Current != '\n' && Current != '#' && Current != ' ') {
 			if (WordPos >= MAX_BUFFER)  // We have hit the maximum line length.
 				return IL_FALSE;
 
 			if (!isalnum(Current)) {
-				if (Started) {
-					Looping = IL_FALSE;
-					break;
-				}
 				continue;
 			}
 
-			if (Looping)
-				SmallBuff[WordPos++] = (ILbyte)Current;
+			SmallBuff[WordPos++] = (ILbyte)Current;
 		}
 		if (Current == IL_EOF)
 			return IL_FALSE;
@@ -347,8 +339,6 @@ static ILboolean iGetWord(SIO *io, ILboolean final,	ILbyte *SmallBuff) {
 		if (final == IL_TRUE)
 	        break;
 
-		if (!Looping)
-			break;
 
 		if (Current == '#') {  // '#' is a comment...read until end of line
 			while ((Current = SIOgetc(io)) != IL_EOF && Current != '\n');
@@ -375,8 +365,10 @@ static ILboolean iGetWord(SIO *io, ILboolean final,	ILbyte *SmallBuff) {
 
 static ILboolean iSavePbmInternal(ILimage *Image)
 {
+	// TODO: add binary variant
+
 	ILuint		Bpp, /*MaxVal = UCHAR_MAX, */i = 0, j;
-	ILenum		Type = 0;
+	// ILenum		Type = 0;
 	ILuint		LinePos = 0;  // Cannot exceed 70 for pnm's!
 	ILboolean	Binary = IL_FALSE;
 	ILimage		*TempImage;
@@ -391,42 +383,14 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 
 	io = &Image->io;
 
-	Type = IL_PBM_ASCII;
-/*
-	if (Image->Type == IL_UNSIGNED_BYTE) {
-		MaxVal = UCHAR_MAX;
-	}
-	else if (Image->Type == IL_UNSIGNED_SHORT) {
-		MaxVal = USHRT_MAX;
-	}
-	else {
-		iSetError(IL_FORMAT_NOT_SUPPORTED);
+	// Type = IL_PBM_ASCII;
+	Bpp = 1;
+
+	TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
+	if (TempImage == NULL) {
+		iSetError(IL_INTERNAL_ERROR);
 		return IL_FALSE;
 	}
-	if (MaxVal > UCHAR_MAX && Type >= IL_PBM_BINARY) {  // binary cannot be higher than 255
-		iSetError(IL_FORMAT_NOT_SUPPORTED);
-		return IL_FALSE;
-	}
-*/
-	switch (Type)
-	{
-		case IL_PBM_ASCII:
-			Bpp = 1;
-			SIOputs(io, "P1\n");
-			TempImage = iConvertImage(Image, IL_LUMINANCE, IL_UNSIGNED_BYTE);
-			break;
-
-		case IL_PBM_BINARY:
-			iSetError(IL_FORMAT_NOT_SUPPORTED);
-			return IL_FALSE;
-
-		default:
-			iSetError(IL_INTERNAL_ERROR);
-			return IL_FALSE;
-	}
-
-	if (TempImage == NULL)
-		return IL_FALSE;
 
 	if (Bpp != TempImage->Bpp) {
 		iSetError(IL_INVALID_CONVERSION);
@@ -443,6 +407,7 @@ static ILboolean iSavePbmInternal(ILimage *Image)
 		TempData = TempImage->Data;
 	}
 
+	SIOputs(io, "P1\n");
 	snprintf(tmp, sizeof(tmp), "%d %d\n", TempImage->Width, TempImage->Height);
 	SIOputs(io, tmp);
 

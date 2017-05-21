@@ -31,6 +31,13 @@ ILAPI void ILAPIENTRY iSetErrorReal(ILenum Error) {
   ErrorStack->ilErrorNum[ErrorStack->ilErrorPlace] = Error;
 }
 
+void iPopError(void) {
+  IL_ERROR_STACK *ErrorStack = &iGetTLSData()->CurError;
+
+  if (ErrorStack->ilErrorPlace >= 0) {
+    ErrorStack->ilErrorPlace--;
+  }
+}
 
 //! Gets the last error on the error stack
 ILenum iGetError(void) {

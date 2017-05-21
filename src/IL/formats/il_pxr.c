@@ -127,6 +127,10 @@ static ILboolean iSavePxrInternal(ILimage *Image) {
     case IL_RGBA:       Head.Bpp = 0x0F; break;
     default:
       TempImage = iConvertImage(Image, IL_RGB, IL_UNSIGNED_BYTE);
+      if (!TempImage) {
+        iSetError(IL_INTERNAL_ERROR);
+        return IL_FALSE;
+      }
       Head.Bpp = 0x0E;
   }
 

@@ -299,14 +299,15 @@ LZWInputStreamReadCode(
     }
   }
 
-  *Code = Stream->InputBits & ((1 << BitsLeftToRead) - 1);
-  Stream->InputBitCount -= BitsLeftToRead;
-
-  if (BitsLeftToRead < 32)
+  if (BitsLeftToRead < 32) {
+    *Code = Stream->InputBits & ((1 << BitsLeftToRead) - 1);
     Stream->InputBits = (Stream->InputBits >> BitsLeftToRead);
-  else
+  } else {
+    *Code = Stream->InputBits;
     Stream->InputBits = 0;
+  }
 
+  Stream->InputBitCount -= BitsLeftToRead;
   return IL_TRUE;
 }
 

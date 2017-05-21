@@ -31,8 +31,7 @@ static SDL_Surface * iConvertToSDL2Surface(ILimage *ilutCurImage, unsigned int f
   ILuint    i = 0, Pad, BppPal;
   ILubyte   *Dest = NULL, *Data = NULL;
   ILimage   *Image = NULL;
-  ILboolean isBigEndian;
-  ILuint rmask, gmask, bmask, amask;
+  ILuint    rmask, gmask, bmask, amask;
 
   Image = ilutCurImage;
   if (ilutCurImage == NULL) {
@@ -41,13 +40,11 @@ static SDL_Surface * iConvertToSDL2Surface(ILimage *ilutCurImage, unsigned int f
   }
 
 #ifdef WORDS_BIGENDIAN
-  isBigEndian = 1;
   rmask = 0xFF000000;
   gmask = 0x00FF0000;
   bmask = 0x0000FF00;
   amask = 0x000000FF;
 #else
-  isBigEndian = 0;
   rmask = 0x000000FF;
   gmask = 0x0000FF00;
   bmask = 0x00FF0000;
@@ -56,26 +53,23 @@ static SDL_Surface * iConvertToSDL2Surface(ILimage *ilutCurImage, unsigned int f
 
   // Should be IL_BGR(A).
   if (ilutCurImage->Format == IL_RGB || ilutCurImage->Format == IL_RGBA) {
-    if (!isBigEndian) {
-      //iluSwapColours();  // No need to swap colors.  Just use the bitmasks.
-      rmask = 0x00FF0000;
-      gmask = 0x0000FF00;
-      bmask = 0x000000FF;
-    }
-  }
-  else if (ilutCurImage->Format == IL_BGR || ilutCurImage->Format == IL_BGRA) {
-    if (isBigEndian) {
-      rmask = 0x0000FF00;
-      gmask = 0x00FF0000;
-      bmask = 0xFF000000;
-    }
-  }
-  else if (Image->Format != IL_COLOR_INDEX) {  // We have to convert the image.
-    #ifdef WORDS_BIGENDIAN
+#ifndef WORDS_BIGENDIAN
+    rmask = 0x00FF0000;
+    gmask = 0x0000FF00;
+    bmask = 0x000000FF;
+#endif
+  } else if (ilutCurImage->Format == IL_BGR || ilutCurImage->Format == IL_BGRA) {
+#ifdef WORDS_BIGENDIAN
+    rmask = 0x0000FF00;
+    gmask = 0x00FF0000;
+    bmask = 0xFF000000;
+#endif
+  } else if (Image->Format != IL_COLOR_INDEX) {  // We have to convert the image.
+#ifdef WORDS_BIGENDIAN
     Image = iConvertImage(Image, IL_RGBA, IL_UNSIGNED_BYTE);
-    #else
+#else
     Image = iConvertImage(Image, IL_BGRA, IL_UNSIGNED_BYTE);
-    #endif
+#endif
     if (Image == NULL)
       goto done;
   }
@@ -122,6 +116,11 @@ static SDL_Surface * iConvertToSDL2Surface(ILimage *ilutCurImage, unsigned int f
 
   if (Image->Format == IL_COLOR_INDEX) {
     BppPal = iGetBppPal(Image->Pal.PalType);
+    if (!BppPal) {
+      iSetError(ILU_INTERNAL_ERROR);
+      goto done;
+    }
+
     switch (ilutCurImage->Pal.PalType)
     {
       case IL_PAL_RGB24:
@@ -168,7 +167,7 @@ static SDL_Surface * iConvertToSDL2Surface(ILimage *ilutCurImage, unsigned int f
   }
 
 done:
-  if (Data != Image->Data)
+  if (Data && (!Image || Data != Image->Data))
     ifree(Data);  // This is flipped data.
 
   if (Image != ilutCurImage)

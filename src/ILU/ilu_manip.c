@@ -39,7 +39,7 @@ static ILboolean iCrop2D(ILimage *Image, ILuint XOff, ILuint YOff, ILuint Width,
   for (y = 0; y < Image->Height; y++) {
     for (x = 0; x < Image->Bps; x += Image->Bpp) {
       for (c = 0; c < Image->Bpp; c++) {
-        Image->Data[y * Image->Bps + x + c] = 
+        Image->Data[y * Image->Bps + x + c] =
           Data[(y + YOff) * OldBps + x + XOff * Image->Bpp + c];
       }
     }
@@ -749,7 +749,7 @@ ILboolean iEqualize(ILimage *Image) {
   ILimage *   LumImage;
   ILuint      NewColour[4];
   ILubyte   * BytePtr;
- 
+
   NewColour[0] = NewColour[1] = NewColour[2] = NewColour[3] = 0;
 
   if (Image == NULL) {
@@ -764,8 +764,13 @@ ILboolean iEqualize(ILimage *Image) {
   }
 
   if (Image->Format == IL_COLOUR_INDEX) {
-    NumPixels = Image->Pal.PalSize / iGetBppPal(Image->Pal.PalType);
     Bpp = iGetBppPal(Image->Pal.PalType);
+    if (!Bpp) {
+      iSetError(ILU_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
+
+    NumPixels = Image->Pal.PalSize / Bpp;
   } else {
     NumPixels = Image->Width * Image->Height * Image->Depth;
     Bpp = Image->Bpp;
@@ -944,6 +949,11 @@ ILboolean iHistogram(ILimage *Image, ILuint *Values, ILuint Size)
 
   if (Image->Format == IL_COLOUR_INDEX) {
     Bpp = iGetBppPal(Image->Pal.PalType);
+    if (!Bpp) {
+      iSetError(ILU_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
+
     F = (ILfloat)(Size / Bpp - 1);
 
     if ((Size % Bpp) || !Size) {
@@ -963,6 +973,11 @@ ILboolean iHistogram(ILimage *Image, ILuint *Values, ILuint Size)
     }
   } else {
     Bpp = iGetBppFormat(Image->Format);
+    if (!Bpp) {
+      iSetError(ILU_INTERNAL_ERROR);
+      return IL_FALSE;
+    }
+
     F = (ILfloat)(Size / Bpp - 1);
 
     if (Size % Bpp) {
