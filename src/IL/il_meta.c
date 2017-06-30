@@ -220,7 +220,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   MetaNew->Length   = Count;
   MetaNew->Size     = Size;
   MetaNew->Data     = ialloc(Size);
-  MetaNew->Next     = NULL;
+  MetaNew->Next     = Image->MetaTags;
   memcpy(MetaNew->Data, Data, Size);
 
 #ifdef _UNICODE
@@ -229,10 +229,7 @@ ILboolean iSetMetadata(ILimage *Image, ILenum IFD, ILenum ID, ILenum Type, ILuin
   MetaNew->String = iCharStrDup((const char*)Data);
 #endif
 
-  if (!Image->MetaTags)
-    Image->MetaTags = MetaNew;
-  else 
-    Image->MetaTags->Next = MetaNew;
+  Image->MetaTags = MetaNew;
 
   return IL_TRUE;
 }
